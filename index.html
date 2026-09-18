@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Contable · CTP Mercedes Norte</title>
+<style>
+:root{
+  --navy:#0E1B3D; --navy-deep:#0A1230;
+  --gold:#B8863C; --gold-light:#F4DD7A;
+  --teal:#2FC2AD; --coral:#EF6A5B;
+  --ink:#20242B; --paper:#F3F5F4; --muted:#5B6470; --line:#D8DCDD;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh;}
+.topbar{background:var(--navy);color:#fff;padding:20px 16px;text-align:center;}
+.topbar h1{margin:0 0 4px;font-size:17px;}
+.topbar p{margin:0;font-size:10.5px;color:rgba(255,255,255,.65);font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;}
+
+.wrap{max-width:520px;margin:0 auto;padding:24px 16px 60px;}
+
+/* login */
+.login-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:28px 22px;text-align:center;margin-top:20px;}
+.login-card h2{font-size:15px;margin:0 0 6px;color:var(--navy);}
+.login-card p{font-size:12.5px;color:var(--muted);margin:0 0 18px;}
+.login-card input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:8px;font-size:16px;font-family:var(--mono);letter-spacing:1px;text-align:center;margin-bottom:12px;}
+.login-card input:focus{outline:none;border-color:var(--gold);}
+.btn{display:inline-block;padding:11px 24px;background:var(--navy);color:#fff;border:none;border-radius:22px;font-size:13.5px;font-weight:600;cursor:pointer;width:100%;}
+.btn:hover{background:var(--navy-deep);}
+.btn:disabled{opacity:.5;cursor:default;}
+.error-msg{color:var(--coral);font-size:12px;margin-top:10px;display:none;}
+.error-msg.show{display:block;}
+.loading-msg{color:var(--muted);font-size:12px;margin-top:10px;display:none;font-family:var(--mono);}
+.loading-msg.show{display:block;}
+
+/* portal */
+.welcome-card{background:var(--navy);color:#fff;border-radius:12px;padding:18px 20px;margin-top:8px;}
+.welcome-card .role-tag{font-family:var(--mono);font-size:10px;color:var(--gold-light);text-transform:uppercase;letter-spacing:1px;}
+.welcome-card h2{margin:6px 0 2px;font-size:17px;}
+.welcome-card p{margin:0;font-size:12px;color:rgba(255,255,255,.75);}
+.logout-btn{margin-top:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:11px;padding:6px 12px;border-radius:14px;cursor:pointer;}
+
+.section-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:22px 0 8px;}
+.level-heading{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin:28px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--gold);}
+.subarea-heading{font-size:12.5px;font-weight:700;color:var(--navy-2,var(--navy));margin:14px 0 6px;padding-left:8px;border-left:3px solid var(--gold);}
+.course-card{display:block;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:10px;text-decoration:none;color:var(--ink);}
+.course-card:hover{border-left-color:var(--teal);}
+.course-card .ctag{font-family:var(--mono);font-size:9.5px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;}
+.course-card .ctitle{font-size:14px;font-weight:600;margin:4px 0 0;color:var(--navy);}
+.course-card .cpending{font-size:11px;color:var(--coral);margin-top:4px;}
+.empty-msg{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 20px;background:#fff;border:1px dashed var(--line);border-radius:8px;}
+
+.sat-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1c2d5c 0%,var(--navy-deep) 100%);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-top:10px;text-decoration:none;color:#fff;}
+.sat-card .sat-icon{font-size:26px;flex-shrink:0;}
+.sat-card .sat-title{font-size:13.5px;font-weight:700;margin:0 0 2px;}
+.sat-card .sat-sub{font-size:10.5px;color:rgba(255,255,255,.7);margin:0;}
+.sat-card .sat-arrow{margin-left:auto;color:var(--gold-light);font-size:16px;}
+
+.catalogo-error{background:#fff3f2;border:1px solid var(--coral);color:#8a2f26;font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🏫 Portal Contable</h1>
+  <p>CTP Mercedes Norte · Especialidad de Contabilidad</p>
+</div>
+
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN
+   - El LOGIN (verificar cédula → nombre/nivel/sección/rol) sigue usando
+     el backend de Google Apps Script + Sheets (hoja "Usuarios_Portal").
+   - El CATÁLOGO de cursos YA NO vive en una hoja de Sheets versionada.
+     Ahora es el archivo catalogo.json de este mismo repositorio: se edita
+     y se sube junto con el código, con historial real en git, sin
+     necesidad de crear una hoja nueva cada vez que cambia algo.
+   ============================================================ */
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+
+function sheetsReady(){ return SHEET_API_URL && !SHEET_API_URL.startsWith('REEMPLAZAR'); }
+
+let jsonpCounter = 0;
+function jsonpRequest(url){
+  return new Promise((resolve, reject)=>{
+    const cbName = 'jsonp_cb_' + (jsonpCounter++) + '_' + Date.now();
+    const script = document.createElement('script');
+    let settled = false;
+    const cleanup = ()=>{ delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); };
+    window[cbName] = (data)=>{ settled = true; cleanup(); resolve(data); };
+    script.onerror = ()=>{ if(!settled){ cleanup(); reject(new Error('Error de red (JSONP)')); } };
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+    document.body.appendChild(script);
+    setTimeout(()=>{ if(!settled){ cleanup(); reject(new Error('Tiempo de espera agotado')); } }, 10000);
+  });
+}
+
+async function apiGet(params){
+  return await jsonpRequest(SHEET_API_URL + '?' + params);
+}
+
+async function loadCatalogo(){
+  const resp = await fetch('catalogo.json', { cache: 'no-store' });
+  if(!resp.ok) throw new Error('No se pudo leer catalogo.json (' + resp.status + ')');
+  return await resp.json();
+}
+
+function escapeHtml(s){ return (s+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+const appEl = document.getElementById('app');
+let session = null;
+try{
+  const saved = sessionStorage.getItem('portal_session');
+  if(saved) session = JSON.parse(saved);
+}catch(e){}
+
+function renderLogin(errorMsg){
+  appEl.innerHTML = `
+    <div class="login-card">
+      <h2>Ingreso al portal</h2>
+      <p>Escriba su número de cédula (sin espacios ni guiones) para continuar.</p>
+      <input type="text" id="cedulaInput" inputmode="numeric" placeholder="Número de cédula" maxlength="15" autocomplete="off">
+      <button class="btn" id="loginBtn">Ingresar</button>
+      <div class="loading-msg" id="loadingMsg">Verificando...</div>
+      <div class="error-msg ${errorMsg?'show':''}" id="errorMsg">${errorMsg||''}</div>
+    </div>
+  `;
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('cedulaInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  document.getElementById('cedulaInput').focus();
+}
+
+async function doLogin(){
+  const cedula = document.getElementById('cedulaInput').value.trim();
+  if(!cedula) return;
+  if(!sheetsReady()){
+    renderLogin('El portal todavía no está conectado a la hoja de usuarios (falta configurar SHEET_API_URL).');
+    return;
+  }
+  document.getElementById('loadingMsg').classList.add('show');
+  document.getElementById('errorMsg').classList.remove('show');
+  document.getElementById('loginBtn').disabled = true;
+  try{
+    const data = await apiGet('action=login&cedula=' + encodeURIComponent(cedula));
+    if(!data.found){
+      renderLogin('Cédula no encontrada. Consulte con su profesor.');
+      return;
+    }
+    session = { cedula, nombre:data.nombre, nivel:data.nivel, seccion:data.seccion, rol:data.rol };
+    sessionStorage.setItem('portal_session', JSON.stringify(session));
+    renderPortal();
+  }catch(e){
+    renderLogin('No se pudo verificar la cédula. Intente de nuevo.');
+  }
+}
+
+function logout(){
+  session = null;
+  sessionStorage.removeItem('portal_session');
+  renderLogin();
+}
+
+async function renderPortal(){
+  const isDocente = session.rol === 'Docente';
+  const nombreParam = encodeURIComponent(session.nombre);
+  appEl.innerHTML = `
+    <div class="welcome-card">
+      <div class="role-tag">${isDocente ? 'Docente' : 'Estudiante · ' + escapeHtml(session.seccion||'')}</div>
+      <h2>${escapeHtml(session.nombre)}</h2>
+      <p>${isDocente ? 'Acceso a todos los niveles y paneles docentes.' : 'Nivel ' + escapeHtml(session.nivel||'') + '° — este es el programa de tu especialidad.'}</p>
+      <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+    </div>
+    <a class="sat-card" href="SAT_Profe_Gerardo.html?nombre=${nombreParam}" target="_blank">
+      <span class="sat-icon">🏛️</span>
+      <span>
+        <div class="sat-title">El SAT del Profe Gerardo</div>
+        <div class="sat-sub">${isDocente ? 'Simulador contable · panel disponible para todos los niveles' : 'Tu simulador contable · disponible en todos los niveles'}</div>
+      </span>
+      <span class="sat-arrow">→</span>
+    </a>
+    <div id="courseList"><div class="empty-msg">Cargando catálogo...</div></div>
+  `;
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+
+  const listEl = document.getElementById('courseList');
+  try{
+    const allRows = await loadCatalogo();
+    let rows = allRows.filter(r=> String(r.Activo).toUpperCase() === 'SI');
+    if(!isDocente) rows = rows.filter(r=> String(r.Nivel) === String(session.nivel));
+
+    if(rows.length===0){
+      listEl.innerHTML = '<div class="empty-msg">Todavía no hay materiales publicados para tu nivel. Consulta con tu profesor.</div>';
+      return;
+    }
+
+    const levels = isDocente ? [...new Set(rows.map(r=>String(r.Nivel)))].sort() : [String(session.nivel)];
+
+    let html = '';
+    levels.forEach(lvl=>{
+      const levelRows = rows.filter(r=>String(r.Nivel)===lvl);
+      if(isDocente) html += `<div class="level-heading">Nivel ${escapeHtml(lvl)}°</div>`;
+
+      const antologia = levelRows.filter(r=>r.Categoria==='Antologia' || r.Categoria==='Antología');
+      const trabajos = levelRows.filter(r=>r.Categoria==='Trabajo en clase');
+      const examenes = levelRows.filter(r=>r.Categoria==='Examen' || r.Categoria==='Tarea');
+      const temas = levelRows.filter(r=>r.Categoria==='Tema' || r.Categoria==='Curso interactivo');
+
+      if(antologia.length){
+        html += `<div class="section-title">📚 Antología y material de consulta</div>`;
+        html += antologia.map(r=>renderCard(r)).join('');
+      }
+      if(trabajos.length){
+        html += `<div class="section-title">📝 Trabajos en clase</div>`;
+        html += trabajos.map(r=>renderCard(r)).join('');
+      }
+      if(examenes.length){
+        html += `<div class="section-title">🎯 Exámenes y tareas</div>`;
+        html += examenes.map(r=>renderCard(r)).join('');
+      }
+      if(temas.length){
+        html += `<div class="section-title">📖 Temas del programa</div>`;
+        const bySubarea = {};
+        temas.sort((a,b)=> (Number(a.Orden)||0) - (Number(b.Orden)||0));
+        temas.forEach(r=>{
+          const sub = r.Subarea || 'General';
+          bySubarea[sub] = bySubarea[sub] || [];
+          bySubarea[sub].push(r);
+        });
+        Object.keys(bySubarea).forEach(sub=>{
+          html += `<div class="subarea-heading">${escapeHtml(sub)}</div>`;
+          html += bySubarea[sub].map(r=>renderCard(r)).join('');
+        });
+      }
+    });
+
+    listEl.innerHTML = html;
+  }catch(e){
+    listEl.innerHTML = '<div class="catalogo-error">No se pudo cargar el catálogo (catalogo.json). Detalle: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderCard(r){
+  const cleanUrl = String(r.URL||'').trim();
+  const pending = !cleanUrl || cleanUrl.toUpperCase().includes('PENDIENTE');
+  const nombreParam = encodeURIComponent(session.nombre);
+  const sep = cleanUrl.includes('?') ? '&' : '?';
+  const href = pending ? '#' : (cleanUrl + sep + 'nombre=' + nombreParam);
+  const catLabel = {'Tema':'Tema del programa','Curso interactivo':'Curso interactivo','Antologia':'Antología','Antología':'Antología','Trabajo en clase':'Trabajo en clase'}[r.Categoria] || r.Categoria || '';
+  return `<a class="course-card" href="${pending?'#':href}" target="${pending?'_self':'_blank'}" onclick="${pending?'return false;':''}">
+    <div class="ctag">${escapeHtml(catLabel)}</div>
+    <div class="ctitle">${escapeHtml(r.Titulo||'')}</div>
+    ${pending ? '<div class="cpending">Próximamente — todavía no está publicado</div>' : ''}
+  </a>`;
+}
+
+/* ============================================================
+   INICIO
+   ============================================================ */
+if(session){ renderPortal(); } else { renderLogin(); }
+</script>
+</body>
+</html>
