@@ -88,7 +88,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-
 <body>
 
 <div class="topbar">
-  <img src="assets/logo_ctp_mercedes_norte.jpg" alt="Escudo CTP Mercedes Norte">
+  <img src="logo_ctp_mercedes_norte.jpg" alt="Escudo CTP Mercedes Norte">
   <div class="topbar-text">
     <h1>🏫 Portal Contable</h1>
     <p>CTP Mercedes Norte · Especialidad de Contabilidad</p>
@@ -231,14 +231,9 @@ async function renderPortal(){
         <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
       </div>
     </div>
-    <a class="sat-card" href="SAT_Profe_Gerardo.html?nombre=${nombreParam}" target="_blank">
-      <span class="sat-icon">🏛️</span>
-      <span>
-        <div class="sat-title">El SAT del Profe Gerardo</div>
-        <div class="sat-sub">${isDocente ? 'Simulador contable · panel disponible para todos los niveles' : 'Tu simulador contable · disponible en todos los niveles'}</div>
-      </span>
-      <span class="sat-arrow">→</span>
-    </a>
+    <!-- "El SAT del Profe Gerardo" se vuelve a mostrar aquí cuando se migre
+         SAT_Profe_Gerardo.html a este repositorio nuevo. Por ahora se oculta
+         para no dejar un enlace roto. -->
     <div id="courseList"><div class="empty-msg">Cargando catálogo...</div></div>
   `;
   document.getElementById('logoutBtn').addEventListener('click', logout);
