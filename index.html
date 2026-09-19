@@ -3,115 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Contable · CTP Mercedes Norte</title>
+<title>Examen Digital · CTP Mercedes Norte</title>
 <style>
 :root{
-  --bg:#000000; --bg-panel:#141414; --bg-card:#1b1b1b;
-  --gold:#B8863C; --gold-light:#F4DD7A;
-  --teal:#2FC2AD; --coral:#EF6A5B;
-  --ink:#EDEDED; --muted:#9AA0A6; --line:#2E2E2E;
-  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --navy:#0E1B3D; --navy-deep:#0A1230; --gold:#B8863C; --gold-light:#F4DD7A;
+  --teal:#2FC2AD; --coral:#EF6A5B; --ok:#1FA97A;
+  --ink:#20242B; --paper:#F3F5F4; --muted:#5B6470; --line:#D8DCDD;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box;}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;}
-.topbar{background:var(--bg-panel);border-bottom:1px solid var(--line);color:#fff;padding:18px 16px;display:flex;align-items:center;gap:14px;justify-content:center;}
-.topbar img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:10px;padding:4px;flex-shrink:0;}
-.topbar-text{text-align:left;}
-.topbar h1{margin:0 0 4px;font-size:16px;}
-.topbar p{margin:0;font-size:10.5px;color:var(--muted);font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;}
-
-.wrap{max-width:520px;margin:0 auto;padding:24px 16px 60px;}
-
-/* login */
-.login-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:28px 22px;text-align:center;margin-top:20px;}
-.login-card h2{font-size:15px;margin:0 0 6px;color:#fff;}
-.login-card p{font-size:12.5px;color:var(--muted);margin:0 0 18px;}
-.login-card input{width:100%;padding:12px 14px;background:#0d0d0d;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;font-size:16px;font-family:var(--mono);letter-spacing:1px;text-align:center;margin-bottom:12px;}
-.login-card input:focus{outline:none;border-color:var(--gold);}
-.btn{display:inline-block;padding:11px 24px;background:var(--gold);color:#0a0a0a;border:none;border-radius:22px;font-size:13.5px;font-weight:700;cursor:pointer;width:100%;}
-.btn:hover{background:var(--gold-light);}
-.btn:disabled{opacity:.5;cursor:default;}
-.btn-outline{background:transparent;border:1px solid var(--line);color:var(--ink);}
-.btn-outline:hover{border-color:var(--gold);background:transparent;}
-.error-msg{color:var(--coral);font-size:12px;margin-top:10px;display:none;}
-.error-msg.show{display:block;}
-.loading-msg{color:var(--muted);font-size:12px;margin-top:10px;display:none;font-family:var(--mono);}
-.loading-msg.show{display:block;}
-
-/* portal */
-.welcome-card{background:var(--bg-card);border:1px solid var(--gold);color:#fff;border-radius:12px;padding:18px 20px;margin-top:8px;}
-.welcome-card .role-tag{font-family:var(--mono);font-size:10px;color:var(--gold-light);text-transform:uppercase;letter-spacing:1px;}
-.welcome-card h2{margin:6px 0 2px;font-size:17px;}
-.welcome-card p{margin:0;font-size:12px;color:var(--muted);}
-.welcome-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.welcome-actions button{font-size:11px;padding:6px 12px;border-radius:14px;cursor:pointer;}
-.logout-btn{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff;}
-.admin-btn{background:rgba(184,134,60,.15);border:1px solid var(--gold);color:var(--gold-light);}
-
-.section-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:22px 0 8px;}
-.level-heading{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;margin:28px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--gold);}
-.subarea-heading{font-size:12.5px;font-weight:700;color:var(--gold-light);margin:14px 0 6px;padding-left:8px;border-left:3px solid var(--gold);}
-.course-card{display:block;background:var(--bg-card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:10px;text-decoration:none;color:var(--ink);}
-.course-card:hover{border-left-color:var(--teal);}
-.course-card .ctag{font-family:var(--mono);font-size:9.5px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;}
-.course-card .ctitle{font-size:14px;font-weight:600;margin:4px 0 0;color:#fff;}
-.course-card .cpending{font-size:11px;color:var(--coral);margin-top:4px;}
-.empty-msg{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 20px;background:var(--bg-card);border:1px dashed var(--line);border-radius:8px;}
-
-.sat-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1c1c1c 0%,#0a0a0a 100%);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-top:10px;text-decoration:none;color:#fff;}
-.sat-card .sat-icon{font-size:26px;flex-shrink:0;}
-.sat-card .sat-title{font-size:13.5px;font-weight:700;margin:0 0 2px;}
-.sat-card .sat-sub{font-size:10.5px;color:var(--muted);margin:0;}
-.sat-card .sat-arrow{margin-left:auto;color:var(--gold-light);font-size:16px;}
-
-.catalogo-error{background:#2a1512;border:1px solid var(--coral);color:#ffb3a8;font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;}
-
-/* panel docente (overlay) */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;overflow-y:auto;z-index:50;}
-.overlay-box{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;max-width:600px;width:100%;padding:22px;}
-.overlay-box h2{margin:0 0 4px;font-size:16px;color:#fff;}
-.overlay-box .sub{font-size:11.5px;color:var(--muted);margin:0 0 18px;}
-.overlay-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:8px;}
-.toggle-row .trow-info{min-width:0;}
-.toggle-row .trow-title{font-size:13px;color:#fff;font-weight:600;}
-.toggle-row .trow-sub{font-size:10.5px;color:var(--muted);font-family:var(--mono);}
-.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh;}
+.header{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.header img{width:44px;height:44px;object-fit:contain;background:#fff;border-radius:8px;padding:3px;aspect-ratio:1/1;flex-shrink:0;}
+.header .htext h1{margin:0;font-size:14.5px;}
+.header .htext p{margin:2px 0 0;font-size:10px;color:rgba(255,255,255,.7);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 70px;}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:16px;}
+h2{color:var(--navy-deep);margin:0 0 6px;font-size:17px;}
+.muted{color:var(--muted);font-size:12.5px;}
+label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px;}
+select,input[type=text],input[type=number],textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px;}
+textarea{min-height:90px;resize:vertical;}
+.btn{display:inline-block;padding:11px 22px;background:var(--navy);color:#fff;border:none;border-radius:22px;font-size:13.5px;font-weight:600;cursor:pointer;}
+.btn:hover{background:var(--navy-deep);}
+.btn:disabled{opacity:.55;cursor:default;}
+.btn-gold{background:var(--gold);color:#1a1206;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-outline{background:transparent;border:1.5px solid var(--line);color:var(--ink);}
+.btn-sm{padding:5px 12px;font-size:11.5px;border-radius:14px;}
+.error-msg{color:var(--coral);font-size:12.5px;margin-top:6px;}
+.timer{position:sticky;top:0;z-index:20;background:var(--navy-deep);color:#fff;text-align:center;padding:8px;font-family:var(--mono);font-size:14px;letter-spacing:1px;}
+.timer.low{background:var(--coral);}
+.tabla-admin{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px;}
+.tabla-admin th,.tabla-admin td{border:1px solid var(--line);padding:6px 8px;text-align:left;}
+.tabla-admin th{background:#f1f5f9;}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:10.5px;font-weight:700;font-family:var(--mono);}
+.pill-ok{background:#dff7ec;color:var(--ok);}
+.pill-warn{background:#fff2df;color:#a5680f;}
+.pill-bad{background:#fde3df;color:var(--coral);}
+.question{border-bottom:1px solid #eef1f2;padding-bottom:16px;margin-bottom:16px;}
+.question:last-child{border-bottom:none;}
+.qhead{font-weight:700;font-size:13.5px;margin-bottom:8px;}
+.opcion{display:block;padding:6px 0;cursor:pointer;font-size:13.5px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px;}
+.overlay-box{background:#fff;border-radius:12px;padding:24px;max-width:420px;width:100%;text-align:center;}
+.switch{position:relative;display:inline-block;width:44px;height:24px;vertical-align:middle;}
 .switch input{opacity:0;width:0;height:0;}
-.switch-track{position:absolute;cursor:pointer;inset:0;background:#3a3a3a;border-radius:24px;transition:.2s;}
+.switch-track{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:24px;transition:.2s;}
 .switch-track:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
 .switch input:checked + .switch-track{background:var(--teal);}
 .switch input:checked + .switch-track:before{transform:translateX(20px);}
+.puntos-edit{display:flex;align-items:center;gap:6px;}
+.puntos-edit input{width:60px;margin:0;padding:5px 6px;text-align:center;}
+.puntos-edit button{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:700;}
+.detalle-resp{background:#f8fafc;border-radius:8px;padding:10px 12px;font-size:12.5px;margin-top:6px;}
+@media print{
+  body.printing > *:not(#printArea){display:none !important;}
+  .no-print{display:none !important;}
+}
 </style>
 </head>
 <body>
-
-<div class="topbar">
-  <img src="logo_ctp_mercedes_norte.jpg" alt="Escudo CTP Mercedes Norte">
-  <div class="topbar-text">
-    <h1>🏫 Portal Contable</h1>
-    <p>CTP Mercedes Norte · Especialidad de Contabilidad</p>
-  </div>
+<div class="header">
+  <img src="logo_ctp_mercedes_norte.jpg" alt="Escudo">
+  <div class="htext"><h1 id="hInstitucion">Institución</h1><p id="hAsignatura">Asignatura</p></div>
 </div>
-
 <div class="wrap" id="app"></div>
 
 <script>
 /* ============================================================
-   CONFIGURACIÓN
-   - LOGIN: sigue usando Google Apps Script + Sheets (hoja "Usuarios_Portal").
-   - CATÁLOGO (qué cursos existen, título, url, nivel): vive en catalogo.json,
-     dentro de este mismo repositorio (se edita junto con el código).
-   - ACTIVO/INACTIVO por curso: es lo único que ahora se puede cambiar en
-     caliente desde el Panel Docente (botones), sin tocar código ni Sheets
-     a mano. Se guarda en una hoja pequeña "CatalogoActivo" vía Apps Script.
+   1) CONFIGURACIÓN DEL EXAMEN — esto es lo único que cambia de un
+      examen a otro (Sección 8 del manual). El motor de abajo nunca
+      se toca.
    ============================================================ */
-const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
-const TEACHER_PIN = "9986";
+const CONFIG = {
+  API_URL: "REEMPLAZAR_URL_APPS_SCRIPT",
+  TEACHER_CODE: "gerardo2026",
+  INSTITUCION: "CTP Mercedes Norte",
+  ASIGNATURA: "Contabilidad",
+  SUBAREA: "Gestión Contable",
+  DOCENTE: "MSc. Gerardo González González",
+  NIVEL: "11",
+  SECCIONES: "11-1, 11-2",
+  FECHA: "",
+  DURACION_MIN: 80,
+  VALOR_PORCENTUAL: 20,
+  PUNTUACION_TOTAL: 40,
+  ESPECIFICACIONES_LECCIONES: { "tema1": 8, "tema2": 6, "tema3": 4 }
+};
 
-function sheetsReady(){ return SHEET_API_URL && !SHEET_API_URL.startsWith('REEMPLAZAR'); }
+// EJEMPLO — reemplazar por la lista real de estudiantes del grupo
+const STUDENT_ROSTER = [
+  { cedula: "1-1111-1111", nombre: "Estudiante Ejemplo Uno", seccion: "11-1" },
+  { cedula: "1-2222-2222", nombre: "Estudiante Ejemplo Dos", seccion: "11-2" }
+];
 
+// EJEMPLO — reemplazar por las preguntas reales, conservando la forma de cada tipo
+const PREGUNTAS = {
+  SU: [
+    { id: 'su1', tema: 'tema1', puntos: 2, text: '¿Cuál cuenta es de naturaleza deudora?', options: { A: 'Capital', B: 'Caja', C: 'Proveedores' }, correct: 'B' },
+    { id: 'su2', tema: 'tema1', puntos: 2, text: '¿Qué documento respalda una compra al crédito?', options: { A: 'Factura', B: 'Recibo de caja', C: 'Cheque' }, correct: 'A' }
+  ],
+  RC: [
+    { id: 'rc1', tema: 'tema1', puntos: 2, text: 'Nombre de la cuenta que representa el dinero en efectivo de la empresa:', validas: ['caja', 'efectivo en caja'] }
+  ],
+  C: [
+    { id: 'c1', tema: 'tema2', puntos: 3,
+      izquierda: [ { id: 'i1', text: 'Activo' }, { id: 'i2', text: 'Pasivo' }, { id: 'i3', text: 'Patrimonio' } ],
+      derecha:   [ { id: 'd1', text: 'Lo que la empresa debe' }, { id: 'd2', text: 'Lo que la empresa posee' }, { id: 'd3', text: 'Aporte de los dueños' } ],
+      correcto: { i1: 'd2', i2: 'd1', i3: 'd3' } }
+  ],
+  RR: [
+    { id: 'rr1', tema: 'tema2', puntos: 5, text: 'Explique la diferencia entre activo corriente y activo no corriente, con un ejemplo de cada uno.',
+      rubrica: [ { criterio: 'Define correctamente ambos conceptos', puntos: 2 }, { criterio: 'Da un ejemplo válido de cada uno', puntos: 2 }, { criterio: 'Redacción clara y orden', puntos: 1 } ] }
+  ],
+  RSC: [
+    { id: 'rsc1', tema: 'tema3', puntos: 8,
+      caso: 'La empresa "El Roble S.A." compró mercadería por ₡500,000 al crédito el 3 de marzo, con condiciones 2/10, n/30. El pago se realizó el 12 de marzo.',
+      preguntas: [ { id: 'p1', text: '¿Tiene derecho al descuento por pronto pago? Justifique.', puntos: 4 }, { id: 'p2', text: 'Elabore el asiento de diario del pago.', puntos: 4 } ],
+      rubrica: [ { criterio: 'Identifica correctamente si aplica o no el descuento', puntos: 4 }, { criterio: 'Asiento de diario correcto y balanceado', puntos: 4 } ] }
+  ],
+  ID: [
+    { id: 'id1', tema: 'tema1', puntos: 2, titulo: 'Identifique cada elemento del comprobante numerado en la imagen (o descripción) siguiente:',
+      contexto: '1) Encabezado con datos de la empresa — 2) Detalle de productos y montos — 3) Total a pagar',
+      items: [ { numero: 1, validas: ['encabezado', 'datos de la empresa'] }, { numero: 2, validas: ['detalle', 'detalle de productos'] }, { numero: 3, validas: ['total', 'total a pagar'] } ] }
+  ]
+};
+
+const SECCIONES_EXAMEN = [
+  { id: 'parte1', tipo: 'SU', titulo: 'Parte I — Selección única', instrucciones: 'Marque la opción correcta.' },
+  { id: 'parte2', tipo: 'RC', titulo: 'Parte II — Respuesta corta', instrucciones: 'Escriba una respuesta breve y precisa.' },
+  { id: 'parte3', tipo: 'C', titulo: 'Parte III — Correspondencia', instrucciones: 'Relacione cada elemento de la izquierda con su pareja correcta.' },
+  { id: 'parte4', tipo: 'ID', titulo: 'Parte IV — Identificación', instrucciones: 'Escriba qué representa cada número.' },
+  { id: 'parte5', tipo: 'RR', titulo: 'Parte V — Respuesta restringida', instrucciones: 'Responda con sus propias palabras. Esta parte la revisa la persona docente.' },
+  { id: 'parte6', tipo: 'RSC', titulo: 'Parte VI — Resolución de casos', instrucciones: 'Analice el caso y responda. Esta parte la revisa la persona docente.' }
+];
+
+/* ============================================================
+   2) MOTOR — no se modifica de un examen a otro
+   ============================================================ */
+
+/* ---------- utilidades de red (mismo patrón ya usado en el resto de la plataforma) ---------- */
 let jsonpCounter = 0;
 function jsonpRequest(url){
   return new Promise((resolve, reject)=>{
@@ -126,269 +159,588 @@ function jsonpRequest(url){
     setTimeout(()=>{ if(!settled){ cleanup(); reject(new Error('Tiempo de espera agotado')); } }, 10000);
   });
 }
-async function apiGet(params){ return await jsonpRequest(SHEET_API_URL + '?' + params); }
-function sheetGet(sheetName){
-  return jsonpRequest(SHEET_API_URL + '?sheet=' + encodeURIComponent(sheetName)).then(d=> (d && d.rows) ? d.rows : []);
+function backendListo(){ return CONFIG.API_URL && !CONFIG.API_URL.startsWith('REEMPLAZAR'); }
+async function conReintentos(fn, intentos=4){
+  let ultimoError;
+  for(let i=0;i<intentos;i++){
+    try{ return await fn(); }
+    catch(e){ ultimoError = e; await new Promise(r=>setTimeout(r, 500 * Math.pow(2,i))); }
+  }
+  throw ultimoError;
 }
-function sheetPost(sheetName, row){
+function sheetGet(sheetName){
+  return conReintentos(()=> jsonpRequest(CONFIG.API_URL + '?sheet=' + encodeURIComponent(sheetName)).then(d=> (d&&d.rows)?d.rows:[]));
+}
+function getConfigRemota(){
+  return conReintentos(()=> jsonpRequest(CONFIG.API_URL + '?action=getConfig').then(d=> (d&&d.value)?d.value:{}));
+}
+function sheetPost(sheetName, row, keyField){
   const body = new URLSearchParams();
   body.set('sheet', sheetName);
-  Object.keys(row).forEach(k=>body.set(k, row[k]));
-  return fetch(SHEET_API_URL, { method:'POST', mode:'no-cors', body });
+  if(keyField) body.set('keyField', keyField);
+  Object.keys(row).forEach(k=>body.set(k, typeof row[k]==='object' ? JSON.stringify(row[k]) : row[k]));
+  return conReintentos(()=> fetch(CONFIG.API_URL, { method:'POST', mode:'no-cors', body }));
+}
+function sheetDelete(sheetName, matchField, matchValue){
+  const body = new URLSearchParams();
+  body.set('action','delete'); body.set('sheet', sheetName); body.set('matchField', matchField); body.set('matchValue', matchValue);
+  return conReintentos(()=> fetch(CONFIG.API_URL, { method:'POST', mode:'no-cors', body }));
 }
 
-async function loadCatalogo(){
-  const resp = await fetch('catalogo.json', { cache: 'no-store' });
-  if(!resp.ok) throw new Error('No se pudo leer catalogo.json (' + resp.status + ')');
-  return await resp.json();
-}
+/* ---------- cédula: comparar solo dígitos/letras, ignorando guiones y espacios ---------- */
+function normalizarCedula(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
 
-// Últimas anulaciones de Activo/Inactivo hechas desde el Panel Docente.
-// Si un curso no tiene anulación, se usa el valor "Activo" que trae catalogo.json.
-async function loadActivoOverrides(){
-  try{
-    const rows = await sheetGet('CatalogoActivo');
-    const map = {};
-    rows.forEach(r=>{
-      const id = String(r.CursoId||'').trim();
-      if(!id) return;
-      map[id] = String(r.Activo||'').toUpperCase(); // el último renglón para ese Id gana
-    });
-    return map;
-  }catch(e){ return {}; }
+/* ---------- orden aleatorio determinístico por cédula (mismo orden si recarga, distinto entre estudiantes) ---------- */
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
-function efectivoActivo(row, overrides){
-  const id = String(row.Id||'').trim();
-  if(id && overrides.hasOwnProperty(id)) return overrides[id];
-  return String(row.Activo||'').toUpperCase();
+function semillaDesde(texto){
+  let h = 0;
+  for(let i=0;i<texto.length;i++){ h = (h*31 + texto.charCodeAt(i)) | 0; }
+  return h;
+}
+function mezclarConSemilla(arr, semilla){
+  const rng = mulberry32(semilla);
+  const copia = arr.slice();
+  for(let i=copia.length-1;i>0;i--){
+    const j = Math.floor(rng()*(i+1));
+    [copia[i],copia[j]] = [copia[j],copia[i]];
+  }
+  return copia;
 }
 
 function escapeHtml(s){ return (s+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtFecha(iso){ try{ return new Date(iso).toLocaleString('es-CR'); }catch(e){ return iso; } }
 
+/* ---------- estado ---------- */
 const appEl = document.getElementById('app');
-let session = null;
-try{
-  const saved = sessionStorage.getItem('portal_session');
-  if(saved) session = JSON.parse(saved);
-}catch(e){}
+document.getElementById('hInstitucion').textContent = CONFIG.INSTITUCION;
+document.getElementById('hAsignatura').textContent = CONFIG.ASIGNATURA + ' · ' + CONFIG.SUBAREA;
 
-function renderLogin(errorMsg){
-  appEl.innerHTML = `
-    <div class="login-card">
-      <h2>Ingreso al portal</h2>
-      <p>Escriba su número de cédula (sin espacios ni guiones) para continuar.</p>
-      <input type="text" id="cedulaInput" inputmode="numeric" placeholder="Número de cédula" maxlength="15" autocomplete="off">
-      <button class="btn" id="loginBtn">Ingresar</button>
-      <div class="loading-msg" id="loadingMsg">Verificando...</div>
-      <div class="error-msg ${errorMsg?'show':''}" id="errorMsg">${errorMsg||''}</div>
-    </div>
-  `;
-  document.getElementById('loginBtn').addEventListener('click', doLogin);
-  document.getElementById('cedulaInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-  document.getElementById('cedulaInput').focus();
-}
+let estudiante = null;      // {cedula, nombre, seccion}
+let respuestas = {};        // { preguntaId: valor }
+let entregado = false;
+let timerInterval = null;
+let segundosRestantes = CONFIG.DURACION_MIN * 60;
+let ordenPorParte = {};     // cache del orden mezclado por parte para este estudiante
 
-async function doLogin(){
-  const cedula = document.getElementById('cedulaInput').value.trim();
-  if(!cedula) return;
-  if(!sheetsReady()){
-    renderLogin('El portal todavía no está conectado a la hoja de usuarios (falta configurar SHEET_API_URL).');
-    return;
+function ordenParte(parte){
+  if(!estudiante) return PREGUNTAS[parte.tipo];
+  if(ordenPorParte[parte.id]) return ordenPorParte[parte.id];
+  const base = PREGUNTAS[parte.tipo] || [];
+  if(parte.tipo === 'SU' || parte.tipo === 'RC' || parte.tipo === 'C'){
+    const semilla = semillaDesde(normalizarCedula(estudiante.cedula) + '_' + parte.id);
+    ordenPorParte[parte.id] = mezclarConSemilla(base, semilla);
+  } else {
+    ordenPorParte[parte.id] = base; // ID/RR/RSC conservan el orden (numeración fija o contexto de caso)
   }
-  document.getElementById('loadingMsg').classList.add('show');
-  document.getElementById('errorMsg').classList.remove('show');
-  document.getElementById('loginBtn').disabled = true;
-  try{
-    const data = await apiGet('action=login&cedula=' + encodeURIComponent(cedula));
-    if(!data.found){
-      renderLogin('Cédula no encontrada. Consulte con su profesor.');
-      return;
-    }
-    session = { cedula, nombre:data.nombre, nivel:data.nivel, seccion:data.seccion, rol:data.rol };
-    sessionStorage.setItem('portal_session', JSON.stringify(session));
-    renderPortal();
-  }catch(e){
-    renderLogin('No se pudo verificar la cédula. Intente de nuevo.');
-  }
-}
-
-function logout(){
-  session = null;
-  sessionStorage.removeItem('portal_session');
-  renderLogin();
-}
-
-async function renderPortal(){
-  const isDocente = session.rol === 'Docente';
-  const nombreParam = encodeURIComponent(session.nombre);
-  appEl.innerHTML = `
-    <div class="welcome-card">
-      <div class="role-tag">${isDocente ? 'Docente' : 'Estudiante · ' + escapeHtml(session.seccion||'')}</div>
-      <h2>${escapeHtml(session.nombre)}</h2>
-      <p>${isDocente ? 'Acceso a todos los niveles y paneles docentes.' : 'Nivel ' + escapeHtml(session.nivel||'') + '° — este es el programa de tu especialidad.'}</p>
-      <div class="welcome-actions">
-        ${isDocente ? '<button class="admin-btn" id="adminBtn">⚙ Panel docente — habilitar temas</button>' : ''}
-        <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
-      </div>
-    </div>
-    <!-- "El SAT del Profe Gerardo" se vuelve a mostrar aquí cuando se migre
-         SAT_Profe_Gerardo.html a este repositorio nuevo. Por ahora se oculta
-         para no dejar un enlace roto. -->
-    <div id="courseList"><div class="empty-msg">Cargando catálogo...</div></div>
-  `;
-  document.getElementById('logoutBtn').addEventListener('click', logout);
-  if(isDocente) document.getElementById('adminBtn').addEventListener('click', openAdminPanel);
-
-  const listEl = document.getElementById('courseList');
-  try{
-    const [allRows, overrides] = await Promise.all([loadCatalogo(), loadActivoOverrides()]);
-    window.__catalogoCache = allRows;
-    window.__overridesCache = overrides;
-    let rows = allRows.filter(r=> efectivoActivo(r, overrides) === 'SI');
-    if(!isDocente) rows = rows.filter(r=> String(r.Nivel) === String(session.nivel));
-
-    if(rows.length===0){
-      listEl.innerHTML = '<div class="empty-msg">Todavía no hay materiales publicados para tu nivel. Consulta con tu profesor.</div>';
-      return;
-    }
-
-    const levels = isDocente ? [...new Set(rows.map(r=>String(r.Nivel)))].sort() : [String(session.nivel)];
-
-    let html = '';
-    levels.forEach(lvl=>{
-      const levelRows = rows.filter(r=>String(r.Nivel)===lvl);
-      if(isDocente) html += `<div class="level-heading">Nivel ${escapeHtml(lvl)}°</div>`;
-
-      const antologia = levelRows.filter(r=>r.Categoria==='Antologia' || r.Categoria==='Antología');
-      const trabajos = levelRows.filter(r=>r.Categoria==='Trabajo en clase');
-      const examenes = levelRows.filter(r=>r.Categoria==='Examen' || r.Categoria==='Tarea');
-      const temas = levelRows.filter(r=>r.Categoria==='Tema' || r.Categoria==='Curso interactivo');
-
-      if(antologia.length){
-        html += `<div class="section-title">📚 Antología y material de consulta</div>`;
-        html += antologia.map(r=>renderCard(r)).join('');
-      }
-      if(trabajos.length){
-        html += `<div class="section-title">📝 Trabajos en clase</div>`;
-        html += trabajos.map(r=>renderCard(r)).join('');
-      }
-      if(examenes.length){
-        html += `<div class="section-title">🎯 Exámenes y tareas</div>`;
-        html += examenes.map(r=>renderCard(r)).join('');
-      }
-      if(temas.length){
-        html += `<div class="section-title">📖 Temas del programa</div>`;
-        const bySubarea = {};
-        temas.sort((a,b)=> (Number(a.Orden)||0) - (Number(b.Orden)||0));
-        temas.forEach(r=>{
-          const sub = r.Subarea || 'General';
-          bySubarea[sub] = bySubarea[sub] || [];
-          bySubarea[sub].push(r);
-        });
-        Object.keys(bySubarea).forEach(sub=>{
-          html += `<div class="subarea-heading">${escapeHtml(sub)}</div>`;
-          html += bySubarea[sub].map(r=>renderCard(r)).join('');
-        });
-      }
-    });
-
-    listEl.innerHTML = html;
-  }catch(e){
-    listEl.innerHTML = '<div class="catalogo-error">No se pudo cargar el catálogo (catalogo.json). Detalle: ' + escapeHtml(e.message) + '</div>';
-  }
-}
-
-function renderCard(r){
-  const cleanUrl = String(r.URL||'').trim();
-  const pending = !cleanUrl || cleanUrl.toUpperCase().includes('PENDIENTE');
-  const nombreParam = encodeURIComponent(session.nombre);
-  const sep = cleanUrl.includes('?') ? '&' : '?';
-  const href = pending ? '#' : (cleanUrl + sep + 'nombre=' + nombreParam);
-  const catLabel = {'Tema':'Tema del programa','Curso interactivo':'Curso interactivo','Antologia':'Antología','Antología':'Antología','Trabajo en clase':'Trabajo en clase'}[r.Categoria] || r.Categoria || '';
-  return `<a class="course-card" href="${pending?'#':href}" target="${pending?'_self':'_blank'}" onclick="${pending?'return false;':''}">
-    <div class="ctag">${escapeHtml(catLabel)}</div>
-    <div class="ctitle">${escapeHtml(r.Titulo||'')}</div>
-    ${pending ? '<div class="cpending">Próximamente — todavía no está publicado</div>' : ''}
-  </a>`;
+  return ordenPorParte[parte.id];
 }
 
 /* ============================================================
-   PANEL DOCENTE — habilitar/inhabilitar temas por nivel con botones
+   PORTADA / LOGIN ESTUDIANTE
    ============================================================ */
-function openAdminPanel(){
-  const pin = window.prompt('PIN del panel docente:');
-  if(pin !== TEACHER_PIN){
-    if(pin !== null) window.alert('PIN incorrecto.');
-    return;
-  }
-  renderAdminPanel();
+function renderPortada(mensajeError){
+  appEl.innerHTML = `
+    <div class="card">
+      <h2>${escapeHtml(CONFIG.ASIGNATURA)}</h2>
+      <p class="muted">${escapeHtml(CONFIG.SUBAREA)} · Nivel ${escapeHtml(CONFIG.NIVEL)}° · ${escapeHtml(CONFIG.DOCENTE)}</p>
+      <p class="muted">Duración: ${CONFIG.DURACION_MIN} minutos · Valor: ${CONFIG.VALOR_PORCENTUAL}% · Puntuación total: ${CONFIG.PUNTUACION_TOTAL} pts</p>
+      <label for="selNombre">Seleccione su nombre</label>
+      <select id="selNombre">
+        <option value="">— Seleccione —</option>
+        ${STUDENT_ROSTER.map(s=>`<option value="${escapeHtml(s.cedula)}">${escapeHtml(s.nombre)} (${escapeHtml(s.seccion)})</option>`).join('')}
+      </select>
+      <label for="inpCedula">Confirme su número de cédula</label>
+      <input type="text" id="inpCedula" placeholder="Con o sin guiones" autocomplete="off">
+      <button class="btn" id="btnIniciar">Iniciar examen</button>
+      <div class="error-msg" id="portadaError">${mensajeError||''}</div>
+      <p class="muted" style="margin-top:16px;">Solo se puede entregar una vez. Si ya entregó antes, al ingresar verá directamente su resultado.</p>
+      <button class="btn btn-outline btn-sm no-print" id="btnDocenteLink" style="margin-top:10px;">Acceso docente</button>
+    </div>
+  `;
+  document.getElementById('btnIniciar').addEventListener('click', intentarIniciar);
+  document.getElementById('btnDocenteLink').addEventListener('click', renderLoginDocente);
 }
 
-function renderAdminPanel(){
-  const allRows = window.__catalogoCache || [];
-  const overrides = window.__overridesCache || {};
-  const levels = [...new Set(allRows.map(r=>String(r.Nivel)))].sort();
+async function intentarIniciar(){
+  const cedulaSel = document.getElementById('selNombre').value;
+  const cedulaEscrita = document.getElementById('inpCedula').value;
+  const errEl = document.getElementById('portadaError');
+  errEl.textContent = '';
+  if(!cedulaSel){ errEl.textContent = 'Seleccione su nombre de la lista.'; return; }
+  if(normalizarCedula(cedulaSel) !== normalizarCedula(cedulaEscrita)){
+    errEl.textContent = 'La cédula no coincide con el nombre seleccionado.';
+    return;
+  }
+  const persona = STUDENT_ROSTER.find(s=> s.cedula === cedulaSel);
+  estudiante = { cedula: persona.cedula, nombre: persona.nombre, seccion: persona.seccion };
 
+  // ¿ya entregó antes?
+  if(backendListo()){
+    try{
+      const rows = await sheetGet('Entregas');
+      const previa = rows.find(r=> normalizarCedula(r.Cedula) === normalizarCedula(estudiante.cedula));
+      if(previa && String(previa.Entregado).toUpperCase()==='SI'){
+        renderResultado(previa);
+        return;
+      }
+      if(previa && previa.Respuestas){
+        try{ respuestas = JSON.parse(previa.Respuestas); }catch(e){ respuestas = {}; }
+      }
+    }catch(e){ /* si el backend falla, se sigue en modo local para no bloquear al estudiante */ }
+  }
+  iniciarCronometro();
+  renderExamen();
+  activarAntiCopia();
+}
+
+/* ============================================================
+   EXAMEN
+   ============================================================ */
+function renderExamen(){
+  let html = `<div class="timer" id="timerBox">Tiempo restante: --:--</div>`;
+  html += `<div class="card"><h2>Hoja de respuestas — ${escapeHtml(estudiante.nombre)}</h2><p class="muted">${escapeHtml(estudiante.seccion)} · Cédula ${escapeHtml(estudiante.cedula)}</p></div>`;
+
+  SECCIONES_EXAMEN.forEach(parte=>{
+    html += `<div class="card" data-parte="${parte.id}"><h2>${escapeHtml(parte.titulo)}</h2><p class="muted">${escapeHtml(parte.instrucciones)}</p>`;
+    const preguntas = ordenParte(parte);
+    preguntas.forEach((preg, idx)=>{ html += renderPregunta(parte, preg, idx+1); });
+    html += `</div>`;
+  });
+
+  html += `<div class="card no-print" style="text-align:center;"><button class="btn btn-gold" id="btnEntregar">Entregar examen</button></div>`;
+  appEl.innerHTML = html;
+  actualizarTimerUI();
+  cablearEventosRespuestas();
+  document.getElementById('btnEntregar').addEventListener('click', ()=> confirmarEntrega(false));
+}
+
+function renderPregunta(parte, preg, numero){
+  const guardado = respuestas[preg.id];
+  if(parte.tipo === 'SU'){
+    return `<div class="question"><div class="qhead">${numero}. ${escapeHtml(preg.text)} <span class="muted">(${preg.puntos} pts)</span></div>
+      ${Object.keys(preg.options).map(k=>`
+        <label class="opcion"><input type="radio" name="${preg.id}" value="${k}" data-pid="${preg.id}" ${guardado===k?'checked':''}> ${k}) ${escapeHtml(preg.options[k])}</label>
+      `).join('')}</div>`;
+  }
+  if(parte.tipo === 'RC'){
+    return `<div class="question"><div class="qhead">${numero}. ${escapeHtml(preg.text)} <span class="muted">(${preg.puntos} pts)</span></div>
+      <input type="text" data-pid="${preg.id}" value="${escapeHtml(guardado||'')}"></div>`;
+  }
+  if(parte.tipo === 'ID'){
+    return `<div class="question"><div class="qhead">${numero}. ${escapeHtml(preg.titulo)} <span class="muted">(${preg.puntos} pts c/u)</span></div>
+      <p class="muted">${escapeHtml(preg.contexto||'')}</p>
+      ${preg.items.map(it=>`<label>Número ${it.numero}</label><input type="text" data-pid="${preg.id}__${it.numero}" value="${escapeHtml(respuestas[preg.id+'__'+it.numero]||'')}">`).join('')}
+      </div>`;
+  }
+  if(parte.tipo === 'RR'){
+    return `<div class="question"><div class="qhead">${numero}. ${escapeHtml(preg.text)} <span class="muted">(${preg.puntos} pts)</span></div>
+      <textarea data-pid="${preg.id}">${escapeHtml(guardado||'')}</textarea></div>`;
+  }
+  if(parte.tipo === 'RSC'){
+    return `<div class="question"><div class="qhead">${numero}. Caso <span class="muted">(${preg.puntos} pts)</span></div>
+      <p class="detalle-resp">${escapeHtml(preg.caso)}</p>
+      ${preg.preguntas.map(sp=>`<p><strong>${escapeHtml(sp.text)}</strong> <span class="muted">(${sp.puntos} pts)</span></p><textarea data-pid="${preg.id}__${sp.id}">${escapeHtml(respuestas[preg.id+'__'+sp.id]||'')}</textarea>`).join('')}
+      </div>`;
+  }
+  if(parte.tipo === 'C'){
+    return `<div class="question" data-corresp="${preg.id}"><div class="qhead">${numero}. Relacione <span class="muted">(${preg.puntos} pts)</span></div>
+      ${preg.izquierda.map(iz=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="min-width:180px;">${escapeHtml(iz.text)}</span>
+          <select data-pid="${preg.id}__${iz.id}" data-corresp-select="${preg.id}">
+            <option value="">—</option>
+            ${preg.derecha.map(d=>`<option value="${d.id}" ${respuestas[preg.id+'__'+iz.id]===d.id?'selected':''}>${escapeHtml(d.text)}</option>`).join('')}
+          </select>
+        </div>`).join('')}
+      </div>`;
+  }
+  return '';
+}
+
+function cablearEventosRespuestas(){
+  appEl.querySelectorAll('[data-pid]').forEach(el=>{
+    const ev = (el.tagName==='SELECT' || el.type==='radio') ? 'change' : 'input';
+    el.addEventListener(ev, ()=>{
+      const pid = el.getAttribute('data-pid');
+      const val = el.type === 'radio' ? (el.checked ? el.value : respuestas[pid]) : el.value;
+      respuestas[pid] = val;
+      if(el.hasAttribute('data-corresp-select')) actualizarOpcionesUsadas(el.getAttribute('data-corresp-select'));
+      guardarProgreso();
+    });
+  });
+}
+
+// Apareamiento: ocultar en los demás selectores las opciones ya usadas
+function actualizarOpcionesUsadas(corrId){
+  const selects = appEl.querySelectorAll(`select[data-corresp-select="${corrId}"]`);
+  const usados = new Set();
+  selects.forEach(s=>{ if(s.value) usados.add(s.value); });
+  selects.forEach(s=>{
+    const valorActual = s.value;
+    Array.from(s.options).forEach(opt=>{
+      if(!opt.value) return;
+      opt.hidden = usados.has(opt.value) && opt.value !== valorActual;
+    });
+  });
+}
+
+let guardando = false, pendienteGuardar = false;
+async function guardarProgreso(){
+  if(!backendListo() || entregado) return;
+  if(guardando){ pendienteGuardar = true; return; }
+  guardando = true;
+  try{
+    await sheetPost('Entregas', {
+      Cedula: estudiante.cedula, Nombre: estudiante.nombre, Seccion: estudiante.seccion,
+      Respuestas: JSON.stringify(respuestas), Entregado: 'NO', Timestamp: new Date().toISOString()
+    }, 'Cedula');
+  }catch(e){ /* el autoguardado reintenta solo; un fallo puntual no debe interrumpir al estudiante */ }
+  guardando = false;
+  if(pendienteGuardar){ pendienteGuardar = false; guardarProgreso(); }
+}
+
+/* ---------- cronómetro ---------- */
+function iniciarCronometro(){
+  timerInterval = setInterval(()=>{
+    segundosRestantes--;
+    actualizarTimerUI();
+    if(segundosRestantes<=0){ clearInterval(timerInterval); confirmarEntrega(true); }
+  }, 1000);
+}
+function actualizarTimerUI(){
+  const box = document.getElementById('timerBox');
+  if(!box) return;
+  const m = Math.max(0,Math.floor(segundosRestantes/60));
+  const s = Math.max(0,segundosRestantes%60);
+  box.textContent = 'Tiempo restante: ' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  box.classList.toggle('low', segundosRestantes <= 300);
+}
+
+/* ---------- anti-copia: dos detectores, nunca entrega automática salvo vencimiento real ---------- */
+let avisoActivo = false;
+function activarAntiCopia(){
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) mostrarAvisoSalida(); });
+  let blurTimeout = null;
+  window.addEventListener('blur', ()=>{
+    blurTimeout = setTimeout(()=>{ if(!document.hasFocus()) mostrarAvisoSalida(); }, 350);
+  });
+  window.addEventListener('focus', ()=>{ if(blurTimeout) clearTimeout(blurTimeout); });
+}
+function mostrarAvisoSalida(){
+  if(avisoActivo || entregado) return;
+  avisoActivo = true;
+  registrarIncidente();
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.id = 'adminOverlay';
+  overlay.innerHTML = `<div class="overlay-box">
+    <h2>Se detectó un cambio de pantalla</h2>
+    <p class="muted">¿Desea finalizar el examen aquí mismo?</p>
+    <button class="btn btn-gold" id="avisoSi" style="margin:6px;">Sí, finalizar</button>
+    <button class="btn btn-outline" id="avisoNo" style="margin:6px;">No, continuar</button>
+  </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('avisoSi').addEventListener('click', ()=>{ overlay.remove(); avisoActivo=false; confirmarEntrega(true); });
+  document.getElementById('avisoNo').addEventListener('click', ()=>{ overlay.remove(); avisoActivo=false; });
+}
+let incidentes = 0;
+function registrarIncidente(){
+  incidentes++;
+  if(backendListo() && estudiante){
+    sheetPost('Entregas', { Cedula: estudiante.cedula, Incidentes: incidentes }, 'Cedula').catch(()=>{});
+  }
+}
 
-  let rowsHtml = '';
-  levels.forEach(lvl=>{
-    rowsHtml += `<div class="level-heading" style="margin-top:18px;">Nivel ${escapeHtml(lvl)}°</div>`;
-    allRows.filter(r=>String(r.Nivel)===lvl).forEach(r=>{
-      const id = String(r.Id||'').trim();
-      const activo = efectivoActivo(r, overrides) === 'SI';
-      rowsHtml += `
-        <div class="toggle-row" data-id="${escapeHtml(id)}">
-          <div class="trow-info">
-            <div class="trow-title">${escapeHtml(r.Titulo||'(sin título)')}</div>
-            <div class="trow-sub">${escapeHtml(r.Subarea||r.Categoria||'')}</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" ${activo?'checked':''} data-toggle-id="${escapeHtml(id)}">
-            <span class="switch-track"></span>
-          </label>
-        </div>`;
-    });
+/* ---------- calificación automática ---------- */
+function calificarAutomatico(){
+  const desglose = {};
+  let totalAuto = 0, totalPendiente = 0;
+
+  (PREGUNTAS.SU||[]).forEach(p=>{ const ok = respuestas[p.id]===p.correct; desglose[p.id]={puntos: ok?p.puntos:0, max:p.puntos, auto:true}; totalAuto += ok?p.puntos:0; });
+  (PREGUNTAS.RC||[]).forEach(p=>{
+    const val = String(respuestas[p.id]||'').trim().toLowerCase();
+    const ok = (p.validas||[]).some(v=> v.trim().toLowerCase()===val);
+    desglose[p.id]={puntos: ok?p.puntos:0, max:p.puntos, auto:true}; totalAuto += ok?p.puntos:0;
   });
-  if(allRows.length===0){
-    rowsHtml = '<div class="empty-msg">Todavía no hay cursos en el catálogo.</div>';
+  (PREGUNTAS.C||[]).forEach(p=>{
+    let correctos=0; const totalItems = p.izquierda.length;
+    p.izquierda.forEach(iz=>{ if(respuestas[p.id+'__'+iz.id] === p.correcto[iz.id]) correctos++; });
+    const pts = Math.round((correctos/totalItems)*p.puntos*100)/100;
+    desglose[p.id]={puntos: pts, max:p.puntos, auto:true}; totalAuto += pts;
+  });
+  (PREGUNTAS.ID||[]).forEach(p=>{
+    let correctos=0;
+    p.items.forEach(it=>{
+      const val = String(respuestas[p.id+'__'+it.numero]||'').trim().toLowerCase();
+      if((it.validas||[]).some(v=>v.trim().toLowerCase()===val)) correctos++;
+    });
+    const pts = Math.round((correctos/p.items.length)*p.puntos*100)/100;
+    desglose[p.id]={puntos: pts, max:p.puntos, auto:true}; totalAuto += pts;
+  });
+  (PREGUNTAS.RR||[]).forEach(p=>{ desglose[p.id]={puntos:0, max:p.puntos, auto:false}; totalPendiente += p.puntos; });
+  (PREGUNTAS.RSC||[]).forEach(p=>{ desglose[p.id]={puntos:0, max:p.puntos, auto:false}; totalPendiente += p.puntos; });
+
+  return { desglose, totalAuto, totalPendiente, requiereRevision: totalPendiente>0 };
+}
+
+async function confirmarEntrega(forzado){
+  if(entregado) return;
+  if(!forzado){
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `<div class="overlay-box"><h2>¿Entregar el examen?</h2><p class="muted">No podrá modificar sus respuestas después de entregar.</p>
+      <button class="btn btn-gold" id="entSi" style="margin:6px;">Sí, entregar</button>
+      <button class="btn btn-outline" id="entNo" style="margin:6px;">No, seguir</button></div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('entNo').addEventListener('click', ()=> overlay.remove());
+    document.getElementById('entSi').addEventListener('click', ()=>{ overlay.remove(); entregarAhora(); });
+    return;
+  }
+  entregarAhora();
+}
+
+async function entregarAhora(){
+  entregado = true;
+  clearInterval(timerInterval);
+  const cal = calificarAutomatico();
+  const btn = document.getElementById('btnEntregar');
+  if(btn){ btn.disabled = true; btn.textContent = 'Enviando…'; }
+
+  const registro = {
+    Cedula: estudiante.cedula, Nombre: estudiante.nombre, Seccion: estudiante.seccion,
+    Respuestas: JSON.stringify(respuestas), Desglose: JSON.stringify(cal.desglose),
+    NotaTotal: cal.totalAuto, PendienteRevision: cal.requiereRevision?'SI':'NO',
+    Entregado: 'SI', Incidentes: incidentes, Timestamp: new Date().toISOString()
+  };
+
+  if(backendListo()){
+    try{
+      await sheetPost('Entregas', registro, 'Cedula');
+      const rows = await sheetGet('Entregas');
+      const confirmado = rows.find(r=> normalizarCedula(r.Cedula)===normalizarCedula(estudiante.cedula) && String(r.Entregado).toUpperCase()==='SI');
+      if(confirmado){ renderResultado(confirmado); return; }
+      alert('No se pudo confirmar la entrega en el servidor. No cierre la ventana; avise a la persona docente.');
+    }catch(e){
+      alert('No se pudo confirmar la entrega en el servidor. No cierre la ventana; avise a la persona docente.');
+    }
+  } else {
+    renderResultado(registro);
+  }
+}
+
+function renderResultado(registro){
+  const pendiente = String(registro.PendienteRevision).toUpperCase()==='SI';
+  appEl.innerHTML = `<div class="card">
+    <h2>Examen entregado</h2>
+    <p><strong>${escapeHtml(registro.Nombre)}</strong> · ${escapeHtml(registro.Seccion)}</p>
+    ${pendiente
+      ? `<p class="pill pill-warn">Pendiente de revisión</p><p class="muted">Su examen incluye partes de calificación manual. La nota final se publicará cuando la persona docente termine de revisarlas.</p>`
+      : `<p style="font-size:32px;font-weight:800;color:var(--navy-deep);">${registro.NotaTotal} / ${CONFIG.PUNTUACION_TOTAL}</p>`}
+    <button class="btn btn-outline no-print" id="btnDescargar">Descargar copia de mis respuestas</button>
+  </div>`;
+  document.getElementById('btnDescargar').addEventListener('click', ()=> descargarCopia(registro));
+}
+
+function descargarCopia(registro){
+  let texto = `${CONFIG.ASIGNATURA} — ${CONFIG.SUBAREA}\nEstudiante: ${registro.Nombre}\nSección: ${registro.Seccion}\nFecha: ${fmtFecha(registro.Timestamp)}\n\n`;
+  let resp = {};
+  try{ resp = JSON.parse(registro.Respuestas||'{}'); }catch(e){}
+  Object.keys(resp).forEach(k=>{ texto += `${k}: ${resp[k]}\n`; });
+  if(!String(registro.PendienteRevision).toUpperCase().includes('SI')) texto += `\nNota: ${registro.NotaTotal} / ${CONFIG.PUNTUACION_TOTAL}\n`;
+  const blob = new Blob([texto], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'examen_' + registro.Nombre.replace(/\s+/g,'_') + '.txt';
+  a.click();
+}
+
+/* ============================================================
+   DOCENTE
+   ============================================================ */
+function renderLoginDocente(){
+  appEl.innerHTML = `<div class="card">
+    <h2>Acceso docente</h2>
+    <label for="inpCodigo">Código de acceso</label>
+    <input type="text" id="inpCodigo">
+    <button class="btn" id="btnEntrarDocente">Entrar</button>
+    <button class="btn btn-outline btn-sm" id="btnVolver" style="margin-left:8px;">Volver</button>
+    <div class="error-msg" id="errDocente"></div>
+  </div>`;
+  document.getElementById('btnVolver').addEventListener('click', ()=> renderPortada());
+  document.getElementById('btnEntrarDocente').addEventListener('click', ()=>{
+    const val = document.getElementById('inpCodigo').value;
+    if(val === CONFIG.TEACHER_CODE) renderPanelDocente();
+    else document.getElementById('errDocente').textContent = 'Código incorrecto.';
+  });
+}
+
+let vistaPrevia = false;
+async function renderPanelDocente(){
+  appEl.innerHTML = `<div class="card"><h2>Panel docente</h2><p class="muted">Cargando…</p></div>`;
+
+  let habilitado = 'SI', entregas = [];
+  if(backendListo()){
+    try{ const cfg = await getConfigRemota(); habilitado = cfg.Habilitado || 'SI'; }catch(e){}
+    try{ entregas = await sheetGet('Entregas'); }catch(e){}
   }
 
-  overlay.innerHTML = `
-    <div class="overlay-box">
-      <button class="overlay-close" id="closeAdmin">&times;</button>
-      <h2>Panel docente</h2>
-      <p class="sub">Active o inactive los temas que ven los estudiantes de cada nivel. Los cambios se guardan de inmediato.</p>
-      ${rowsHtml}
+  let html = `<div class="card">
+    <h2>Panel docente</h2>
+    <p class="muted">${escapeHtml(CONFIG.ASIGNATURA)} · ${escapeHtml(CONFIG.DOCENTE)}</p>
+    <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
+      <label class="switch"><input type="checkbox" id="toggleHabilitado" ${habilitado==='SI'?'checked':''}><span class="switch-track"></span></label>
+      <span>Examen habilitado para el grupo</span>
     </div>
-  `;
-  document.body.appendChild(overlay);
-  document.getElementById('closeAdmin').addEventListener('click', ()=> overlay.remove());
-  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+    <button class="btn btn-outline btn-sm" id="btnVistaPrevia">Vista previa del examen</button>
+    <button class="btn btn-outline btn-sm" id="btnClave">Ver clave de respuestas</button>
+    <button class="btn btn-outline btn-sm" id="btnEspecificaciones">Tabla de especificaciones</button>
+    <button class="btn btn-outline btn-sm" id="btnExportar">Exportar CSV</button>
+    <button class="btn btn-outline btn-sm" id="btnImprimir">Imprimir versión en blanco (PDF)</button>
+  </div>`;
 
-  overlay.querySelectorAll('input[data-toggle-id]').forEach(inp=>{
-    inp.addEventListener('change', async ()=>{
-      const id = inp.getAttribute('data-toggle-id');
-      const nuevoValor = inp.checked ? 'SI' : 'NO';
-      inp.disabled = true;
-      try{
-        await sheetPost('CatalogoActivo', { CursoId: id, Activo: nuevoValor, Timestamp: new Date().toISOString() });
-        window.__overridesCache[id] = nuevoValor;
-      }catch(e){
-        window.alert('No se pudo guardar el cambio. Intente de nuevo.');
-        inp.checked = !inp.checked;
-      }
-      inp.disabled = false;
+  html += `<div class="card"><h2>Entregas (${entregas.length})</h2><table class="tabla-admin"><thead><tr>
+      <th>Nombre</th><th>Sección</th><th>Nota</th><th>Estado</th><th>Incidentes</th><th></th></tr></thead><tbody>`;
+  entregas.forEach(r=>{
+    const pendiente = String(r.PendienteRevision).toUpperCase()==='SI';
+    const entregadoFlag = String(r.Entregado).toUpperCase()==='SI';
+    html += `<tr data-cedula="${escapeHtml(r.Cedula)}">
+      <td>${escapeHtml(r.Nombre)}</td><td>${escapeHtml(r.Seccion)}</td>
+      <td>${entregadoFlag ? escapeHtml(String(r.NotaTotal)) : '—'}</td>
+      <td>${entregadoFlag ? (pendiente?'<span class="pill pill-warn">Pendiente revisión</span>':'<span class="pill pill-ok">Completo</span>') : '<span class="pill pill-warn">En progreso</span>'}</td>
+      <td>${Number(r.Incidentes)||0}</td>
+      <td><button class="btn btn-outline btn-sm ver-detalle">Ver</button> <button class="btn btn-outline btn-sm eliminar-entrega">Eliminar</button></td>
+    </tr><tr class="fila-detalle" data-detalle-de="${escapeHtml(r.Cedula)}" style="display:none;"><td colspan="6"></td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  appEl.innerHTML = html;
+
+  document.getElementById('toggleHabilitado').addEventListener('change', async (e)=>{
+    if(backendListo()) await sheetPost('Config', { Clave:'Habilitado', Valor: e.target.checked?'SI':'NO' }, 'Clave');
+  });
+  document.getElementById('btnVistaPrevia').addEventListener('click', ()=>{ vistaPrevia = true; entregado = false; estudiante = { cedula:'PREVIEW', nombre:'Vista previa (docente)', seccion:'—' }; segundosRestantes = CONFIG.DURACION_MIN*60; renderExamen(); });
+  document.getElementById('btnClave').addEventListener('click', mostrarClave);
+  document.getElementById('btnEspecificaciones').addEventListener('click', mostrarEspecificaciones);
+  document.getElementById('btnExportar').addEventListener('click', ()=> exportarCSV(entregas));
+  document.getElementById('btnImprimir').addEventListener('click', ()=> window.print());
+
+  appEl.querySelectorAll('.ver-detalle').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const cedula = btn.closest('tr').getAttribute('data-cedula');
+      const registro = entregas.find(r=>r.Cedula===cedula);
+      const fila = appEl.querySelector(`.fila-detalle[data-detalle-de="${CSS.escape(cedula)}"] td`);
+      if(fila.innerHTML){ fila.innerHTML=''; fila.closest('tr').style.display='none'; return; }
+      fila.innerHTML = renderDetalleEntrega(registro);
+      fila.closest('tr').style.display='';
+      cablearEdicionPuntos(fila, registro);
+    });
+  });
+  appEl.querySelectorAll('.eliminar-entrega').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const cedula = btn.closest('tr').getAttribute('data-cedula');
+      if(!confirm('¿Eliminar esta entrega? La persona podrá presentar el examen de nuevo.')) return;
+      if(backendListo()) await sheetDelete('Entregas','Cedula',cedula);
+      renderPanelDocente();
     });
   });
 }
 
+function renderDetalleEntrega(registro){
+  let resp = {}, desglose = {};
+  try{ resp = JSON.parse(registro.Respuestas||'{}'); }catch(e){}
+  try{ desglose = JSON.parse(registro.Desglose||'{}'); }catch(e){}
+  let html = '<div class="detalle-resp">';
+  Object.keys(desglose).forEach(pid=>{
+    const d = desglose[pid];
+    html += `<div style="margin-bottom:8px;">
+      <strong>${escapeHtml(pid)}</strong> — ${d.auto ? (d.puntos>0?'<span class="pill pill-ok">Correcto</span>':'<span class="pill pill-bad">Incorrecto</span>') : '<span class="pill pill-warn">Manual</span>'}
+      <div class="puntos-edit">
+        <button data-menos="${escapeHtml(pid)}">−</button>
+        <input type="number" step="0.5" min="0" max="${d.max}" value="${d.puntos}" data-puntos-pid="${escapeHtml(pid)}">
+        <button data-mas="${escapeHtml(pid)}">+</button>
+        <span class="muted">/ ${d.max}</span>
+      </div>
+    </div>`;
+  });
+  html += `<button class="btn btn-sm" id="btnGuardarPuntos" data-cedula="${escapeHtml(registro.Cedula)}">Guardar cambios</button></div>`;
+  return html;
+}
+
+function cablearEdicionPuntos(fila, registro){
+  fila.querySelectorAll('[data-mas]').forEach(b=> b.addEventListener('click', ()=>{
+    const inp = fila.querySelector(`input[data-puntos-pid="${CSS.escape(b.getAttribute('data-mas'))}"]`);
+    inp.value = (parseFloat(inp.value)||0) + 0.5;
+  }));
+  fila.querySelectorAll('[data-menos]').forEach(b=> b.addEventListener('click', ()=>{
+    const inp = fila.querySelector(`input[data-puntos-pid="${CSS.escape(b.getAttribute('data-menos'))}"]`);
+    inp.value = Math.max(0, (parseFloat(inp.value)||0) - 0.5);
+  }));
+  const btnGuardar = fila.querySelector('#btnGuardarPuntos');
+  if(btnGuardar) btnGuardar.addEventListener('click', async ()=>{
+    let desglose = {};
+    try{ desglose = JSON.parse(registro.Desglose||'{}'); }catch(e){}
+    fila.querySelectorAll('[data-puntos-pid]').forEach(inp=>{
+      const pid = inp.getAttribute('data-puntos-pid');
+      desglose[pid].puntos = parseFloat(inp.value)||0;
+    });
+    const nuevaNota = Object.values(desglose).reduce((s,d)=> s + (parseFloat(d.puntos)||0), 0);
+    btnGuardar.disabled = true; btnGuardar.textContent = 'Guardando…';
+    if(backendListo()) await sheetPost('Entregas', { Cedula: registro.Cedula, Desglose: JSON.stringify(desglose), NotaTotal: nuevaNota, PendienteRevision:'NO' }, 'Cedula');
+    renderPanelDocente();
+  });
+}
+
+function mostrarClave(){
+  let html = '<div class="card"><h2>Clave de respuestas</h2>';
+  (PREGUNTAS.SU||[]).forEach(p=> html += `<p><strong>${p.id}</strong>: ${p.correct}</p>`);
+  (PREGUNTAS.RC||[]).forEach(p=> html += `<p><strong>${p.id}</strong>: ${p.validas.join(' / ')}</p>`);
+  (PREGUNTAS.C||[]).forEach(p=> html += `<p><strong>${p.id}</strong>: ${Object.keys(p.correcto).map(k=>k+'→'+p.correcto[k]).join(', ')}</p>`);
+  (PREGUNTAS.ID||[]).forEach(p=> html += `<p><strong>${p.id}</strong>: ${p.items.map(i=>i.numero+'='+i.validas.join('/')).join(', ')}</p>`);
+  html += `<button class="btn btn-outline btn-sm" id="btnVolverPanel">Volver al panel</button></div>`;
+  appEl.innerHTML = html;
+  document.getElementById('btnVolverPanel').addEventListener('click', renderPanelDocente);
+}
+
+function mostrarEspecificaciones(){
+  const temas = Object.keys(CONFIG.ESPECIFICACIONES_LECCIONES);
+  const puntosPorTema = {};
+  Object.values(PREGUNTAS).flat().forEach(p=>{ puntosPorTema[p.tema] = (puntosPorTema[p.tema]||0) + p.puntos; });
+  let html = '<div class="card"><h2>Tabla de especificaciones</h2><table class="tabla-admin"><thead><tr><th>Tema</th><th>Lecciones</th><th>Puntos</th></tr></thead><tbody>';
+  temas.forEach(t=> html += `<tr><td>${escapeHtml(t)}</td><td><input type="number" data-tema-lecciones="${escapeHtml(t)}" value="${CONFIG.ESPECIFICACIONES_LECCIONES[t]}" style="width:70px;margin:0;"></td><td>${puntosPorTema[t]||0}</td></tr>`);
+  html += `</tbody></table><button class="btn btn-sm" id="btnGuardarEspec" style="margin-top:10px;">Guardar</button> <button class="btn btn-outline btn-sm" id="btnVolverPanel2">Volver</button></div>`;
+  appEl.innerHTML = html;
+  document.getElementById('btnVolverPanel2').addEventListener('click', renderPanelDocente);
+  document.getElementById('btnGuardarEspec').addEventListener('click', async ()=>{
+    const nueva = {};
+    appEl.querySelectorAll('[data-tema-lecciones]').forEach(inp=> nueva[inp.getAttribute('data-tema-lecciones')] = Number(inp.value)||0);
+    Object.assign(CONFIG.ESPECIFICACIONES_LECCIONES, nueva);
+    if(backendListo()) await sheetPost('Config', { Clave:'Especificaciones', Valor: JSON.stringify(CONFIG.ESPECIFICACIONES_LECCIONES) }, 'Clave');
+    renderPanelDocente();
+  });
+}
+
+function exportarCSV(entregas){
+  const encabezados = ['Nombre','Seccion','Cedula','NotaTotal','PendienteRevision','Incidentes','Timestamp'];
+  let csv = encabezados.join(',') + '\n';
+  entregas.forEach(r=>{ csv += encabezados.map(h=> '"'+String(r[h]||'').replace(/"/g,'""')+'"').join(',') + '\n'; });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'entregas_' + CONFIG.ASIGNATURA.replace(/\s+/g,'_') + '.csv';
+  a.click();
+}
+
 /* ============================================================
-   INICIO
+   INICIO — la portada aparece de inmediato; el estado real
+   (habilitado/deshabilitado) llega después sin bloquear la pantalla.
    ============================================================ */
-if(session){ renderPortal(); } else { renderLogin(); }
+renderPortada();
 </script>
 </body>
 </html>
