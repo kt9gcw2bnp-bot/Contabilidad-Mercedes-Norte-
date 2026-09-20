@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Contable · CTP Mercedes Norte</title>
+<style>
+:root{
+  --bg:#000000; --bg-panel:#141414; --bg-card:#1b1b1b;
+  --gold:#B8863C; --gold-light:#F4DD7A;
+  --teal:#2FC2AD; --coral:#EF6A5B;
+  --ink:#EDEDED; --muted:#9AA0A6; --line:#2E2E2E;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;}
+.topbar{background:var(--bg-panel);border-bottom:1px solid var(--line);color:#fff;padding:18px 16px;display:flex;align-items:center;gap:14px;justify-content:center;}
+.topbar img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:10px;padding:4px;flex-shrink:0;}
+.topbar-text{text-align:left;}
+.topbar h1{margin:0 0 4px;font-size:16px;}
+.topbar p{margin:0;font-size:10.5px;color:var(--muted);font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;}
+
+.wrap{max-width:520px;margin:0 auto;padding:24px 16px 60px;}
+
+/* login */
+.login-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:28px 22px;text-align:center;margin-top:20px;}
+.login-card h2{font-size:15px;margin:0 0 6px;color:#fff;}
+.login-card p{font-size:12.5px;color:var(--muted);margin:0 0 18px;}
+.login-card input{width:100%;padding:12px 14px;background:#0d0d0d;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;font-size:16px;font-family:var(--mono);letter-spacing:1px;text-align:center;margin-bottom:12px;}
+.login-card input:focus{outline:none;border-color:var(--gold);}
+.btn{display:inline-block;padding:11px 24px;background:var(--gold);color:#0a0a0a;border:none;border-radius:22px;font-size:13.5px;font-weight:700;cursor:pointer;width:100%;}
+.btn:hover{background:var(--gold-light);}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--ink);}
+.btn-outline:hover{border-color:var(--gold);background:transparent;}
+.error-msg{color:var(--coral);font-size:12px;margin-top:10px;display:none;}
+.error-msg.show{display:block;}
+.loading-msg{color:var(--muted);font-size:12px;margin-top:10px;display:none;font-family:var(--mono);}
+.loading-msg.show{display:block;}
+
+/* portal */
+.welcome-card{background:var(--bg-card);border:1px solid var(--gold);color:#fff;border-radius:12px;padding:18px 20px;margin-top:8px;}
+.welcome-card .role-tag{font-family:var(--mono);font-size:10px;color:var(--gold-light);text-transform:uppercase;letter-spacing:1px;}
+.welcome-card h2{margin:6px 0 2px;font-size:17px;}
+.welcome-card p{margin:0;font-size:12px;color:var(--muted);}
+.welcome-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.welcome-actions button{font-size:11px;padding:6px 12px;border-radius:14px;cursor:pointer;}
+.logout-btn{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff;}
+.admin-btn{background:rgba(184,134,60,.15);border:1px solid var(--gold);color:var(--gold-light);}
+
+.section-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:22px 0 8px;}
+.level-heading{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;margin:28px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--gold);}
+.subarea-heading{font-size:12.5px;font-weight:700;color:var(--gold-light);margin:14px 0 6px;padding-left:8px;border-left:3px solid var(--gold);}
+.course-card{display:block;background:var(--bg-card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:10px;text-decoration:none;color:var(--ink);}
+.course-card:hover{border-left-color:var(--teal);}
+.course-card .ctag{font-family:var(--mono);font-size:9.5px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;}
+.course-card .ctitle{font-size:14px;font-weight:600;margin:4px 0 0;color:#fff;}
+.course-card .cpending{font-size:11px;color:var(--coral);margin-top:4px;}
+.empty-msg{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 20px;background:var(--bg-card);border:1px dashed var(--line);border-radius:8px;}
+
+.sat-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1c1c1c 0%,#0a0a0a 100%);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-top:10px;text-decoration:none;color:#fff;}
+.sat-card .sat-icon{font-size:26px;flex-shrink:0;}
+.sat-card .sat-title{font-size:13.5px;font-weight:700;margin:0 0 2px;}
+.sat-card .sat-sub{font-size:10.5px;color:var(--muted);margin:0;}
+.sat-card .sat-arrow{margin-left:auto;color:var(--gold-light);font-size:16px;}
+
+.catalogo-error{background:#2a1512;border:1px solid var(--coral);color:#ffb3a8;font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;}
+
+/* panel docente (overlay) */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;overflow-y:auto;z-index:50;}
+.overlay-box{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;max-width:600px;width:100%;padding:22px;}
+.overlay-box h2{margin:0 0 4px;font-size:16px;color:#fff;}
+.overlay-box .sub{font-size:11.5px;color:var(--muted);margin:0 0 18px;}
+.overlay-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:8px;}
+.toggle-row .trow-info{min-width:0;}
+.toggle-row .trow-title{font-size:13px;color:#fff;font-weight:600;}
+.toggle-row .trow-sub{font-size:10.5px;color:var(--muted);font-family:var(--mono);}
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch-track{position:absolute;cursor:pointer;inset:0;background:#3a3a3a;border-radius:24px;transition:.2s;}
+.switch-track:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
+.switch input:checked + .switch-track{background:var(--teal);}
+.switch input:checked + .switch-track:before{transform:translateX(20px);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="logo_ctp_mercedes_norte.jpg" alt="Escudo CTP Mercedes Norte">
+  <div class="topbar-text">
+    <h1>🏫 Portal Contable</h1>
+    <p>CTP Mercedes Norte · Especialidad de Contabilidad</p>
+  </div>
+</div>
+
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN
+   - LOGIN: sigue usando Google Apps Script + Sheets (hoja "Usuarios_Portal").
+   - CATÁLOGO (qué cursos existen, título, url, nivel): vive en catalogo.json,
+     dentro de este mismo repositorio (se edita junto con el código).
+   - ACTIVO/INACTIVO por curso: es lo único que ahora se puede cambiar en
+     caliente desde el Panel Docente (botones), sin tocar código ni Sheets
+     a mano. Se guarda en una hoja pequeña "CatalogoActivo" vía Apps Script.
+   ============================================================ */
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN = "9986";
+
+function sheetsReady(){ return SHEET_API_URL && !SHEET_API_URL.startsWith('REEMPLAZAR'); }
+
+let jsonpCounter = 0;
+function jsonpRequest(url){
+  return new Promise((resolve, reject)=>{
+    const cbName = 'jsonp_cb_' + (jsonpCounter++) + '_' + Date.now();
+    const script = document.createElement('script');
+    let settled = false;
+    const cleanup = ()=>{ delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); };
+    window[cbName] = (data)=>{ settled = true; cleanup(); resolve(data); };
+    script.onerror = ()=>{ if(!settled){ cleanup(); reject(new Error('Error de red (JSONP)')); } };
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+    document.body.appendChild(script);
+    setTimeout(()=>{ if(!settled){ cleanup(); reject(new Error('Tiempo de espera agotado')); } }, 10000);
+  });
+}
+async function apiGet(params){ return await jsonpRequest(SHEET_API_URL + '?' + params); }
+function sheetGet(sheetName){
+  return jsonpRequest(SHEET_API_URL + '?sheet=' + encodeURIComponent(sheetName)).then(d=> (d && d.rows) ? d.rows : []);
+}
+function sheetPost(sheetName, row){
+  const body = new URLSearchParams();
+  body.set('sheet', sheetName);
+  Object.keys(row).forEach(k=>body.set(k, row[k]));
+  return fetch(SHEET_API_URL, { method:'POST', mode:'no-cors', body });
+}
+
+async function loadCatalogo(){
+  const resp = await fetch('catalogo.json', { cache: 'no-store' });
+  if(!resp.ok) throw new Error('No se pudo leer catalogo.json (' + resp.status + ')');
+  return await resp.json();
+}
+
+// Últimas anulaciones de Activo/Inactivo hechas desde el Panel Docente.
+// Si un curso no tiene anulación, se usa el valor "Activo" que trae catalogo.json.
+async function loadActivoOverrides(){
+  try{
+    const rows = await sheetGet('CatalogoActivo');
+    const map = {};
+    rows.forEach(r=>{
+      const id = String(r.CursoId||'').trim();
+      if(!id) return;
+      map[id] = String(r.Activo||'').toUpperCase(); // el último renglón para ese Id gana
+    });
+    return map;
+  }catch(e){ return {}; }
+}
+function efectivoActivo(row, overrides){
+  const id = String(row.Id||'').trim();
+  if(id && overrides.hasOwnProperty(id)) return overrides[id];
+  return String(row.Activo||'').toUpperCase();
+}
+
+function escapeHtml(s){ return (s+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+const appEl = document.getElementById('app');
+let session = null;
+try{
+  const saved = sessionStorage.getItem('portal_session');
+  if(saved) session = JSON.parse(saved);
+}catch(e){}
+
+function renderLogin(errorMsg){
+  appEl.innerHTML = `
+    <div class="login-card">
+      <h2>Ingreso al portal</h2>
+      <p>Escriba su número de cédula (sin espacios ni guiones) para continuar.</p>
+      <input type="text" id="cedulaInput" inputmode="numeric" placeholder="Número de cédula" maxlength="15" autocomplete="off">
+      <button class="btn" id="loginBtn">Ingresar</button>
+      <div class="loading-msg" id="loadingMsg">Verificando...</div>
+      <div class="error-msg ${errorMsg?'show':''}" id="errorMsg">${errorMsg||''}</div>
+    </div>
+  `;
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('cedulaInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  document.getElementById('cedulaInput').focus();
+}
+
+async function doLogin(){
+  const cedula = document.getElementById('cedulaInput').value.trim();
+  if(!cedula) return;
+  if(!sheetsReady()){
+    renderLogin('El portal todavía no está conectado a la hoja de usuarios (falta configurar SHEET_API_URL).');
+    return;
+  }
+  document.getElementById('loadingMsg').classList.add('show');
+  document.getElementById('errorMsg').classList.remove('show');
+  document.getElementById('loginBtn').disabled = true;
+  try{
+    const data = await apiGet('action=login&cedula=' + encodeURIComponent(cedula));
+    if(!data.found){
+      renderLogin('Cédula no encontrada. Consulte con su profesor.');
+      return;
+    }
+    session = { cedula, nombre:data.nombre, nivel:data.nivel, seccion:data.seccion, rol:data.rol };
+    sessionStorage.setItem('portal_session', JSON.stringify(session));
+    renderPortal();
+  }catch(e){
+    renderLogin('No se pudo verificar la cédula. Intente de nuevo.');
+  }
+}
+
+function logout(){
+  session = null;
+  sessionStorage.removeItem('portal_session');
+  renderLogin();
+}
+
+async function renderPortal(){
+  const isDocente = session.rol === 'Docente';
+  const nombreParam = encodeURIComponent(session.nombre);
+  appEl.innerHTML = `
+    <div class="welcome-card">
+      <div class="role-tag">${isDocente ? 'Docente' : 'Estudiante · ' + escapeHtml(session.seccion||'')}</div>
+      <h2>${escapeHtml(session.nombre)}</h2>
+      <p>${isDocente ? 'Acceso a todos los niveles y paneles docentes.' : 'Nivel ' + escapeHtml(session.nivel||'') + '° — este es el programa de tu especialidad.'}</p>
+      <div class="welcome-actions">
+        ${isDocente ? '<button class="admin-btn" id="adminBtn">⚙ Panel docente — habilitar temas</button>' : ''}
+        <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+      </div>
+    </div>
+    <a class="sat-card" href="SAT_Profe_Gerardo.html?nombre=${nombreParam}" target="_blank">
+      <div class="sat-icon">🏢</div>
+      <div>
+        <div class="sat-title">El SAT del Profe Gerardo</div>
+        <div class="sat-sub">Simulador contable — creá tu empresa y llevá su contabilidad</div>
+      </div>
+      <div class="sat-arrow">→</div>
+    </a>
+    <div id="courseList"><div class="empty-msg">Cargando catálogo...</div></div>
+  `;
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  if(isDocente) document.getElementById('adminBtn').addEventListener('click', openAdminPanel);
+
+  const listEl = document.getElementById('courseList');
+  try{
+    const [allRows, overrides] = await Promise.all([loadCatalogo(), loadActivoOverrides()]);
+    window.__catalogoCache = allRows;
+    window.__overridesCache = overrides;
+    let rows = allRows.filter(r=> efectivoActivo(r, overrides) === 'SI');
+    if(!isDocente) rows = rows.filter(r=> String(r.Nivel) === String(session.nivel));
+
+    if(rows.length===0){
+      listEl.innerHTML = '<div class="empty-msg">Todavía no hay materiales publicados para tu nivel. Consulta con tu profesor.</div>';
+      return;
+    }
+
+    const levels = isDocente ? [...new Set(rows.map(r=>String(r.Nivel)))].sort() : [String(session.nivel)];
+
+    let html = '';
+    levels.forEach(lvl=>{
+      const levelRows = rows.filter(r=>String(r.Nivel)===lvl);
+      if(isDocente) html += `<div class="level-heading">Nivel ${escapeHtml(lvl)}°</div>`;
+
+      const antologia = levelRows.filter(r=>r.Categoria==='Antologia' || r.Categoria==='Antología');
+      const trabajos = levelRows.filter(r=>r.Categoria==='Trabajo en clase');
+      const examenes = levelRows.filter(r=>r.Categoria==='Examen' || r.Categoria==='Tarea');
+      const temas = levelRows.filter(r=>r.Categoria==='Tema' || r.Categoria==='Curso interactivo');
+
+      if(antologia.length){
+        html += `<div class="section-title">📚 Antología y material de consulta</div>`;
+        const antSorted = antologia.slice().sort((a,b)=> (Number(a.Orden)||0) - (Number(b.Orden)||0));
+        const byAntSubarea = {};
+        antSorted.forEach(r=>{
+          const sub = r.Subarea || 'General';
+          byAntSubarea[sub] = byAntSubarea[sub] || [];
+          byAntSubarea[sub].push(r);
+        });
+        Object.keys(byAntSubarea).forEach(sub=>{
+          html += `<div class="subarea-heading">${escapeHtml(sub)}</div>`;
+          html += byAntSubarea[sub].map(r=>renderCard(r)).join('');
+        });
+      }
+      if(trabajos.length){
+        html += `<div class="section-title">📝 Trabajos en clase</div>`;
+        html += trabajos.map(r=>renderCard(r)).join('');
+      }
+      if(examenes.length){
+        html += `<div class="section-title">🎯 Exámenes y tareas</div>`;
+        html += examenes.map(r=>renderCard(r)).join('');
+      }
+      if(temas.length){
+        html += `<div class="section-title">📖 Temas del programa</div>`;
+        const bySubarea = {};
+        temas.sort((a,b)=> (Number(a.Orden)||0) - (Number(b.Orden)||0));
+        temas.forEach(r=>{
+          const sub = r.Subarea || 'General';
+          bySubarea[sub] = bySubarea[sub] || [];
+          bySubarea[sub].push(r);
+        });
+        Object.keys(bySubarea).forEach(sub=>{
+          html += `<div class="subarea-heading">${escapeHtml(sub)}</div>`;
+          html += bySubarea[sub].map(r=>renderCard(r)).join('');
+        });
+      }
+    });
+
+    listEl.innerHTML = html;
+  }catch(e){
+    listEl.innerHTML = '<div class="catalogo-error">No se pudo cargar el catálogo (catalogo.json). Detalle: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderCard(r){
+  const cleanUrl = String(r.URL||'').trim();
+  const pending = !cleanUrl || cleanUrl.toUpperCase().includes('PENDIENTE');
+  const nombreParam = encodeURIComponent(session.nombre);
+  const sep = cleanUrl.includes('?') ? '&' : '?';
+  const href = pending ? '#' : (cleanUrl + sep + 'nombre=' + nombreParam);
+  const catLabel = {'Tema':'Tema del programa','Curso interactivo':'Curso interactivo','Antologia':'Antología','Antología':'Antología','Trabajo en clase':'Trabajo en clase'}[r.Categoria] || r.Categoria || '';
+  return `<a class="course-card" href="${pending?'#':href}" target="${pending?'_self':'_blank'}" onclick="${pending?'return false;':''}">
+    <div class="ctag">${escapeHtml(catLabel)}</div>
+    <div class="ctitle">${escapeHtml(r.Titulo||'')}</div>
+    ${pending ? '<div class="cpending">Próximamente — todavía no está publicado</div>' : ''}
+  </a>`;
+}
+
+/* ============================================================
+   PANEL DOCENTE — habilitar/inhabilitar temas por nivel con botones
+   ============================================================ */
+function openAdminPanel(){
+  const pin = window.prompt('PIN del panel docente:');
+  if(pin !== TEACHER_PIN){
+    if(pin !== null) window.alert('PIN incorrecto.');
+    return;
+  }
+  renderAdminPanel();
+}
+
+function renderAdminPanel(){
+  const allRows = window.__catalogoCache || [];
+  const overrides = window.__overridesCache || {};
+  const levels = [...new Set(allRows.map(r=>String(r.Nivel)))].sort();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'adminOverlay';
+
+  let rowsHtml = '';
+  levels.forEach(lvl=>{
+    rowsHtml += `<div class="level-heading" style="margin-top:18px;">Nivel ${escapeHtml(lvl)}°</div>`;
+    allRows.filter(r=>String(r.Nivel)===lvl).forEach(r=>{
+      const id = String(r.Id||'').trim();
+      const activo = efectivoActivo(r, overrides) === 'SI';
+      rowsHtml += `
+        <div class="toggle-row" data-id="${escapeHtml(id)}">
+          <div class="trow-info">
+            <div class="trow-title">${escapeHtml(r.Titulo||'(sin título)')}</div>
+            <div class="trow-sub">${escapeHtml(r.Subarea||r.Categoria||'')}</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" ${activo?'checked':''} data-toggle-id="${escapeHtml(id)}">
+            <span class="switch-track"></span>
+          </label>
+        </div>`;
+    });
+  });
+  if(allRows.length===0){
+    rowsHtml = '<div class="empty-msg">Todavía no hay cursos en el catálogo.</div>';
+  }
+
+  overlay.innerHTML = `
+    <div class="overlay-box">
+      <button class="overlay-close" id="closeAdmin">&times;</button>
+      <h2>Panel docente</h2>
+      <p class="sub">Active o inactive los temas que ven los estudiantes de cada nivel. Los cambios se guardan de inmediato.</p>
+      ${rowsHtml}
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById('closeAdmin').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+
+  overlay.querySelectorAll('input[data-toggle-id]').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const id = inp.getAttribute('data-toggle-id');
+      const nuevoValor = inp.checked ? 'SI' : 'NO';
+      inp.disabled = true;
+      try{
+        await sheetPost('CatalogoActivo', { CursoId: id, Activo: nuevoValor, Timestamp: new Date().toISOString() });
+        window.__overridesCache[id] = nuevoValor;
+      }catch(e){
+        window.alert('No se pudo guardar el cambio. Intente de nuevo.');
+        inp.checked = !inp.checked;
+      }
+      inp.disabled = false;
+    });
+  });
+}
+
+/* ============================================================
+   INICIO
+   ============================================================ */
+if(session){ renderPortal(); } else { renderLogin(); }
+</script>
+</body>
+</html>

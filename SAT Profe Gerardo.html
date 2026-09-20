@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El SAT del Profe Gerardo</title>
+<style>
+:root{
+  --navy:#0E1B3D; --navy-deep:#0A1230;
+  --gold:#B8863C; --gold-light:#F4DD7A;
+  --teal:#2FC2AD; --coral:#EF6A5B;
+  --ink:#20242B; --paper:#F3F5F4; --muted:#5B6470; --line:#D8DCDD;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);padding-bottom:60px;}
+.topbar{position:sticky;top:0;z-index:30;background:var(--navy);color:#fff;padding:12px 16px;box-shadow:0 2px 10px rgba(0,0,0,.18);}
+.topbar-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.topbar h1{font-size:15px;margin:0 0 2px;}
+.topbar p{margin:0;font-size:10px;color:rgba(255,255,255,.65);font-family:var(--mono);letter-spacing:.4px;text-transform:uppercase;}
+.badge-phase{background:var(--gold);color:var(--navy-deep);font-size:9.5px;font-family:var(--mono);font-weight:700;padding:3px 9px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px;}
+
+.namebar{background:#fff;border-bottom:1px solid var(--line);padding:9px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.namebar input{padding:7px 9px;border:1px solid var(--line);border-radius:6px;font-size:13px;flex:1;min-width:160px;}
+.namebar input:disabled{background:#f7f8f6;color:var(--navy);font-weight:600;border-color:var(--teal);}
+.namebar label{font-size:11px;color:var(--muted);font-family:var(--mono);}
+.namebar.verified{background:#e7f1ec;}
+.namebar .verified-tag{font-size:10.5px;color:var(--teal);font-family:var(--mono);font-weight:700;}
+
+.page{max-width:760px;margin:0 auto;padding:16px;}
+.intro-card{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:16px 18px;margin-bottom:18px;font-size:13px;line-height:1.6;color:var(--ink);}
+.intro-card h2{font-size:16px;margin:0 0 8px;color:var(--navy);}
+
+.section-title{font-size:13.5px;font-weight:700;color:var(--navy);margin:20px 0 10px;display:flex;align-items:center;gap:8px;}
+.section-title .line{flex:1;height:1px;background:var(--line);}
+
+.empresa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+@media (max-width:520px){.empresa-grid{grid-template-columns:1fr;}}
+.empresa-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s;position:relative;}
+.empresa-card:hover{border-color:var(--gold);}
+.empresa-card.active{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal) inset;}
+.empresa-card .ec-name{font-weight:700;color:var(--navy);font-size:13.5px;margin-bottom:3px;padding-right:22px;}
+.empresa-card .ec-sector{font-size:10.5px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;}
+.empresa-card .ec-cedula{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px;}
+.empresa-card .ec-date{font-size:10px;color:var(--muted);margin-top:6px;}
+.empresa-card .ec-delete{position:absolute;top:10px;right:10px;font-size:15px;color:var(--muted);cursor:pointer;line-height:1;padding:2px 4px;border-radius:4px;}
+.empresa-card .ec-delete:hover{color:var(--coral);background:#f7e9e8;}
+
+.new-empresa-card{background:#f7f8f6;border:1px dashed var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:12.5px;min-height:90px;}
+.new-empresa-card:hover{border-color:var(--gold);color:var(--gold);}
+.new-empresa-card .plus{font-size:24px;margin-bottom:4px;}
+
+.form-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px;}
+.form-card h3{font-size:13.5px;margin:0 0 10px;color:var(--navy);}
+.form-row{margin-bottom:12px;}
+.form-row label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;font-family:var(--mono);text-transform:uppercase;}
+.form-row input, .form-row select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-family:var(--sans);}
+.btn{display:inline-block;padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;}
+.btn:hover{background:var(--navy-deep);}
+.btn:disabled{opacity:.45;cursor:default;}
+.btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy);}
+.btn-row{display:flex;gap:8px;}
+
+.catalogo-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-deep) 100%);color:#fff;border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.catalogo-header .ch-label{font-family:var(--mono);font-size:10px;color:var(--gold-light);text-transform:uppercase;letter-spacing:1px;}
+.catalogo-header h2{margin:6px 0 2px;font-size:17px;}
+.catalogo-header p{margin:0;font-size:11.5px;color:rgba(255,255,255,.7);}
+
+.informe-header{background:#fff;border:2px solid var(--navy);border-radius:10px;padding:16px 18px;margin-bottom:14px;text-align:center;}
+.informe-header .ih-empresa{font-size:15px;font-weight:800;color:var(--navy);margin:0 0 2px;}
+.informe-header .ih-cedula{font-size:11px;color:var(--muted);font-family:var(--mono);margin:0 0 8px;}
+.informe-header .ih-titulo{font-size:12.5px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:8px 0 2px;padding-top:8px;border-top:1px dashed var(--line);}
+.informe-header .ih-fecha{font-size:10.5px;color:var(--muted);font-family:var(--mono);}
+
+.empresa-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.empresa-tab{flex:0 0 auto;padding:8px 14px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--line);color:var(--muted);white-space:nowrap;background:#fff;}
+.empresa-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+.linea-row{display:grid;grid-template-columns:2.4fr 1fr 1fr 32px;gap:6px;align-items:start;margin-bottom:8px;}
+@media (max-width:560px){.linea-row{grid-template-columns:1fr;}}
+.linea-row .cuenta-search{position:relative;}
+.linea-row input, .linea-row select{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;font-family:var(--sans);}
+.linea-row input.monto{font-family:var(--mono);text-align:right;}
+.linea-remove{width:32px;height:34px;background:#f7e9e8;color:var(--coral);border:none;border-radius:6px;cursor:pointer;font-size:14px;}
+.linea-remove:hover{background:var(--coral);color:#fff;}
+.cuenta-suggestions{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:15;max-height:180px;overflow-y:auto;display:none;}
+.cuenta-suggestions.show{display:block;}
+.cuenta-suggestions .sug-item{padding:8px 10px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--line);}
+.cuenta-suggestions .sug-item:last-child{border-bottom:none;}
+.cuenta-suggestions .sug-item:hover{background:#f7f8f6;}
+.cuenta-suggestions .sug-item .sug-code{font-family:var(--mono);color:var(--gold);font-weight:700;margin-right:6px;}
+.cuenta-suggestions .sug-empty{padding:8px 10px;font-size:11.5px;color:var(--muted);}
+
+.balance-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:8px;margin:12px 0;font-size:12.5px;font-family:var(--mono);}
+.balance-bar.ok{background:#e7f1ec;color:#1e4a37;border:1px solid var(--teal);}
+.balance-bar.bad{background:#f7e9e8;color:#6f2626;border:1px solid var(--coral);}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(10,18,48,.6);z-index:60;align-items:flex-start;justify-content:center;padding:20px 12px;overflow-y:auto;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#fff;border-radius:10px;max-width:520px;width:100%;padding:18px;max-height:90vh;overflow-y:auto;}
+.modal-box .modal-close{float:right;cursor:pointer;font-size:18px;color:var(--muted);}
+.modal-box h3{margin:0 0 12px;color:var(--navy);font-size:14px;}
+.catalog-lookup-link{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--gold);cursor:pointer;font-weight:600;margin:2px 0 10px;}
+.catalog-lookup-link:hover{text-decoration:underline;}
+
+.mayor-account{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.mayor-account-head{padding:10px 14px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center;}
+.mayor-account-head b{font-size:12.5px;}
+.mayor-account-head .ma-saldo{font-family:var(--mono);font-size:12px;}
+.mayor-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.mayor-table th{text-align:left;font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;padding:5px 8px;border-bottom:1px solid var(--line);}
+.mayor-table td{padding:5px 8px;border-bottom:1px solid #f0f1ef;}
+.mayor-table td.num{font-family:var(--mono);text-align:right;}
+
+.estado-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+.estado-table td{padding:7px 10px;font-size:12.5px;border-bottom:1px solid #f0f1ef;}
+.estado-table td.num{font-family:var(--mono);text-align:right;width:110px;}
+.estado-table tr.subtotal td{font-weight:700;border-top:1px solid var(--line);}
+.estado-table tr.total td{font-weight:800;color:var(--navy);border-top:2px solid var(--navy);font-size:13.5px;}
+.estado-section-title{font-family:var(--mono);font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;padding:10px 10px 2px;}
+
+.bg-check{padding:12px 14px;border-radius:8px;margin-top:10px;font-size:12.5px;font-family:var(--mono);text-align:center;}
+.bg-check.ok{background:#e7f1ec;color:#1e4a37;border:1px solid var(--teal);}
+.bg-check.bad{background:#f7e9e8;color:#6f2626;border:1px solid var(--coral);}
+
+.factura-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.factura-type-btn{padding:12px 10px;border:1px solid var(--line);border-radius:8px;text-align:center;cursor:pointer;font-size:12px;background:#f7f8f6;}
+.factura-type-btn.selected{border-color:var(--navy);background:var(--navy);color:#fff;}
+.factura-preview{background:#f7f8f6;border:1px dashed var(--line);border-radius:8px;padding:10px 12px;font-size:11.5px;margin:10px 0;}
+.balance-bar b{font-size:14px;}
+
+.asiento-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;}
+.asiento-card .ac-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.asiento-card .ac-info b{color:var(--navy);font-size:13px;}
+.asiento-card .ac-info span{display:block;font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-top:2px;}
+.asiento-card .ac-delete{font-size:14px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:4px;}
+.asiento-card .ac-delete:hover{color:var(--coral);background:#f7e9e8;}
+.asiento-table{width:100%;border-collapse:collapse;font-size:12px;}
+.asiento-table th{text-align:left;font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;padding:5px 6px;border-bottom:1px solid var(--line);}
+.asiento-table td{padding:6px;border-bottom:1px solid #f0f1ef;}
+.asiento-table td.num{font-family:var(--mono);text-align:right;}
+.asiento-table tfoot td{font-weight:700;border-top:2px solid var(--navy);border-bottom:none;}
+
+.cat-group{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.cat-group-head{padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff;display:flex;justify-content:space-between;align-items:center;}
+.cat-group-head .count{font-family:var(--mono);font-size:11px;font-weight:400;opacity:.85;}
+.cat-table{width:100%;border-collapse:collapse;}
+.cat-table td{padding:8px 14px;font-size:12px;border-top:1px solid var(--line);}
+.cat-table td.code{font-family:var(--mono);color:var(--muted);width:60px;}
+.cat-table td.nature{font-family:var(--mono);font-size:10px;text-align:right;width:80px;}
+.nature.deudora{color:#1e7a63;}
+.nature.acreedora{color:#a3541e;}
+
+.empty-state{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 20px;background:#fff;border:1px dashed var(--line);border-radius:8px;}
+.footer-note{font-size:11px;color:var(--muted);text-align:center;margin-top:20px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div>
+      <h1>🏛️ El SAT del Profe Gerardo</h1>
+      <p>Simulador contable · Contabilidad</p>
+    </div>
+    <span class="badge-phase">Fase 1: Empresas y Catálogo</span>
+  </div>
+</div>
+
+<div class="namebar" id="namebar">
+  <label>Tu nombre:</label>
+  <input type="text" id="studentName" placeholder="Nombre completo" maxlength="45">
+  <span id="nameStatus" style="font-size:11px;color:var(--muted);font-family:var(--mono);"></span>
+</div>
+
+<div class="page" id="page">
+  <div class="intro-card">
+    <h2>Bienvenido a tu simulador contable</h2>
+    <p>Acá vas a crear tus propias empresas y llevar su contabilidad completa: catálogo de cuentas, registro de facturas, asientos de diario, mayorización y estados financieros. Iremos agregando partes conforme avancemos en el curso.</p>
+    <p style="margin:0;color:var(--muted);">Por ahora: escribí tu nombre arriba, y creá tu primera empresa.</p>
+  </div>
+
+  <div class="section-title"><span>📂 Mis empresas</span><span class="line"></span></div>
+  <div class="empresa-grid" id="empresaGrid"></div>
+
+  <div id="formArea"></div>
+  <div id="empresaTabsArea"></div>
+  <div id="catalogoArea"></div>
+</div>
+
+<div class="modal-bg" id="catalogModalBg">
+  <div class="modal-box">
+    <span class="modal-close" id="catalogModalClose">✕</span>
+    <h3>📖 Consulta rápida del catálogo</h3>
+    <div id="catalogModalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONEXIÓN A GOOGLE SHEETS
+   ============================================================ */
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+function sheetsReady(){ return SHEET_API_URL && !SHEET_API_URL.startsWith('REEMPLAZAR'); }
+
+let jsonpCounter = 0;
+function jsonpRequest(url){
+  return new Promise((resolve, reject)=>{
+    const cbName = 'jsonp_cb_' + (jsonpCounter++) + '_' + Date.now();
+    const script = document.createElement('script');
+    let settled = false;
+    const cleanup = ()=>{ delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); };
+    window[cbName] = (data)=>{ settled = true; cleanup(); resolve(data); };
+    script.onerror = ()=>{ if(!settled){ cleanup(); reject(new Error('Error de red')); } };
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+    document.body.appendChild(script);
+    setTimeout(()=>{ if(!settled){ cleanup(); reject(new Error('Tiempo de espera agotado')); } }, 10000);
+  });
+}
+async function sheetGet(sheetName){
+  const data = await jsonpRequest(SHEET_API_URL + '?sheet=' + encodeURIComponent(sheetName));
+  return data.rows || [];
+}
+async function sheetPost(sheetName, row){
+  await fetch(SHEET_API_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({ sheet: sheetName, row }) });
+  return { ok:true };
+}
+function escapeHtml(s){ return (s+"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function genId(){ return 'emp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7); }
+
+/* ============================================================
+   ENCABEZADO FORMAL DE INFORMES
+   Reutilizable para todo informe generado por el sistema:
+   catálogo, asientos, mayor, estados financieros, etc.
+   ============================================================ */
+function renderInformeHeader(empresa, tituloInforme){
+  const fechaHoy = new Date().toLocaleDateString('es-CR', { day:'2-digit', month:'long', year:'numeric' });
+  return `
+    <div class="informe-header">
+      <div class="ih-empresa">${escapeHtml(empresa.NombreEmpresa)}</div>
+      <div class="ih-cedula">Cédula Jurídica: ${escapeHtml(empresa.CedulaJuridica || 'No registrada')}</div>
+      <div class="ih-titulo">${escapeHtml(tituloInforme)}</div>
+      <div class="ih-fecha">Emitido el ${fechaHoy}</div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   CATÁLOGOS DE CUENTAS ESTÁNDAR (por sector)
+   ============================================================ */
+const CATALOGOS_POR_SECTOR = {
+  "Comercial": {
+    "Activo": { color:"#2FC2AD", cuentas:[
+      {codigo:"1101", nombre:"Efectivo", naturaleza:"Deudora"},
+      {codigo:"1102", nombre:"Bancos", naturaleza:"Deudora"},
+      {codigo:"1103", nombre:"Cuentas por Cobrar", naturaleza:"Deudora"},
+      {codigo:"1104", nombre:"Estimación para Cuentas Incobrables", naturaleza:"Acreedora"},
+      {codigo:"1105", nombre:"Inventario de Mercancías", naturaleza:"Deudora"},
+      {codigo:"1106", nombre:"IVA Acreditable", naturaleza:"Deudora"},
+      {codigo:"1201", nombre:"Terreno", naturaleza:"Deudora"},
+      {codigo:"1202", nombre:"Edificio", naturaleza:"Deudora"},
+      {codigo:"1203", nombre:"Depreciación Acumulada Edificio", naturaleza:"Acreedora"},
+      {codigo:"1204", nombre:"Mobiliario y Equipo", naturaleza:"Deudora"},
+      {codigo:"1205", nombre:"Depreciación Acumulada Mobiliario y Equipo", naturaleza:"Acreedora"},
+      {codigo:"1206", nombre:"Equipo de Cómputo", naturaleza:"Deudora"},
+      {codigo:"1207", nombre:"Depreciación Acumulada Equipo de Cómputo", naturaleza:"Acreedora"},
+    ]},
+    "Pasivo": { color:"#EF6A5B", cuentas:[
+      {codigo:"2101", nombre:"Cuentas por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2102", nombre:"Documentos por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2103", nombre:"IVA por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2104", nombre:"Sueldos y Salarios por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2105", nombre:"Cargas Sociales por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2201", nombre:"Préstamos Bancarios a Largo Plazo", naturaleza:"Acreedora"},
+    ]},
+    "Patrimonio": { color:"#B8863C", cuentas:[
+      {codigo:"3101", nombre:"Capital Social", naturaleza:"Acreedora"},
+      {codigo:"3102", nombre:"Utilidades Retenidas", naturaleza:"Acreedora"},
+      {codigo:"3103", nombre:"Utilidad (Pérdida) del Ejercicio", naturaleza:"Acreedora"},
+    ]},
+    "Ingreso": { color:"#0E1B3D", cuentas:[
+      {codigo:"4101", nombre:"Ventas", naturaleza:"Acreedora"},
+      {codigo:"4102", nombre:"Devoluciones sobre Ventas", naturaleza:"Deudora"},
+      {codigo:"4103", nombre:"Descuentos sobre Ventas", naturaleza:"Deudora"},
+      {codigo:"4104", nombre:"Ingresos Financieros", naturaleza:"Acreedora"},
+    ]},
+    "Costo": { color:"#5B6470", cuentas:[
+      {codigo:"5101", nombre:"Costo de Ventas", naturaleza:"Deudora"},
+      {codigo:"5102", nombre:"Compras", naturaleza:"Deudora"},
+      {codigo:"5103", nombre:"Devoluciones sobre Compras", naturaleza:"Acreedora"},
+      {codigo:"5104", nombre:"Descuentos sobre Compras", naturaleza:"Acreedora"},
+      {codigo:"5105", nombre:"Fletes sobre Compras", naturaleza:"Deudora"},
+    ]},
+    "Gasto": { color:"#a3541e", cuentas:[
+      {codigo:"6101", nombre:"Gastos de Salarios", naturaleza:"Deudora"},
+      {codigo:"6102", nombre:"Gastos de Cargas Sociales", naturaleza:"Deudora"},
+      {codigo:"6103", nombre:"Gastos de Alquiler", naturaleza:"Deudora"},
+      {codigo:"6104", nombre:"Gastos de Servicios Públicos", naturaleza:"Deudora"},
+      {codigo:"6105", nombre:"Gastos de Depreciación", naturaleza:"Deudora"},
+      {codigo:"6106", nombre:"Gastos de Publicidad", naturaleza:"Deudora"},
+      {codigo:"6107", nombre:"Gastos Financieros", naturaleza:"Deudora"},
+      {codigo:"6108", nombre:"Gastos de Papelería y Útiles", naturaleza:"Deudora"},
+      {codigo:"6109", nombre:"Gastos Diversos", naturaleza:"Deudora"},
+    ]}
+  },
+
+  "Servicios": {
+    "Activo": { color:"#2FC2AD", cuentas:[
+      {codigo:"1101", nombre:"Efectivo", naturaleza:"Deudora"},
+      {codigo:"1102", nombre:"Bancos", naturaleza:"Deudora"},
+      {codigo:"1103", nombre:"Cuentas por Cobrar", naturaleza:"Deudora"},
+      {codigo:"1104", nombre:"Estimación para Cuentas Incobrables", naturaleza:"Acreedora"},
+      {codigo:"1105", nombre:"Suministros", naturaleza:"Deudora"},
+      {codigo:"1106", nombre:"IVA Acreditable", naturaleza:"Deudora"},
+      {codigo:"1201", nombre:"Mobiliario y Equipo", naturaleza:"Deudora"},
+      {codigo:"1202", nombre:"Depreciación Acumulada Mobiliario y Equipo", naturaleza:"Acreedora"},
+      {codigo:"1203", nombre:"Equipo de Cómputo", naturaleza:"Deudora"},
+      {codigo:"1204", nombre:"Depreciación Acumulada Equipo de Cómputo", naturaleza:"Acreedora"},
+    ]},
+    "Pasivo": { color:"#EF6A5B", cuentas:[
+      {codigo:"2101", nombre:"Cuentas por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2102", nombre:"Documentos por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2103", nombre:"IVA por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2104", nombre:"Sueldos y Salarios por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2105", nombre:"Cargas Sociales por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2106", nombre:"Ingresos Cobrados por Anticipado", naturaleza:"Acreedora"},
+    ]},
+    "Patrimonio": { color:"#B8863C", cuentas:[
+      {codigo:"3101", nombre:"Capital Social", naturaleza:"Acreedora"},
+      {codigo:"3102", nombre:"Utilidades Retenidas", naturaleza:"Acreedora"},
+      {codigo:"3103", nombre:"Utilidad (Pérdida) del Ejercicio", naturaleza:"Acreedora"},
+    ]},
+    "Ingreso": { color:"#0E1B3D", cuentas:[
+      {codigo:"4101", nombre:"Ingresos por Servicios", naturaleza:"Acreedora"},
+      {codigo:"4102", nombre:"Descuentos sobre Servicios", naturaleza:"Deudora"},
+      {codigo:"4103", nombre:"Ingresos Financieros", naturaleza:"Acreedora"},
+    ]},
+    "Costo": { color:"#5B6470", cuentas:[
+      {codigo:"5101", nombre:"Costo de Servicios Prestados", naturaleza:"Deudora"},
+    ]},
+    "Gasto": { color:"#a3541e", cuentas:[
+      {codigo:"6101", nombre:"Gastos de Salarios", naturaleza:"Deudora"},
+      {codigo:"6102", nombre:"Gastos de Cargas Sociales", naturaleza:"Deudora"},
+      {codigo:"6103", nombre:"Gastos de Alquiler", naturaleza:"Deudora"},
+      {codigo:"6104", nombre:"Gastos de Servicios Públicos", naturaleza:"Deudora"},
+      {codigo:"6105", nombre:"Gastos de Depreciación", naturaleza:"Deudora"},
+      {codigo:"6106", nombre:"Gastos de Publicidad", naturaleza:"Deudora"},
+      {codigo:"6107", nombre:"Gastos Financieros", naturaleza:"Deudora"},
+      {codigo:"6108", nombre:"Gastos de Papelería y Útiles", naturaleza:"Deudora"},
+      {codigo:"6109", nombre:"Gastos Diversos", naturaleza:"Deudora"},
+    ]}
+  },
+
+  "Industrial": {
+    "Activo": { color:"#2FC2AD", cuentas:[
+      {codigo:"1101", nombre:"Efectivo", naturaleza:"Deudora"},
+      {codigo:"1102", nombre:"Bancos", naturaleza:"Deudora"},
+      {codigo:"1103", nombre:"Cuentas por Cobrar", naturaleza:"Deudora"},
+      {codigo:"1104", nombre:"Estimación para Cuentas Incobrables", naturaleza:"Acreedora"},
+      {codigo:"1105", nombre:"Inventario de Materia Prima", naturaleza:"Deudora"},
+      {codigo:"1106", nombre:"Inventario de Productos en Proceso", naturaleza:"Deudora"},
+      {codigo:"1107", nombre:"Inventario de Productos Terminados", naturaleza:"Deudora"},
+      {codigo:"1108", nombre:"IVA Acreditable", naturaleza:"Deudora"},
+      {codigo:"1201", nombre:"Terreno", naturaleza:"Deudora"},
+      {codigo:"1202", nombre:"Edificio", naturaleza:"Deudora"},
+      {codigo:"1203", nombre:"Depreciación Acumulada Edificio", naturaleza:"Acreedora"},
+      {codigo:"1204", nombre:"Maquinaria y Equipo de Producción", naturaleza:"Deudora"},
+      {codigo:"1205", nombre:"Depreciación Acumulada Maquinaria y Equipo", naturaleza:"Acreedora"},
+      {codigo:"1206", nombre:"Equipo de Cómputo", naturaleza:"Deudora"},
+      {codigo:"1207", nombre:"Depreciación Acumulada Equipo de Cómputo", naturaleza:"Acreedora"},
+    ]},
+    "Pasivo": { color:"#EF6A5B", cuentas:[
+      {codigo:"2101", nombre:"Cuentas por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2102", nombre:"Documentos por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2103", nombre:"IVA por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2104", nombre:"Sueldos y Salarios por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2105", nombre:"Cargas Sociales por Pagar", naturaleza:"Acreedora"},
+      {codigo:"2201", nombre:"Préstamos Bancarios a Largo Plazo", naturaleza:"Acreedora"},
+    ]},
+    "Patrimonio": { color:"#B8863C", cuentas:[
+      {codigo:"3101", nombre:"Capital Social", naturaleza:"Acreedora"},
+      {codigo:"3102", nombre:"Utilidades Retenidas", naturaleza:"Acreedora"},
+      {codigo:"3103", nombre:"Utilidad (Pérdida) del Ejercicio", naturaleza:"Acreedora"},
+    ]},
+    "Ingreso": { color:"#0E1B3D", cuentas:[
+      {codigo:"4101", nombre:"Ventas", naturaleza:"Acreedora"},
+      {codigo:"4102", nombre:"Devoluciones sobre Ventas", naturaleza:"Deudora"},
+      {codigo:"4103", nombre:"Descuentos sobre Ventas", naturaleza:"Deudora"},
+      {codigo:"4104", nombre:"Ingresos Financieros", naturaleza:"Acreedora"},
+    ]},
+    "Costo": { color:"#5B6470", cuentas:[
+      {codigo:"5101", nombre:"Costo de Ventas", naturaleza:"Deudora"},
+      {codigo:"5102", nombre:"Materia Prima Utilizada", naturaleza:"Deudora"},
+      {codigo:"5103", nombre:"Mano de Obra Directa", naturaleza:"Deudora"},
+      {codigo:"5104", nombre:"Costos Indirectos de Fabricación", naturaleza:"Deudora"},
+      {codigo:"5105", nombre:"Costo de Producción del Periodo", naturaleza:"Deudora"},
+    ]},
+    "Gasto": { color:"#a3541e", cuentas:[
+      {codigo:"6101", nombre:"Gastos de Salarios Administrativos", naturaleza:"Deudora"},
+      {codigo:"6102", nombre:"Gastos de Cargas Sociales", naturaleza:"Deudora"},
+      {codigo:"6103", nombre:"Gastos de Alquiler", naturaleza:"Deudora"},
+      {codigo:"6104", nombre:"Gastos de Servicios Públicos", naturaleza:"Deudora"},
+      {codigo:"6105", nombre:"Gastos de Depreciación (Administrativa)", naturaleza:"Deudora"},
+      {codigo:"6106", nombre:"Gastos de Publicidad", naturaleza:"Deudora"},
+      {codigo:"6107", nombre:"Gastos Financieros", naturaleza:"Deudora"},
+      {codigo:"6108", nombre:"Gastos de Papelería y Útiles", naturaleza:"Deudora"},
+      {codigo:"6109", nombre:"Gastos Diversos", naturaleza:"Deudora"},
+    ]}
+  }
+};
+
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+let studentName = "";
+let misEmpresas = [];
+let empresaActiva = null;
+
+const empresaGrid = document.getElementById('empresaGrid');
+const formArea = document.getElementById('formArea');
+const catalogoArea = document.getElementById('catalogoArea');
+
+/* ============================================================
+   CARGA DE EMPRESAS DEL ESTUDIANTE
+   ============================================================ */
+let empresasEliminadasIds = [];
+
+async function loadMisEmpresas(){
+  if(!studentName || !sheetsReady()){ renderEmpresaGrid(); return; }
+  empresaGrid.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando tus empresas...</p>';
+  try{
+    const [rows, eliminadas] = await Promise.all([
+      sheetGet('SAT_Empresas'),
+      sheetGet('SAT_EmpresasEliminadas')
+    ]);
+    empresasEliminadasIds = eliminadas.filter(r => r.Estudiante === studentName).map(r => r.EmpresaId);
+    misEmpresas = rows.filter(r => r.Estudiante === studentName && !empresasEliminadasIds.includes(r.EmpresaId));
+  }catch(e){
+    misEmpresas = [];
+  }
+  renderEmpresaGrid();
+}
+
+function renderEmpresaGrid(){
+  empresaGrid.innerHTML = '';
+
+  if(!studentName){
+    empresaGrid.innerHTML = '<div class="empty-state">Escribí tu nombre arriba para ver o crear tus empresas.</div>';
+    return;
+  }
+
+  misEmpresas.forEach(emp=>{
+    const card = document.createElement('div');
+    card.className = 'empresa-card' + (empresaActiva && empresaActiva.EmpresaId===emp.EmpresaId ? ' active' : '');
+    const fecha = emp.Timestamp ? new Date(emp.Timestamp).toLocaleDateString('es-CR') : '';
+    card.innerHTML = `
+      <span class="ec-delete" title="Eliminar empresa">🗑️</span>
+      <div class="ec-name">🏢 ${escapeHtml(emp.NombreEmpresa)}</div>
+      <div class="ec-sector">${escapeHtml(emp.Sector || 'Comercial')}</div>
+      <div class="ec-cedula">Céd. Jurídica: ${escapeHtml(emp.CedulaJuridica || '—')}</div>
+      <div class="ec-date">Creada: ${fecha}</div>
+    `;
+    card.addEventListener('click', ()=>{
+      selectEmpresa(emp);
+    });
+    card.querySelector('.ec-delete').addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      if(!confirm(`¿Eliminar la empresa "${emp.NombreEmpresa}"? Esta acción no se puede deshacer.`)) return;
+      try{
+        const nowIso = new Date().toISOString();
+        await sheetPost('SAT_EmpresasEliminadas', [nowIso, studentName, emp.EmpresaId]);
+        misEmpresas = misEmpresas.filter(m => m.EmpresaId !== emp.EmpresaId);
+        if(empresaActiva && empresaActiva.EmpresaId === emp.EmpresaId){
+          empresaActiva = null;
+          catalogoArea.innerHTML = '';
+          document.getElementById('empresaTabsArea').innerHTML = '';
+        }
+        renderEmpresaGrid();
+      }catch(err){
+        alert('No se pudo eliminar la empresa. Revisá la conexión a la hoja de datos.');
+      }
+    });
+    empresaGrid.appendChild(card);
+  });
+
+  const newCard = document.createElement('div');
+  newCard.className = 'new-empresa-card';
+  newCard.innerHTML = `<div class="plus">➕</div><div>Crear nueva empresa</div>`;
+  newCard.addEventListener('click', renderNuevaEmpresaForm);
+  empresaGrid.appendChild(newCard);
+}
+
+/* ============================================================
+   FORMULARIO: NUEVA EMPRESA
+   ============================================================ */
+function renderNuevaEmpresaForm(){
+  if(!studentName){ alert('Escribí tu nombre arriba antes de crear una empresa.'); return; }
+  catalogoArea.innerHTML = '';
+  empresaActiva = null;
+  renderEmpresaGrid();
+
+  formArea.innerHTML = `
+    <div class="form-card">
+      <h3>➕ Crear nueva empresa</h3>
+      <div class="form-row">
+        <label>Nombre de la empresa</label>
+        <input type="text" id="newEmpresaName" placeholder="Ej: Comercial El Roble S.A.">
+      </div>
+      <div class="form-row">
+        <label>Cédula Jurídica</label>
+        <input type="text" id="newEmpresaCedula" placeholder="Ej: 3-101-123456" inputmode="numeric">
+      </div>
+      <div class="form-row">
+        <label>Sector</label>
+        <select id="newEmpresaSector">
+          <option value="Comercial">Comercial (compra-venta de mercancías)</option>
+          <option value="Servicios">Servicios (empresa que presta servicios)</option>
+          <option value="Industrial">Industrial (empresa que fabrica productos)</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="createEmpresaBtn">Crear empresa</button>
+        <button class="btn secondary" id="cancelEmpresaBtn">Cancelar</button>
+      </div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:10px;margin-bottom:0;">La empresa se crea con el catálogo de cuentas estándar según el sector elegido. Luego podés agregar cuentas adicionales si lo necesitás.</p>
+    </div>
+  `;
+
+  document.getElementById('cancelEmpresaBtn').addEventListener('click', ()=>{ formArea.innerHTML=''; });
+
+  document.getElementById('createEmpresaBtn').addEventListener('click', async ()=>{
+    const nombre = document.getElementById('newEmpresaName').value.trim();
+    const cedulaJuridica = document.getElementById('newEmpresaCedula').value.trim();
+    const sector = document.getElementById('newEmpresaSector').value;
+    if(!nombre){ alert('Escribí un nombre para la empresa.'); return; }
+    if(!cedulaJuridica){ alert('Escribí la cédula jurídica de la empresa — es parte del procedimiento formal.'); return; }
+
+    const btn = document.getElementById('createEmpresaBtn');
+    btn.disabled = true;
+    btn.textContent = 'Creando...';
+
+    const empresaId = genId();
+    const nowIso = new Date().toISOString();
+    const nuevaEmpresa = { Timestamp: nowIso, Estudiante: studentName, EmpresaId: empresaId, NombreEmpresa: nombre, Sector: sector, CedulaJuridica: cedulaJuridica };
+
+    try{
+      await sheetPost('SAT_Empresas', [nowIso, studentName, empresaId, nombre, sector, cedulaJuridica]);
+      misEmpresas.push(nuevaEmpresa);
+      formArea.innerHTML = '';
+      renderEmpresaGrid();
+      selectEmpresa(nuevaEmpresa);
+    }catch(e){
+      alert('No se pudo crear la empresa. Revisá la conexión a la hoja de datos.');
+      btn.disabled = false;
+      btn.textContent = 'Crear empresa';
+    }
+  });
+}
+
+/* ============================================================
+   CATÁLOGO DE CUENTAS (estándar por sector + personalizadas)
+   ============================================================ */
+let cuentasPersonalizadas = [];
+
+/* ============================================================
+   PESTAÑAS INTERNAS DE EMPRESA (Catálogo / Asientos)
+   ============================================================ */
+let activeEmpresaTab = 'catalogo';
+
+function selectEmpresa(emp){
+  empresaActiva = emp;
+  activeEmpresaTab = 'catalogo';
+  formArea.innerHTML = '';
+  renderEmpresaGrid();
+  renderEmpresaTabs();
+  renderActiveTab();
+}
+
+function renderEmpresaTabs(){
+  const tabsArea = document.getElementById('empresaTabsArea');
+  if(!empresaActiva){ tabsArea.innerHTML = ''; return; }
+  const tabs = [
+    { id:'catalogo', label:'📋 Catálogo' },
+    { id:'asientos', label:'📒 Asientos' },
+    { id:'facturacion', label:'🧾 Facturación' },
+    { id:'mayor', label:'📚 Mayor' },
+    { id:'estadoResultados', label:'📈 Est. Resultados' },
+    { id:'balanceGeneral', label:'⚖️ Balance General' },
+    { id:'libroInventarios', label:'📦 Libro Inventarios' },
+  ];
+  tabsArea.innerHTML = `<div class="empresa-tabs">${tabs.map(t=>
+    `<div class="empresa-tab${t.id===activeEmpresaTab?' active':''}" data-tab="${t.id}">${t.label}</div>`
+  ).join('')}</div>`;
+  tabsArea.querySelectorAll('.empresa-tab').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      activeEmpresaTab = el.dataset.tab;
+      renderEmpresaTabs();
+      renderActiveTab();
+    });
+  });
+}
+
+function renderActiveTab(){
+  if(activeEmpresaTab === 'catalogo') renderCatalogo();
+  else if(activeEmpresaTab === 'asientos') renderAsientos();
+  else if(activeEmpresaTab === 'mayor') renderMayor();
+  else if(activeEmpresaTab === 'estadoResultados') renderEstadoResultados();
+  else if(activeEmpresaTab === 'balanceGeneral') renderBalanceGeneral();
+  else if(activeEmpresaTab === 'libroInventarios') renderLibroInventarios();
+  else if(activeEmpresaTab === 'facturacion') renderFacturacion();
+}
+
+async function renderCatalogo(){
+  if(!empresaActiva){ catalogoArea.innerHTML = ''; return; }
+
+  catalogoArea.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando catálogo...</p>';
+
+  cuentasPersonalizadas = [];
+  if(sheetsReady()){
+    try{
+      const rows = await sheetGet('SAT_CuentasPersonalizadas');
+      cuentasPersonalizadas = rows.filter(r => r.EmpresaId === empresaActiva.EmpresaId);
+    }catch(e){}
+  }
+
+  const sector = empresaActiva.Sector || 'Comercial';
+  const catalogoBase = CATALOGOS_POR_SECTOR[sector] || CATALOGOS_POR_SECTOR['Comercial'];
+
+  // combinar catalogo estandar + personalizadas, agrupadas por Tipo
+  const grupos = {};
+  Object.entries(catalogoBase).forEach(([grupo, data])=>{
+    grupos[grupo] = { color:data.color, cuentas: [...data.cuentas] };
+  });
+  cuentasPersonalizadas.forEach(c=>{
+    const tipo = c.Tipo || 'Gasto';
+    if(!grupos[tipo]) grupos[tipo] = { color:'#5B6470', cuentas:[] };
+    grupos[tipo].cuentas.push({ codigo:c.Codigo, nombre:c.Nombre, naturaleza:c.Naturaleza, personalizada:true });
+  });
+
+  let totalCuentas = 0;
+  Object.values(grupos).forEach(g=>totalCuentas+=g.cuentas.length);
+
+  let html = renderInformeHeader(empresaActiva, 'Catálogo de Cuentas');
+  html += `
+    <div class="catalogo-header">
+      <div class="ch-label">Catálogo de Cuentas</div>
+      <h2>🏢 ${escapeHtml(empresaActiva.NombreEmpresa)}</h2>
+      <p>Sector: ${escapeHtml(sector)} · ${totalCuentas} cuentas${cuentasPersonalizadas.length ? ' (' + cuentasPersonalizadas.length + ' agregadas por vos)' : ''}</p>
+    </div>
+  `;
+
+  const ORDEN_GRUPOS = ["Activo","Pasivo","Patrimonio","Ingreso","Costo","Gasto"];
+  ORDEN_GRUPOS.filter(g=>grupos[g]).forEach(grupo=>{
+    const data = grupos[grupo];
+    let rows = '';
+    data.cuentas.forEach(c=>{
+      const natClass = c.naturaleza === 'Deudora' ? 'deudora' : 'acreedora';
+      const tag = c.personalizada ? ' <span style="font-size:9px;color:var(--gold);font-family:var(--mono);">· agregada</span>' : '';
+      rows += `<tr><td class="code">${escapeHtml(c.codigo)}</td><td>${escapeHtml(c.nombre)}${tag}</td><td class="nature ${natClass}">${c.naturaleza}</td></tr>`;
+    });
+    html += `
+      <div class="cat-group">
+        <div class="cat-group-head" style="background:${data.color};">
+          <span>${grupo}</span><span class="count">${data.cuentas.length} cuentas</span>
+        </div>
+        <table class="cat-table"><tbody>${rows}</tbody></table>
+      </div>
+    `;
+  });
+
+  html += `
+    <div class="form-card" id="addCuentaCard">
+      <h3>➕ Agregar cuenta al catálogo</h3>
+      <div class="form-row">
+        <label>Código</label>
+        <input type="text" id="newCuentaCodigo" placeholder="Ej: 1108" inputmode="numeric">
+      </div>
+      <div class="form-row">
+        <label>Nombre de la cuenta</label>
+        <input type="text" id="newCuentaNombre" placeholder="Ej: Anticipo de Clientes">
+      </div>
+      <div class="form-row">
+        <label>Grupo</label>
+        <select id="newCuentaTipo">
+          <option value="Activo">Activo</option>
+          <option value="Pasivo">Pasivo</option>
+          <option value="Patrimonio">Patrimonio</option>
+          <option value="Ingreso">Ingreso</option>
+          <option value="Costo">Costo</option>
+          <option value="Gasto">Gasto</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Naturaleza</label>
+        <select id="newCuentaNaturaleza">
+          <option value="Deudora">Deudora</option>
+          <option value="Acreedora">Acreedora</option>
+        </select>
+      </div>
+      <button class="btn" id="addCuentaBtn">Agregar cuenta</button>
+    </div>
+  `;
+
+  html += `<p class="footer-note">Próximamente: registro de facturas, asientos de diario, mayorización y estados financieros para esta empresa.</p>`;
+
+  catalogoArea.innerHTML = html;
+
+  document.getElementById('addCuentaBtn').addEventListener('click', async ()=>{
+    const codigo = document.getElementById('newCuentaCodigo').value.trim();
+    const nombre = document.getElementById('newCuentaNombre').value.trim();
+    const tipo = document.getElementById('newCuentaTipo').value;
+    const naturaleza = document.getElementById('newCuentaNaturaleza').value;
+    if(!codigo || !nombre){ alert('Completá el código y el nombre de la cuenta.'); return; }
+
+    const btn = document.getElementById('addCuentaBtn');
+    btn.disabled = true;
+    btn.textContent = 'Agregando...';
+
+    try{
+      const nowIso = new Date().toISOString();
+      await sheetPost('SAT_CuentasPersonalizadas', [nowIso, empresaActiva.EmpresaId, codigo, nombre, tipo, naturaleza]);
+      invalidarCacheContable();
+      await renderCatalogo();
+    }catch(e){
+      alert('No se pudo agregar la cuenta. Revisá la conexión a la hoja de datos.');
+      btn.disabled = false;
+      btn.textContent = 'Agregar cuenta';
+    }
+  });
+}
+
+/* ============================================================
+   MÓDULO: ASIENTOS DE DIARIO
+   ============================================================ */
+let misAsientos = [];
+let lineaCounter = 0;
+let cuentasDisponibles = []; // catálogo plano (estándar + personalizadas) para búsqueda
+
+function construirCuentasDisponibles(){
+  const sector = empresaActiva.Sector || 'Comercial';
+  const catalogoBase = CATALOGOS_POR_SECTOR[sector] || CATALOGOS_POR_SECTOR['Comercial'];
+  cuentasDisponibles = [];
+  Object.entries(catalogoBase).forEach(([grupo, data])=>{
+    data.cuentas.forEach(c => cuentasDisponibles.push({ codigo:c.codigo, nombre:c.nombre, naturaleza:c.naturaleza, grupo }));
+  });
+  cuentasPersonalizadas.forEach(c=>{
+    cuentasDisponibles.push({ codigo:c.Codigo, nombre:c.Nombre, naturaleza:c.Naturaleza, grupo:c.Tipo });
+  });
+}
+
+/* ============================================================
+   UTILIDADES CONTABLES COMPARTIDAS
+   (Mayor, Estado de Resultados, Balance General, Libro de Inventarios)
+   ============================================================ */
+const GRUPO_NATURALEZA_DOMINANTE = { Activo:'Deudora', Pasivo:'Acreedora', Patrimonio:'Acreedora', Ingreso:'Acreedora', Costo:'Deudora', Gasto:'Deudora' };
+
+let contableCache = { empresaId:null, asientosRows:null, lineasRows:null, cuentasPersonalizadas:null };
+
+function invalidarCacheContable(){
+  contableCache = { empresaId:null, asientosRows:null, lineasRows:null, cuentasPersonalizadas:null };
+}
+
+async function cargarCuentasYLineas(){
+  // usar caché si ya se cargaron los datos de esta misma empresa
+  if(contableCache.empresaId === empresaActiva.EmpresaId && contableCache.asientosRows){
+    cuentasPersonalizadas = contableCache.cuentasPersonalizadas;
+    construirCuentasDisponibles();
+    return { asientosRows: contableCache.asientosRows, lineasRows: contableCache.lineasRows };
+  }
+
+  cuentasPersonalizadas = [];
+  let asientosRows = [], lineasRows = [];
+  if(sheetsReady()){
+    try{
+      const [cp, ar, lr, ea] = await Promise.all([
+        sheetGet('SAT_CuentasPersonalizadas'),
+        sheetGet('SAT_Asientos'),
+        sheetGet('SAT_AsientoLineas'),
+        sheetGet('SAT_AsientosEliminados')
+      ]);
+      cuentasPersonalizadas = cp.filter(r => r.EmpresaId === empresaActiva.EmpresaId);
+      const eliminadosIds = ea.filter(r=>r.EmpresaId===empresaActiva.EmpresaId).map(r=>r.AsientoId);
+      const misAsientosHeaders = ar.filter(r => r.EmpresaId === empresaActiva.EmpresaId && !eliminadosIds.includes(r.AsientoId));
+      const misAsientoIds = misAsientosHeaders.map(h=>h.AsientoId);
+      lineasRows = lr.filter(l => misAsientoIds.includes(l.AsientoId));
+      asientosRows = misAsientosHeaders;
+    }catch(e){}
+  }
+  construirCuentasDisponibles();
+
+  // guardar en caché para la próxima pestaña que se consulte
+  contableCache = { empresaId: empresaActiva.EmpresaId, asientosRows, lineasRows, cuentasPersonalizadas };
+
+  return { asientosRows, lineasRows };
+}
+
+function saldoCuenta(naturaleza, debe, haber){
+  return naturaleza === 'Deudora' ? (debe - haber) : (haber - debe);
+}
+
+function contribucionGrupo(grupo, naturaleza, saldo){
+  return naturaleza === GRUPO_NATURALEZA_DOMINANTE[grupo] ? saldo : -saldo;
+}
+
+function computeSaldosPorCuenta(lineasRows){
+  const mapa = {};
+  lineasRows.forEach(l=>{
+    const codigo = String(l.Codigo).trim();
+    if(!mapa[codigo]){
+      const cuentaInfo = cuentasDisponibles.find(c=>String(c.codigo)===codigo) || { nombre:l.NombreCuenta, naturaleza:'Deudora', grupo:'Gasto' };
+      mapa[codigo] = { codigo, nombre: cuentaInfo.nombre, naturaleza: cuentaInfo.naturaleza, grupo: cuentaInfo.grupo, debe:0, haber:0, movimientos:[] };
+    }
+    const monto = Number(l.Monto);
+    if(l.TipoMovimiento === 'Debe') mapa[codigo].debe += monto;
+    else mapa[codigo].haber += monto;
+    mapa[codigo].movimientos.push({ fecha:l.Timestamp, tipo:l.TipoMovimiento, monto, asientoId:l.AsientoId });
+  });
+  Object.values(mapa).forEach(c=>{ c.saldo = saldoCuenta(c.naturaleza, c.debe, c.haber); });
+  return mapa;
+}
+
+function computeUtilidadNeta(saldosPorCuenta){
+  let ingresos=0, costos=0, gastos=0;
+  Object.values(saldosPorCuenta).forEach(c=>{
+    const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+    if(c.grupo==='Ingreso') ingresos += contrib;
+    else if(c.grupo==='Costo') costos += contrib;
+    else if(c.grupo==='Gasto') gastos += contrib;
+  });
+  return { ingresos, costos, gastos, utilidad: ingresos - costos - gastos };
+}
+
+async function renderAsientos(){
+  catalogoArea.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando asientos...</p>';
+
+  // asegurar catálogo cargado (para búsqueda de cuentas)
+  cuentasPersonalizadas = [];
+  if(sheetsReady()){
+    try{
+      const rows = await sheetGet('SAT_CuentasPersonalizadas');
+      cuentasPersonalizadas = rows.filter(r => r.EmpresaId === empresaActiva.EmpresaId);
+    }catch(e){}
+  }
+  construirCuentasDisponibles();
+
+  // cargar asientos existentes
+  misAsientos = [];
+  if(sheetsReady()){
+    try{
+      const [asientosRows, lineasRows, eliminadosRows] = await Promise.all([
+        sheetGet('SAT_Asientos'),
+        sheetGet('SAT_AsientoLineas'),
+        sheetGet('SAT_AsientosEliminados')
+      ]);
+      const eliminadosIds = eliminadosRows.filter(r=>r.EmpresaId===empresaActiva.EmpresaId).map(r=>r.AsientoId);
+      const misHeaders = asientosRows.filter(r => r.EmpresaId === empresaActiva.EmpresaId && !eliminadosIds.includes(r.AsientoId));
+      misAsientos = misHeaders.map(h=>({
+        ...h,
+        lineas: lineasRows.filter(l => l.AsientoId === h.AsientoId)
+      })).sort((a,b)=> new Date(b.Timestamp) - new Date(a.Timestamp));
+    }catch(e){}
+  }
+
+  let html = renderInformeHeader(empresaActiva, 'Libro Diario');
+  html += `
+    <div class="catalogo-header">
+      <div class="ch-label">Asientos de Diario</div>
+      <h2>🏢 ${escapeHtml(empresaActiva.NombreEmpresa)}</h2>
+      <p>${misAsientos.length} asiento${misAsientos.length===1?'':'s'} registrado${misAsientos.length===1?'':'s'}</p>
+    </div>
+    <div id="nuevoAsientoArea"></div>
+    <div class="section-title"><span>📑 Asientos registrados</span><span class="line"></span></div>
+    <div id="listaAsientosArea"></div>
+  `;
+  catalogoArea.innerHTML = html;
+
+  renderNuevoAsientoForm();
+  renderListaAsientos();
+}
+
+function renderNuevoAsientoForm(){
+  const area = document.getElementById('nuevoAsientoArea');
+  const hoy = new Date().toISOString().slice(0,10);
+  lineaCounter = 0;
+
+  area.innerHTML = `
+    <div class="form-card">
+      <h3>➕ Nuevo asiento</h3>
+      <div class="catalog-lookup-link" id="openCatalogModalBtn">📖 Consultar catálogo de cuentas</div>
+      <div class="form-row">
+        <label>Fecha</label>
+        <input type="date" id="asientoFecha" value="${hoy}">
+      </div>
+      <div class="form-row">
+        <label>Número de factura</label>
+        <input type="text" id="asientoFactura" placeholder="Ej: FE-00123">
+      </div>
+      <div class="form-row">
+        <label>Descripción (opcional)</label>
+        <input type="text" id="asientoDescripcion" placeholder="Ej: Compra de mercancía de contado">
+      </div>
+      <div id="lineasWrap"></div>
+      <button class="btn secondary" id="addLineaBtn" style="margin-top:4px;">➕ Agregar línea</button>
+      <div class="balance-bar" id="balanceBar"></div>
+      <button class="btn" id="guardarAsientoBtn" disabled>Guardar asiento</button>
+    </div>
+  `;
+
+  document.getElementById('openCatalogModalBtn').addEventListener('click', openCatalogModal);
+  document.getElementById('addLineaBtn').addEventListener('click', ()=> addLinea());
+  document.getElementById('guardarAsientoBtn').addEventListener('click', guardarAsiento);
+
+  // arrancar con 2 líneas vacías
+  addLinea();
+  addLinea();
+}
+
+function addLinea(){
+  const id = 'lin' + (lineaCounter++);
+  const wrap = document.getElementById('lineasWrap');
+  const row = document.createElement('div');
+  row.className = 'linea-row';
+  row.dataset.lineaId = id;
+  row.innerHTML = `
+    <div class="cuenta-search">
+      <input type="text" class="cuenta-input" placeholder="Buscar cuenta por código o nombre..." autocomplete="off">
+      <input type="hidden" class="cuenta-codigo">
+      <div class="cuenta-suggestions"></div>
+    </div>
+    <input type="text" class="monto debe" placeholder="Debe" inputmode="numeric">
+    <input type="text" class="monto haber" placeholder="Haber" inputmode="numeric">
+    <button class="linea-remove" title="Quitar línea">✕</button>
+  `;
+  wrap.appendChild(row);
+
+  const cuentaInput = row.querySelector('.cuenta-input');
+  const cuentaCodigo = row.querySelector('.cuenta-codigo');
+  const suggestions = row.querySelector('.cuenta-suggestions');
+  const debeInput = row.querySelector('.monto.debe');
+  const haberInput = row.querySelector('.monto.haber');
+
+  cuentaInput.addEventListener('input', ()=>{
+    cuentaCodigo.value = '';
+    const q = cuentaInput.value.trim().toLowerCase();
+    if(!q){ suggestions.classList.remove('show'); return; }
+    const matches = cuentasDisponibles.filter(c =>
+      c.codigo.toLowerCase().includes(q) || c.nombre.toLowerCase().includes(q)
+    ).slice(0, 8);
+    if(matches.length===0){
+      suggestions.innerHTML = '<div class="sug-empty">Sin coincidencias — revisá el catálogo de cuentas.</div>';
+    }else{
+      suggestions.innerHTML = matches.map(c =>
+        `<div class="sug-item" data-codigo="${escapeHtml(c.codigo)}" data-nombre="${escapeHtml(c.nombre)}"><span class="sug-code">${escapeHtml(c.codigo)}</span>${escapeHtml(c.nombre)}</div>`
+      ).join('');
+    }
+    suggestions.classList.add('show');
+  });
+  cuentaInput.addEventListener('focus', ()=>{ if(cuentaInput.value.trim()) suggestions.classList.add('show'); });
+  document.addEventListener('click', (e)=>{
+    if(!row.contains(e.target)) suggestions.classList.remove('show');
+  });
+  suggestions.addEventListener('click', (e)=>{
+    const item = e.target.closest('.sug-item');
+    if(!item) return;
+    cuentaInput.value = item.dataset.codigo + ' — ' + item.dataset.nombre;
+    cuentaCodigo.value = item.dataset.codigo;
+    suggestions.classList.remove('show');
+    updateBalance();
+  });
+
+  [debeInput, haberInput].forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      inp.value = inp.value.replace(/[^0-9]/g,'');
+      // una linea no debe tener monto en ambas columnas a la vez
+      if(inp===debeInput && inp.value) haberInput.value='';
+      if(inp===haberInput && inp.value) debeInput.value='';
+      updateBalance();
+    });
+  });
+
+  row.querySelector('.linea-remove').addEventListener('click', ()=>{
+    row.remove();
+    updateBalance();
+  });
+
+  updateBalance();
+}
+
+function updateBalance(){
+  const rows = document.querySelectorAll('#lineasWrap .linea-row');
+  let totalDebe = 0, totalHaber = 0;
+  rows.forEach(r=>{
+    totalDebe += parseInt(r.querySelector('.monto.debe').value || '0', 10);
+    totalHaber += parseInt(r.querySelector('.monto.haber').value || '0', 10);
+  });
+  const bar = document.getElementById('balanceBar');
+  const guardarBtn = document.getElementById('guardarAsientoBtn');
+  const diferencia = totalDebe - totalHaber;
+  const balanceado = diferencia === 0 && totalDebe > 0;
+
+  bar.className = 'balance-bar ' + (balanceado ? 'ok' : 'bad');
+  bar.innerHTML = `
+    <span>Debe: <b>₡${fmt(totalDebe)}</b></span>
+    <span>Haber: <b>₡${fmt(totalHaber)}</b></span>
+    <span>${balanceado ? '✅ Partida doble cumple' : (totalDebe===0 && totalHaber===0 ? '⏳ Ingresá los montos' : '❌ No cuadra — diferencia: ₡'+fmt(Math.abs(diferencia)))}</span>
+  `;
+  guardarBtn.disabled = !balanceado;
+}
+
+function fmt(n){ return new Intl.NumberFormat('es-CR').format(n); }
+
+/* ============================================================
+   MODAL: CONSULTA RÁPIDA DEL CATÁLOGO
+   ============================================================ */
+function openCatalogModal(){
+  const grupos = {};
+  cuentasDisponibles.forEach(c=>{
+    if(!grupos[c.grupo]) grupos[c.grupo] = [];
+    grupos[c.grupo].push(c);
+  });
+  const ORDEN = ["Activo","Pasivo","Patrimonio","Ingreso","Costo","Gasto"];
+  let html = '';
+  ORDEN.filter(g=>grupos[g]).forEach(grupo=>{
+    html += `<div style="font-family:var(--mono);font-size:10px;color:var(--gold);text-transform:uppercase;margin:10px 0 4px;">${grupo}</div>`;
+    html += '<table class="cat-table" style="border:1px solid var(--line);border-radius:6px;overflow:hidden;"><tbody>';
+    grupos[grupo].forEach(c=>{
+      html += `<tr><td class="code">${escapeHtml(c.codigo)}</td><td>${escapeHtml(c.nombre)}</td></tr>`;
+    });
+    html += '</tbody></table>';
+  });
+  document.getElementById('catalogModalContent').innerHTML = html;
+  document.getElementById('catalogModalBg').classList.add('show');
+}
+document.getElementById('catalogModalClose').addEventListener('click', ()=>{
+  document.getElementById('catalogModalBg').classList.remove('show');
+});
+document.getElementById('catalogModalBg').addEventListener('click', (e)=>{
+  if(e.target.id === 'catalogModalBg') document.getElementById('catalogModalBg').classList.remove('show');
+});
+
+async function guardarAsiento(){
+  const fecha = document.getElementById('asientoFecha').value;
+  const factura = document.getElementById('asientoFactura').value.trim();
+  const descripcion = document.getElementById('asientoDescripcion').value.trim();
+  if(!factura){ alert('Escribí el número de factura.'); return; }
+
+  const rows = document.querySelectorAll('#lineasWrap .linea-row');
+  const lineas = [];
+  let valid = true;
+  rows.forEach(r=>{
+    const codigo = r.querySelector('.cuenta-codigo').value;
+    const debe = parseInt(r.querySelector('.monto.debe').value || '0', 10);
+    const haber = parseInt(r.querySelector('.monto.haber').value || '0', 10);
+    if(!codigo || (debe===0 && haber===0)){ valid = false; return; }
+    const cuenta = cuentasDisponibles.find(c=>c.codigo===codigo);
+    lineas.push({ codigo, nombre: cuenta?cuenta.nombre:codigo, tipo: debe>0?'Debe':'Haber', monto: debe>0?debe:haber });
+  });
+
+  if(!valid || lineas.length < 2){
+    alert('Cada línea debe tener una cuenta seleccionada del catálogo y un monto en Debe o Haber.');
+    return;
+  }
+
+  const btn = document.getElementById('guardarAsientoBtn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  const asientoId = 'as_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7);
+  const nowIso = new Date().toISOString();
+
+  try{
+    await sheetPost('SAT_Asientos', [nowIso, empresaActiva.EmpresaId, asientoId, factura, fecha, descripcion]);
+    for(const l of lineas){
+      await sheetPost('SAT_AsientoLineas', [nowIso, asientoId, l.codigo, l.nombre, l.tipo, l.monto]);
+    }
+    invalidarCacheContable();
+    await renderAsientos();
+  }catch(e){
+    alert('No se pudo guardar el asiento. Revisá la conexión a la hoja de datos.');
+    btn.disabled = false;
+    btn.textContent = 'Guardar asiento';
+  }
+}
+
+function renderListaAsientos(){
+  const area = document.getElementById('listaAsientosArea');
+  if(misAsientos.length === 0){
+    area.innerHTML = '<div class="empty-state">Todavía no hay asientos registrados para esta empresa.</div>';
+    return;
+  }
+
+  area.innerHTML = misAsientos.map(a=>{
+    const totalDebe = a.lineas.filter(l=>l.TipoMovimiento==='Debe').reduce((s,l)=>s+Number(l.Monto),0);
+    const fechaFmt = a.Fecha ? new Date(a.Fecha+'T00:00:00').toLocaleDateString('es-CR') : '';
+    const filasHtml = a.lineas.map(l=>`
+      <tr>
+        <td>${escapeHtml(l.Codigo)} — ${escapeHtml(l.NombreCuenta)}</td>
+        <td class="num">${l.TipoMovimiento==='Debe' ? '₡'+fmt(l.Monto) : ''}</td>
+        <td class="num">${l.TipoMovimiento==='Haber' ? '₡'+fmt(l.Monto) : ''}</td>
+      </tr>
+    `).join('');
+    return `
+      <div class="asiento-card">
+        <div class="ac-head">
+          <div class="ac-info">
+            <b>Factura: ${escapeHtml(a.NumeroFactura)}</b>
+            <span>${fechaFmt}${a.Descripcion ? ' · ' + escapeHtml(a.Descripcion) : ''}</span>
+          </div>
+          <span class="ac-delete" data-asiento-id="${escapeHtml(a.AsientoId)}" title="Eliminar asiento">🗑️</span>
+        </div>
+        <table class="asiento-table">
+          <thead><tr><th>Cuenta</th><th style="text-align:right;">Debe</th><th style="text-align:right;">Haber</th></tr></thead>
+          <tbody>${filasHtml}</tbody>
+          <tfoot><tr><td>Total</td><td class="num">₡${fmt(totalDebe)}</td><td class="num">₡${fmt(totalDebe)}</td></tr></tfoot>
+        </table>
+      </div>
+    `;
+  }).join('');
+
+  area.querySelectorAll('.ac-delete').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const asientoId = el.dataset.asientoId;
+      if(!confirm('¿Eliminar este asiento? Esta acción no se puede deshacer.')) return;
+      try{
+        const nowIso = new Date().toISOString();
+        await sheetPost('SAT_AsientosEliminados', [nowIso, empresaActiva.EmpresaId, asientoId]);
+        misAsientos = misAsientos.filter(a=>a.AsientoId !== asientoId);
+        invalidarCacheContable();
+        renderListaAsientos();
+      }catch(err){
+        alert('No se pudo eliminar el asiento. Revisá la conexión a la hoja de datos.');
+      }
+    });
+  });
+}
+
+/* ============================================================
+   MÓDULO: LIBRO MAYOR (MAYORIZACIÓN)
+   ============================================================ */
+async function renderMayor(){
+  catalogoArea.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando mayor...</p>';
+  const { lineasRows } = await cargarCuentasYLineas();
+  const saldos = computeSaldosPorCuenta(lineasRows);
+  const cuentasConMovimiento = Object.values(saldos).sort((a,b)=>a.codigo.localeCompare(b.codigo));
+
+  let html = renderInformeHeader(empresaActiva, 'Libro Mayor');
+  html += `<div class="catalogo-header"><div class="ch-label">Mayorización</div><h2>🏢 ${escapeHtml(empresaActiva.NombreEmpresa)}</h2><p>${cuentasConMovimiento.length} cuenta${cuentasConMovimiento.length===1?'':'s'} con movimiento</p></div>`;
+
+  if(cuentasConMovimiento.length===0){
+    html += '<div class="empty-state">Todavía no hay asientos registrados — el mayor se genera automáticamente a partir de ellos.</div>';
+  }else{
+    cuentasConMovimiento.forEach(c=>{
+      let running = 0;
+      const filas = c.movimientos.map(m=>{
+        running += (m.tipo==='Debe' ? (c.naturaleza==='Deudora'?m.monto:-m.monto) : (c.naturaleza==='Deudora'?-m.monto:m.monto));
+        return `<tr>
+          <td class="num">${m.tipo==='Debe' ? '₡'+fmt(m.monto) : ''}</td>
+          <td class="num">${m.tipo==='Haber' ? '₡'+fmt(m.monto) : ''}</td>
+          <td class="num">₡${fmt(running)}</td>
+        </tr>`;
+      }).join('');
+      html += `
+        <div class="mayor-account">
+          <div class="mayor-account-head">
+            <b>${escapeHtml(c.codigo)} — ${escapeHtml(c.nombre)}</b>
+            <span class="ma-saldo">Saldo: ₡${fmt(c.saldo)} (${c.naturaleza})</span>
+          </div>
+          <table class="mayor-table">
+            <thead><tr><th style="text-align:right;">Debe</th><th style="text-align:right;">Haber</th><th style="text-align:right;">Saldo</th></tr></thead>
+            <tbody>${filas}</tbody>
+          </table>
+        </div>
+      `;
+    });
+  }
+
+  catalogoArea.innerHTML = html;
+}
+
+/* ============================================================
+   MÓDULO: ESTADO DE RESULTADOS
+   ============================================================ */
+async function renderEstadoResultados(){
+  catalogoArea.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando estado de resultados...</p>';
+  const { lineasRows } = await cargarCuentasYLineas();
+  const saldos = computeSaldosPorCuenta(lineasRows);
+
+  const porGrupo = { Ingreso:[], Costo:[], Gasto:[] };
+  Object.values(saldos).forEach(c=>{
+    if(porGrupo[c.grupo]) porGrupo[c.grupo].push(c);
+  });
+
+  const { ingresos, costos, gastos, utilidad } = computeUtilidadNeta(saldos);
+
+  let html = renderInformeHeader(empresaActiva, 'Estado de Resultados');
+  html += '<table class="estado-table">';
+
+  html += '<tr class="estado-section-title"><td colspan="2">Ingresos</td></tr>';
+  porGrupo.Ingreso.sort((a,b)=>a.codigo.localeCompare(b.codigo)).forEach(c=>{
+    const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+    html += `<tr><td>${escapeHtml(c.nombre)}</td><td class="num">${contrib<0?'(':''}₡${fmt(Math.abs(contrib))}${contrib<0?')':''}</td></tr>`;
+  });
+  html += `<tr class="subtotal"><td>Total Ingresos</td><td class="num">₡${fmt(ingresos)}</td></tr>`;
+
+  html += '<tr class="estado-section-title"><td colspan="2">Costos</td></tr>';
+  if(porGrupo.Costo.length===0){
+    html += '<tr><td colspan="2" style="color:var(--muted);font-size:11px;">Sin movimientos</td></tr>';
+  }
+  porGrupo.Costo.sort((a,b)=>a.codigo.localeCompare(b.codigo)).forEach(c=>{
+    const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+    html += `<tr><td>${escapeHtml(c.nombre)}</td><td class="num">${contrib<0?'(':''}₡${fmt(Math.abs(contrib))}${contrib<0?')':''}</td></tr>`;
+  });
+  html += `<tr class="subtotal"><td>Total Costos</td><td class="num">₡${fmt(costos)}</td></tr>`;
+
+  html += '<tr class="estado-section-title"><td colspan="2">Gastos</td></tr>';
+  if(porGrupo.Gasto.length===0){
+    html += '<tr><td colspan="2" style="color:var(--muted);font-size:11px;">Sin movimientos</td></tr>';
+  }
+  porGrupo.Gasto.sort((a,b)=>a.codigo.localeCompare(b.codigo)).forEach(c=>{
+    const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+    html += `<tr><td>${escapeHtml(c.nombre)}</td><td class="num">${contrib<0?'(':''}₡${fmt(Math.abs(contrib))}${contrib<0?')':''}</td></tr>`;
+  });
+  html += `<tr class="subtotal"><td>Total Gastos</td><td class="num">₡${fmt(gastos)}</td></tr>`;
+
+  html += `<tr class="total"><td>${utilidad>=0?'Utilidad Neta del Ejercicio':'Pérdida Neta del Ejercicio'}</td><td class="num">₡${fmt(Math.abs(utilidad))}</td></tr>`;
+  html += '</table>';
+
+  catalogoArea.innerHTML = html;
+}
+
+/* ============================================================
+   MÓDULO: BALANCE GENERAL
+   ============================================================ */
+async function renderBalanceGeneral(){
+  catalogoArea.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando balance general...</p>';
+  const { lineasRows } = await cargarCuentasYLineas();
+  const saldos = computeSaldosPorCuenta(lineasRows);
+  const { utilidad } = computeUtilidadNeta(saldos);
+
+  const porGrupo = { Activo:[], Pasivo:[], Patrimonio:[] };
+  Object.values(saldos).forEach(c=>{
+    if(porGrupo[c.grupo]) porGrupo[c.grupo].push(c);
+  });
+
+  function totalGrupo(lista){
+    return lista.reduce((s,c)=> s + contribucionGrupo(c.grupo, c.naturaleza, c.saldo), 0);
+  }
+  const totalActivo = totalGrupo(porGrupo.Activo);
+  const totalPasivo = totalGrupo(porGrupo.Pasivo);
+  const totalPatrimonioSinUtilidad = totalGrupo(porGrupo.Patrimonio);
+  const totalPatrimonio = totalPatrimonioSinUtilidad + utilidad;
+  const cuadra = totalActivo === (totalPasivo + totalPatrimonio);
+
+  let html = renderInformeHeader(empresaActiva, 'Balance General');
+  html += '<table class="estado-table">';
+
+  html += '<tr class="estado-section-title"><td colspan="2">Activo</td></tr>';
+  porGrupo.Activo.sort((a,b)=>a.codigo.localeCompare(b.codigo)).forEach(c=>{
+    const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+    html += `<tr><td>${escapeHtml(c.nombre)}</td><td class="num">₡${fmt(contrib)}</td></tr>`;
+  });
+  html += `<tr class="subtotal"><td>Total Activo</td><td class="num">₡${fmt(totalActivo)}</td></tr>`;
+
+  html += '<tr class="estado-section-title"><td colspan="2">Pasivo</td></tr>';
+  if(porGrupo.Pasivo.length===0){
+    html += '<tr><td colspan="2" style="color:var(--muted);font-size:11px;">Sin movimientos</td></tr>';
+  }
+  porGrupo.Pasivo.sort((a,b)=>a.codigo.localeCompare(b.codigo)).forEach(c=>{
+    const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+    html += `<tr><td>${escapeHtml(c.nombre)}</td><td class="num">₡${fmt(contrib)}</td></tr>`;
+  });
+  html += `<tr class="subtotal"><td>Total Pasivo</td><td class="num">₡${fmt(totalPasivo)}</td></tr>`;
+
+  html += '<tr class="estado-section-title"><td colspan="2">Patrimonio</td></tr>';
+  porGrupo.Patrimonio.sort((a,b)=>a.codigo.localeCompare(b.codigo)).forEach(c=>{
+    const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+    html += `<tr><td>${escapeHtml(c.nombre)}</td><td class="num">₡${fmt(contrib)}</td></tr>`;
+  });
+  html += `<tr><td>${utilidad>=0?'Utilidad':'Pérdida'} Neta del Ejercicio</td><td class="num">₡${fmt(utilidad)}</td></tr>`;
+  html += `<tr class="subtotal"><td>Total Patrimonio</td><td class="num">₡${fmt(totalPatrimonio)}</td></tr>`;
+
+  html += `<tr class="total"><td>Total Pasivo + Patrimonio</td><td class="num">₡${fmt(totalPasivo+totalPatrimonio)}</td></tr>`;
+  html += '</table>';
+
+  html += `<div class="bg-check ${cuadra?'ok':'bad'}">${cuadra ? '✅ El balance cuadra: Activo = Pasivo + Patrimonio' : '❌ El balance no cuadra — revisá los asientos registrados'}</div>`;
+
+  catalogoArea.innerHTML = html;
+}
+
+/* ============================================================
+   MÓDULO: LIBRO DE INVENTARIOS Y BALANCES
+   (listado detallado, cuenta por cuenta, sin agrupar en totales)
+   ============================================================ */
+async function renderLibroInventarios(){
+  catalogoArea.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando libro de inventarios...</p>';
+  const { lineasRows } = await cargarCuentasYLineas();
+  const saldos = computeSaldosPorCuenta(lineasRows);
+  const { utilidad } = computeUtilidadNeta(saldos);
+
+  const ORDEN = ["Activo","Pasivo","Patrimonio"];
+  let html = renderInformeHeader(empresaActiva, 'Libro de Inventarios y Balances');
+  html += `<div class="catalogo-header"><div class="ch-label">Detalle Itemizado</div><h2>🏢 ${escapeHtml(empresaActiva.NombreEmpresa)}</h2><p>Listado detallado de activos, pasivos y patrimonio</p></div>`;
+
+  let totalGeneral = { Activo:0, Pasivo:0, Patrimonio:0 };
+
+  ORDEN.forEach(grupo=>{
+    const cuentasGrupo = Object.values(saldos).filter(c=>c.grupo===grupo).sort((a,b)=>a.codigo.localeCompare(b.codigo));
+    let rows = '';
+    cuentasGrupo.forEach(c=>{
+      const contrib = contribucionGrupo(c.grupo, c.naturaleza, c.saldo);
+      totalGeneral[grupo] += contrib;
+      rows += `<tr><td class="code">${escapeHtml(c.codigo)}</td><td>${escapeHtml(c.nombre)}</td><td class="num">₡${fmt(contrib)}</td></tr>`;
+    });
+    if(grupo==='Patrimonio'){
+      totalGeneral[grupo] += utilidad;
+      rows += `<tr><td class="code">—</td><td>${utilidad>=0?'Utilidad':'Pérdida'} Neta del Ejercicio</td><td class="num">₡${fmt(utilidad)}</td></tr>`;
+    }
+    if(cuentasGrupo.length===0 && grupo!=='Patrimonio'){
+      rows = '<tr><td colspan="3" style="color:var(--muted);font-size:11px;padding:8px;">Sin movimientos</td></tr>';
+    }
+    html += `
+      <div class="cat-group">
+        <div class="cat-group-head" style="background:${grupo==='Activo'?'#2FC2AD':grupo==='Pasivo'?'#EF6A5B':'#B8863C'};">
+          <span>${grupo}</span><span class="count">Total: ₡${fmt(totalGeneral[grupo])}</span>
+        </div>
+        <table class="cat-table"><tbody>${rows}</tbody></table>
+      </div>
+    `;
+  });
+
+  const cuadra = totalGeneral.Activo === (totalGeneral.Pasivo + totalGeneral.Patrimonio);
+  html += `<div class="bg-check ${cuadra?'ok':'bad'}">${cuadra ? '✅ Activo = Pasivo + Patrimonio' : '❌ No cuadra — revisá los asientos'}</div>`;
+
+  catalogoArea.innerHTML = html;
+}
+
+/* ============================================================
+   MÓDULO: FACTURACIÓN (con asiento automático)
+   ============================================================ */
+const FACTURA_TIPOS = {
+  Comercial: [
+    { id:'venta_contado', label:'Venta de Contado', cuentaContra:'1101', cuentaResultado:'4101', debeContra:true },
+    { id:'venta_credito', label:'Venta a Crédito', cuentaContra:'1103', cuentaResultado:'4101', debeContra:true },
+    { id:'compra_contado', label:'Compra de Contado', cuentaContra:'1101', cuentaResultado:'5102', debeContra:false },
+    { id:'compra_credito', label:'Compra a Crédito', cuentaContra:'2101', cuentaResultado:'5102', debeContra:false },
+  ],
+  Industrial: [
+    { id:'venta_contado', label:'Venta de Contado', cuentaContra:'1101', cuentaResultado:'4101', debeContra:true },
+    { id:'venta_credito', label:'Venta a Crédito', cuentaContra:'1103', cuentaResultado:'4101', debeContra:true },
+    { id:'compra_contado', label:'Compra de Materia Prima (Contado)', cuentaContra:'1101', cuentaResultado:'5102', debeContra:false },
+    { id:'compra_credito', label:'Compra de Materia Prima (Crédito)', cuentaContra:'2101', cuentaResultado:'5102', debeContra:false },
+  ],
+  Servicios: [
+    { id:'venta_contado', label:'Servicio Cobrado de Contado', cuentaContra:'1101', cuentaResultado:'4101', debeContra:true },
+    { id:'venta_credito', label:'Servicio Facturado a Crédito', cuentaContra:'1103', cuentaResultado:'4101', debeContra:true },
+  ],
+};
+
+let facturaTipoSeleccionado = null;
+
+async function renderFacturacion(){
+  catalogoArea.innerHTML = '<p style="color:var(--muted);font-size:12px;">Cargando...</p>';
+  await cargarCuentasYLineas();
+
+  const sector = empresaActiva.Sector || 'Comercial';
+  const tipos = FACTURA_TIPOS[sector] || FACTURA_TIPOS.Comercial;
+  facturaTipoSeleccionado = null;
+
+  let html = renderInformeHeader(empresaActiva, 'Facturación');
+  html += `<div class="catalogo-header"><div class="ch-label">Facturación</div><h2>🏢 ${escapeHtml(empresaActiva.NombreEmpresa)}</h2><p>Registrá una factura y el sistema genera el asiento automáticamente</p></div>`;
+
+  html += `
+    <div class="form-card">
+      <h3>🧾 Nueva factura</h3>
+      <div class="form-row">
+        <label>Tipo de operación</label>
+        <div class="factura-type-grid" id="facturaTypeGrid">
+          ${tipos.map(t=>`<div class="factura-type-btn" data-tipo="${t.id}">${t.label}</div>`).join('')}
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Fecha</label>
+        <input type="date" id="facturaFecha" value="${new Date().toISOString().slice(0,10)}">
+      </div>
+      <div class="form-row">
+        <label>Número de factura</label>
+        <input type="text" id="facturaNumero" placeholder="Ej: FE-00456">
+      </div>
+      <div class="form-row">
+        <label>Cliente / Proveedor</label>
+        <input type="text" id="facturaTercero" placeholder="Ej: Comercial Los Andes S.A.">
+      </div>
+      <div class="form-row">
+        <label>Monto total (₡)</label>
+        <input type="text" id="facturaMonto" placeholder="Ej: 150000" inputmode="numeric">
+      </div>
+      <div class="factura-preview" id="facturaPreview" style="display:none;"></div>
+      <button class="btn" id="guardarFacturaBtn" disabled>Registrar factura y generar asiento</button>
+    </div>
+    <div class="section-title"><span>🧾 Facturas registradas</span><span class="line"></span></div>
+    <div id="listaFacturasArea"></div>
+  `;
+
+  catalogoArea.innerHTML = html;
+
+  document.getElementById('facturaTypeGrid').querySelectorAll('.factura-type-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.factura-type-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      facturaTipoSeleccionado = tipos.find(t=>t.id===btn.dataset.tipo);
+      updateFacturaPreview();
+    });
+  });
+
+  ['facturaMonto'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', function(){
+      this.value = this.value.replace(/[^0-9]/g,'');
+      updateFacturaPreview();
+    });
+  });
+
+  document.getElementById('guardarFacturaBtn').addEventListener('click', guardarFactura);
+
+  renderListaFacturas();
+}
+
+function updateFacturaPreview(){
+  const preview = document.getElementById('facturaPreview');
+  const btn = document.getElementById('guardarFacturaBtn');
+  const monto = parseInt(document.getElementById('facturaMonto').value || '0', 10);
+
+  if(!facturaTipoSeleccionado || monto <= 0){
+    preview.style.display = 'none';
+    btn.disabled = true;
+    return;
+  }
+
+  const cContra = cuentasDisponibles.find(c=>c.codigo===facturaTipoSeleccionado.cuentaContra);
+  const cResultado = cuentasDisponibles.find(c=>c.codigo===facturaTipoSeleccionado.cuentaResultado);
+  const debeNombre = facturaTipoSeleccionado.debeContra ? cContra : cResultado;
+  const haberNombre = facturaTipoSeleccionado.debeContra ? cResultado : cContra;
+
+  preview.style.display = 'block';
+  preview.innerHTML = `<b>Asiento que se generará:</b><br>
+    Debe: ${escapeHtml(debeNombre.codigo)} — ${escapeHtml(debeNombre.nombre)} · ₡${fmt(monto)}<br>
+    Haber: ${escapeHtml(haberNombre.codigo)} — ${escapeHtml(haberNombre.nombre)} · ₡${fmt(monto)}`;
+  btn.disabled = false;
+}
+
+async function guardarFactura(){
+  const fecha = document.getElementById('facturaFecha').value;
+  const numero = document.getElementById('facturaNumero').value.trim();
+  const tercero = document.getElementById('facturaTercero').value.trim();
+  const monto = parseInt(document.getElementById('facturaMonto').value || '0', 10);
+
+  if(!numero){ alert('Escribí el número de factura.'); return; }
+  if(!facturaTipoSeleccionado || monto<=0){ alert('Elegí el tipo de operación y el monto.'); return; }
+
+  const btn = document.getElementById('guardarFacturaBtn');
+  btn.disabled = true;
+  btn.textContent = 'Registrando...';
+
+  const cContra = cuentasDisponibles.find(c=>c.codigo===facturaTipoSeleccionado.cuentaContra);
+  const cResultado = cuentasDisponibles.find(c=>c.codigo===facturaTipoSeleccionado.cuentaResultado);
+  const lineaContra = { codigo:cContra.codigo, nombre:cContra.nombre, tipo: facturaTipoSeleccionado.debeContra ? 'Debe':'Haber', monto };
+  const lineaResultado = { codigo:cResultado.codigo, nombre:cResultado.nombre, tipo: facturaTipoSeleccionado.debeContra ? 'Haber':'Debe', monto };
+
+  const asientoId = 'as_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7);
+  const nowIso = new Date().toISOString();
+  const descripcion = `[Facturación] ${facturaTipoSeleccionado.label}${tercero ? ' — ' + tercero : ''}`;
+
+  try{
+    await sheetPost('SAT_Asientos', [nowIso, empresaActiva.EmpresaId, asientoId, numero, fecha, descripcion]);
+    await sheetPost('SAT_AsientoLineas', [nowIso, asientoId, lineaContra.codigo, lineaContra.nombre, lineaContra.tipo, lineaContra.monto]);
+    await sheetPost('SAT_AsientoLineas', [nowIso, asientoId, lineaResultado.codigo, lineaResultado.nombre, lineaResultado.tipo, lineaResultado.monto]);
+    invalidarCacheContable();
+    await renderFacturacion();
+  }catch(e){
+    alert('No se pudo registrar la factura. Revisá la conexión a la hoja de datos.');
+    btn.disabled = false;
+    btn.textContent = 'Registrar factura y generar asiento';
+  }
+}
+
+async function renderListaFacturas(){
+  const area = document.getElementById('listaFacturasArea');
+  if(!sheetsReady()){ area.innerHTML = '<div class="empty-state">Sin conexión a la hoja de datos.</div>'; return; }
+  try{
+    const [asientosRows, eliminadosRows] = await Promise.all([
+      sheetGet('SAT_Asientos'), sheetGet('SAT_AsientosEliminados')
+    ]);
+    const eliminadosIds = eliminadosRows.filter(r=>r.EmpresaId===empresaActiva.EmpresaId).map(r=>r.AsientoId);
+    const facturas = asientosRows.filter(r => r.EmpresaId===empresaActiva.EmpresaId && !eliminadosIds.includes(r.AsientoId) && (r.Descripcion||'').startsWith('[Facturación]'))
+      .sort((a,b)=> new Date(b.Timestamp) - new Date(a.Timestamp));
+    if(facturas.length===0){
+      area.innerHTML = '<div class="empty-state">Todavía no hay facturas registradas.</div>';
+      return;
+    }
+    area.innerHTML = facturas.map(f=>{
+      const fechaFmt = f.Fecha ? new Date(f.Fecha+'T00:00:00').toLocaleDateString('es-CR') : '';
+      return `<div class="asiento-card"><div class="ac-info"><b>Factura: ${escapeHtml(f.NumeroFactura)}</b><span>${fechaFmt} · ${escapeHtml((f.Descripcion||'').replace('[Facturación] ',''))}</span></div></div>`;
+    }).join('');
+  }catch(e){
+    area.innerHTML = '<div class="empty-state">No se pudo cargar la lista de facturas.</div>';
+  }
+}
+
+/* ============================================================
+   NOMBRE DEL ESTUDIANTE
+   ============================================================ */
+document.getElementById('studentName').addEventListener('input', function(){
+  studentName = this.value.trim();
+  document.getElementById('nameStatus').textContent = studentName ? '● identificado' : '';
+});
+document.getElementById('studentName').addEventListener('change', function(){
+  empresaActiva = null;
+  formArea.innerHTML = '';
+  catalogoArea.innerHTML = '';
+  if(studentName) loadMisEmpresas();
+});
+
+(function prefillFromLink(){
+  const params = new URLSearchParams(window.location.search);
+  const nombreParam = params.get('nombre');
+  if(nombreParam){
+    studentName = nombreParam;
+    const input = document.getElementById('studentName');
+    input.value = nombreParam;
+    input.disabled = true;
+    document.getElementById('namebar').classList.add('verified');
+    document.getElementById('nameStatus').innerHTML = '<span class="verified-tag">✓ Verificado desde tu perfil</span>';
+    loadMisEmpresas();
+  }
+})();
+
+renderEmpresaGrid();
+</script>
+</body>
+</html>
