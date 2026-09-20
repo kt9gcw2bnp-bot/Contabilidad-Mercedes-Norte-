@@ -1,0 +1,652 @@
+[
+  {
+    "Id": "ciclos_contables_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Contable",
+    "Titulo": "Ciclos Contables",
+    "URL": "Curso_Ciclos_Contables_Decimo.html",
+    "Activo": "SI",
+    "Orden": 1
+  },
+  {
+    "Id": "activo_pasivo_patrimonio_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Contable",
+    "Titulo": "Control Contable del Activo, Pasivo y Patrimonio",
+    "URL": "Curso_Activo_Pasivo_Patrimonio_Decimo.html",
+    "Activo": "SI",
+    "Orden": 2
+  },
+  {
+    "Id": "gestion_comercial_ventas_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Gestión Comercial y de Ventas",
+    "URL": "Curso_Gestion_Comercial_Ventas_Decimo.html",
+    "Activo": "SI",
+    "Orden": 3
+  },
+  {
+    "Id": "ley9635_iva_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Contable",
+    "Titulo": "Ley 9635: Fortalecimiento de las Finanzas Públicas e IVA",
+    "URL": "Curso_Ley9635_IVA_Decimo.html",
+    "Activo": "SI",
+    "Orden": 4
+  },
+  {
+    "Id": "matematica_financiera_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Contable",
+    "Titulo": "Matemática Financiera",
+    "URL": "Curso_Matematica_Financiera_Decimo.html",
+    "Activo": "SI",
+    "Orden": 5
+  },
+  {
+    "Id": "tic_contabilidad_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "TIC aplicada a la Contabilidad",
+    "URL": "Curso_TIC_Contabilidad_Decimo.html",
+    "Activo": "SI",
+    "Orden": 6
+  },
+  {
+    "Id": "gobdigital_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "especialidad de Contabilidad",
+    "Titulo": "Gobierno Digital y Ciudadanía Digital",
+    "URL": "Curso_GobiernoDigital_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 1
+  },
+  {
+    "Id": "integrador_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "",
+    "Titulo": "Curso Integrador de Gestión Pública",
+    "URL": "Curso_Integrador_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 2
+  },
+  {
+    "Id": "donaciones_inscripciones_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Tributaria",
+    "Titulo": "Donaciones, Inscripciones y Saldos a Favor",
+    "URL": "Curso_Donaciones_Inscripciones_Saldos_Favor_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 3
+  },
+  {
+    "Id": "pymes_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "especialidad de Contabilidad",
+    "Titulo": "Gestión Pública y las PYMES",
+    "URL": "Curso_PYMES_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 4
+  },
+  {
+    "Id": "guias_tributarias_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Tributaria",
+    "Titulo": "Guías Tributarias y Ayudas Audiovisuales",
+    "URL": "Curso_Guias_Tributarias_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 5
+  },
+  {
+    "Id": "normativa_tributaria_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Tributaria",
+    "Titulo": "Normativa Tributaria",
+    "URL": "Curso_Normativa_Tributaria_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 6
+  },
+  {
+    "Id": "planificacion_proyectos_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Planificación y Evaluación de Proyectos",
+    "URL": "Curso_Planificacion_Evaluacion_Proyectos_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 7
+  },
+  {
+    "Id": "rts_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Tributaria",
+    "Titulo": "Régimen de Tributación Simplificada (RTS)",
+    "URL": "Curso_RTS_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 8
+  },
+  {
+    "Id": "seguros_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Tributaria",
+    "Titulo": "Seguros",
+    "URL": "Curso_Seguros_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 9
+  },
+  {
+    "Id": "impuestos_salida_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Tributaria",
+    "Titulo": "Servicios Relacionados con Impuestos de Salida",
+    "URL": "Curso_Impuestos_Salida_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 10
+  },
+  {
+    "Id": "traspasos_inmuebles_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Tributaria",
+    "Titulo": "Servicios de Impuestos sobre los Traspasos de Bienes Inmuebles",
+    "URL": "Curso_Traspasos_Inmuebles_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 11
+  },
+  {
+    "Id": "auditoria_12",
+    "Nivel": "12",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Contable",
+    "Titulo": "Auditoría",
+    "URL": "Curso_Auditoria_Duodecimo.html",
+    "Activo": "SI",
+    "Orden": 1
+  },
+  {
+    "Id": "cooperativas_12",
+    "Nivel": "12",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Contable",
+    "Titulo": "Cooperativas, Asociaciones Solidaristas y Sindicatos",
+    "URL": "Curso_Cooperativas_Asociaciones_Solidaristas_y_Sindicatos_Duodecimo.html",
+    "Activo": "SI",
+    "Orden": 2
+  },
+  {
+    "Id": "costos_proceso_12",
+    "Nivel": "12",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Costos",
+    "Titulo": "Costos por Proceso Continuo",
+    "URL": "Curso_Costos_Proceso_Continuo_Duodecimo.html",
+    "Activo": "SI",
+    "Orden": 3
+  },
+  {
+    "Id": "costos_ordenes_12",
+    "Nivel": "12",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Costos",
+    "Titulo": "Costos por Órdenes Específicas",
+    "URL": "Curso_Costos_Ordenes_Especificas_Duodecimo.html",
+    "Activo": "SI",
+    "Orden": 4
+  },
+  {
+    "Id": "estadistica_12",
+    "Nivel": "12",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Contable",
+    "Titulo": "Estadística",
+    "URL": "Curso_Estadistica_Duodecimo.html",
+    "Activo": "SI",
+    "Orden": 5
+  },
+  {
+    "Id": "presupuesto_12",
+    "Nivel": "12",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Costos",
+    "Titulo": "Presupuesto",
+    "URL": "Curso_Presupuesto_Duodecimo.html",
+    "Activo": "SI",
+    "Orden": 6
+  },
+  {
+    "Id": "antologia_matfin_01_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Matemática Financiera",
+    "Titulo": "01. Interés Simple",
+    "URL": "Antologia_MatFin_01_Interes_Simple_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 200
+  },
+  {
+    "Id": "antologia_matfin_02_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Matemática Financiera",
+    "Titulo": "02. Interés Compuesto",
+    "URL": "Antologia_MatFin_02_Interes_Compuesto_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 201
+  },
+  {
+    "Id": "antologia_matfin_03_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Matemática Financiera",
+    "Titulo": "03. Anualidades Valor Presente y Valor Futuro",
+    "URL": "Antologia_MatFin_03_Anualidades_Valor_Presente_y_Valor_Futuro_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 202
+  },
+  {
+    "Id": "antologia_matfin_04_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Matemática Financiera",
+    "Titulo": "04. Gestión Documental y el Archivo Nacional",
+    "URL": "Antologia_MatFin_04_Gestion_Documental_y_el_Archivo_Nacional_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 203
+  },
+  {
+    "Id": "antologia_matfin_05_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Matemática Financiera",
+    "Titulo": "05. Razones Financieras",
+    "URL": "Antologia_MatFin_05_Razones_Financieras_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 204
+  },
+  {
+    "Id": "antologia_matfin_06_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Matemática Financiera",
+    "Titulo": "06. Pensamiento Crítico y Desarrollo Sostenible",
+    "URL": "Antologia_MatFin_06_Pensamiento_Critico_y_Desarrollo_Sostenible_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 205
+  },
+  {
+    "Id": "antologia_ciclos_01_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ciclos Contables",
+    "Titulo": "01. Tipos de Catálogos de Cuentas",
+    "URL": "Antologia_Ciclos_01_Tipos_de_Catalogos_de_Cuentas_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 206
+  },
+  {
+    "Id": "antologia_ciclos_02_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ciclos Contables",
+    "Titulo": "02. El Ciclo Contable",
+    "URL": "Antologia_Ciclos_02_El_Ciclo_Contable_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 207
+  },
+  {
+    "Id": "antologia_ciclos_03_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ciclos Contables",
+    "Titulo": "03. Ciclo Contable en Empresas de Servicios y Comerciales",
+    "URL": "Antologia_Ciclos_03_Ciclo_Contable_en_Empresas_de_Servicios_y_Comerciales_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 208
+  },
+  {
+    "Id": "antologia_ciclos_04_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ciclos Contables",
+    "Titulo": "04. Herramientas - Hoja Electrónica y Software Contable",
+    "URL": "Antologia_Ciclos_04_Herramientas_Hoja_Electronica_y_Software_Contable_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 209
+  },
+  {
+    "Id": "antologia_ciclos_05_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ciclos Contables",
+    "Titulo": "05. Comprobantes Electrónicos",
+    "URL": "Antologia_Ciclos_05_Comprobantes_Electronicos_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 210
+  },
+  {
+    "Id": "antologia_ciclos_06_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ciclos Contables",
+    "Titulo": "06. Pensamiento Crítico y Administración Verde",
+    "URL": "Antologia_Ciclos_06_Pensamiento_Critico_y_Administracion_Verde_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 211
+  },
+  {
+    "Id": "antologia_iva_01_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ley 9635 e IVA",
+    "Titulo": "01. La Ley Nº 9635",
+    "URL": "Antologia_IVA_01_La_Ley_No_9635_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 212
+  },
+  {
+    "Id": "antologia_iva_02_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ley 9635 e IVA",
+    "Titulo": "02. El Impuesto al Valor Agregado (IVA)",
+    "URL": "Antologia_IVA_02_El_Impuesto_al_Valor_Agregado_IVA_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 213
+  },
+  {
+    "Id": "antologia_iva_03_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ley 9635 e IVA",
+    "Titulo": "03. La Canasta Básica Tributaria",
+    "URL": "Antologia_IVA_03_La_Canasta_Basica_Tributaria_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 214
+  },
+  {
+    "Id": "antologia_iva_04_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ley 9635 e IVA",
+    "Titulo": "04. Aplicación Práctica del IVA",
+    "URL": "Antologia_IVA_04_Aplicacion_Practica_del_IVA_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 215
+  },
+  {
+    "Id": "antologia_iva_05_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ley 9635 e IVA",
+    "Titulo": "05. Resolución de Casos y Pensamiento Crítico",
+    "URL": "Antologia_IVA_05_Resolucion_de_Casos_y_Pensamiento_Critico_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 216
+  },
+  {
+    "Id": "antologia_iva_06_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Ley 9635 e IVA",
+    "Titulo": "06. El Impuesto Verde y la Sostenibilidad",
+    "URL": "Antologia_IVA_06_El_Impuesto_Verde_y_la_Sostenibilidad_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 217
+  },
+  {
+    "Id": "antologia_comercial_01_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Gestión Comercial y Ventas",
+    "Titulo": "01. El Derecho Mercantil y los Auxiliares del Comercio",
+    "URL": "Antologia_Comercial_01_El_Derecho_Mercantil_y_los_Auxiliares_del_Comercio_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 218
+  },
+  {
+    "Id": "antologia_comercial_02_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Gestión Comercial y Ventas",
+    "Titulo": "02. Técnicas Modernas de Ventas Efectivas",
+    "URL": "Antologia_Comercial_02_Tecnicas_Modernas_de_Ventas_Efectivas_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 219
+  },
+  {
+    "Id": "antologia_comercial_03_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Gestión Comercial y Ventas",
+    "Titulo": "03. Normas de Protocolo y Etiqueta en Eventos Institucionales",
+    "URL": "Antologia_Comercial_03_Normas_de_Protocolo_y_Etiqueta_en_Eventos_Institucionales_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 220
+  },
+  {
+    "Id": "antologia_comercial_04_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Gestión Comercial y Ventas",
+    "Titulo": "04. Pensamiento Creativo e Innovación",
+    "URL": "Antologia_Comercial_04_Pensamiento_Creativo_e_Innovacion_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 221
+  },
+  {
+    "Id": "antologia_comercial_05_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Gestión Comercial y Ventas",
+    "Titulo": "05. Ciudadanía Digital Equidad y Equidad de Género en el Comercio",
+    "URL": "Antologia_Comercial_05_Ciudadania_Digital_Equidad_y_Equidad_de_Genero_en_el_Comercio_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 222
+  },
+  {
+    "Id": "antologia_tic_01_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "TIC aplicada a la Contabilidad",
+    "Titulo": "01. Herramientas para la Producción de Documentos",
+    "URL": "Antologia_TIC_01_Herramientas_para_la_Produccion_de_Documentos_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 223
+  },
+  {
+    "Id": "antologia_tic_02_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "TIC aplicada a la Contabilidad",
+    "Titulo": "02. Herramientas para la Gestión y Análisis de la Información",
+    "URL": "Antologia_TIC_02_Herramientas_para_la_Gestion_y_Analisis_de_la_Informacion_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 224
+  },
+  {
+    "Id": "antologia_tic_03_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "TIC aplicada a la Contabilidad",
+    "Titulo": "03. Internet de las Cosas (IoT) y Seguridad de los Datos",
+    "URL": "Antologia_TIC_03_Internet_de_las_Cosas_IoT_y_Seguridad_de_los_Datos_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 225
+  },
+  {
+    "Id": "antologia_tic_04_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "TIC aplicada a la Contabilidad",
+    "Titulo": "04. Ética y Legalidad en el Uso de Grandes Volúmenes de Datos",
+    "URL": "Antologia_TIC_04_Etica_y_Legalidad_en_el_Uso_de_Grandes_Volumenes_de_Datos_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 226
+  },
+  {
+    "Id": "antologia_tic_05_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "TIC aplicada a la Contabilidad",
+    "Titulo": "05. Acceso Eficiente Responsable y Crítico a la Información",
+    "URL": "Antologia_TIC_05_Acceso_Eficiente_Responsable_y_Critico_a_la_Informacion_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 227
+  },
+  {
+    "Id": "antologia_tic_06_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "TIC aplicada a la Contabilidad",
+    "Titulo": "06. Ciudadanía Digital Equidad y Netiqueta",
+    "URL": "Antologia_TIC_06_Ciudadania_Digital_Equidad_y_Netiqueta_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 228
+  },
+  {
+    "Id": "antologia_app_01_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "01. Caja Bancos y Conciliación Bancaria",
+    "URL": "Antologia_APP_01_Caja_Bancos_y_Conciliacion_Bancaria_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 229
+  },
+  {
+    "Id": "antologia_app_02_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "02. Inversiones en Valores Negociables",
+    "URL": "Antologia_APP_02_Inversiones_en_Valores_Negociables_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 230
+  },
+  {
+    "Id": "antologia_app_03_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "03. Inventarios - Valuación y Sistemas de Control",
+    "URL": "Antologia_APP_03_Inventarios_Valuacion_y_Sistemas_de_Control_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 231
+  },
+  {
+    "Id": "antologia_app_04_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "04. Cuentas por Cobrar - Incobrables e Interés de Pagarés",
+    "URL": "Antologia_APP_04_Cuentas_por_Cobrar_Incobrables_e_Interes_de_Pagares_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 232
+  },
+  {
+    "Id": "antologia_app_05_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "05. Propiedad Planta y Equipo - Depreciación",
+    "URL": "Antologia_APP_05_Propiedad_Planta_y_Equipo_Depreciacion_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 233
+  },
+  {
+    "Id": "antologia_app_06_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "06. Recursos Naturales Pagos Anticipados Arrendamientos e Intangibles",
+    "URL": "Antologia_APP_06_Recursos_Naturales_Pagos_Anticipados_Arrendamientos_e_Intangibles_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 234
+  },
+  {
+    "Id": "antologia_app_07_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "07. Marco Legal Transversal - Ley 8204 y Ley 6727",
+    "URL": "Antologia_APP_07_Marco_Legal_Transversal_Ley_8204_y_Ley_6727_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 235
+  },
+  {
+    "Id": "antologia_app_08_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "08. Cuentas por Pagar y Nómina",
+    "URL": "Antologia_APP_08_Cuentas_por_Pagar_y_Nomina_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 236
+  },
+  {
+    "Id": "antologia_app_09_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "09. Contratos de Trabajo y Prestaciones Laborales",
+    "URL": "Antologia_APP_09_Contratos_de_Trabajo_y_Prestaciones_Laborales_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 237
+  },
+  {
+    "Id": "antologia_app_10_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "10. Pasivos Estimados Contingentes y Bonos",
+    "URL": "Antologia_APP_10_Pasivos_Estimados_Contingentes_y_Bonos_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 238
+  },
+  {
+    "Id": "antologia_app_11_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "11. Patrimonio - Capital Social Superávit Utilidades y Reservas",
+    "URL": "Antologia_APP_11_Patrimonio_Capital_Social_Superavit_Utilidades_y_Reservas_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 239
+  },
+  {
+    "Id": "antologia_app_12_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "12. Distribución de Dividendos",
+    "URL": "Antologia_APP_12_Distribucion_de_Dividendos_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 240
+  },
+  {
+    "Id": "antologia_app_13_10",
+    "Nivel": "10",
+    "Categoria": "Antologia",
+    "Subarea": "Activo, Pasivo y Patrimonio",
+    "Titulo": "13. Pensamiento Crítico y Responsabilidad Social",
+    "URL": "Antologia_APP_13_Pensamiento_Critico_y_Responsabilidad_Social_Decimo.pdf",
+    "Activo": "SI",
+    "Orden": 241
+  }
+]
