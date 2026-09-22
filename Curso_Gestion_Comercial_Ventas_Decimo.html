@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestión Comercial y de Ventas</title>
+<style>
+:root{
+  --azul:#1d4ed8; --azul-osc:#1e3a8a; --verde:#16a34a; --rojo:#dc2626; --gris:#64748b; --fondo:#f8fafc;
+}
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--fondo);margin:0;color:#0f172a;}
+#app{max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+h1{color:var(--azul-osc);font-size:1.8rem;margin-bottom:4px;}
+h2{color:var(--azul-osc);border-bottom:3px solid var(--azul);padding-bottom:6px;}
+.subtitulo{color:var(--gris);margin-top:0;}
+.portada{max-width:640px;margin:60px auto;text-align:center;}
+.portada-caja{background:#fff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);padding:28px;margin-top:20px;}
+.portada-caja input{width:100%;padding:10px;font-size:1rem;border:1px solid #cbd5e1;border-radius:8px;margin:10px 0 16px;}
+.portada-caja input[readonly]{background:#eef2f7;color:#1e3a8a;font-weight:600;cursor:default;}
+.btn-primario{background:var(--azul);color:#fff;border:none;padding:12px 22px;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:600;}
+.btn-primario:hover{background:var(--azul-osc);}
+.btn-primario:disabled{opacity:.6;cursor:default;}
+.btn-secundario{background:#e2e8f0;color:#0f172a;border:none;padding:10px 18px;border-radius:8px;font-size:.95rem;cursor:pointer;margin:4px 6px 4px 0;}
+.btn-secundario:hover{background:#cbd5e1;}
+.btn-link{background:none;border:none;color:var(--gris);text-decoration:underline;cursor:pointer;margin-top:18px;}
+.aviso{font-size:.85rem;color:var(--gris);margin-top:14px;}
+.progbar-wrap{max-width:900px;margin:0 auto;padding:10px 20px 0;}
+.progbar-track{background:#e2e8f0;border-radius:6px;height:10px;overflow:hidden;}
+.progbar-fill{background:var(--verde);height:100%;transition:width .3s;}
+.progbar-text{font-size:.8rem;color:var(--gris);margin:4px 0 0;}
+.paso-wrap{background:#fff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.06);padding:26px;margin-top:16px;}
+.antologia-texto{line-height:1.65;}
+.antologia-texto h3{color:var(--azul);}
+.pregunta-mc{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #eef2f7;}
+.opcion{display:block;padding:6px 0;cursor:pointer;}
+.resultado{font-weight:600;margin-top:10px;}
+.nav-footer{display:flex;justify-content:space-between;margin-top:22px;}
+.asocie-col{display:inline-block;vertical-align:top;width:47%;margin-right:2%;}
+.asocie-input{width:50px;padding:4px;margin-right:6px;}
+.complete-input{padding:4px 8px;border:1px solid #cbd5e1;border-radius:6px;min-width:140px;}
+.sopa-flex{display:flex;gap:24px;flex-wrap:wrap;}
+.sopa-grid{display:grid;gap:2px;background:#cbd5e1;padding:4px;border-radius:8px;width:fit-content;}
+.sopa-cell{background:#fff;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem;cursor:pointer;user-select:none;}
+.sopa-cell.sopa-sel{background:#bfdbfe;}
+.sopa-cell.sopa-found{background:#bbf7d0;color:var(--verde);}
+.sopa-lista{min-width:160px;}
+.sopa-word-done{text-decoration:line-through;color:var(--verde);}
+.cruci-flex{display:flex;gap:28px;flex-wrap:wrap;}
+.cruci-grid{display:grid;gap:2px;background:#cbd5e1;padding:4px;border-radius:6px;width:fit-content;}
+.cruci-cell{position:relative;width:2rem;height:2rem;background:#fff;}
+.cruci-cell.cruci-blank{background:transparent;}
+.cruci-cell input{width:100%;height:100%;border:none;text-align:center;font-weight:700;text-transform:uppercase;font-size:1rem;background:transparent;}
+.cruci-cell input.cruci-ok{background:#bbf7d0;}
+.cruci-cell input.cruci-bad{background:#fecaca;}
+.cruci-num{position:absolute;top:0;left:2px;font-size:.55rem;color:var(--gris);}
+.cruci-clues p{margin:4px 0;font-size:.9rem;}
+.caso-texto{background:#eff6ff;border-left:4px solid var(--azul);padding:14px 18px;border-radius:6px;line-height:1.6;}
+textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:.95rem;}
+.foro-post{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:14px;}
+.foro-comentario{background:#fff;border-radius:6px;padding:6px 10px;margin:6px 0;font-size:.88rem;}
+.foro-nuevo-comentario{display:flex;gap:8px;margin-top:8px;}
+.foro-nuevo-comentario input{flex:1;padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;}
+canvas{background:#fff;border:2px solid #cbd5e1;border-radius:10px;display:block;margin:10px 0;max-width:100%;}
+.game-quiz{background:#fff7ed;border:2px solid #f59e0b;border-radius:10px;padding:16px;margin:10px 0;}
+.game-quiz button{display:block;width:100%;text-align:left;margin:4px 0;}
+.ok{color:var(--verde);font-weight:700;}
+.bad{color:var(--rojo);font-weight:700;}
+.cert-container{margin-top:20px;}
+.cert{border:10px double var(--azul-osc);padding:40px;text-align:center;border-radius:10px;background:#fffdf5;}
+.cert h2{border:none;color:var(--azul-osc);font-size:1.6rem;}
+.cert-nombre{font-size:1.6rem;font-weight:700;color:var(--azul-osc);margin:10px 0;}
+.cert-titulo-curso{font-size:1.2rem;font-weight:600;}
+.cert-detalle{font-size:.85rem;color:var(--gris);}
+.docente-fila{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:8px;}
+.docente-detalle{margin-top:8px;background:#f8fafc;padding:10px;border-radius:6px;font-size:.9rem;}
+@media print{
+  body.printing-cert > *:not(#app) , body.printing-cert #app > *:not(.paso-wrap){display:none !important;}
+  body.printing-cert .paso-wrap > *:not(#certContainer){display:none !important;}
+  body.printing-cert .nav-footer, body.printing-cert #btnCert{display:none !important;}
+}
+.progress-table{width:100%;border-collapse:collapse;margin:10px 0 18px;font-size:.88rem;}
+.progress-table th,.progress-table td{border:1px solid #e2e8f0;padding:8px 10px;text-align:left;}
+.progress-table th{background:#f1f5f9;}
+.progress-table td.center{text-align:center;}
+.status-ok{color:#0f9d78;font-weight:700;}
+.status-mid{color:#b8863c;font-weight:700;}
+.status-bad{color:#d9534f;font-weight:700;}
+.status-pending{color:#7f8fb8;font-weight:600;}
+.rubrica-nota{font-size:.78rem;color:#7f8fb8;margin:-4px 0 12px;}
+
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CONFIG = {
+  moduleId: "curso_gestion_comercial_ventas_decimo_v2",
+  aventuraRica: true,
+  dinoRica: true,
+  titulo: "Gestión Comercial y de Ventas",
+  subtitulo: "Curso interactivo — 10° nivel, Gestión en Tecnologías Digitales Contables — CTP Mercedes Norte",
+  steps: [
+    {key:'antologia', label:'Antología'},
+    {key:'complete', label:'Complete'},
+    {key:'asocie', label:'Asocie'},
+    {key:'mc', label:'Selección única'},
+    {key:'cruci', label:'Crucigrama'},
+    {key:'sopa', label:'Sopa de letras'},
+    {key:'dino', label:'Corre y responde'},
+    {key:'caso', label:'Estudio de caso'},
+    {key:'aventura', label:'Aventura'},
+    {key:'cert', label:'Certificado'}
+  ],
+  rubrica: [
+    {ra:"RA1", texto:"Explica el papel del Derecho Mercantil y los Auxiliares del Comercio en la economía del país.", steps:['mc','asocie','complete','cruci','sopa','dino','caso']},
+    {ra:"RA2", texto:"Demuestra el uso de técnicas modernas de ventas efectivas, aplicables a todo el comercio.", steps:['mc','asocie','complete','cruci','sopa','dino','caso']},
+    {ra:"RA4", texto:"Participa en dinámicas que favorecen el pensamiento creativo usando como base la innovación.", steps:['mc','asocie','complete','cruci','sopa','dino','caso']},
+    {ra:"RA5", texto:"Muestra los principios de la ciudadanía digital con equidad, en temas afines a la equidad y género.", steps:['mc','asocie','complete','cruci','sopa','dino','caso']}
+  ],
+  antologia: {
+    titulo: "Derecho Mercantil, técnicas de venta, innovación y equidad de género en el comercio",
+    html: `
+    <h3>1. El Derecho Mercantil</h3>
+    <ul>
+      <li><strong>Concepto</strong>: rama del derecho que regula las relaciones jurídicas entre comerciantes y las operaciones de comercio.</li>
+      <li><strong>Fuentes</strong>: la ley mercantil, la costumbre mercantil y los principios generales del derecho.</li>
+      <li><strong>Actos</strong>: actos de comercio, aquellos que la ley califica como mercantiles por su naturaleza o por realizarse en el ejercicio de una actividad comercial.</li>
+      <li><strong>Sujetos</strong>: los comerciantes, individuales o colectivos, que ejercen habitualmente el comercio.</li>
+      <li><strong>Fundamentos del Derecho mercantil internacional</strong>: principios que rigen el comercio entre sujetos de distintos países, como la uniformidad de normas, la buena fe y la autonomía de la voluntad de las partes.</li>
+    </ul>
+    <h3>2. Entes mercantiles</h3>
+    <ul>
+      <li><strong>Empresa individual de responsabilidad limitada</strong>: una sola persona física destina parte de su patrimonio a una actividad comercial, limitando su responsabilidad al monto destinado.</li>
+      <li><strong>Sociedades mercantiles</strong>: agrupaciones de personas que se organizan bajo una figura jurídica para realizar actividades de comercio.</li>
+    </ul>
+    <p><strong>Clasificación doctrinaria — organización general:</strong></p>
+    <ul>
+      <li><strong>Constitución</strong>: el acto formal de creación de la sociedad.</li>
+      <li><strong>Órganos de la sociedad</strong>: asamblea de socios, junta directiva y representación legal.</li>
+      <li><strong>Disolución y liquidación</strong>: el proceso de finalización de la sociedad y reparto de su patrimonio.</li>
+      <li><strong>Fusión y transformación</strong>: la unión de dos o más sociedades o el cambio de su tipo societario.</li>
+    </ul>
+    <p>El Código de Comercio establece además su propia <strong>clasificación según el Código de Comercio</strong> (versión vigente) de las sociedades mercantiles.</p>
+    <h3>3. Los Auxiliares del Comercio</h3>
+    <p>Regulados del <strong>Capítulo II al Capítulo VII del Código de Comercio Costarricense</strong> (versión vigente):</p>
+    <ul>
+      <li><strong>Los comisionistas</strong>: realizan operaciones de comercio por cuenta ajena, a cambio de una comisión.</li>
+      <li><strong>Los corredores jurados</strong>: intermedian y ponen en contacto a las partes de un negocio, sin representarlas.</li>
+      <li><strong>Los factores</strong>: administran un establecimiento comercial en representación de su titular.</li>
+      <li><strong>Los porteadores</strong>: se encargan del transporte de las mercancías.</li>
+      <li><strong>Los agentes viajeros</strong>: promueven y gestionan ventas fuera del establecimiento del comerciante.</li>
+      <li><strong>Los representantes de casas extranjeras</strong>: representan en el país a empresas comerciales establecidas en el extranjero.</li>
+      <li><strong>Los dependientes</strong>: colaboradores que trabajan bajo las órdenes directas del comerciante, dentro de su establecimiento.</li>
+    </ul>
+    <h3>4. Técnicas modernas de ventas efectivas</h3>
+    <ul>
+      <li><strong>Método SPIN</strong>: preguntas de Situación, Problema, Implicación y Necesidad de solución, para guiar la conversación de venta.</li>
+      <li><strong>Método SNAP</strong>: vender de forma Simple, iNvaluable, Alineada a las prioridades del cliente y en Prioridad frente a la competencia.</li>
+      <li><strong>Vendedor retador</strong>: enseña al cliente algo nuevo sobre su propio negocio, adapta el mensaje y toma el control de la conversación.</li>
+      <li><strong>Sistema de ventas Sandler</strong>: construye una relación de confianza antes de calificar al cliente y cerrar la venta, evitando la presión.</li>
+      <li><strong>Venta consultiva o venta de soluciones</strong>: identifica primero las necesidades reales del cliente y ofrece una solución a la medida.</li>
+    </ul>
+    <h3>5. Cierre de ventas</h3>
+    <ul>
+      <li><strong>Cuerpo espín</strong>: profundiza en el dolor o la necesidad del cliente antes de presentar la solución final.</li>
+      <li><strong>Cambio de precio</strong>: ofrecer una condición especial de precio para motivar la decisión final de compra.</li>
+      <li><strong>Alternativa</strong>: dar al cliente a elegir entre dos opciones, ambas favorables al cierre de la venta.</li>
+      <li><strong>Cierre rebote</strong>: convertir una objeción del cliente en la razón misma para cerrar la venta.</li>
+      <li><strong>Descripción de necesidades</strong>: resumir las necesidades identificadas del cliente como argumento final de cierre.</li>
+    </ul>
+    <p>Un buen <strong>manejo de objeciones</strong> es clave en cualquier técnica de cierre: escuchar la preocupación del cliente, validarla y responder con información honesta, sin presionar de forma agresiva.</p>
+    <h3>6. Pensamiento creativo e innovación</h3>
+    <p>El comercio moderno exige <strong>pensamiento creativo</strong> para diferenciarse de la competencia: dinámicas como "el aterrizaje del huevo", "tormenta de post-it", "fuera de la caja" o el uso de un software para generar ideas ayudan a entrenar esta habilidad. La <strong>innovación</strong> no siempre significa inventar algo completamente nuevo; muchas veces consiste en combinar ideas existentes de una manera distinta para generar valor —por ejemplo, adaptar una técnica de venta digital a un negocio tradicionalmente presencial.</p>
+    <h3>7. Ciudadanía digital, equidad y equidad de género en el comercio</h3>
+    <p>La <strong>ciudadanía digital con equidad</strong>, aplicada al comercio, implica que las estrategias de venta y marketing —especialmente en redes sociales y comercio electrónico— eviten estereotipos discriminatorios, representen de forma justa a personas de todos los géneros, y promuevan un trato igualitario tanto hacia el equipo de ventas como hacia la clientela. Este eje también incluye el <strong>liderazgo y la participación política de las mujeres</strong>: la ciudadanía y democracia paritaria intercultural, y el empoderamiento y fortalecimiento de esa participación, con base en la Convención para la Eliminación de todas las Formas de Discriminación contra la Mujer (<strong>CEDAW</strong>).</p>`
+  },
+  mc: [
+    {q:"El Derecho Mercantil regula principalmente:", opciones:["Las relaciones jurídicas entre comerciantes y las operaciones de comercio","Exclusivamente los procedimientos penales entre particulares y el Estado","Los trámites migratorios de las personas trabajadoras extranjeras","Las relaciones laborales entre patronos y trabajadores del comercio"], correcta:0, ra:"RA1"},
+    {q:"Las fuentes del Derecho Mercantil son:", opciones:["Únicamente los reglamentos internos de cada empresa privada","La ley mercantil, la costumbre mercantil y los principios generales del derecho","Solo las resoluciones administrativas del Ministerio de Hacienda sin considerar las circunstancias particulares del caso","Exclusivamente los tratados de libre comercio vigentes"], correcta:1, ra:"RA1"},
+    {q:"Un acto de comercio es:", opciones:["Cualquier trámite que una persona realice ante una entidad bancaria de acuerdo con los procedimientos internos de la empresa","Un procedimiento exclusivo de los tribunales de trabajo","Aquel que la ley califica como mercantil por su naturaleza o por realizarse en una actividad comercial","Un contrato que solo puede firmarse entre instituciones públicas"], correcta:2, ra:"RA1"},
+    {q:"Los sujetos del Derecho Mercantil son:", opciones:["Únicamente los notarios públicos autorizados por la Corte independientemente del tipo de cliente involucrado","Los funcionarios que laboran en el Registro Nacional","Solamente las personas que trabajan en el sector público","Los comerciantes, individuales o colectivos, que ejercen habitualmente el comercio"], correcta:3, ra:"RA1"},
+    {q:"Los fundamentos del Derecho mercantil internacional incluyen:", opciones:["La uniformidad de normas, la buena fe y la autonomía de la voluntad de las partes","La obligación de usar una sola moneda en todas las transacciones","La prohibición total de firmar contratos fuera del país","El uso exclusivo del idioma inglés en cualquier negociación"], correcta:0, ra:"RA1"},
+    {q:"La empresa individual de responsabilidad limitada se caracteriza porque:", opciones:["Exige la participación obligatoria de al menos diez socios fundadores sin considerar las circunstancias particulares del caso","Una sola persona física destina parte de su patrimonio a la actividad comercial, limitando su responsabilidad","Solo puede constituirse mediante decreto del Poder Ejecutivo","Debe cotizar sus acciones en la Bolsa Nacional de Valores"], correcta:1, ra:"RA1"},
+    {q:"Dentro de la organización general de una sociedad mercantil, la 'disolución y liquidación' se refiere a:", opciones:["El acto mediante el cual se contrata al primer gerente general de acuerdo con los procedimientos internos de la empresa","La firma inicial de la escritura pública de constitución","El proceso de finalización de la sociedad y reparto de su patrimonio","El trámite anual de renovación de la patente comercial"], correcta:2, ra:"RA1"},
+    {q:"La fusión y transformación de una sociedad mercantil consiste en:", opciones:["El cierre inmediato del negocio sin ningún trámite legal independientemente del tipo de cliente involucrado","La contratación masiva de personal nuevo para la empresa","El traslado físico de las oficinas a otra provincia","La unión de dos o más sociedades o el cambio de su tipo societario"], correcta:3, ra:"RA1"},
+    {q:"Según el Código de Comercio Costarricense, los comisionistas son auxiliares del comercio que:", opciones:["Realizan operaciones de comercio por cuenta ajena, a cambio de una comisión","Transportan mercancías únicamente por vía marítima o aérea","Redactan y aprueban las leyes mercantiles del país","Supervisan el cobro de impuestos aduaneros en las fronteras"], correcta:0, ra:"RA1"},
+    {q:"Los corredores jurados, como auxiliares del comercio, se encargan de:", opciones:["Administrar el establecimiento comercial como si fueran sus dueños sin considerar las circunstancias particulares del caso","Intermediar y poner en contacto a las partes de un negocio, sin representarlas","Fabricar directamente los productos que luego se comercializan","Fijar de manera oficial los precios de los productos en el mercado"], correcta:1, ra:"RA1"},
+    {q:"Un factor, como auxiliar del comercio, es la persona que:", opciones:["Transporta las mercancías por cuenta de terceros comerciantes de acuerdo con los procedimientos internos de la empresa","Redacta los contratos internacionales de compraventa","Administra un establecimiento comercial en representación de su titular","Audita los estados financieros anuales de la empresa"], correcta:2, ra:"RA1"},
+    {q:"Los porteadores, como auxiliares del comercio, se encargan de:", opciones:["La elaboración de los registros contables de la empresa","La firma de los contratos de constitución de sociedades","El cobro y la fiscalización de los impuestos municipales","El transporte de las mercancías de un lugar a otro"], correcta:3, ra:"RA1"},
+    {q:"Los agentes viajeros, como auxiliares del comercio, se dedican a:", opciones:["Promover y gestionar ventas fuera del establecimiento del comerciante","Fiscalizar el correcto pago de los impuestos nacionales","Administrar los bienes inmuebles que pertenecen al Estado","Representar al comerciante ante los tribunales penales"], correcta:0, ra:"RA1"},
+    {q:"Los representantes de casas extranjeras, como auxiliares del comercio:", opciones:["Trabajan exclusivamente como funcionarios de aduanas nacionales sin considerar las circunstancias particulares del caso","Representan en el país a empresas comerciales establecidas en el extranjero","Administran los fondos de las pensiones complementarias","Elaboran los presupuestos anuales de las municipalidades"], correcta:1, ra:"RA1"},
+    {q:"Los dependientes, como auxiliares del comercio, son:", opciones:["Los dueños principales y únicos socios fundadores del negocio","Auditores externos contratados de forma totalmente independiente de acuerdo con los procedimientos internos de la empresa","Colaboradores que trabajan bajo las órdenes directas del comerciante, dentro de su establecimiento","Representantes oficiales del Poder Judicial en materia mercantil"], correcta:2, ra:"RA1"},
+    {q:"El método SPIN en ventas se utiliza para:", opciones:["Calcular de forma automática el IVA que corresponde a una factura","Registrar el asiento contable correspondiente a una venta al crédito independientemente del tipo de cliente involucrado","Elaborar el cartel de una licitación pública ante el Estado","Guiar la conversación de ventas mediante preguntas de situación, problema, implicación y necesidad"], correcta:3, ra:"RA2"},
+    {q:"El método SNAP en ventas busca que la oferta sea:", opciones:["Simple, iNvaluable, Alineada a las prioridades del cliente y en Prioridad frente a la competencia","Compleja y detallada al máximo posible en cada reunión de ventas","Exclusivamente basada en ofrecer siempre el precio más bajo","Idéntica para todos los clientes, sin ninguna adaptación previa"], correcta:0, ra:"RA2"},
+    {q:"El 'vendedor retador' se caracteriza por:", opciones:["Evitar cualquier tipo de interacción directa con el cliente potencial sin considerar las circunstancias particulares del caso","Enseñar al cliente algo nuevo sobre su propio negocio y tomar el control de la conversación","Aceptar de inmediato el primer 'no' que le dé el cliente","Vender únicamente por medio de un catálogo impreso tradicional"], correcta:1, ra:"RA2"},
+    {q:"El sistema de ventas Sandler se basa en:", opciones:["Presionar de forma constante al cliente desde el primer contacto de acuerdo con los procedimientos internos de la empresa","Ofrecer siempre el precio más alto disponible en el catálogo","Construir una relación de confianza antes de calificar al cliente y cerrar la venta, evitando la presión","Evitar por completo cualquier calificación del cliente potencial"], correcta:2, ra:"RA2"},
+    {q:"La venta consultiva o venta de soluciones se caracteriza por:", opciones:["Ignorar por completo las necesidades expresadas por el cliente independientemente del tipo de cliente involucrado","Presionar al cliente para que compre sin escuchar sus dudas","Vender los productos exclusivamente a través de redes sociales","Identificar las necesidades reales del cliente antes de ofrecer una solución"], correcta:3, ra:"RA2"},
+    {q:"El cierre de ventas por 'cuerpo espín' consiste en:", opciones:["Profundizar en el dolor o la necesidad del cliente antes de presentar la solución final","Ofrecer un descuento inmediato sin analizar antes al cliente","Terminar la venta de forma abrupta sin explicar el producto","Ignorar por completo cualquier objeción que plantee el cliente"], correcta:0, ra:"RA2"},
+    {q:"El cierre de ventas por 'cambio de precio' consiste en:", opciones:["Aumentar el precio del producto sin ningún previo aviso","Ofrecer una condición especial de precio para motivar la decisión final de compra","Eliminar por completo cualquier descuento que estuviera disponible sin considerar las circunstancias particulares del caso","Cancelar de inmediato la negociación que se tenía con el cliente"], correcta:1, ra:"RA2"},
+    {q:"El cierre 'alternativa' en ventas consiste en:", opciones:["Obligar al cliente a elegir una única opción sin alternativas","No ofrecerle al cliente ninguna opción concreta de compra","Dar al cliente a elegir entre dos opciones, ambas favorables al cierre de la venta","Cancelar la venta de inmediato si el cliente muestra alguna duda de acuerdo con los procedimientos internos de la empresa"], correcta:2, ra:"RA2"},
+    {q:"El 'cierre rebote' consiste en:", opciones:["Ignorar por completo la objeción que acaba de plantear el cliente independientemente del tipo de cliente involucrado","Finalizar la conversación ante la primera objeción del cliente","Aumentar el precio del producto como respuesta a una objeción","Convertir una objeción del cliente en la razón misma para cerrar la venta"], correcta:3, ra:"RA2"},
+    {q:"Un buen manejo de objeciones implica:", opciones:["Escuchar, validar la preocupación y responder con información honesta","Ignorar por completo la preocupación que expresa el cliente","Presionar de forma agresiva al cliente hasta que acepte comprar","Terminar la conversación de inmediato ante cualquier objeción"], correcta:0, ra:"RA2"},
+    {q:"El pensamiento creativo en el comercio busca principalmente:", opciones:["Repetir siempre las mismas estrategias comerciales sin ningún cambio sin considerar las circunstancias particulares del caso","Diferenciarse de la competencia con nuevas formas de presentar un producto o servicio","Eliminar por completo cualquier tipo de innovación en la empresa","Evitar en todo momento el uso de canales de venta digitales"], correcta:1, ra:"RA4"},
+    {q:"La innovación comercial:", opciones:["Siempre requiere inventar algo completamente nuevo desde cero","Es totalmente incompatible con las técnicas tradicionales de venta de acuerdo con los procedimientos internos de la empresa","Puede consistir en combinar ideas existentes de una manera distinta para generar valor","No guarda ninguna relación con el pensamiento creativo del equipo"], correcta:2, ra:"RA4"},
+    {q:"La ciudadanía digital con equidad aplicada al comercio busca:", opciones:["Excluir de manera deliberada a ciertos grupos de la publicidad","Ignorar por completo el lenguaje usado en las campañas de marketing independientemente del tipo de cliente involucrado","Limitar el acceso a la información comercial según el género","Evitar estereotipos discriminatorios en la publicidad y promover un trato igualitario"], correcta:3, ra:"RA5"},
+    {q:"La Convención CEDAW está relacionada con:", opciones:["La eliminación de todas las formas de discriminación contra la mujer","El funcionamiento del Sistema Nacional de Pagos Electrónicos","Las disposiciones generales del Código de Comercio vigente","Los procedimientos de la Ley de Contratación Administrativa"], correcta:0, ra:"RA5"},
+    {q:"El empoderamiento y la participación política de las mujeres forman parte de:", opciones:["Los temas exclusivos del Derecho Mercantil costarricense","El liderazgo y la ciudadanía y democracia paritaria intercultural","Las técnicas de cierre de ventas estudiadas en este curso","El procedimiento de cálculo del Impuesto al Valor Agregado sin considerar las circunstancias particulares del caso"], correcta:1, ra:"RA5"}
+  ],
+  asocie: [
+    {concepto:"Fuentes del Derecho Mercantil", definicion:"La ley mercantil, la costumbre mercantil y los principios generales del derecho.", ra:"RA1"},
+    {concepto:"Acto de comercio", definicion:"El que la ley califica como mercantil por su naturaleza o por realizarse en una actividad comercial.", ra:"RA1"},
+    {concepto:"Comisionistas", definicion:"Auxiliares del comercio que realizan operaciones por cuenta ajena a cambio de una comisión.", ra:"RA1"},
+    {concepto:"Corredores jurados", definicion:"Intermedian y ponen en contacto a las partes de un negocio, sin representarlas.", ra:"RA1"},
+    {concepto:"Factores", definicion:"Administran un establecimiento comercial en representación de su titular.", ra:"RA1"},
+    {concepto:"Agentes viajeros", definicion:"Promueven y gestionan ventas fuera del establecimiento del comerciante.", ra:"RA1"},
+    {concepto:"Método SPIN", definicion:"Preguntas de Situación, Problema, Implicación y Necesidad de solución en la venta.", ra:"RA2"},
+    {concepto:"Método SNAP", definicion:"Vender de forma Simple, iNvaluable, Alineada y en Prioridad frente a la competencia.", ra:"RA2"},
+    {concepto:"Venta consultiva", definicion:"Identifica primero las necesidades reales del cliente antes de ofrecer una solución.", ra:"RA2"},
+    {concepto:"Cierre rebote", definicion:"Convierte una objeción del cliente en la razón misma para cerrar la venta.", ra:"RA2"},
+    {concepto:"Innovación comercial", definicion:"Combinar ideas existentes de manera distinta para generar valor.", ra:"RA4"},
+    {concepto:"CEDAW", definicion:"Convención para la Eliminación de todas las Formas de Discriminación contra la Mujer.", ra:"RA5"}
+  ],
+  complete: [
+    {frase:"Los comisionistas y corredores jurados son ejemplos de ___ del Comercio.", respuesta:"Auxiliares", ra:"RA1"},
+    {frase:"La técnica de venta que identifica primero las necesidades del cliente se llama venta ___.", respuesta:"consultiva", ra:"RA2"},
+    {frase:"El Derecho ___ regula las relaciones jurídicas entre comerciantes.", respuesta:"Mercantil", ra:"RA1"},
+    {frase:"Escuchar, validar y responder con información honesta a una duda del cliente es el manejo de ___.", respuesta:"objeciones", ra:"RA2"},
+    {frase:"Combinar ideas existentes de forma distinta para generar valor es un ejemplo de ___.", respuesta:"innovación", ra:"RA4"},
+    {frase:"Evitar estereotipos discriminatorios en la publicidad es parte de la ciudadanía digital con ___.", respuesta:"equidad", ra:"RA5"},
+    {frase:"La empresa individual de responsabilidad limitada y las sociedades mercantiles son ___ mercantiles.", respuesta:"entes", ra:"RA1"},
+    {frase:"La Convención ___ busca eliminar todas las formas de discriminación contra la mujer.", respuesta:"CEDAW", ra:"RA5"},
+    {frase:"El método ___ organiza la venta en preguntas de Situación, Problema, Implicación y Necesidad.", respuesta:"SPIN", ra:"RA2"},
+    {frase:"Los ___ se encargan del transporte de las mercancías, como auxiliares del comercio.", respuesta:"porteadores", ra:"RA1"},
+    {frase:"El cierre de venta que ofrece al cliente elegir entre dos opciones favorables se llama cierre por ___.", respuesta:"alternativa", ra:"RA2"},
+    {frase:"El proceso de finalización de una sociedad y reparto de su patrimonio se llama ___ y liquidación.", respuesta:"disolución", ra:"RA1"}
+  ],
+  sopa: { size: 14, words: ["MERCANTIL","COMISIONISTA","CORREDOR","FACTOR","PORTEADOR","CONSULTIVA","INNOVACION","EQUIDAD"],
+    raPorPalabra: { MERCANTIL:"RA1", COMISIONISTA:"RA1", CORREDOR:"RA1", FACTOR:"RA1", PORTEADOR:"RA1", CONSULTIVA:"RA2", INNOVACION:"RA4", EQUIDAD:"RA5" } },
+  cruci: {
+    size: {rows:10, cols:15},
+    words: [
+      {num:1, word:"MERCANTIL", row:0, col:0, dir:'h', clue:"Rama del Derecho que regula las relaciones entre comerciantes", ra:"RA1"},
+      {num:2, word:"COMISIONISTA", row:1, col:0, dir:'h', clue:"Auxiliar del comercio que actúa por cuenta ajena a cambio de comisión", ra:"RA1"},
+      {num:3, word:"CONSULTIVA", row:2, col:0, dir:'h', clue:"Tipo de venta que identifica primero las necesidades del cliente", ra:"RA2"},
+      {num:4, word:"INNOVACION", row:3, col:0, dir:'h', clue:"Combinar ideas existentes de forma distinta para generar valor", ra:"RA4"},
+      {num:5, word:"EQUIDAD", row:4, col:0, dir:'h', clue:"Principio de trato igualitario, sin importar el género", ra:"RA5"},
+      {num:6, word:"FACTOR", row:5, col:0, dir:'h', clue:"Auxiliar del comercio que administra un establecimiento por su titular", ra:"RA1"},
+      {num:7, word:"PORTEADOR", row:6, col:0, dir:'h', clue:"Auxiliar del comercio encargado del transporte de mercancías", ra:"RA1"}
+    ]
+  },
+  caso: {
+    html: `<p>La empresa <strong>"Moda Urbana"</strong> quiere lanzar una campaña publicitaria en redes sociales para su nueva colección. El equipo de mercadeo propone usar únicamente modelos de un solo género y frases publicitarias que refuerzan estereotipos tradicionales sobre "quién debe usar cada prenda". Para conseguir mejores precios, la gerencia decide contratar como intermediario a una persona conocida "de confianza" sin verificar si cumple los requisitos legales para actuar como Auxiliar del Comercio (por ejemplo, como corredor jurado o comisionista). Por último, el gerente insiste en que el equipo de ventas use solo la técnica de "hablar rápido y cerrar la venta", sin escuchar las dudas ni objeciones de los clientes, y sin aplicar ninguna técnica de venta consultiva.</p>`,
+    pregunta: "Identifique al menos tres problemas en la estrategia de Moda Urbana relacionados con: (1) ciudadanía digital y equidad de género, (2) el papel legal de los Auxiliares del Comercio, y (3) las técnicas modernas de venta y manejo de objeciones. Proponga una alternativa concreta y mejor fundamentada para cada uno de los tres problemas identificados.",
+    ra: ["RA1","RA2","RA5"]
+  },
+  gameQuestions: []
+};
+CONFIG.gameQuestions = CONFIG.mc.concat([
+    {q:"Usar publicidad que refuerza estereotipos de género es un problema de:", opciones:["El respeto a la ciudadanía digital con equidad de género","El uso correcto de las técnicas modernas de venta consultiva","El cumplimiento del Derecho Mercantil y el Código de Comercio","El manejo adecuado de objeciones durante la negociación"], correcta:0},
+    {q:"Contratar un intermediario sin verificar si cumple los requisitos legales afecta:", opciones:["El desarrollo del pensamiento creativo dentro de la empresa sin considerar las circunstancias particulares del caso","El papel de los Auxiliares del Comercio según el Código de Comercio","La aplicación correcta de la ciudadanía digital con equidad","El uso adecuado del método SPIN en la conversación de venta"], correcta:1},
+    {q:"Insistir en 'hablar rápido y cerrar la venta' sin escuchar al cliente contradice:", opciones:["Las disposiciones generales del Derecho Mercantil vigente","Los principios de la innovación comercial en la empresa","La venta consultiva y el buen manejo de objeciones","Lo establecido en la Convención CEDAW sobre discriminación"], correcta:2},
+    {q:"Una alternativa más equitativa para la campaña publicitaria sería:", opciones:["Mantener exactamente el mismo enfoque publicitario sin cambios","Eliminar por completo la publicidad de la empresa","Usar solamente un género, pero con mayor frecuencia","Representar de forma justa a personas de todos los géneros"], correcta:3},
+    {q:"Diseñar una experiencia de compra distinta para diferenciarse de la competencia es un ejemplo de:", opciones:["Pensamiento creativo e innovación comercial","La función legal de un Auxiliar del Comercio","Una disposición del Código de Comercio vigente","Un principio establecido en la Convención CEDAW"], correcta:0}
+]);
+
+</script>
+<script>
+/* ============================================================
+   MOTOR DE CURSO INTERACTIVO — reutilizado por los 3 cursos
+   Requiere que exista un objeto global CONFIG (definido antes de
+   cargar este script) con la forma documentada en config_template.js
+   ============================================================ */
+(function(){
+'use strict';
+
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN = "9986";
+const MODULE_ID = CONFIG.moduleId;
+const STEPS = CONFIG.steps; // array of {key, label}
+let studentName = "";
+let progress = {};
+STEPS.forEach(s=>{ if(s.key!=='cert') progress[s.key]=false; });
+let currentIdx = 0;
+let vidasAventura = 3;
+
+/* ---------- utilidades sheet ---------- */
+function jsonpRequest(url){
+  return new Promise((resolve,reject)=>{
+    const cbName = 'cb_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+    const script = document.createElement('script');
+    window[cbName] = function(data){
+      resolve(data);
+      delete window[cbName];
+      script.remove();
+    };
+    script.onerror = function(){ reject(new Error('jsonp error')); delete window[cbName]; script.remove(); };
+    script.src = url + (url.indexOf('?')>-1?'&':'?') + 'callback=' + cbName;
+    document.body.appendChild(script);
+    setTimeout(()=>{ if(window[cbName]){ resolve({rows:[]}); delete window[cbName]; script.remove(); } }, 8000);
+  });
+}
+function sheetGet(sheetName){
+  return jsonpRequest(SHEET_API_URL + '?sheet=' + encodeURIComponent(sheetName))
+    .then(d=> (d && d.rows) ? d.rows : []);
+}
+function sheetPost(sheetName, row){
+  // El backend (doPost) espera JSON: { sheet, row:[valores en orden de columnas] },
+  // NO un formulario. Se envía con Content-Type "text/plain" a propósito: así el
+  // navegador lo trata como solicitud "simple" (sin preflight CORS, que Apps Script
+  // no maneja), y el servidor igual lee el texto crudo con JSON.parse(e.postData.contents).
+  const payload = { sheet: sheetName, row: Object.keys(row).map(k=>row[k]) };
+  return fetch(SHEET_API_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload),
+    keepalive:true
+  }).catch(()=>{});
+}
+function sheetDelete(sheetName, matchField, matchValue){
+  const match = {}; match[matchField] = matchValue;
+  const payload = { sheet: sheetName, action:'delete', match };
+  return fetch(SHEET_API_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload),
+    keepalive:true
+  }).catch(()=>{});
+}
+
+/* ---------- arranque / anti-repetición ---------- */
+function checkExisting(name){
+  return sheetGet('Progreso').then(rows=>{
+    return rows.some(r => String(r.Estudiante).trim().toLowerCase()===name.trim().toLowerCase()
+                        && String(r.Modulo).trim()===MODULE_ID
+                        && String(r.Score).trim()===String(STEPS.length-1)+'/completo');
+  });
+}
+
+function nombreDesdePortal(){
+  try{
+    const params = new URLSearchParams(window.location.search);
+    const n = (params.get('nombre')||'').trim();
+    return n.length>0 ? n : null;
+  }catch(e){ return null; }
+}
+function initModule(){
+  const app = document.getElementById('app');
+  const nombrePortal = nombreDesdePortal();
+  app.innerHTML = `
+    <div class="portada">
+      <h1>${CONFIG.titulo}</h1>
+      <p class="subtitulo">${CONFIG.subtitulo}</p>
+      <div class="portada-caja">
+        <label for="inpNombre">Nombre completo del estudiante:</label>
+        <input id="inpNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" ${nombrePortal ? 'readonly' : ''} value="${nombrePortal ? nombrePortal.replace(/"/g,'&quot;') : ''}">
+        <button id="btnComenzar" class="btn-primario">${nombrePortal ? 'Comenzar curso' : 'Comenzar curso'}</button>
+        <p class="aviso">${nombrePortal ? 'Su nombre se tomó automáticamente de su sesión en el portal.' : ''} Este curso tiene una duración estimada de 4 horas e incluye actividades evaluadas, juegos y un certificado final. Solo puede completarse una vez.</p>
+      </div>
+      <button id="btnDocente" class="btn-link">Panel docente</button>
+    </div>`;
+  document.getElementById('btnComenzar').addEventListener('click', async ()=>{
+    const name = document.getElementById('inpNombre').value.trim();
+    if(!name){ alert('Por favor escriba su nombre completo.'); return; }
+    const btn = document.getElementById('btnComenzar');
+    btn.disabled = true; btn.textContent = 'Verificando...';
+    let yaHizo = false;
+    try{ yaHizo = await checkExisting(name); }catch(e){ yaHizo = false; }
+    if(yaHizo){
+      alert('Ya existe un intento completo registrado para este nombre. Si necesita repetir el curso, pida a su docente que reinicie su intento en el panel docente.');
+      btn.disabled = false; btn.textContent = 'Comenzar curso';
+      return;
+    }
+    studentName = name;
+    monitorSalidaPantalla();
+    renderProgBar();
+    showStep(STEPS[0].key);
+  });
+  document.getElementById('btnDocente').addEventListener('click', openTeacherPanel);
+}
+
+/* ---------- navegación ---------- */
+function renderProgBar(){
+  let bar = document.getElementById('progBarWrap');
+  if(!bar){
+    bar = document.createElement('div');
+    bar.id = 'progBarWrap';
+    bar.className = 'progbar-wrap';
+    document.body.insertBefore(bar, document.getElementById('app'));
+  }
+  const total = STEPS.length - 1;
+  const done = STEPS.filter(s=>s.key!=='cert' && progress[s.key]).length;
+  const pct = Math.round((done/total)*100);
+  bar.innerHTML = `<div class="progbar-track"><div class="progbar-fill" style="width:${pct}%"></div></div>
+    <div class="progbar-text">${CONFIG.titulo} — ${studentName} · ${done}/${total} actividades completas</div>`;
+}
+
+function allDone(){ return STEPS.filter(s=>s.key!=='cert').every(s=>progress[s.key]); }
+
+function mostrarAvisoGuardado_(){
+  let box = document.getElementById('avisoGuardadoBox');
+  if(!box){
+    box = document.createElement('div');
+    box.id = 'avisoGuardadoBox';
+    box.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:99999;padding:10px 16px;border-radius:8px;font:14px sans-serif;color:#fff;background:#555;box-shadow:0 2px 8px rgba(0,0,0,.3);transition:opacity .3s;';
+    document.body.appendChild(box);
+  }
+  box.style.opacity = '1';
+  box.style.background = '#555';
+  box.textContent = 'Guardando avance...';
+  clearTimeout(box.__t1); clearTimeout(box.__t2);
+  box.__t1 = setTimeout(()=>{
+    box.style.background = '#1e8e3e';
+    box.textContent = 'Avance guardado ✓';
+  }, 350);
+  box.__t2 = setTimeout(()=>{ box.style.opacity = '0'; }, 3000);
+}
+
+function markDone(key, score, total, porRA){
+  if(score===undefined) score = 1;
+  if(total===undefined) total = 1;
+  progress[key] = { done:true, score, total, porRA: porRA||null };
+  renderProgBar();
+  mostrarAvisoGuardado_();
+  sheetPost('Progreso', {
+    Timestamp: new Date().toISOString(),
+    Estudiante: studentName,
+    Modulo: MODULE_ID + '_' + key + '_paso',
+    Score: String(score), Total: String(total)
+  });
+  if(allDone()){
+    sheetPost('Progreso', {
+      Timestamp: new Date().toISOString(),
+      Estudiante: studentName,
+      Modulo: MODULE_ID,
+      Score: (STEPS.length-1)+'/completo', Total: String(STEPS.length-1)
+    });
+    showStep('cert');
+  }
+}
+
+function idxOf(key){ return STEPS.findIndex(s=>s.key===key); }
+
+/* ---------- Rúbrica de evaluación por Resultado de Aprendizaje ---------- */
+function getRubrica(){
+  if(CONFIG.rubrica && CONFIG.rubrica.length) return CONFIG.rubrica;
+  // Respaldo automático: un indicador por cada paso del curso (si el curso no define CONFIG.rubrica)
+  return STEPS.filter(s=>s.key!=='cert').map(s=>({ra:s.label, texto:s.label, steps:[s.key]}));
+}
+function rubricaScoreLocal(item){
+  // Preferido: si las preguntas de las actividades traen una etiqueta "ra" que
+  // coincide con este resultado de aprendizaje (item.ra), se calcula el
+  // puntaje SOLO con esas preguntas — así cada RA muestra su propio resultado
+  // en vez de repetir el mismo puntaje agregado en todas las filas.
+  let sum=0, total=0, any=false;
+  ['mc','asocie','complete','cruci','sopa'].forEach(key=>{
+    const p = progress[key];
+    if(p && typeof p==='object' && p.porRA && p.porRA[item.ra] && p.porRA[item.ra].total>0){
+      sum += p.porRA[item.ra].correctas;
+      total += p.porRA[item.ra].total;
+      any = true;
+    }
+  });
+  if(CONFIG.caso && Array.isArray(CONFIG.caso.ra) && CONFIG.caso.ra.indexOf(item.ra)>-1){
+    const cp = progress.caso;
+    if(cp && typeof cp==='object'){ sum += 1; total += 1; any = true; }
+  }
+  if(any) return { sum, total, pct: total>0 ? Math.round((sum/total)*100) : null };
+
+  // Respaldo (cursos que no etiquetan "ra" por pregunta): comportamiento
+  // original, un puntaje agregado por cada paso listado en item.steps.
+  sum=0; total=0; any=false;
+  (item.steps||[]).forEach(k=>{
+    const p = progress[k];
+    if(p && typeof p==='object'){ sum+=p.score; total+=p.total; any=true; }
+  });
+  return { sum, total, pct: any && total>0 ? Math.round((sum/total)*100) : null };
+}
+function competencyLevel(pctVal){
+  if(pctVal===null) return { label:'Sin evidencia', cls:'status-pending' };
+  if(pctVal<=50) return { label:'No logrado', cls:'status-bad' };
+  if(pctVal<=80) return { label:'En proceso', cls:'status-mid' };
+  return { label:'Logrado', cls:'status-ok' };
+}
+function renderRubricaTableLocal(){
+  const rows = getRubrica().map(item=>{
+    const s = rubricaScoreLocal(item);
+    const lvl = competencyLevel(s.pct);
+    return `<tr>
+      <td><strong>${item.ra}</strong><br><span style="font-weight:400;font-size:.82rem;color:#7f8fb8;">${item.texto}</span></td>
+      <td class="center">${s.total>0 ? s.sum+' / '+s.total : '—'}</td>
+      <td class="center">${s.pct!==null ? s.pct+'%' : '—'}</td>
+      <td class="center"><span class="${lvl.cls}">${lvl.label}</span></td>
+    </tr>`;
+  }).join('');
+  return `<h3>Avance por resultado de aprendizaje</h3>
+    <p class="rubrica-nota">Escala: 0–50% No logrado · 51–80% En proceso · 81–100% Logrado.</p>
+    <table class="progress-table">
+      <tr><th>Indicador</th><th>Puntaje</th><th>%</th><th>Nivel</th></tr>
+      ${rows}
+    </table>`;
+}
+
+/* ---------- Bloqueo anti-repetición por actividad ---------- */
+// Una vez que una actividad evaluada (mc/asocie/complete/cruci/sopa/caso/
+// dino/aventura) queda marcada como "done" en progress[], no se le permite
+// al estudiante volver a contestarla ni a generar un nuevo resultado
+// navegando "Anterior"/"Siguiente" hacia ella. Esto evita que se guarden
+// filas duplicadas en la hoja Progreso y que el resultado final quede mal
+// calculado por reintentos silenciosos. Solo el docente puede reiniciar el
+// intento completo de un estudiante desde el panel docente ("Repetir").
+function renderLockedStep(wrap, headerHtml, key, opts){
+  opts = opts || {};
+  const p = progress[key];
+  const pct = (p && p.total>0) ? Math.round((p.score/p.total)*100) : null;
+  wrap.innerHTML = `${headerHtml}
+    <div class="resultado-bloqueado" style="border:1px solid #2FC2AD;border-radius:10px;padding:16px;margin-top:12px;background:rgba(47,194,173,.08);">
+      <p><strong>✓ Actividad ya completada.</strong></p>
+      ${pct!==null ? `<p>Resultado guardado: ${p.score}/${p.total} (${pct}%).</p>` : ''}
+      <p class="aviso" style="font-size:.85rem;color:#7f8fb8;">Esta actividad ya fue evaluada y no se puede repetir. Si necesita reiniciar su intento, pida a su docente que lo haga desde el panel docente.</p>
+    </div>
+    ${opts.extraHtml || ''}`;
+  if(opts.afterRender) opts.afterRender(wrap);
+}
+function isLocked(key){ return !!(progress[key] && progress[key].done); }
+
+function showStep(key){
+  currentIdx = idxOf(key);
+  const app = document.getElementById('app');
+  const step = STEPS[currentIdx];
+  const wrap = document.createElement('div');
+  wrap.className = 'paso-wrap';
+  app.innerHTML = '';
+  app.appendChild(wrap);
+  const renderers = {
+    antologia: renderAntologiaStep, mc: renderMcStep, asocie: renderAsocieStep,
+    complete: renderCompleteStep, sopa: renderSopaStep, cruci: renderCruciStep,
+    caso: renderCasoStep,
+    dino: (w)=> (CONFIG.dinoRica ? renderDinoStepRica(w) : renderDinoStep(w)),
+    aventura: (w)=> (CONFIG.aventuraRica ? renderAventuraStepRica(w) : renderAventuraStep(w)),
+    cert: renderCertStep
+  };
+  renderers[step.type || key](wrap);
+  if(key!=='cert') navFooter(wrap, key);
+  window.scrollTo(0,0);
+}
+
+function navFooter(wrap, currentKey){
+  const foot = document.createElement('div');
+  foot.className = 'nav-footer';
+  const idx = idxOf(currentKey);
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '← Anterior';
+  prevBtn.className = 'btn-secundario';
+  prevBtn.style.visibility = idx<=0 ? 'hidden':'visible';
+  prevBtn.addEventListener('click', ()=> showStep(STEPS[idx-1].key));
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = 'Siguiente →';
+  nextBtn.className = 'btn-secundario';
+  nextBtn.id = 'navNextBtn';
+  nextBtn.style.visibility = idx>=STEPS.length-1 ? 'hidden':'visible';
+  nextBtn.addEventListener('click', ()=> showStep(STEPS[idx+1].key));
+  foot.appendChild(prevBtn); foot.appendChild(nextBtn);
+  wrap.appendChild(foot);
+}
+
+/* ---------- 1. Antología ---------- */
+function renderAntologiaStep(wrap){
+  wrap.innerHTML = `<h2>1. Antología: ${CONFIG.antologia.titulo}</h2>
+    <div class="antologia-texto">${CONFIG.antologia.html}</div>
+    <button id="btnLeido" class="btn-primario">Ya leí este material</button>`;
+  document.getElementById('btnLeido').addEventListener('click', ()=>{
+    markDone('antologia');
+    if(!progress.cert) showStep(STEPS[idxOf('antologia')+1].key);
+  });
+}
+
+/* ---------- 2. Selección única ---------- */
+function renderMcStep(wrap){
+  const nStep = idxOf('mc')+1;
+  if(isLocked('mc')){ renderLockedStep(wrap, `<h2>${nStep}. Selección única (${CONFIG.mc.length} preguntas)</h2>`, 'mc'); return; }
+  wrap.innerHTML = `<h2>${nStep}. Selección única (${CONFIG.mc.length} preguntas)</h2>
+    <form id="mcForm"></form>
+    <button id="btnMcCheck" class="btn-primario">Comprobar</button>
+    <p id="mcResultado" class="resultado"></p>`;
+  const form = document.getElementById('mcForm');
+  CONFIG.mc.forEach((q,i)=>{
+    const div = document.createElement('div');
+    div.className = 'pregunta-mc';
+    div.innerHTML = `<p><strong>${i+1}.</strong> ${q.q}</p>` +
+      q.opciones.map((op,j)=>`<label class="opcion"><input type="radio" name="mc${i}" value="${j}"> ${op}</label>`).join('');
+    form.appendChild(div);
+  });
+  document.getElementById('btnMcCheck').addEventListener('click', ()=>{
+    let correctas = 0;
+    const porRA = {};
+    CONFIG.mc.forEach((q,i)=>{
+      const sel = form.querySelector(`input[name="mc${i}"]:checked`);
+      const ok = !!(sel && parseInt(sel.value,10)===q.correcta);
+      if(ok) correctas++;
+      const ra = q.ra || 'General';
+      if(!porRA[ra]) porRA[ra] = {correctas:0, total:0};
+      porRA[ra].total++;
+      if(ok) porRA[ra].correctas++;
+    });
+    const pct = Math.round((correctas/CONFIG.mc.length)*100);
+    document.getElementById('mcResultado').textContent = `Resultado: ${correctas}/${CONFIG.mc.length} correctas (${pct}%).`;
+    if(pct>=60){ markDone('mc', correctas, CONFIG.mc.length, porRA); document.getElementById('mcResultado').textContent += ' ¡Aprobado! Puede continuar.'; }
+    else { document.getElementById('mcResultado').textContent += ' Necesita al menos 60% para continuar. Revise el material y vuelva a intentarlo.'; }
+  });
+}
+
+/* ---------- 3. Asocie ---------- */
+function renderAsocieStep(wrap){
+  const nStep = idxOf('asocie')+1;
+  if(isLocked('asocie')){ renderLockedStep(wrap, `<h2>${nStep}. Asocie (pareo de conceptos)</h2>`, 'asocie'); return; }
+  wrap.innerHTML = `<h2>${nStep}. Asocie (pareo de conceptos)</h2>
+    <p>Escriba en cada casilla el número del concepto que corresponde a cada definición.</p>
+    <div id="asocieBox"></div>
+    <button id="btnAsocieCheck" class="btn-primario">Comprobar</button>
+    <p id="asocieResultado" class="resultado"></p>`;
+  const box = document.getElementById('asocieBox');
+  const conceptos = CONFIG.asocie.map(p=>p.concepto);
+  const shuffled = conceptos.map((c,i)=>({c,i})).sort(()=>Math.random()-0.5);
+  const colIzq = document.createElement('div'); colIzq.className = 'asocie-col';
+  colIzq.innerHTML = '<h4>Conceptos</h4>' + shuffled.map((c,idx)=>`<p>${idx+1}. ${c.c}</p>`).join('');
+  const colDer = document.createElement('div'); colDer.className = 'asocie-col';
+  colDer.innerHTML = '<h4>Definiciones</h4>' + CONFIG.asocie.map((p,i)=>
+    `<p><input type="number" min="1" max="${CONFIG.asocie.length}" data-correct="${shuffled.findIndex(s=>s.i===i)+1}" class="asocie-input"> ${p.definicion}</p>`).join('');
+  box.appendChild(colIzq); box.appendChild(colDer);
+  document.getElementById('btnAsocieCheck').addEventListener('click', ()=>{
+    const inputs = box.querySelectorAll('.asocie-input');
+    let correctas = 0;
+    const porRA = {};
+    inputs.forEach((inp,i)=>{
+      const ok = parseInt(inp.value,10)===parseInt(inp.dataset.correct,10);
+      if(ok) correctas++;
+      const ra = (CONFIG.asocie[i] && CONFIG.asocie[i].ra) || 'General';
+      if(!porRA[ra]) porRA[ra] = {correctas:0, total:0};
+      porRA[ra].total++;
+      if(ok) porRA[ra].correctas++;
+    });
+    const pct = Math.round((correctas/inputs.length)*100);
+    document.getElementById('asocieResultado').textContent = `Resultado: ${correctas}/${inputs.length} correctas (${pct}%).`;
+    if(pct>=60){ markDone('asocie', correctas, inputs.length, porRA); document.getElementById('asocieResultado').textContent += ' ¡Aprobado!'; }
+    else { document.getElementById('asocieResultado').textContent += ' Necesita al menos 60%. Intente de nuevo.'; }
+  });
+}
+
+/* ---------- 4. Complete ---------- */
+function renderCompleteStep(wrap){
+  const nStep = idxOf('complete')+1;
+  if(isLocked('complete')){ renderLockedStep(wrap, `<h2>${nStep}. Complete</h2>`, 'complete'); return; }
+  wrap.innerHTML = `<h2>${nStep}. Complete</h2>
+    <div id="completeBox"></div>
+    <button id="btnCompleteCheck" class="btn-primario">Comprobar</button>
+    <p id="completeResultado" class="resultado"></p>`;
+  const box = document.getElementById('completeBox');
+  CONFIG.complete.forEach((c,i)=>{
+    const p = document.createElement('p');
+    p.innerHTML = `${i+1}. ${c.frase.replace('___', `<input type="text" class="complete-input" data-correct="${c.respuesta.toLowerCase()}">`)}`;
+    box.appendChild(p);
+  });
+  document.getElementById('btnCompleteCheck').addEventListener('click', ()=>{
+    const inputs = box.querySelectorAll('.complete-input');
+    let correctas = 0;
+    const porRA = {};
+    inputs.forEach((inp,i)=>{
+      const ok = inp.value.trim().toLowerCase()===inp.dataset.correct;
+      if(ok) correctas++;
+      const ra = (CONFIG.complete[i] && CONFIG.complete[i].ra) || 'General';
+      if(!porRA[ra]) porRA[ra] = {correctas:0, total:0};
+      porRA[ra].total++;
+      if(ok) porRA[ra].correctas++;
+    });
+    const pct = Math.round((correctas/inputs.length)*100);
+    document.getElementById('completeResultado').textContent = `Resultado: ${correctas}/${inputs.length} correctas (${pct}%).`;
+    if(pct>=60){ markDone('complete', correctas, inputs.length, porRA); document.getElementById('completeResultado').textContent += ' ¡Aprobado!'; }
+    else { document.getElementById('completeResultado').textContent += ' Necesita al menos 60%. Intente de nuevo.'; }
+  });
+}
+
+/* ---------- 5. Sopa de letras ---------- */
+function generarSopa(words, size){
+  const grid = Array.from({length:size}, ()=>Array(size).fill(null));
+  const dirs = [[0,1],[1,0],[1,1],[-1,1]];
+  const placed = [];
+  words.forEach(word=>{
+    let ok = false, tries = 0;
+    while(!ok && tries<200){
+      tries++;
+      const dir = dirs[Math.floor(Math.random()*dirs.length)];
+      const row0 = Math.floor(Math.random()*size);
+      const col0 = Math.floor(Math.random()*size);
+      const endRow = row0 + dir[0]*(word.length-1);
+      const endCol = col0 + dir[1]*(word.length-1);
+      if(endRow<0||endRow>=size||endCol<0||endCol>=size) continue;
+      let fits = true;
+      for(let k=0;k<word.length;k++){
+        const r = row0+dir[0]*k, c = col0+dir[1]*k;
+        if(grid[r][c] !== null && grid[r][c] !== word[k]){ fits=false; break; }
+      }
+      if(!fits) continue;
+      for(let k=0;k<word.length;k++){
+        const r = row0+dir[0]*k, c = col0+dir[1]*k;
+        grid[r][c] = word[k];
+      }
+      placed.push({word, row0, col0, dir});
+      ok = true;
+    }
+  });
+  const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for(let r=0;r<size;r++) for(let c=0;c<size;c++) if(grid[r][c]===null) grid[r][c] = letras[Math.floor(Math.random()*letras.length)];
+  return {grid, placed};
+}
+
+let sopaState = null;
+function renderSopaStep(wrap){
+  const nStep = idxOf('sopa')+1;
+  if(isLocked('sopa')){ renderLockedStep(wrap, `<h2>${nStep}. Sopa de letras</h2>`, 'sopa'); return; }
+  const size = CONFIG.sopa.size || 12;
+  const {grid, placed} = generarSopa(CONFIG.sopa.words.map(w=>w.toUpperCase()), size);
+  sopaState = { grid, placed, found:new Set(), selecting:null };
+  window.__sopaState = sopaState; // expuesto solo para pruebas automatizadas
+  wrap.innerHTML = `<h2>${nStep}. Sopa de letras</h2>
+    <p>Encuentre las ${placed.length} palabras. Haga clic en la primera letra y luego en la última letra de cada palabra.</p>
+    <div class="sopa-flex">
+      <div id="sopaGrid" class="sopa-grid" style="grid-template-columns:repeat(${size},1fr)"></div>
+      <div id="sopaLista" class="sopa-lista"></div>
+    </div>
+    <p id="sopaResultado" class="resultado"></p>`;
+  const gridDiv = document.getElementById('sopaGrid');
+  const cells = [];
+  for(let r=0;r<size;r++){
+    for(let c=0;c<size;c++){
+      const cell = document.createElement('div');
+      cell.className = 'sopa-cell';
+      cell.textContent = grid[r][c];
+      cell.dataset.r = r; cell.dataset.c = c;
+      cell.addEventListener('click', ()=> onSopaCellClick(r,c,cells));
+      gridDiv.appendChild(cell);
+      cells.push(cell);
+    }
+  }
+  const lista = document.getElementById('sopaLista');
+  lista.innerHTML = '<h4>Palabras</h4>' + CONFIG.sopa.words.map(w=>`<p data-word="${w.toUpperCase()}" class="sopa-word">${w}</p>`).join('');
+  checkSopaComplete();
+}
+function cellAt(cells,r,c,size){ return cells[r*size+c]; }
+function onSopaCellClick(r,c, cells){
+  const size = CONFIG.sopa.size || 12;
+  const st = sopaState;
+  const cell = cellAt(cells,r,c,size);
+  if(!st.selecting){
+    st.selecting = {r,c};
+    cell.classList.add('sopa-sel');
+    return;
+  }
+  const start = st.selecting;
+  st.selecting = null;
+  cells.forEach(cc=>cc.classList.remove('sopa-sel'));
+  if(start.r===r && start.c===c) return;
+  const dr = Math.sign(r-start.r), dc = Math.sign(c-start.c);
+  const match = st.placed.find(p=>{
+    if(p.dir[0]!==dr || p.dir[1]!==dc) return false;
+    const endR = p.row0 + p.dir[0]*(p.word.length-1);
+    const endC = p.col0 + p.dir[1]*(p.word.length-1);
+    return (p.row0===start.r && p.col0===start.c && endR===r && endC===c);
+  });
+  if(match && !st.found.has(match.word)){
+    st.found.add(match.word);
+    for(let k=0;k<match.word.length;k++){
+      const rr = match.row0+match.dir[0]*k, cc = match.col0+match.dir[1]*k;
+      cellAt(cells,rr,cc,size).classList.add('sopa-found');
+    }
+    const li = document.querySelector(`.sopa-word[data-word="${match.word}"]`);
+    if(li) li.classList.add('sopa-word-done');
+    checkSopaComplete();
+  }
+}
+function checkSopaComplete(){
+  const el = document.getElementById('sopaResultado');
+  if(!el) return;
+  const total = sopaState.placed.length;
+  const found = sopaState.found.size;
+  el.textContent = `Encontradas: ${found}/${total}`;
+  if(found>=total){
+    el.textContent += ' ¡Completado!';
+    const porRA = {};
+    const raMap = (CONFIG.sopa && CONFIG.sopa.raPorPalabra) || {};
+    CONFIG.sopa.words.forEach(w=>{
+      const word = w.toUpperCase();
+      const ra = raMap[word] || 'General';
+      if(!porRA[ra]) porRA[ra] = {correctas:0, total:0};
+      porRA[ra].total++;
+      porRA[ra].correctas++; // se exige encontrar el 100% para completar la sopa
+    });
+    markDone('sopa', found, total, porRA);
+  }
+}
+
+/* ---------- 6. Crucigrama ---------- */
+function buildCruciCellMap(){
+  const map = {}; // key "r,c" -> {letter, cells refs later}
+  CONFIG.cruci.words.forEach(w=>{
+    for(let k=0;k<w.word.length;k++){
+      const r = w.row + (w.dir==='v'?k:0);
+      const c = w.col + (w.dir==='h'?k:0);
+      const key = r+','+c;
+      map[key] = { letter: w.word[k].toUpperCase() };
+    }
+  });
+  return map;
+}
+function renderCruciStep(wrap){
+  const nStep = idxOf('cruci')+1;
+  if(isLocked('cruci')){ renderLockedStep(wrap, `<h2>${nStep}. Crucigrama</h2>`, 'cruci'); return; }
+  const size = CONFIG.cruci.size;
+  const cellMap = buildCruciCellMap();
+  wrap.innerHTML = `<h2>${nStep}. Crucigrama</h2>
+    <div class="cruci-flex">
+      <div id="cruciGrid" class="cruci-grid" style="grid-template-columns:repeat(${size.cols},2rem)"></div>
+      <div id="cruciClues" class="cruci-clues"></div>
+    </div>
+    <button id="btnCruciCheck" class="btn-primario">Comprobar</button>
+    <p id="cruciResultado" class="resultado"></p>`;
+  const gridDiv = document.getElementById('cruciGrid');
+  const numberStarts = {};
+  CONFIG.cruci.words.forEach(w=>{ numberStarts[w.row+','+w.col] = w.num; });
+  for(let r=0;r<size.rows;r++){
+    for(let c=0;c<size.cols;c++){
+      const key = r+','+c;
+      const td = document.createElement('div');
+      if(cellMap[key]){
+        td.className = 'cruci-cell';
+        td.dataset.r = r; td.dataset.c = c;
+        td.dataset.answer = cellMap[key].letter;
+        if(numberStarts[key]){
+          const num = document.createElement('span');
+          num.className = 'cruci-num'; num.textContent = numberStarts[key];
+          td.appendChild(num);
+        }
+        const input = document.createElement('input');
+        input.maxLength = 1;
+        input.addEventListener('input', (e)=>{ e.target.value = e.target.value.toUpperCase().slice(-1); });
+        td.appendChild(input);
+      } else {
+        td.className = 'cruci-cell cruci-blank';
+      }
+      gridDiv.appendChild(td);
+    }
+  }
+  const clues = document.getElementById('cruciClues');
+  clues.innerHTML = '<h4>Pistas</h4>' + CONFIG.cruci.words.map(w=>
+    `<p><strong>${w.num}${w.dir==='h'?'H':'V'}.</strong> ${w.clue}</p>`).join('');
+  document.getElementById('btnCruciCheck').addEventListener('click', ()=>{
+    const cellDivs = gridDiv.querySelectorAll('.cruci-cell:not(.cruci-blank)');
+    let total = cellDivs.length, correctas = 0;
+    cellDivs.forEach(td=>{
+      const input = td.querySelector('input');
+      const ok = input.value.trim().toUpperCase() === td.dataset.answer;
+      input.classList.toggle('cruci-ok', ok);
+      input.classList.toggle('cruci-bad', !ok && input.value.trim()!=='');
+      if(ok) correctas++;
+    });
+    const pct = Math.round((correctas/total)*100);
+    document.getElementById('cruciResultado').textContent = `Casillas correctas: ${correctas}/${total} (${pct}%).`;
+    if(correctas===total){
+      const porRA = {};
+      CONFIG.cruci.words.forEach(w=>{
+        const ra = w.ra || 'General';
+        if(!porRA[ra]) porRA[ra] = {correctas:0, total:0};
+        porRA[ra].total++;
+        porRA[ra].correctas++; // se exige el crucigrama 100% correcto para completarlo
+      });
+      markDone('cruci', correctas, total, porRA);
+      document.getElementById('cruciResultado').textContent += ' ¡Crucigrama completo!';
+    }
+  });
+}
+
+/* ---------- 7. Estudio de caso + foro ---------- */
+function caseKey(){ return MODULE_ID+'_caso'; }
+function commentKey(){ return MODULE_ID+'_comentario'; }
+function renderCasoStep(wrap){
+  const nStep = idxOf('caso')+1;
+  if(isLocked('caso')){
+    renderLockedStep(wrap, `<h2>${nStep}. Estudio de caso</h2>`, 'caso', {
+      extraHtml: `<hr><h3>Foro: respuestas de sus compañeros</h3><div id="foroLista">Cargando...</div>`,
+      afterRender: ()=> loadForo()
+    });
+    return;
+  }
+  wrap.innerHTML = `<h2>${nStep}. Estudio de caso</h2>
+    <div class="caso-texto">${CONFIG.caso.html}</div>
+    <p><strong>${CONFIG.caso.pregunta}</strong></p>
+    <textarea id="casoRespuesta" rows="6" placeholder="Escriba su análisis (mínimo 80 palabras)..."></textarea>
+    <button id="btnCasoEnviar" class="btn-primario">Publicar mi respuesta</button>
+    <p id="casoResultado" class="resultado"></p>
+    <hr>
+    <h3>Foro: respuestas de sus compañeros</h3>
+    <div id="foroLista">Cargando...</div>`;
+  loadForo();
+  document.getElementById('btnCasoEnviar').addEventListener('click', ()=>{
+    const texto = document.getElementById('casoRespuesta').value.trim();
+    const palabras = texto.split(/\s+/).filter(Boolean).length;
+    if(palabras<40){ document.getElementById('casoResultado').textContent = 'Su respuesta debe tener al menos 40 palabras.'; return; }
+    sheetPost('Casos', { Timestamp: new Date().toISOString(), CasoId: caseKey(), Nombre: studentName, Texto: texto });
+    document.getElementById('casoResultado').textContent = 'Respuesta publicada. ¡Gracias!';
+    markDone('caso');
+    setTimeout(loadForo, 1200);
+  });
+}
+function loadForo(){
+  const box = document.getElementById('foroLista');
+  Promise.all([sheetGet('Casos')]).then(([rows])=>{
+    const posts = rows.filter(r=>String(r.CasoId).trim()===caseKey());
+    const comments = rows.filter(r=>String(r.CasoId).trim()===commentKey());
+    if(!box) return;
+    if(posts.length===0){ box.innerHTML = '<p>Aún no hay respuestas publicadas. ¡Sea el primero!</p>'; return; }
+    box.innerHTML = posts.map(p=>{
+      const nombre = p.Nombre;
+      const misComentarios = comments.filter(c=> String(c.Texto).startsWith('→'+nombre+'|'));
+      const comentariosHtml = misComentarios.map(c=>{
+        const txt = String(c.Texto).split('|').slice(1).join('|');
+        return `<div class="foro-comentario"><strong>${c.Nombre||'Compañero/a'}:</strong> ${txt}</div>`;
+      }).join('');
+      return `<div class="foro-post">
+        <p><strong>${nombre}</strong> escribió:</p>
+        <p>${p.Texto}</p>
+        <div class="foro-comentarios">${comentariosHtml}</div>
+        <div class="foro-nuevo-comentario">
+          <input type="text" placeholder="Comentar la respuesta de ${nombre}..." data-target="${nombre}">
+          <button class="btn-secundario foro-btn-comentar" data-target="${nombre}">Comentar</button>
+        </div>
+      </div>`;
+    }).join('');
+    box.querySelectorAll('.foro-btn-comentar').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const target = btn.dataset.target;
+        const input = box.querySelector(`input[data-target="${CSS.escape(target)}"]`);
+        enviarComentario(input, target);
+      });
+    });
+  });
+}
+function enviarComentario(input, target){
+  const texto = input.value.trim();
+  if(!texto) return;
+  sheetPost('Casos', { Timestamp: new Date().toISOString(), CasoId: commentKey(), Nombre: studentName, Texto: '→'+target+'|'+texto });
+  input.value = '';
+  input.disabled = true;
+  setTimeout(loadForo, 1000);
+}
+
+/* ---------- 8. Juego del dinosaurio ---------- */
+function renderDinoStep(wrap){
+  const nStep = idxOf('dino')+1;
+  if(isLocked('dino')){ renderLockedStep(wrap, `<h2>${nStep}. Juego: Corre y responde</h2>`, 'dino'); return; }
+  wrap.innerHTML = `<h2>${nStep}. Juego: Corre y responde</h2>
+    <p>Presione ESPACIO o toque la pantalla para saltar los obstáculos. Cada cierto tramo aparecerá una pregunta: respóndala bien para seguir corriendo.</p>
+    <canvas id="dinoCanvas" width="700" height="220"></canvas>
+    <div id="dinoOverlay"></div>
+    <p id="dinoResultado" class="resultado"></p>`;
+  const canvas = document.getElementById('dinoCanvas');
+  const ctx = canvas.getContext('2d');
+  let player = {x:50,y:170,w:24,h:30,vy:0,jumping:false};
+  const groundY = 200;
+  let obstacles = [];
+  let frame = 0;
+  let speed = 4;
+  let distance = 0;
+  let paused = false;
+  let quizPending = false;
+  let running = true;
+  let nextQuizAt = 400;
+
+  function spawnObstacle(){
+    obstacles.push({x:canvas.width, w:16+Math.random()*10, h:20+Math.random()*20});
+  }
+  function jump(){
+    if(!player.jumping && !paused){ player.vy = -10; player.jumping = true; }
+  }
+  window.addEventListener('keydown', e=>{ if(e.code==='Space'){ e.preventDefault(); jump(); } });
+  canvas.addEventListener('click', jump);
+
+  function showDinoQuiz(){
+    paused = true; quizPending = true;
+    const pool = CONFIG.gameQuestions;
+    const q = pool[Math.floor(Math.random()*pool.length)];
+    const overlay = document.getElementById('dinoOverlay');
+    overlay.innerHTML = `<div class="game-quiz"><p>${q.q}</p>` +
+      q.opciones.map((op,j)=>`<button class="btn-secundario dino-opt" data-i="${j}">${op}</button>`).join('') + `</div>`;
+    overlay.querySelectorAll('.dino-opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const ok = parseInt(btn.dataset.i,10)===q.correcta;
+        overlay.innerHTML = `<p class="${ok?'ok':'bad'}">${ok?'¡Correcto! Continúa corriendo.':'Incorrecto. Intente de nuevo más adelante.'}</p>`;
+        setTimeout(()=>{ overlay.innerHTML=''; paused=false; quizPending=false; nextQuizAt = distance+300+Math.random()*200; }, 900);
+      });
+    });
+  }
+
+  function loop(){
+    if(!running) return;
+    if(!paused){
+      frame++;
+      distance += speed;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = '#eef6ff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = '#334155'; ctx.fillRect(0, groundY+player.h, canvas.width, 4);
+      player.vy += 0.6; player.y += player.vy;
+      if(player.y > 170){ player.y = 170; player.vy=0; player.jumping=false; }
+      ctx.fillStyle = '#2563eb'; ctx.fillRect(player.x, player.y, player.w, player.h);
+      if(frame%90===0) spawnObstacle();
+      obstacles.forEach(o=> o.x -= speed);
+      obstacles = obstacles.filter(o=>o.x> -30);
+      ctx.fillStyle = '#dc2626';
+      obstacles.forEach(o=> ctx.fillRect(o.x, groundY+player.h-o.h, o.w, o.h));
+      obstacles.forEach(o=>{
+        if(player.x < o.x+o.w && player.x+player.w > o.x && player.y+player.h > groundY+player.h-o.h){
+          distance = Math.max(0, distance-60);
+        }
+      });
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('Distancia: '+Math.floor(distance)+' m', 10, 20);
+      if(distance >= nextQuizAt && !quizPending){ showDinoQuiz(); }
+      if(distance >= 2000){
+        running = false;
+        document.getElementById('dinoResultado').textContent = '¡Meta alcanzada! Actividad completada.';
+        markDone('dino');
+        return;
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* ---------- 8b. Juego del dinosaurio (versión rica: dificultad progresiva + meta 1000 pts) ---------- */
+function renderDinoStepRica(wrap){
+  const nStep = idxOf('dino')+1;
+  if(isLocked('dino')){ renderLockedStep(wrap, `<h2>${nStep}. Juego: Corre y responde</h2>`, 'dino'); return; }
+  wrap.innerHTML = `
+  <style>
+  .dino2-hud{display:flex;justify-content:space-between;align-items:center;margin:10px 0 8px;}
+  .dino2-hud .dino2-score{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:#0E1B3D;}
+  .dino2-hud .dino2-best{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5B6470;}
+  .dino2-gamebox{position:relative;width:100%;max-width:700px;height:220px;background:linear-gradient(180deg,#dfe9f0 0%,#f3f5f4 70%);border:2px solid #0E1B3D;border-radius:10px;overflow:hidden;touch-action:none;cursor:pointer;-webkit-user-select:none;user-select:none;}
+  .dino2-ground{position:absolute;bottom:0;left:0;right:0;height:3px;background:#0E1B3D;}
+  .dino2-ground::after{content:"";position:absolute;bottom:-2px;left:0;right:0;height:1px;background:repeating-linear-gradient(90deg,#5B6470 0 12px, transparent 12px 24px);}
+  .dino2-player{position:absolute;bottom:3px;left:40px;font-size:34px;line-height:1;transform:scaleX(-1) translateY(0);transition:transform .08s linear;z-index:5;}
+  .dino2-player.jump{transition:transform .5s cubic-bezier(.22,.9,.4,1.1);}
+  .dino2-obstacle{position:absolute;bottom:3px;font-size:30px;line-height:1;z-index:4;}
+  .dino2-obstacle.dino2-colon{font-weight:800;color:#B8863C;-webkit-text-stroke:1px #0E1B3D;}
+  .dino2-startOverlay,.dino2-qOverlay,.dino2-overOverlay,.dino2-winOverlay{position:absolute;inset:0;background:rgba(14,27,61,.92);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;gap:10px;z-index:10;}
+  .dino2-winOverlay{background:rgba(184,134,60,.95);}
+  .dino2-startOverlay h2,.dino2-overOverlay h3,.dino2-winOverlay h2{margin:0;}
+  .dino2-startOverlay p,.dino2-overOverlay p,.dino2-winOverlay p{font-size:11.5px;color:rgba(255,255,255,.8);margin:0;max-width:380px;}
+  .dino2-bigbtn{padding:10px 22px;background:#B8863C;color:#0A1230;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;}
+  .dino2-bigbtn:hover{background:#F4DD7A;}
+  .dino2-qOverlay{gap:8px;padding:14px;}
+  .dino2-qtag{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#F4DD7A;text-transform:uppercase;letter-spacing:.5px;}
+  .dino2-qtext{font-size:13px;font-weight:600;max-width:420px;}
+  .dino2-opts{display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px;}
+  .dino2-opt{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;text-align:left;}
+  .dino2-opt:hover{background:rgba(255,255,255,.16);}
+  .dino2-opt.locked{cursor:default;}
+  .dino2-opt.chosen-correct{background:rgba(47,194,173,.35);border-color:#2FC2AD;}
+  .dino2-opt.chosen-incorrect{background:rgba(239,106,91,.35);border-color:#EF6A5B;}
+  .dino2-opt.reveal-correct{background:rgba(47,194,173,.35);border-color:#2FC2AD;}
+  .dino2-controls-hint{font-size:10.5px;color:#5B6470;text-align:center;margin-top:6px;font-family:'IBM Plex Mono',monospace;}
+  </style>
+  <h2>${nStep}. Juego: Corre y responde</h2>
+  <p>Toque la pantalla o presione ESPACIO para saltar los obstáculos. La velocidad aumenta con el puntaje. Si choca, deberá responder una pregunta correctamente para seguir — si falla, se reinicia el intento.</p>
+  <div class="dino2-hud">
+    <span class="dino2-score" id="dino2Score">Puntos: 0</span>
+    <span class="dino2-best" id="dino2Best">Mejor: 0</span>
+  </div>
+  <div class="dino2-gamebox" id="dino2Box">
+    <div class="dino2-ground"></div>
+    <div class="dino2-player" id="dino2Player">🦖</div>
+    <div class="dino2-startOverlay" id="dino2StartOverlay">
+      <h2>🏃 Corre y Responde</h2>
+      <p>Toque o presione ESPACIO para saltar los obstáculos. Si choca, responda bien para seguir — si falla, se reinicia el intento.</p>
+      <button class="dino2-bigbtn" id="dino2StartBtn">▶️ Comenzar</button>
+    </div>
+  </div>
+  <p class="dino2-controls-hint">Toque la pantalla / Espacio = saltar</p>
+  <p id="dinoResultado" class="resultado"></p>`;
+
+  const WIN_SCORE = 1000;
+  let running=false, paused=false, score=0, best=0, speed=4.2, spawnTimer=0, spawnInterval=90, jumping=false;
+  let obstacles=[], usedQuestions=[], animFrame=null;
+  let totalCorrect=0, totalAnswered=0;
+
+  const gameBox = wrap.querySelector('#dino2Box');
+  const player = wrap.querySelector('#dino2Player');
+  const scoreDisplay = wrap.querySelector('#dino2Score');
+  const bestDisplay = wrap.querySelector('#dino2Best');
+  const startOverlay = wrap.querySelector('#dino2StartOverlay');
+  const dinoResultado = wrap.querySelector('#dinoResultado');
+
+  function updateHUD(){
+    scoreDisplay.textContent = 'Puntos: ' + Math.floor(score);
+    bestDisplay.textContent = 'Mejor: ' + Math.floor(best);
+  }
+  function resetGameState(){
+    score=0; speed=4.2; spawnInterval=90; spawnTimer=0;
+    obstacles.forEach(o=>o.el.remove()); obstacles=[];
+    updateHUD();
+  }
+  wrap.querySelector('#dino2StartBtn').addEventListener('click', ()=>{
+    startOverlay.style.display='none';
+    resetGameState();
+    running=true; paused=false;
+    loop();
+  });
+  function doJump(){
+    if(!running||paused||jumping) return;
+    jumping=true;
+    player.classList.add('jump');
+    player.style.transform='scaleX(-1) translateY(-70px)';
+    setTimeout(()=>{
+      player.style.transform='scaleX(-1) translateY(0)';
+      setTimeout(()=>{ jumping=false; player.classList.remove('jump'); },480);
+    },260);
+  }
+  gameBox.addEventListener('mousedown', doJump);
+  gameBox.addEventListener('touchstart', e=>{ e.preventDefault(); doJump(); }, {passive:false});
+  const dino2Keydown = e=>{
+    if(e.code==='Space' && running && !paused){ e.preventDefault(); doJump(); }
+  };
+  document.addEventListener('keydown', dino2Keydown);
+
+  function spawnObstacle(){
+    const el=document.createElement('div');
+    const isColon = Math.random()<0.5;
+    el.className='dino2-obstacle'+(isColon?' dino2-colon':'');
+    el.textContent = isColon ? '₡' : '💲';
+    el.style.right='-30px';
+    gameBox.appendChild(el);
+    obstacles.push({el, x: gameBox.clientWidth+10});
+  }
+  function rectsOverlap(a,b){ return !(a.right<b.left || a.left>b.right || a.bottom<b.top || a.top>b.bottom); }
+
+  function loop(){
+    if(!running||paused) return;
+    score += 0.12;
+    if(score>=WIN_SCORE){ score=WIN_SCORE; showWin(); return; }
+    speed = Math.min(16, 4.2+score*0.012);
+    spawnTimer++;
+    if(spawnTimer>spawnInterval){
+      spawnTimer=0;
+      spawnInterval = Math.max(48, 90-score*0.3);
+      spawnObstacle();
+    }
+    const boxRect = gameBox.getBoundingClientRect();
+    const playerRect = player.getBoundingClientRect();
+    const playerBox = { left:playerRect.left-boxRect.left+6, right:playerRect.right-boxRect.left-6, top:playerRect.top-boxRect.top+4, bottom:playerRect.bottom-boxRect.top };
+    for(let i=obstacles.length-1;i>=0;i--){
+      const o=obstacles[i];
+      o.x -= speed;
+      o.el.style.right='auto';
+      o.el.style.left=o.x+'px';
+      if(o.x<-40){ o.el.remove(); obstacles.splice(i,1); continue; }
+      const oRect=o.el.getBoundingClientRect();
+      const oBox={ left:oRect.left-boxRect.left+4, right:oRect.right-boxRect.left-4, top:oRect.top-boxRect.top+4, bottom:oRect.bottom-boxRect.top };
+      if(!jumping && rectsOverlap(playerBox,oBox)){ handleCollision(); return; }
+    }
+    updateHUD();
+    animFrame = requestAnimationFrame(loop);
+  }
+  function handleCollision(){
+    paused=true;
+    if(animFrame) cancelAnimationFrame(animFrame);
+    best=Math.max(best,score);
+    updateHUD();
+    showQuestion();
+  }
+  function pickQuestion(){
+    const pool = CONFIG.gameQuestions;
+    const available = pool.filter((_,i)=>!usedQuestions.includes(i));
+    const list = available.length ? available : pool;
+    const chosen = list[Math.floor(Math.random()*list.length)];
+    const idx = pool.indexOf(chosen);
+    usedQuestions.push(idx);
+    if(usedQuestions.length>=pool.length) usedQuestions=[];
+    return chosen;
+  }
+  function showQuestion(){
+    const item = pickQuestion();
+    const overlay=document.createElement('div');
+    overlay.className='dino2-qOverlay';
+    overlay.innerHTML = `<span class="dino2-qtag">⚠️ Chocaste — respondé bien para revivir</span>
+      <div class="dino2-qtext">${item.q}</div><div class="dino2-opts"></div>`;
+    gameBox.appendChild(overlay);
+    const optsDiv = overlay.querySelector('.dino2-opts');
+    item.opciones.forEach((optText,oi)=>{
+      const opt=document.createElement('div');
+      opt.className='dino2-opt';
+      opt.textContent=optText;
+      opt.addEventListener('click', ()=>{
+        if(overlay.dataset.answered) return;
+        overlay.dataset.answered='1';
+        optsDiv.querySelectorAll('.dino2-opt').forEach(o=>o.classList.add('locked'));
+        const isCorrect = oi===item.correcta;
+        opt.classList.add(isCorrect?'chosen-correct':'chosen-incorrect');
+        if(!isCorrect) optsDiv.querySelectorAll('.dino2-opt')[item.correcta].classList.add('reveal-correct');
+        totalAnswered++; if(isCorrect) totalCorrect++;
+        setTimeout(()=>{
+          overlay.remove();
+          if(isCorrect){ resumeAfterCorrect(); } else { showGameOver(); }
+        },1300);
+      });
+      optsDiv.appendChild(opt);
+    });
+  }
+  function resumeAfterCorrect(){
+    obstacles.forEach(o=>o.el.remove()); obstacles=[];
+    spawnTimer=0; paused=false;
+    animFrame=requestAnimationFrame(loop);
+  }
+  function showWin(){
+    running=false; paused=false;
+    if(animFrame) cancelAnimationFrame(animFrame);
+    best=Math.max(best,score);
+    updateHUD();
+    const overlay=document.createElement('div');
+    overlay.className='dino2-winOverlay';
+    overlay.innerHTML=`<h2>🏆 ¡Meta alcanzada!</h2>
+      <p>Llegaste a ${WIN_SCORE} puntos. Preguntas respondidas: ${totalAnswered} · Correctas: ${totalCorrect}</p>`;
+    gameBox.appendChild(overlay);
+    dinoResultado.textContent = '¡Meta alcanzada! Actividad completada.';
+    markDone('dino');
+  }
+  function showGameOver(){
+    running=false; paused=false;
+    const overlay=document.createElement('div');
+    overlay.className='dino2-overOverlay';
+    overlay.innerHTML=`<h3>💥 Fin del intento</h3>
+      <p>Puntaje: <strong>${Math.floor(score)}</strong> · Mejor: <strong>${Math.floor(best)}</strong></p>
+      <button class="dino2-bigbtn" id="dino2RetryBtn">🔄 Reintentar</button>`;
+    gameBox.appendChild(overlay);
+    overlay.querySelector('#dino2RetryBtn').addEventListener('click', ()=>{
+      overlay.remove(); resetGameState(); running=true; paused=false; loop();
+    });
+  }
+
+  updateHUD();
+
+  // Test/debug hook (used by the automated test suite to reach the win condition without a full real-time playthrough)
+  window.__dinoRicaDebug = {
+    forceWin: ()=>{ score=WIN_SCORE; showWin(); },
+    getState: ()=>({score,best,running,paused}),
+  };
+}
+
+/* ---------- 9. Juego de aventura (plataformas) ---------- */
+function renderAventuraStep(wrap){
+  const nStep = idxOf('aventura')+1;
+  if(isLocked('aventura')){ renderLockedStep(wrap, `<h2>${nStep}. Juego de aventura</h2>`, 'aventura'); return; }
+  wrap.innerHTML = `<h2>${nStep}. Juego de aventura</h2>
+    <p>Use las flechas ← → para moverse y ↑ o ESPACIO para saltar. Recoja todas las monedas y llegue a la bandera. Cuidado con los obstáculos: le harán perder una vida y deberá responder una pregunta para recuperarla.</p>
+    <canvas id="avCanvas" width="700" height="300"></canvas>
+    <div id="avOverlay"></div>
+    <p id="avEstado">Vidas: <span id="avVidas">3</span> · Monedas: <span id="avMonedas">0</span>/<span id="avMonedasTotal">0</span></p>
+    <p id="avResultado" class="resultado"></p>`;
+  const canvas = document.getElementById('avCanvas');
+  const ctx = canvas.getContext('2d');
+  const platforms = [
+    {x:0,y:270,w:700,h:30},
+    {x:150,y:210,w:100,h:14},
+    {x:320,y:170,w:100,h:14},
+    {x:480,y:210,w:100,h:14},
+    {x:600,y:150,w:80,h:14}
+  ];
+  const coins = [
+    {x:190,y:180,r:8,got:false},
+    {x:360,y:140,r:8,got:false},
+    {x:520,y:180,r:8,got:false},
+    {x:630,y:120,r:8,got:false},
+    {x:40,y:240,r:8,got:false}
+  ];
+  const obstacles = [ {x:260,y:255,w:16,h:16}, {x:430,y:255,w:16,h:16} ];
+  document.getElementById('avMonedasTotal').textContent = coins.length;
+  let vidas = 3;
+  let flag = {x:660,y:100,w:20,h:50};
+  let player = {x:20,y:230,w:20,h:30,vx:0,vy:0,onGround:false};
+  const keys = {};
+  let paused = false, running = true;
+  function keydown(e){ keys[e.code]=true; if(e.code==='Space') e.preventDefault(); }
+  function keyup(e){ keys[e.code]=false; }
+  window.addEventListener('keydown', keydown);
+  window.addEventListener('keyup', keyup);
+
+  function rectsOverlap(a,b){ return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y; }
+
+  function showAvQuiz(onResolved){
+    paused = true;
+    const pool = CONFIG.gameQuestions;
+    const q = pool[Math.floor(Math.random()*pool.length)];
+    const overlay = document.getElementById('avOverlay');
+    overlay.innerHTML = `<div class="game-quiz"><p>${q.q}</p>` +
+      q.opciones.map((op,j)=>`<button class="btn-secundario av-opt" data-i="${j}">${op}</button>`).join('') + `</div>`;
+    overlay.querySelectorAll('.av-opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const ok = parseInt(btn.dataset.i,10)===q.correcta;
+        overlay.innerHTML = `<p class="${ok?'ok':'bad'}">${ok?'¡Correcto! Recupera una vida.':'Incorrecto.'}</p>`;
+        if(ok) vidas = Math.min(3, vidas+1);
+        document.getElementById('avVidas').textContent = vidas;
+        setTimeout(()=>{ overlay.innerHTML=''; paused=false; onResolved && onResolved(); }, 800);
+      });
+    });
+  }
+
+  function loop(){
+    if(!running) return;
+    if(!paused){
+      if(keys['ArrowLeft']) player.vx = -3;
+      else if(keys['ArrowRight']) player.vx = 3;
+      else player.vx = 0;
+      if((keys['ArrowUp']||keys['Space']) && player.onGround){ player.vy = -9; player.onGround=false; }
+      player.vy += 0.5;
+      player.x += player.vx; player.y += player.vy;
+      player.onGround = false;
+      platforms.forEach(p=>{
+        if(player.x < p.x+p.w && player.x+player.w > p.x && player.y+player.h > p.y && player.y+player.h < p.y+p.h+12 && player.vy>=0){
+          player.y = p.y - player.h; player.vy = 0; player.onGround = true;
+        }
+      });
+      if(player.x<0) player.x=0;
+      if(player.x+player.w>canvas.width) player.x = canvas.width-player.w;
+      if(player.y>canvas.height){ player.x=20; player.y=230; }
+      coins.forEach(c=>{
+        if(!c.got && Math.hypot((player.x+player.w/2)-c.x, (player.y+player.h/2)-c.y) < c.r+16){
+          c.got = true;
+          document.getElementById('avMonedas').textContent = coins.filter(cc=>cc.got).length;
+        }
+      });
+      obstacles.forEach(o=>{
+        if(rectsOverlap(player,o)){
+          vidas--;
+          document.getElementById('avVidas').textContent = vidas;
+          player.x = 20; player.y = 230; player.vy=0;
+          if(vidas<=0){
+            showAvQuiz(()=>{ vidas=1; document.getElementById('avVidas').textContent=vidas; });
+          }
+        }
+      });
+      if(coins.every(c=>c.got) && rectsOverlap(player, flag)){
+        running = false;
+        document.getElementById('avResultado').textContent = '¡Meta alcanzada con todas las monedas! Actividad completada.';
+        markDone('aventura');
+        return;
+      }
+    }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#f0fdf4'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#166534';
+    platforms.forEach(p=> ctx.fillRect(p.x,p.y,p.w,p.h));
+    ctx.fillStyle = '#facc15';
+    coins.forEach(c=>{ if(!c.got){ ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2); ctx.fill(); } });
+    ctx.fillStyle = '#dc2626';
+    obstacles.forEach(o=>{
+      ctx.beginPath(); ctx.moveTo(o.x,o.y+o.h); ctx.lineTo(o.x+o.w/2,o.y); ctx.lineTo(o.x+o.w,o.y+o.h); ctx.closePath(); ctx.fill();
+    });
+    ctx.fillStyle = coins.every(c=>c.got) ? '#16a34a' : '#94a3b8';
+    ctx.fillRect(flag.x, flag.y, flag.w, flag.h);
+    ctx.fillStyle = '#1d4ed8';
+    ctx.fillRect(player.x, player.y, player.w, player.h);
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* ---------- 9b. Juego de aventura — versión rica (5 niveles, plataformas, power-ups, fantasmas) ---------- */
+function renderAventuraStepRica(wrap){
+  const nStep = idxOf('aventura')+1;
+  if(isLocked('aventura')){ renderLockedStep(wrap, `<h2>${nStep}. Juego de aventura</h2>`, 'aventura'); return; }
+  wrap.innerHTML = `<h2>${nStep}. Juego de aventura</h2>
+  <div class="av2-wrap">
+  <style>
+  .av2-wrap{--av2-navy:#0E1B3D;--av2-navy-deep:#0A1230;--av2-gold:#B8863C;--av2-gold-light:#F4DD7A;--av2-teal:#2FC2AD;--av2-coral:#EF6A5B;--av2-sky:#bfe3f2;}
+  .av2-wrap{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:460px;margin:0 auto;}
+  .av2-wrap .av2-hint{font-size:13px;color:#555;margin:0 0 12px;}
+  .av2-hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace;font-size:13px;color:var(--av2-navy);flex-wrap:wrap;gap:6px;}
+  .av2-hud .av2-lives{font-size:16px;}
+  .av2-hud .av2-level-badge{background:var(--av2-navy);color:#fff;padding:3px 10px;border-radius:10px;font-size:12px;}
+  .av2-gamebox{position:relative;width:100%;height:300px;background:linear-gradient(180deg,var(--av2-sky) 0%,#eaf6ee 75%);border:2px solid var(--av2-navy);border-radius:10px;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;}
+  .av2-world{position:absolute;top:0;left:0;height:100%;}
+  .av2-platform{position:absolute;background:#7a5230;border-top:4px solid #3f9142;border-radius:3px;}
+  .av2-player{position:absolute;font-size:26px;line-height:1;z-index:6;}
+  .av2-player.av2-grown{font-size:36px;}
+  .av2-player.av2-invincible{animation:av2sparkle .3s infinite alternate;}
+  @keyframes av2sparkle{ from{filter:drop-shadow(0 0 4px gold);} to{filter:drop-shadow(0 0 10px gold) brightness(1.3);} }
+  .av2-coin{position:absolute;font-size:18px;z-index:4;}
+  .av2-enemy{position:absolute;font-size:22px;z-index:5;}
+  .av2-powerup{position:absolute;font-size:20px;z-index:4;}
+  .av2-flag{position:absolute;font-size:28px;z-index:4;}
+  .av2-squash{animation:av2squash .3s;}
+  @keyframes av2squash{ 0%{transform:scaleY(1);} 40%{transform:scaleY(.2);} 100%{transform:scaleY(1);opacity:0;} }
+  .av2-controls{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px;}
+  .av2-dpad{display:flex;gap:8px;}
+  .av2-ctrlbtn{width:52px;height:44px;background:var(--av2-navy);color:#fff;border:none;border-radius:10px;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;cursor:pointer;}
+  .av2-ctrlbtn:active{background:var(--av2-navy-deep);}
+  .av2-jumpbtn{width:80px;height:44px;background:var(--av2-gold);color:var(--av2-navy-deep);border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;}
+  .av2-jumpbtn:active{background:var(--av2-gold-light);}
+  .av2-overlay{position:absolute;inset:0;background:rgba(14,27,61,.93);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;gap:8px;z-index:20;}
+  .av2-overlay h3{font-size:16px;margin:0;}
+  .av2-overlay p{font-size:12px;color:rgba(255,255,255,.8);margin:0;max-width:380px;}
+  .av2-overlay.av2-win{background:rgba(184,134,60,.95);}
+  .av2-overlay.av2-levelup{background:rgba(47,194,173,.95);}
+  .av2-btn{display:inline-block;padding:9px 18px;background:var(--av2-gold);color:var(--av2-navy-deep);border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;}
+  .av2-qoverlay{position:absolute;inset:0;background:rgba(14,27,61,.94);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;gap:7px;z-index:20;}
+  .av2-qoverlay .av2-qtag{font-family:'DejaVu Sans Mono',monospace;font-size:10px;color:var(--av2-gold-light);text-transform:uppercase;}
+  .av2-qoverlay .av2-qtext{font-size:13px;font-weight:600;max-width:380px;}
+  .av2-qoverlay .av2-opts{display:flex;flex-direction:column;gap:5px;width:100%;max-width:380px;}
+  .av2-qoverlay .av2-opt{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.3);color:#fff;padding:7px 10px;border-radius:8px;font-size:12px;cursor:pointer;text-align:left;display:flex;gap:7px;}
+  .av2-qoverlay .av2-opt.av2-locked{cursor:default;}
+  .av2-qoverlay .av2-opt.av2-chosen-correct{background:rgba(47,194,173,.35);border-color:var(--av2-teal);}
+  .av2-qoverlay .av2-opt.av2-chosen-incorrect{background:rgba(239,106,91,.35);border-color:var(--av2-coral);}
+  .av2-qoverlay .av2-opt.av2-reveal-correct{background:rgba(47,194,173,.35);border-color:var(--av2-teal);}
+  </style>
+  <p class="av2-hint">Use las flechas ← → (o los botones) para caminar y ↑ / ESPACIO / el botón de salto para saltar. Recolecte todas las monedas de cada nivel y llegue a la bandera 🚩. El hongo 🍄 lo hace crecer (aguanta un golpe extra), la estrella ⭐ lo vuelve invencible. Si choca contra un fantasma pierde una vida (responda una pregunta para recuperarla) — pero si le salta <strong>encima</strong>, ¡lo elimina!</p>
+  <div class="av2-hud">
+    <span class="av2-level-badge" id="av2HudLevel">Nivel 1 / 5</span>
+    <span class="av2-lives" id="av2HudLives">❤️❤️❤️</span>
+    <span id="av2HudCoins">🪙 0 / 5</span>
+  </div>
+  <div class="av2-gamebox" id="av2GameBox">
+    <div class="av2-overlay" id="av2StartOverlay">
+      <h3>🐱 Aventura de Plataformas</h3>
+      <p>5 niveles · pisá a los fantasmas para eliminarlos.</p>
+      <button class="av2-btn" id="av2StartBtn">▶️ Comenzar</button>
+    </div>
+  </div>
+  <div class="av2-controls">
+    <div class="av2-dpad">
+      <button class="av2-ctrlbtn" id="av2LeftBtn" type="button">◀</button>
+      <button class="av2-ctrlbtn" id="av2RightBtn" type="button">▶</button>
+    </div>
+    <button class="av2-jumpbtn" id="av2JumpBtn" type="button">⬆️ SALTAR</button>
+  </div>
+  <p id="avResultado" class="resultado"></p>
+  </div>`;
+
+  const GW = 360, GH = 300;
+  const GRAVITY = 0.55, MOVE_SPEED = 2.6, JUMP_VELOCITY = -10.5, PLAYER_SIZE = 26, STOMP_BOUNCE = -6.5;
+
+  const LEVELS = [{"levelNum":1,"width":2474,"platforms":[{"x":20,"y":260,"w":70,"h":14},{"x":75,"y":228,"w":88,"h":14},{"x":139,"y":252,"w":88,"h":14},{"x":194,"y":220,"w":88,"h":14},{"x":258,"y":244,"w":113,"h":14},{"x":313,"y":212,"w":88,"h":14},{"x":377,"y":236,"w":88,"h":14},{"x":432,"y":204,"w":88,"h":14},{"x":496,"y":228,"w":113,"h":14},{"x":551,"y":196,"w":88,"h":14},{"x":615,"y":220,"w":88,"h":14},{"x":670,"y":188,"w":88,"h":14},{"x":734,"y":212,"w":113,"h":14},{"x":789,"y":180,"w":88,"h":14},{"x":853,"y":204,"w":88,"h":14},{"x":908,"y":172,"w":88,"h":14},{"x":972,"y":196,"w":113,"h":14},{"x":1027,"y":164,"w":88,"h":14},{"x":1091,"y":188,"w":88,"h":14},{"x":1146,"y":156,"w":88,"h":14},{"x":1210,"y":180,"w":113,"h":14},{"x":1265,"y":148,"w":88,"h":14},{"x":1329,"y":172,"w":88,"h":14},{"x":1384,"y":140,"w":88,"h":14},{"x":1448,"y":164,"w":113,"h":14},{"x":1503,"y":132,"w":88,"h":14},{"x":1567,"y":156,"w":88,"h":14},{"x":1622,"y":124,"w":88,"h":14},{"x":1686,"y":148,"w":113,"h":14},{"x":1741,"y":116,"w":88,"h":14},{"x":1805,"y":140,"w":88,"h":14},{"x":1860,"y":108,"w":88,"h":14},{"x":1924,"y":132,"w":113,"h":14},{"x":1979,"y":100,"w":88,"h":14},{"x":2043,"y":124,"w":88,"h":14},{"x":2098,"y":92,"w":88,"h":14},{"x":2162,"y":116,"w":113,"h":14},{"x":2217,"y":84,"w":88,"h":14},{"x":2281,"y":108,"w":88,"h":14},{"x":2336,"y":76,"w":88,"h":14}],"coins":[{"x":111,"y":202},{"x":175,"y":226},{"x":230,"y":194},{"x":306.5,"y":218},{"x":349,"y":186},{"x":413,"y":210},{"x":468,"y":178},{"x":544.5,"y":202},{"x":587,"y":170},{"x":651,"y":194},{"x":706,"y":162},{"x":782.5,"y":186},{"x":825,"y":154},{"x":889,"y":178},{"x":944,"y":146},{"x":1020.5,"y":170},{"x":1063,"y":138},{"x":1127,"y":162},{"x":1182,"y":130},{"x":1258.5,"y":154},{"x":1301,"y":122},{"x":1365,"y":146},{"x":1420,"y":114},{"x":1496.5,"y":138},{"x":1539,"y":106},{"x":1603,"y":130},{"x":1658,"y":98},{"x":1734.5,"y":122},{"x":1777,"y":90},{"x":1841,"y":114},{"x":1896,"y":82},{"x":1972.5,"y":106},{"x":2015,"y":74},{"x":2079,"y":98},{"x":2134,"y":66},{"x":2210.5,"y":90},{"x":2253,"y":58},{"x":2317,"y":82}],"mushrooms":[{"x":109,"y":206},{"x":173,"y":230},{"x":228,"y":198}],"stars":[{"x":347,"y":190},{"x":411,"y":214},{"x":466,"y":182}],"enemies":[{"platformIdx":4,"minX":262,"maxX":347,"x":262,"dir":1,"speed":0.85},{"platformIdx":8,"minX":500,"maxX":585,"x":500,"dir":1,"speed":0.85},{"platformIdx":12,"minX":738,"maxX":823,"x":738,"dir":1,"speed":0.85},{"platformIdx":16,"minX":976,"maxX":1061,"x":976,"dir":1,"speed":0.85},{"platformIdx":20,"minX":1214,"maxX":1299,"x":1214,"dir":1,"speed":0.85},{"platformIdx":24,"minX":1452,"maxX":1537,"x":1452,"dir":1,"speed":0.85}],"flag":{"x":2400,"y":42}},{"levelNum":2,"width":3286,"platforms":[{"x":20,"y":260,"w":70,"h":14},{"x":80,"y":228,"w":78,"h":14},{"x":152,"y":252,"w":78,"h":14},{"x":212,"y":220,"w":78,"h":14},{"x":284,"y":244,"w":103,"h":14},{"x":344,"y":212,"w":78,"h":14},{"x":422,"y":236,"w":78,"h":14},{"x":482,"y":204,"w":78,"h":14},{"x":554,"y":228,"w":103,"h":14},{"x":614,"y":196,"w":78,"h":14},{"x":686,"y":220,"w":78,"h":14},{"x":746,"y":188,"w":78,"h":14},{"x":824,"y":212,"w":103,"h":14},{"x":884,"y":180,"w":78,"h":14},{"x":956,"y":204,"w":78,"h":14},{"x":1016,"y":172,"w":78,"h":14},{"x":1088,"y":196,"w":103,"h":14},{"x":1148,"y":164,"w":78,"h":14},{"x":1226,"y":188,"w":78,"h":14},{"x":1286,"y":156,"w":78,"h":14},{"x":1358,"y":180,"w":103,"h":14},{"x":1418,"y":148,"w":78,"h":14},{"x":1490,"y":172,"w":78,"h":14},{"x":1550,"y":140,"w":78,"h":14},{"x":1628,"y":164,"w":103,"h":14},{"x":1688,"y":132,"w":78,"h":14},{"x":1760,"y":156,"w":78,"h":14},{"x":1820,"y":124,"w":78,"h":14},{"x":1892,"y":148,"w":103,"h":14},{"x":1952,"y":116,"w":78,"h":14},{"x":2030,"y":140,"w":78,"h":14},{"x":2090,"y":108,"w":78,"h":14},{"x":2162,"y":132,"w":103,"h":14},{"x":2222,"y":100,"w":78,"h":14},{"x":2294,"y":124,"w":78,"h":14},{"x":2354,"y":92,"w":78,"h":14},{"x":2432,"y":116,"w":103,"h":14},{"x":2492,"y":84,"w":78,"h":14},{"x":2564,"y":108,"w":78,"h":14},{"x":2624,"y":76,"w":78,"h":14},{"x":2696,"y":100,"w":103,"h":14},{"x":2756,"y":68,"w":78,"h":14},{"x":2834,"y":92,"w":78,"h":14},{"x":2894,"y":65,"w":78,"h":14},{"x":2966,"y":89,"w":103,"h":14},{"x":3026,"y":65,"w":78,"h":14},{"x":3098,"y":89,"w":78,"h":14},{"x":3158,"y":65,"w":78,"h":14}],"coins":[{"x":111,"y":202},{"x":183,"y":226},{"x":243,"y":194},{"x":327.5,"y":218},{"x":375,"y":186},{"x":453,"y":210},{"x":513,"y":178},{"x":597.5,"y":202},{"x":645,"y":170},{"x":717,"y":194},{"x":777,"y":162},{"x":867.5,"y":186},{"x":915,"y":154},{"x":987,"y":178},{"x":1047,"y":146},{"x":1131.5,"y":170},{"x":1179,"y":138},{"x":1257,"y":162},{"x":1317,"y":130},{"x":1401.5,"y":154},{"x":1449,"y":122},{"x":1521,"y":146},{"x":1581,"y":114},{"x":1671.5,"y":138},{"x":1719,"y":106},{"x":1791,"y":130},{"x":1851,"y":98},{"x":1935.5,"y":122},{"x":1983,"y":90},{"x":2061,"y":114},{"x":2121,"y":82},{"x":2205.5,"y":106},{"x":2253,"y":74},{"x":2325,"y":98},{"x":2385,"y":66},{"x":2475.5,"y":90},{"x":2523,"y":58},{"x":2595,"y":82},{"x":2655,"y":50},{"x":2739.5,"y":74},{"x":2787,"y":42},{"x":2865,"y":66},{"x":2925,"y":39},{"x":3009.5,"y":63},{"x":3057,"y":39},{"x":3129,"y":63}],"mushrooms":[{"x":109,"y":206},{"x":181,"y":230},{"x":241,"y":198}],"stars":[{"x":373,"y":190},{"x":451,"y":214},{"x":511,"y":182}],"enemies":[{"platformIdx":4,"minX":288,"maxX":363,"x":288,"dir":1,"speed":1.0},{"platformIdx":8,"minX":558,"maxX":633,"x":558,"dir":1,"speed":1.0},{"platformIdx":12,"minX":828,"maxX":903,"x":828,"dir":1,"speed":1.0},{"platformIdx":16,"minX":1092,"maxX":1167,"x":1092,"dir":1,"speed":1.0},{"platformIdx":20,"minX":1362,"maxX":1437,"x":1362,"dir":1,"speed":1.0},{"platformIdx":24,"minX":1632,"maxX":1707,"x":1632,"dir":1,"speed":1.0},{"platformIdx":28,"minX":1896,"maxX":1971,"x":1896,"dir":1,"speed":1.0},{"platformIdx":32,"minX":2166,"maxX":2241,"x":2166,"dir":1,"speed":1.0},{"platformIdx":36,"minX":2436,"maxX":2511,"x":2436,"dir":1,"speed":1.0}],"flag":{"x":3212,"y":31}},{"levelNum":3,"width":3223,"platforms":[{"x":20,"y":260,"w":70,"h":14},{"x":79,"y":238,"w":74,"h":14},{"x":147,"y":216,"w":74,"h":14},{"x":206,"y":186,"w":99,"h":14},{"x":274,"y":200,"w":74,"h":14},{"x":348,"y":178,"w":74,"h":14},{"x":416,"y":148,"w":99,"h":14},{"x":475,"y":126,"w":74,"h":14},{"x":543,"y":140,"w":74,"h":14},{"x":602,"y":110,"w":99,"h":14},{"x":676,"y":88,"w":74,"h":14},{"x":735,"y":66,"w":74,"h":14},{"x":803,"y":80,"w":99,"h":14},{"x":862,"y":65,"w":74,"h":14},{"x":930,"y":65,"w":74,"h":14},{"x":1004,"y":65,"w":99,"h":14},{"x":1072,"y":79,"w":74,"h":14},{"x":1131,"y":65,"w":74,"h":14},{"x":1199,"y":65,"w":99,"h":14},{"x":1258,"y":65,"w":74,"h":14},{"x":1332,"y":79,"w":74,"h":14},{"x":1391,"y":65,"w":99,"h":14},{"x":1459,"y":65,"w":74,"h":14},{"x":1518,"y":65,"w":74,"h":14},{"x":1586,"y":79,"w":99,"h":14},{"x":1660,"y":65,"w":74,"h":14},{"x":1728,"y":65,"w":74,"h":14},{"x":1787,"y":65,"w":99,"h":14},{"x":1855,"y":79,"w":74,"h":14},{"x":1914,"y":65,"w":74,"h":14},{"x":1988,"y":65,"w":99,"h":14},{"x":2047,"y":65,"w":74,"h":14},{"x":2115,"y":79,"w":74,"h":14},{"x":2174,"y":65,"w":99,"h":14},{"x":2242,"y":65,"w":74,"h":14},{"x":2316,"y":65,"w":74,"h":14},{"x":2384,"y":79,"w":99,"h":14},{"x":2443,"y":65,"w":74,"h":14},{"x":2511,"y":65,"w":74,"h":14},{"x":2570,"y":65,"w":99,"h":14},{"x":2644,"y":79,"w":74,"h":14},{"x":2703,"y":65,"w":74,"h":14},{"x":2771,"y":65,"w":99,"h":14},{"x":2830,"y":65,"w":74,"h":14},{"x":2898,"y":79,"w":74,"h":14},{"x":2972,"y":65,"w":99,"h":14},{"x":3040,"y":65,"w":74,"h":14},{"x":3099,"y":65,"w":74,"h":14}],"coins":[{"x":108,"y":212},{"x":176,"y":190},{"x":247.5,"y":160},{"x":303,"y":174},{"x":377,"y":152},{"x":457.5,"y":122},{"x":504,"y":100},{"x":572,"y":114},{"x":643.5,"y":84},{"x":705,"y":62},{"x":764,"y":40},{"x":844.5,"y":54},{"x":891,"y":39},{"x":959,"y":39},{"x":1045.5,"y":39},{"x":1101,"y":53},{"x":1160,"y":39},{"x":1240.5,"y":39},{"x":1287,"y":39},{"x":1361,"y":53},{"x":1432.5,"y":39},{"x":1488,"y":39},{"x":1547,"y":39},{"x":1627.5,"y":53},{"x":1689,"y":39},{"x":1757,"y":39},{"x":1828.5,"y":39},{"x":1884,"y":53},{"x":1943,"y":39},{"x":2029.5,"y":39},{"x":2076,"y":39},{"x":2144,"y":53},{"x":2215.5,"y":39},{"x":2271,"y":39},{"x":2345,"y":39},{"x":2425.5,"y":53},{"x":2472,"y":39},{"x":2540,"y":39},{"x":2611.5,"y":39},{"x":2673,"y":53},{"x":2732,"y":39},{"x":2812.5,"y":39},{"x":2859,"y":39},{"x":2927,"y":53},{"x":3013.5,"y":39},{"x":3069,"y":39}],"mushrooms":[{"x":106,"y":216},{"x":174,"y":194},{"x":301,"y":178}],"stars":[{"x":375,"y":156},{"x":502,"y":104},{"x":570,"y":118},{"x":703,"y":66}],"enemies":[{"platformIdx":3,"minX":210,"maxX":281,"x":210,"dir":1,"speed":1.05},{"platformIdx":6,"minX":420,"maxX":491,"x":420,"dir":1,"speed":1.05},{"platformIdx":9,"minX":606,"maxX":677,"x":606,"dir":1,"speed":1.05},{"platformIdx":12,"minX":807,"maxX":878,"x":807,"dir":1,"speed":1.05},{"platformIdx":15,"minX":1008,"maxX":1079,"x":1008,"dir":1,"speed":1.05},{"platformIdx":18,"minX":1203,"maxX":1274,"x":1203,"dir":1,"speed":1.05},{"platformIdx":21,"minX":1395,"maxX":1466,"x":1395,"dir":1,"speed":1.05},{"platformIdx":24,"minX":1590,"maxX":1661,"x":1590,"dir":1,"speed":1.05},{"platformIdx":27,"minX":1791,"maxX":1862,"x":1791,"dir":1,"speed":1.05},{"platformIdx":30,"minX":1992,"maxX":2063,"x":1992,"dir":1,"speed":1.05},{"platformIdx":33,"minX":2178,"maxX":2249,"x":2178,"dir":1,"speed":1.05}],"flag":{"x":3149,"y":31}},{"levelNum":4,"width":4186,"platforms":[{"x":20,"y":260,"w":70,"h":14},{"x":84,"y":228,"w":56,"h":14},{"x":160,"y":252,"w":56,"h":14},{"x":242,"y":220,"w":81,"h":14},{"x":318,"y":244,"w":56,"h":14},{"x":382,"y":212,"w":56,"h":14},{"x":464,"y":236,"w":81,"h":14},{"x":528,"y":204,"w":56,"h":14},{"x":604,"y":228,"w":56,"h":14},{"x":686,"y":196,"w":81,"h":14},{"x":762,"y":220,"w":56,"h":14},{"x":826,"y":188,"w":56,"h":14},{"x":908,"y":212,"w":81,"h":14},{"x":972,"y":180,"w":56,"h":14},{"x":1048,"y":204,"w":56,"h":14},{"x":1130,"y":172,"w":81,"h":14},{"x":1206,"y":196,"w":56,"h":14},{"x":1270,"y":164,"w":56,"h":14},{"x":1352,"y":188,"w":81,"h":14},{"x":1416,"y":156,"w":56,"h":14},{"x":1492,"y":180,"w":56,"h":14},{"x":1574,"y":148,"w":81,"h":14},{"x":1650,"y":172,"w":56,"h":14},{"x":1714,"y":140,"w":56,"h":14},{"x":1796,"y":164,"w":81,"h":14},{"x":1860,"y":132,"w":56,"h":14},{"x":1936,"y":156,"w":56,"h":14},{"x":2018,"y":124,"w":81,"h":14},{"x":2094,"y":148,"w":56,"h":14},{"x":2158,"y":116,"w":56,"h":14},{"x":2240,"y":140,"w":81,"h":14},{"x":2304,"y":108,"w":56,"h":14},{"x":2380,"y":132,"w":56,"h":14},{"x":2462,"y":100,"w":81,"h":14},{"x":2538,"y":124,"w":56,"h":14},{"x":2602,"y":92,"w":56,"h":14},{"x":2684,"y":116,"w":81,"h":14},{"x":2748,"y":84,"w":56,"h":14},{"x":2824,"y":108,"w":56,"h":14},{"x":2906,"y":76,"w":81,"h":14},{"x":2982,"y":100,"w":56,"h":14},{"x":3046,"y":68,"w":56,"h":14},{"x":3128,"y":92,"w":81,"h":14},{"x":3192,"y":65,"w":56,"h":14},{"x":3268,"y":89,"w":56,"h":14},{"x":3350,"y":65,"w":81,"h":14},{"x":3426,"y":89,"w":56,"h":14},{"x":3490,"y":65,"w":56,"h":14},{"x":3572,"y":89,"w":81,"h":14},{"x":3636,"y":65,"w":56,"h":14},{"x":3712,"y":89,"w":56,"h":14},{"x":3794,"y":65,"w":81,"h":14},{"x":3870,"y":89,"w":56,"h":14},{"x":3934,"y":65,"w":56,"h":14},{"x":4016,"y":89,"w":81,"h":14},{"x":4080,"y":65,"w":56,"h":14}],"coins":[{"x":104,"y":202},{"x":180,"y":226},{"x":274.5,"y":194},{"x":338,"y":218},{"x":402,"y":186},{"x":496.5,"y":210},{"x":548,"y":178},{"x":624,"y":202},{"x":718.5,"y":170},{"x":782,"y":194},{"x":846,"y":162},{"x":940.5,"y":186},{"x":992,"y":154},{"x":1068,"y":178},{"x":1162.5,"y":146},{"x":1226,"y":170},{"x":1290,"y":138},{"x":1384.5,"y":162},{"x":1436,"y":130},{"x":1512,"y":154},{"x":1606.5,"y":122},{"x":1670,"y":146},{"x":1734,"y":114},{"x":1828.5,"y":138},{"x":1880,"y":106},{"x":1956,"y":130},{"x":2050.5,"y":98},{"x":2114,"y":122},{"x":2178,"y":90},{"x":2272.5,"y":114},{"x":2324,"y":82},{"x":2400,"y":106},{"x":2494.5,"y":74},{"x":2558,"y":98},{"x":2622,"y":66},{"x":2716.5,"y":90},{"x":2768,"y":58},{"x":2844,"y":82},{"x":2938.5,"y":50},{"x":3002,"y":74},{"x":3066,"y":42},{"x":3160.5,"y":66},{"x":3212,"y":39},{"x":3288,"y":63},{"x":3382.5,"y":39},{"x":3446,"y":63},{"x":3510,"y":39},{"x":3604.5,"y":63},{"x":3656,"y":39},{"x":3732,"y":63},{"x":3826.5,"y":39},{"x":3890,"y":63},{"x":3954,"y":39},{"x":4048.5,"y":63}],"mushrooms":[{"x":102,"y":206},{"x":178,"y":230},{"x":336,"y":222}],"stars":[{"x":400,"y":190},{"x":546,"y":182},{"x":622,"y":206},{"x":780,"y":198}],"enemies":[{"platformIdx":3,"minX":246,"maxX":299,"x":246,"dir":1,"speed":1.3},{"platformIdx":6,"minX":468,"maxX":521,"x":468,"dir":1,"speed":1.3},{"platformIdx":9,"minX":690,"maxX":743,"x":690,"dir":1,"speed":1.3},{"platformIdx":12,"minX":912,"maxX":965,"x":912,"dir":1,"speed":1.3},{"platformIdx":15,"minX":1134,"maxX":1187,"x":1134,"dir":1,"speed":1.3},{"platformIdx":18,"minX":1356,"maxX":1409,"x":1356,"dir":1,"speed":1.3},{"platformIdx":21,"minX":1578,"maxX":1631,"x":1578,"dir":1,"speed":1.3},{"platformIdx":24,"minX":1800,"maxX":1853,"x":1800,"dir":1,"speed":1.3},{"platformIdx":27,"minX":2022,"maxX":2075,"x":2022,"dir":1,"speed":1.3},{"platformIdx":30,"minX":2244,"maxX":2297,"x":2244,"dir":1,"speed":1.3},{"platformIdx":33,"minX":2466,"maxX":2519,"x":2466,"dir":1,"speed":1.3},{"platformIdx":36,"minX":2688,"maxX":2741,"x":2688,"dir":1,"speed":1.3},{"platformIdx":39,"minX":2910,"maxX":2963,"x":2910,"dir":1,"speed":1.3},{"platformIdx":42,"minX":3132,"maxX":3185,"x":3132,"dir":1,"speed":1.3}],"flag":{"x":4112,"y":31}},{"levelNum":5,"width":2609,"platforms":[{"x":20,"y":260,"w":70,"h":14},{"x":73,"y":238,"w":92,"h":14},{"x":134,"y":216,"w":92,"h":14},{"x":187,"y":186,"w":117,"h":14},{"x":248,"y":200,"w":92,"h":14},{"x":301,"y":178,"w":92,"h":14},{"x":362,"y":148,"w":117,"h":14},{"x":415,"y":126,"w":92,"h":14},{"x":476,"y":140,"w":92,"h":14},{"x":529,"y":110,"w":117,"h":14},{"x":590,"y":88,"w":92,"h":14},{"x":643,"y":66,"w":92,"h":14},{"x":704,"y":80,"w":117,"h":14},{"x":757,"y":65,"w":92,"h":14},{"x":818,"y":65,"w":92,"h":14},{"x":871,"y":65,"w":117,"h":14},{"x":932,"y":79,"w":92,"h":14},{"x":985,"y":65,"w":92,"h":14},{"x":1046,"y":65,"w":117,"h":14},{"x":1099,"y":65,"w":92,"h":14},{"x":1160,"y":79,"w":92,"h":14},{"x":1213,"y":65,"w":117,"h":14},{"x":1274,"y":65,"w":92,"h":14},{"x":1327,"y":65,"w":92,"h":14},{"x":1388,"y":79,"w":117,"h":14},{"x":1441,"y":65,"w":92,"h":14},{"x":1502,"y":65,"w":92,"h":14},{"x":1555,"y":65,"w":117,"h":14},{"x":1616,"y":79,"w":92,"h":14},{"x":1669,"y":65,"w":92,"h":14},{"x":1730,"y":65,"w":117,"h":14},{"x":1783,"y":65,"w":92,"h":14},{"x":1844,"y":79,"w":92,"h":14},{"x":1897,"y":65,"w":117,"h":14},{"x":1958,"y":65,"w":92,"h":14},{"x":2011,"y":65,"w":92,"h":14},{"x":2072,"y":79,"w":117,"h":14},{"x":2125,"y":65,"w":92,"h":14},{"x":2186,"y":65,"w":92,"h":14},{"x":2239,"y":65,"w":117,"h":14},{"x":2300,"y":79,"w":92,"h":14},{"x":2353,"y":65,"w":92,"h":14},{"x":2414,"y":65,"w":117,"h":14},{"x":2467,"y":65,"w":92,"h":14}],"coins":[{"x":111,"y":212},{"x":172,"y":190},{"x":237.5,"y":160},{"x":286,"y":174},{"x":339,"y":152},{"x":412.5,"y":122},{"x":453,"y":100},{"x":514,"y":114},{"x":579.5,"y":84},{"x":628,"y":62},{"x":681,"y":40},{"x":754.5,"y":54},{"x":795,"y":39},{"x":856,"y":39},{"x":921.5,"y":39},{"x":970,"y":53},{"x":1023,"y":39},{"x":1096.5,"y":39},{"x":1137,"y":39},{"x":1198,"y":53},{"x":1263.5,"y":39},{"x":1312,"y":39},{"x":1365,"y":39},{"x":1438.5,"y":53},{"x":1479,"y":39},{"x":1540,"y":39},{"x":1605.5,"y":39},{"x":1654,"y":53},{"x":1707,"y":39},{"x":1780.5,"y":39},{"x":1821,"y":39},{"x":1882,"y":53},{"x":1947.5,"y":39},{"x":1996,"y":39},{"x":2049,"y":39},{"x":2122.5,"y":53},{"x":2163,"y":39},{"x":2224,"y":39},{"x":2289.5,"y":39},{"x":2338,"y":53},{"x":2391,"y":39},{"x":2464.5,"y":39}],"mushrooms":[{"x":109,"y":216},{"x":170,"y":194},{"x":284,"y":178},{"x":337,"y":156}],"stars":[{"x":451,"y":104},{"x":512,"y":118},{"x":626,"y":66},{"x":679,"y":44}],"enemies":[{"platformIdx":3,"minX":191,"maxX":280,"x":191,"dir":1,"speed":0.75},{"platformIdx":6,"minX":366,"maxX":455,"x":366,"dir":1,"speed":0.75},{"platformIdx":9,"minX":533,"maxX":622,"x":533,"dir":1,"speed":0.75},{"platformIdx":12,"minX":708,"maxX":797,"x":708,"dir":1,"speed":0.75},{"platformIdx":15,"minX":875,"maxX":964,"x":875,"dir":1,"speed":0.75},{"platformIdx":18,"minX":1050,"maxX":1139,"x":1050,"dir":1,"speed":0.75},{"platformIdx":21,"minX":1217,"maxX":1306,"x":1217,"dir":1,"speed":0.75},{"platformIdx":24,"minX":1392,"maxX":1481,"x":1392,"dir":1,"speed":0.75},{"platformIdx":27,"minX":1559,"maxX":1648,"x":1559,"dir":1,"speed":0.75}],"flag":{"x":2535,"y":31}}];
+
+  let currentLevelIdx = 0;
+  let px, py, pvx, pvy, grounded, grown, invincible, invincibleUntil;
+  let lives, coinsCollected, coinsState, mushroomState, starState;
+  let enemies, enemyAlive, cameraX;
+  let running = false, paused = false, rafId;
+  let leftHeld=false, rightHeld=false;
+  let totalStomps=0;
+  let usedQ = [];
+
+  const gameBox = wrap.querySelector('#av2GameBox');
+  const worldEl = document.createElement('div');
+  worldEl.className = 'av2-world';
+  gameBox.appendChild(worldEl);
+  const hudLives = wrap.querySelector('#av2HudLives');
+  const hudCoins = wrap.querySelector('#av2HudCoins');
+  const hudLevel = wrap.querySelector('#av2HudLevel');
+  const avResultado = wrap.querySelector('#avResultado');
+
+  function currentLevel(){ return LEVELS[currentLevelIdx]; }
+  function resetPlayerToStart(){ px=30; py=260-PLAYER_SIZE; pvx=0; pvy=0; grounded=true; cameraX=0; }
+
+  function loadLevel(idx){
+    currentLevelIdx = idx;
+    const lvl = currentLevel();
+    resetPlayerToStart();
+    coinsCollected = 0;
+    coinsState = lvl.coins.map(()=>true);
+    mushroomState = lvl.mushrooms.map(()=>true);
+    starState = lvl.stars.map(()=>true);
+    enemies = lvl.enemies.map(e=>({...e}));
+    enemyAlive = lvl.enemies.map(()=>true);
+    grown=false; invincible=false; invincibleUntil=0;
+    updateHUD(); buildScene(); syncVisuals();
+  }
+  function updateHUD(){
+    const lvl = currentLevel();
+    hudLevel.textContent = 'Nivel ' + lvl.levelNum + ' / ' + LEVELS.length;
+    hudLives.textContent = '❤️'.repeat(Math.max(lives,0)) + '🖤'.repeat(Math.max(3-lives,0));
+    hudCoins.textContent = '🪙 ' + coinsCollected + ' / ' + lvl.coins.length;
+  }
+
+  let playerEl, coinEls=[], enemyEls=[], mushroomEls=[], starEls=[], flagEl;
+
+  function buildScene(){
+    worldEl.innerHTML = '';
+    const lvl = currentLevel();
+    worldEl.style.width = lvl.width + 'px';
+    lvl.platforms.forEach(p=>{
+      const el=document.createElement('div'); el.className='av2-platform';
+      el.style.left=p.x+'px'; el.style.top=p.y+'px'; el.style.width=p.w+'px'; el.style.height=p.h+'px';
+      worldEl.appendChild(el);
+    });
+    playerEl = document.createElement('div'); playerEl.className='av2-player'; playerEl.textContent='🐱';
+    worldEl.appendChild(playerEl);
+    coinEls = lvl.coins.map(c=>{
+      const el=document.createElement('div'); el.className='av2-coin'; el.textContent='🪙';
+      el.style.left=c.x+'px'; el.style.top=c.y+'px'; worldEl.appendChild(el); return el;
+    });
+    mushroomEls = lvl.mushrooms.map(m=>{
+      const el=document.createElement('div'); el.className='av2-powerup'; el.textContent='🍄';
+      el.style.left=m.x+'px'; el.style.top=m.y+'px'; worldEl.appendChild(el); return el;
+    });
+    starEls = lvl.stars.map(s=>{
+      const el=document.createElement('div'); el.className='av2-powerup'; el.textContent='⭐';
+      el.style.left=s.x+'px'; el.style.top=s.y+'px'; worldEl.appendChild(el); return el;
+    });
+    flagEl = document.createElement('div'); flagEl.className='av2-flag'; flagEl.textContent='🚩';
+    flagEl.style.left=lvl.flag.x+'px'; flagEl.style.top=lvl.flag.y+'px'; worldEl.appendChild(flagEl);
+    enemyEls = enemies.map(()=>{
+      const el=document.createElement('div'); el.className='av2-enemy'; el.textContent='👻';
+      worldEl.appendChild(el); return el;
+    });
+  }
+
+  function syncVisuals(){
+    const lvl = currentLevel();
+    cameraX = px - GW/2 + PLAYER_SIZE/2;
+    cameraX = Math.max(0, Math.min(lvl.width-GW, cameraX));
+    worldEl.style.transform = 'translateX(' + (-cameraX) + 'px)';
+    playerEl.style.left = px+'px'; playerEl.style.top = py+'px';
+    playerEl.classList.toggle('av2-grown', grown);
+    playerEl.classList.toggle('av2-invincible', invincible);
+    playerEl.style.transform = (pvx<0 ? 'scaleX(-1)' : 'scaleX(1)');
+    coinEls.forEach((el,i)=>{ el.style.display = coinsState[i]?'block':'none'; });
+    mushroomEls.forEach((el,i)=>{ el.style.display = mushroomState[i]?'block':'none'; });
+    starEls.forEach((el,i)=>{ el.style.display = starState[i]?'block':'none'; });
+    enemies.forEach((e,i)=>{
+      if(!enemyAlive[i]) return;
+      enemyEls[i].style.left = e.x+'px';
+      enemyEls[i].style.top = (lvl.platforms[e.platformIdx].y-22)+'px';
+    });
+  }
+
+  function rectsOverlap(a,b){ return !(a.x+a.w<b.x || a.x>b.x+b.w || a.y+a.h<b.y || a.y>b.y+b.h); }
+  function playerRect(){ const size = grown?PLAYER_SIZE*1.3:PLAYER_SIZE; return {x:px,y:py,w:size,h:size}; }
+
+  function physicsStep(){
+    const lvl = currentLevel();
+    pvx=0; if(leftHeld) pvx=-MOVE_SPEED; if(rightHeld) pvx=MOVE_SPEED;
+    px += pvx; px = Math.max(0, Math.min(lvl.width-PLAYER_SIZE, px));
+    pvy += GRAVITY;
+    const prevY = py; const nextY = py+pvy;
+    grounded = false;
+    for(const plat of lvl.platforms){
+      const withinX = px+PLAYER_SIZE>plat.x && px<plat.x+plat.w;
+      const wasAbove = (prevY+PLAYER_SIZE) <= plat.y+2;
+      const willBeBelowOrAt = (nextY+PLAYER_SIZE) >= plat.y;
+      if(withinX && wasAbove && willBeBelowOrAt && pvy>=0){ py=plat.y-PLAYER_SIZE; pvy=0; grounded=true; break; }
+    }
+    if(!grounded) py = nextY;
+    if(py > GH){ loseLife(); return; }
+    if(invincible && Date.now()>invincibleUntil) invincible=false;
+    moveEnemies(); checkCollisions(prevY); syncVisuals();
+  }
+  function moveEnemies(){
+    enemies.forEach((e,i)=>{ if(!enemyAlive[i]) return; e.x += e.dir*e.speed; if(e.x<e.minX || e.x>e.maxX) e.dir*=-1; });
+  }
+  function checkCollisions(prevY){
+    const lvl = currentLevel();
+    const pRect = playerRect();
+    coinsState.forEach((present,i)=>{
+      if(!present) return;
+      const c = lvl.coins[i];
+      if(rectsOverlap(pRect,{x:c.x,y:c.y,w:16,h:16})){ coinsState[i]=false; coinsCollected++; updateHUD(); }
+    });
+    mushroomState.forEach((present,i)=>{
+      if(!present) return;
+      const m = lvl.mushrooms[i];
+      if(rectsOverlap(pRect,{x:m.x,y:m.y,w:18,h:18})){ mushroomState[i]=false; grown=true; }
+    });
+    starState.forEach((present,i)=>{
+      if(!present) return;
+      const s = lvl.stars[i];
+      if(rectsOverlap(pRect,{x:s.x,y:s.y,w:18,h:18})){ starState[i]=false; invincible=true; invincibleUntil=Date.now()+5000; }
+    });
+    enemies.forEach((e,i)=>{
+      if(!enemyAlive[i]) return;
+      const eRect = {x:e.x, y:lvl.platforms[e.platformIdx].y-22, w:20, h:20};
+      if(!rectsOverlap(pRect,eRect)) return;
+      const fallingOntoTop = pvy>0 && (prevY+PLAYER_SIZE) <= eRect.y+8;
+      if(fallingOntoTop){ stompEnemy(i); }
+      else if(invincible){ stompEnemy(i); }
+      else if(grown){ grown=false; px += (px<e.x)?-14:14; }
+      else { loseLife(); }
+    });
+    if(rectsOverlap(pRect,{x:lvl.flag.x,y:lvl.flag.y,w:20,h:26})){
+      if(coinsCollected >= lvl.coins.length) onLevelComplete();
+    }
+  }
+  function stompEnemy(i){
+    enemyAlive[i]=false; enemyEls[i].classList.add('av2-squash');
+    setTimeout(()=>{ enemyEls[i].style.display='none'; }, 300);
+    pvy = STOMP_BOUNCE; totalStomps++;
+  }
+  function loseLife(){
+    if(paused) return;
+    paused = true; lives--; updateHUD();
+    if(lives<=0){ showGameOver(); return; }
+    showQuestion();
+  }
+  function pickQuestion(){
+    const bank = CONFIG.gameQuestions;
+    const avail = bank.filter((_,i)=>!usedQ.includes(i));
+    const pool = avail.length?avail:bank;
+    const idx = bank.indexOf(pool[Math.floor(Math.random()*pool.length)]);
+    usedQ.push(idx);
+    if(usedQ.length>=bank.length) usedQ=[];
+    return bank[idx];
+  }
+  function showQuestion(){
+    const item = pickQuestion();
+    const overlay = document.createElement('div');
+    overlay.className='av2-qoverlay';
+    overlay.innerHTML = `<span class="av2-qtag">💔 Perdiste una vida — respondé bien para recuperarla</span>
+      <div class="av2-qtext">${item.q}</div><div class="av2-opts"></div>`;
+    gameBox.appendChild(overlay);
+    const optsDiv = overlay.querySelector('.av2-opts');
+    item.opciones.forEach((optText,oi)=>{
+      const opt=document.createElement('div'); opt.className='av2-opt';
+      opt.textContent = optText;
+      opt.addEventListener('click', ()=>{
+        if(overlay.dataset.answered) return;
+        overlay.dataset.answered='1';
+        optsDiv.querySelectorAll('.av2-opt').forEach(o=>o.classList.add('av2-locked'));
+        const isCorrect = oi===item.correcta;
+        opt.classList.add(isCorrect?'av2-chosen-correct':'av2-chosen-incorrect');
+        if(!isCorrect) optsDiv.querySelectorAll('.av2-opt')[item.correcta].classList.add('av2-reveal-correct');
+        setTimeout(()=>{
+          overlay.remove();
+          if(isCorrect){ lives++; updateHUD(); }
+          paused=false; resetPlayerToStart();
+          rafId = requestAnimationFrame(loop);
+        }, 1300);
+      });
+      optsDiv.appendChild(opt);
+    });
+  }
+  function showGameOver(){
+    running=false; paused=false;
+    const overlay = document.createElement('div');
+    overlay.className='av2-overlay';
+    overlay.innerHTML = `<h3>💥 Sin vidas</h3>
+      <p>Llegaste al nivel ${currentLevel().levelNum} de ${LEVELS.length} · Fantasmas eliminados: ${totalStomps}</p>
+      <button class="av2-btn" id="av2RetryBtn">🔄 Reintentar desde el nivel 1</button>`;
+    gameBox.appendChild(overlay);
+    overlay.querySelector('#av2RetryBtn').addEventListener('click', ()=>{ overlay.remove(); startGame(); });
+  }
+  function onLevelComplete(){
+    running=false; paused=true;
+    if(rafId) cancelAnimationFrame(rafId);
+    const isLastLevel = currentLevelIdx >= LEVELS.length-1;
+    const overlay = document.createElement('div');
+    if(isLastLevel){
+      overlay.className='av2-overlay av2-win';
+      overlay.innerHTML = `<h3>🏆 ¡Completaste los ${LEVELS.length} niveles!</h3>
+        <p>Fantasmas eliminados: ${totalStomps}</p>
+        <button class="av2-btn" id="av2PlayAgainBtn">🔄 Jugar de nuevo</button>`;
+    } else {
+      overlay.className='av2-overlay av2-levelup';
+      overlay.innerHTML = `<h3>✅ ¡Nivel ${currentLevel().levelNum} completo!</h3>
+        <p>Preparate para el nivel ${currentLevel().levelNum+1}.</p>
+        <button class="av2-btn" id="av2NextLevelBtn">➡️ Siguiente nivel</button>`;
+    }
+    gameBox.appendChild(overlay);
+    if(isLastLevel){
+      avResultado.textContent = '¡Meta alcanzada en los 5 niveles! Actividad completada.';
+      markDone('aventura');
+      overlay.querySelector('#av2PlayAgainBtn').addEventListener('click', ()=>{ overlay.remove(); startGame(); });
+    } else {
+      overlay.querySelector('#av2NextLevelBtn').addEventListener('click', ()=>{
+        overlay.remove(); loadLevel(currentLevelIdx+1); running=true; paused=false;
+        rafId = requestAnimationFrame(loop);
+      });
+    }
+  }
+  function loop(){ if(!running||paused) return; physicsStep(); rafId = requestAnimationFrame(loop); }
+  function startGame(){
+    lives=3; totalStomps=0; usedQ=[];
+    loadLevel(0); running=true; paused=false;
+    rafId = requestAnimationFrame(loop);
+  }
+
+  wrap.querySelector('#av2StartBtn').addEventListener('click', ()=>{
+    wrap.querySelector('#av2StartOverlay').remove();
+    startGame();
+  });
+  function bindHold(el,onDown,onUp){
+    el.addEventListener('mousedown',onDown); el.addEventListener('mouseup',onUp); el.addEventListener('mouseleave',onUp);
+    el.addEventListener('touchstart', e=>{ e.preventDefault(); onDown(); }, {passive:false});
+    el.addEventListener('touchend', e=>{ e.preventDefault(); onUp(); }, {passive:false});
+  }
+  bindHold(wrap.querySelector('#av2LeftBtn'), ()=>leftHeld=true, ()=>leftHeld=false);
+  bindHold(wrap.querySelector('#av2RightBtn'), ()=>rightHeld=true, ()=>rightHeld=false);
+  wrap.querySelector('#av2JumpBtn').addEventListener('click', ()=>{ if(grounded && running && !paused){ pvy=JUMP_VELOCITY; grounded=false; } });
+  const av2Keydown = e=>{
+    if(!running||paused) return;
+    if(e.code==='ArrowLeft') leftHeld=true;
+    if(e.code==='ArrowRight') rightHeld=true;
+    if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault && e.code==='Space' && e.preventDefault(); if(grounded){ pvy=JUMP_VELOCITY; grounded=false; } }
+  };
+  const av2Keyup = e=>{ if(e.code==='ArrowLeft') leftHeld=false; if(e.code==='ArrowRight') rightHeld=false; };
+  document.addEventListener('keydown', av2Keydown);
+  document.addEventListener('keyup', av2Keyup);
+
+  // Test/debug hook (used by the automated test suite to verify all 5 levels + markDone without a full manual playthrough)
+  window.__avRicaDebug = {
+    start: ()=> startGame(),
+    forceCompleteLevel: ()=>{ coinsState = coinsState.map(()=>false); coinsCollected = currentLevel().coins.length; onLevelComplete(); },
+    getState: ()=>({ currentLevelIdx, lives, running, paused }),
+  };
+}
+
+/* ---------- 10. Certificado ---------- */
+function renderCertStep(wrap){
+  if(!allDone()){
+    const pendientes = STEPS.filter(s=>s.key!=='cert' && !progress[s.key]);
+    const primerPendiente = pendientes[0];
+    const listaPendientes = pendientes.map(s=>`<li>${s.label}</li>`).join('');
+    wrap.innerHTML = `<h2>Certificado</h2>
+      <p>Debe completar todas las actividades para desbloquear el certificado.</p>
+      <p>Actividades pendientes:</p>
+      <ul>${listaPendientes}</ul>
+      ${renderRubricaTableLocal()}
+      <button id="btnVolverPendiente" class="btn-primario">← Volver a mis actividades</button>`;
+    document.getElementById('btnVolverPendiente').addEventListener('click', ()=>{
+      showStep(primerPendiente ? primerPendiente.key : STEPS[0].key);
+    });
+    return;
+  }
+  wrap.innerHTML = `<h2>¡Curso completado!</h2>
+    <p>Felicidades, ${studentName}. Ha finalizado todas las actividades de <strong>${CONFIG.titulo}</strong>.</p>
+    ${renderRubricaTableLocal()}
+    <button id="btnCert" class="btn-primario">Ver y descargar mi certificado</button>
+    <div id="certContainer" class="cert-container" style="display:none">
+      <div class="cert">
+        <h2>Certificado de finalización</h2>
+        <p class="cert-institucion">CTP Mercedes Norte — Especialidad de Contabilidad</p>
+        <p class="cert-otorga">Se otorga el presente certificado a</p>
+        <p class="cert-nombre">${studentName}</p>
+        <p class="cert-curso">por completar satisfactoriamente el curso</p>
+        <p class="cert-titulo-curso">${CONFIG.titulo}</p>
+        <p class="cert-detalle">Duración estimada: 4 horas · Incluye: antología, evaluación objetiva, estudio de caso, gamificación y foro de discusión</p>
+        <p class="cert-fecha">${new Date().toLocaleDateString('es-CR', {year:'numeric', month:'long', day:'numeric'})}</p>
+        <p class="cert-docente">Prof. Gerardo González González</p>
+      </div>
+    </div>`;
+  document.getElementById('btnCert').addEventListener('click', ()=>{
+    document.getElementById('certContainer').style.display = 'block';
+    document.body.classList.add('printing-cert');
+    setTimeout(()=>{ window.print(); document.body.classList.remove('printing-cert'); }, 200);
+  });
+}
+
+/* ---------- monitoreo de salida de pantalla ---------- */
+function monitorSalidaPantalla(){
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden && studentName){
+      sheetPost('Progreso', {
+        Timestamp: new Date().toISOString(), Estudiante: studentName,
+        Modulo: 'incidente_salida_pantalla_' + CONFIG.moduleId, Score:'salida', Total:'1'
+      });
+    }
+  });
+}
+
+/* ---------- panel docente ---------- */
+function openTeacherPanel(){
+  const pin = prompt('PIN del panel docente:');
+  if(pin !== TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  const app = document.getElementById('app');
+  app.innerHTML = `<h2>Panel docente — ${CONFIG.titulo}</h2>
+    <button id="btnVolverPortada" class="btn-secundario">← Volver</button>
+    <div id="listaEstudiantes">Cargando...</div>`;
+  document.getElementById('btnVolverPortada').addEventListener('click', initModule);
+  Promise.all([sheetGet('Progreso'), sheetGet('Casos')]).then(([prog, casos])=>{
+    const pasoSuffix = '_paso';
+    const incidentMod = 'incidente_salida_pantalla_' + MODULE_ID;
+    const byStudent = {};
+    prog.forEach(r=>{
+      const mod = String(r.Modulo||'').trim();
+      const name = r.Estudiante;
+      if(!name) return;
+      if(mod === incidentMod){
+        byStudent[name] = byStudent[name] || {};
+        byStudent[name].__salidas = (byStudent[name].__salidas||0) + 1;
+        return;
+      }
+      if(!mod.startsWith(MODULE_ID)) return;
+      byStudent[name] = byStudent[name] || {};
+      if(mod === MODULE_ID){
+        byStudent[name].__completo = true;
+      } else if(mod.startsWith(MODULE_ID+'_') && mod.endsWith(pasoSuffix)){
+        const stepKey = mod.slice(MODULE_ID.length+1, mod.length-pasoSuffix.length);
+        byStudent[name][stepKey] = { score:Number(r.Score)||0, total:Number(r.Total)||1 };
+      }
+    });
+    const nombres = Object.keys(byStudent).sort();
+    const box = document.getElementById('listaEstudiantes');
+    if(nombres.length===0){ box.innerHTML = '<p>Aún no hay estudiantes con avance guardado.</p>'; return; }
+    const rubrica = getRubrica();
+    const pctFor = (stepsMap, keys)=>{
+      let sum=0,total=0,any=false;
+      keys.forEach(k=>{ const x=stepsMap[k]; if(x){ sum+=x.score; total+=x.total; any=true; } });
+      return any && total>0 ? Math.round((sum/total)*100) : null;
+    };
+    const levelCell = (pctVal)=>{
+      const lvl = competencyLevel(pctVal);
+      return `<span class="${lvl.cls}">${lvl.label}</span>`;
+    };
+    let html = '<p class="rubrica-nota">Nivel por indicador: 0–50% No logrado · 51–80% En proceso · 81–100% Logrado.</p>';
+    html += '<table class="progress-table"><tr><th>Estudiante</th>' + rubrica.map(r=>`<th>${r.ra}</th>`).join('') + '<th>Curso completo</th><th>Salidas de pantalla</th><th>Caso</th><th>Acciones</th></tr>';
+    nombres.forEach(n=>{
+      const stepsMap = byStudent[n];
+      const casoRow = casos.find(c=> String(c.CasoId).trim()===caseKey() && c.Nombre===n);
+      const salidas = stepsMap.__salidas || 0;
+      html += `<tr>
+        <td>${n}</td>
+        ${rubrica.map(r=> `<td class="center">${levelCell(pctFor(stepsMap, r.steps))}</td>`).join('')}
+        <td class="center">${stepsMap.__completo ? '<span class="status-ok">✓ Completo</span>' : '<span class="status-pending">En curso</span>'}</td>
+        <td class="center">${salidas>0 ? `<span class="status-bad">⚠ ${salidas}</span>` : '<span class="status-ok">0</span>'}</td>
+        <td class="center">${casoRow ? `<button class="btn-secundario btn-ver-caso" data-n="${n}">Ver</button>` : '—'}</td>
+        <td class="center"><button class="btn-secundario btn-repetir" data-n="${n}">🔄 Repetir</button></td>
+      </tr>
+      <tr id="detalle-row-${cssId(n)}" style="display:none"><td colspan="${rubrica.length+5}"><div class="docente-detalle">${casoRow ? casoRow.Texto : '(sin respuesta registrada)'}</div></td></tr>`;
+    });
+    html += '</table>';
+    box.innerHTML = html;
+    box.querySelectorAll('.btn-ver-caso').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const row = document.getElementById('detalle-row-'+cssId(btn.dataset.n));
+        row.style.display = row.style.display==='none' ? 'table-row':'none';
+      });
+    });
+    box.querySelectorAll('.btn-repetir').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const n = btn.dataset.n;
+        if(!confirm(`¿Reiniciar el intento de ${n}? Podrá volver a realizar el curso.`)) return;
+        Promise.all([
+          sheetDelete('Progreso','Estudiante',n),
+          sheetDelete('Casos','Nombre',n)
+        ]).then(()=>{ alert('Intento reiniciado.'); openTeacherPanel(); });
+      });
+    });
+  });
+}
+function cssId(s){ return String(s).replace(/[^a-zA-Z0-9]/g,'_'); }
+
+/* ---------- init ---------- */
+document.addEventListener('DOMContentLoaded', initModule);
+window.__engineExports = { generarSopa, buildCruciCellMap, getRubrica, rubricaScoreLocal, getProgress: ()=>progress }; // para pruebas
+})();
+
+
+</script>
+</body>
+</html>
