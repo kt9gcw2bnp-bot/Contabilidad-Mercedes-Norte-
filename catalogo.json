@@ -708,5 +708,15 @@
     "URL": "Antologia_TIC_06_Ciudadania_Digital_Equidad_y_Netiqueta_Decimo.pdf",
     "Activo": "SI",
     "Orden": 266
+  },
+  {
+    "Id": "gestor_proyectos_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Gestor de Proyectos: PERT, CPM, Gantt, valor ganado y VAN/TIR",
+    "URL": "Gestor_Proyectos.html",
+    "Activo": true,
+    "Orden": 15
   }
 ]

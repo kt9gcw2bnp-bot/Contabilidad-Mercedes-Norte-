@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestor de Proyectos · Administración y evaluación de proyectos</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --navy:#0E1B3D; --navy2:#16295a; --gold:#B8863C; --gold2:#e3b94a; --teal:#2FC2AD; --teal2:#e6f7f4; --ink:#1d2433; --mut:#5b6478; --line:#d9dde6; --soft:#f5f6f9; --red:#c0392b; --bg:#eef1f6; --crit:#d6453a; }
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Poppins',system-ui,sans-serif; color:var(--ink); background:var(--bg); font-size:14.5px; line-height:1.5; }
+button,input,textarea,select{ font-family:inherit; font-size:13.5px; }
+.top{ background:var(--navy); color:#fff; padding:10px 16px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:20; flex-wrap:wrap; }
+.top .logo{ width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--teal),var(--gold2)); display:grid; place-items:center; font-size:18px; }
+.top h1{ font-size:16px; margin:0; font-weight:600; } .top .sub{ font-size:12px; color:#c9cfdc; }
+.top .acts{ margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.top .acts .btn{ background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.25); }
+.wrap{ max-width:1200px; margin:0 auto; padding:14px 12px 60px; }
+.card{ background:#fff; border-radius:14px; padding:18px; box-shadow:0 2px 10px rgba(14,27,61,.07); margin-bottom:14px; }
+h2{ color:var(--navy); margin:0 0 6px; font-size:19px; } h3{ color:var(--navy); margin:14px 0 6px; font-size:15.5px; }
+.mut{ color:var(--mut); font-size:12.5px; }
+.btn{ border:none; border-radius:9px; padding:8px 13px; font-weight:600; cursor:pointer; background:var(--navy); color:#fff; }
+.btn.gold{ background:var(--gold); } .btn.teal{ background:var(--teal); color:#062a25; } .btn.ghost{ background:#fff; color:var(--navy); border:1.5px solid var(--navy); } .btn.red{ background:#fff; color:var(--red); border:1.5px solid var(--red); }
+.btn.sm{ padding:5px 10px; font-size:12px; } .btn:disabled{ opacity:.45; cursor:not-allowed; }
+input[type=text],input[type=number],input[type=date],textarea,select{ width:100%; border:1.5px solid var(--line); border-radius:8px; padding:7px 9px; background:#fff; }
+input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--teal); }
+label{ font-weight:600; font-size:12.5px; display:block; margin:8px 0 3px; color:var(--navy); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid{ display:grid; gap:12px; } .g2{ grid-template-columns:1fr 1fr; } .g3{ grid-template-columns:repeat(3,1fr); } .g4{ grid-template-columns:repeat(4,1fr); }
+@media(max-width:820px){ .g2,.g3,.g4{ grid-template-columns:1fr 1fr; } }
+.tabs{ display:flex; gap:4px; overflow-x:auto; margin-bottom:12px; background:#fff; padding:6px; border-radius:12px; box-shadow:0 2px 10px rgba(14,27,61,.07); }
+.tab{ border:none; background:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600; color:var(--mut); white-space:nowrap; font-size:13px; }
+.tab.on{ background:var(--navy); color:#fff; }
+.kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:12px; }
+.kpi{ background:#fff; border-radius:12px; padding:12px 14px; box-shadow:0 2px 10px rgba(14,27,61,.07); border-left:4px solid var(--teal); }
+.kpi .l{ font-size:11.5px; color:var(--mut); font-weight:600; } .kpi .v{ font-size:21px; font-weight:700; color:var(--navy); line-height:1.2; } .kpi .s{ font-size:11.5px; color:var(--mut); }
+.kpi.red{ border-left-color:var(--crit); } .kpi.gold{ border-left-color:var(--gold); }
+table.tb{ width:100%; border-collapse:collapse; font-size:12.8px; } table.tb th{ background:var(--navy); color:#fff; text-align:left; padding:6px 7px; font-weight:600; white-space:nowrap; position:sticky; top:0; }
+table.tb td{ border-bottom:1px solid var(--line); padding:4px 6px; vertical-align:middle; } table.tb td.n{ text-align:right; font-family:'DejaVu Sans Mono',Consolas,monospace; white-space:nowrap; }
+table.tb tr.crit td{ background:#fdf0ee; } table.tb tr.crit td:first-child{ border-left:4px solid var(--crit); }
+table.tb input{ padding:4px 6px; font-size:12.5px; border-radius:6px; }
+.scroll{ overflow:auto; max-width:100%; } .box{ overflow:auto; background:#fff; border:1.5px solid var(--line); border-radius:12px; }
+.pill{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; background:var(--soft); color:var(--navy); }
+.pill.red{ background:#fbeeea; color:var(--crit); } .pill.teal{ background:var(--teal2); color:#0b6b5d; } .pill.gold{ background:#f6ecd9; color:#7a5a24; }
+.tip{ background:var(--teal2); border:1px solid #a9e3d9; border-radius:10px; padding:9px 12px; font-size:13px; margin:8px 0; }
+.warn{ background:#fdf1e6; border:1px solid #f0c9a3; border-radius:10px; padding:9px 12px; font-size:13px; margin:8px 0; }
+.err{ color:var(--red); font-weight:600; } .ok{ color:#0b6b5d; font-weight:600; }
+.seg{ display:inline-flex; border:1.5px solid var(--navy); border-radius:9px; overflow:hidden; } .seg button{ border:none; background:#fff; padding:6px 12px; cursor:pointer; font-weight:600; color:var(--navy); } .seg button.on{ background:var(--navy); color:#fff; }
+.formula{ background:var(--soft); border:1px dashed var(--gold); border-radius:8px; padding:6px 10px; font-family:'DejaVu Sans Mono',Consolas,monospace; font-size:12.5px; display:inline-block; margin:4px 0; }
+.list .it{ display:flex; gap:10px; align-items:center; padding:10px; border-bottom:1px solid var(--line); } .list .it:hover{ background:var(--soft); }
+#toast{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--navy); color:#fff; padding:10px 18px; border-radius:10px; font-weight:600; display:none; z-index:99; }
+footer{ text-align:center; color:var(--mut); font-size:12px; margin-top:20px; } .hidden{ display:none !important; }
+@media print{ .top,.tabs,footer,.noprint{ display:none !important; } body{ background:#fff; } .card{ box-shadow:none; border:1px solid #ddd; break-inside:avoid; } .wrap{ max-width:none; padding:0; } .box{ overflow:visible; border:none; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="logo">📊</div><div><h1>Gestor de Proyectos</h1><div class="sub" id="subt">Administración y evaluación de proyectos · CTP Mercedes Norte</div></div>
+ <div class="acts" id="topActs"></div></div>
+<div class="wrap" id="app"></div>
+<div id="toast"></div>
+<footer class="noprint">Gestor de Proyectos · Especialidad de Contabilidad · CTP Mercedes Norte · <a href="#" id="lnkDocente">Panel docente</a></footer>
+<script>
+(function(){
+'use strict';
+/* =================== CONFIGURACIÓN =================== */
+const SHEET_API_URL="https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN="9986", MODULE_ID="gproy", SH_DATA="Casos", SH_PROG="Progreso", CHUNK=30000;
+const SECCIONES=["11-1","11-2","11-3","11-4","Docente"];
+
+/* =================== UTILIDADES =================== */
+const $=id=>document.getElementById(id);
+const r2=x=>Math.round(x*100)/100, r4=x=>Math.round(x*10000)/10000;
+const num=v=>{ if(v===null||v===undefined) return NaN; const s=String(v).trim().replace(/\s/g,'').replace(/₡/g,''); if(s==='') return NaN; if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) return +s.replace(/\./g,''); const t=(s.indexOf(',')>-1&&s.indexOf('.')>-1)?s.replace(/\./g,'').replace(',','.'):s.replace(',','.'); return +t; };
+const fd=(x,d=2)=>isFinite(x)?Number(x).toLocaleString('es-CR',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const fm=x=>isFinite(x)?'₡'+Math.round(x).toLocaleString('es-CR'):'—';
+const fp=x=>isFinite(x)?(x*100).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' %':'—';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const now=()=>new Date().toISOString();
+function toast(t){ const e=$('toast'); e.textContent=t; e.style.display='block'; clearTimeout(e._t); e._t=setTimeout(()=>e.style.display='none',2600); }
+const MESES=['ene','feb','mar','abr','may','jun','jul','ago','set','oct','nov','dic'];
+function addDays(iso,d){ if(!iso) return null; const t=new Date(iso+'T12:00:00'); t.setDate(t.getDate()+Math.floor(d+1e-9)); return t; }
+const fdate=t=>t?t.getDate()+' '+MESES[t.getMonth()]:'';
+
+/* =================== MOTOR DE CÁLCULO =================== */
+function teOf(a,modo){ return modo==='cpm'?num(a.m):r2((num(a.o)+4*num(a.m)+num(a.p))/6); }
+function varOf(a,modo){ return modo==='cpm'?0:r4(Math.pow((num(a.p)-num(a.o))/6,2)); }
+function topo(acts){ const seen={},tmp={},out=[]; let cyc=false; const by={}; acts.forEach(a=>by[a.id]=a);
+  function v(id){ if(seen[id]) return; if(tmp[id]){ cyc=true; return; } tmp[id]=1; (by[id]?by[id].pred:[]).forEach(v); tmp[id]=0; seen[id]=1; out.push(id); } acts.forEach(a=>v(a.id)); return cyc?null:out; }
+function cpm(acts,modo,override){
+  const ord=topo(acts); if(!ord) return null; const by={};
+  acts.forEach(a=>{ const te=override&&override[a.id]!==undefined?override[a.id]:teOf(a,modo); by[a.id]={a:a,id:a.id,te:r2(te),v:varOf(a,modo),pred:a.pred.slice(),succ:[]}; });
+  acts.forEach(a=>a.pred.forEach(p=>by[p]&&by[p].succ.push(a.id)));
+  ord.forEach(id=>{ const x=by[id]; x.IC=r2(Math.max(0,...x.pred.map(p=>by[p].TC))); x.TC=r2(x.IC+x.te); });
+  const T=r2(Math.max(0,...ord.map(id=>by[id].TC)));
+  ord.slice().reverse().forEach(id=>{ const x=by[id]; x.TL=x.succ.length?r2(Math.min(...x.succ.map(s=>by[s].IL))):T; x.IL=r2(x.TL-x.te); x.H=r2(x.IL-x.IC); x.crit=Math.abs(x.H)<0.005; });
+  // todas las rutas (inicio→fin)
+  const paths=[]; function dfs(id,p){ const x=by[id]; if(!x.succ.length){ paths.push(p.slice()); return; } if(paths.length>500) return; x.succ.forEach(s=>{ p.push(s); dfs(s,p); p.pop(); }); }
+  ord.filter(id=>!by[id].pred.length).forEach(id=>dfs(id,[id]));
+  const rutas=paths.map(p=>({p:p,d:r2(p.reduce((a,id)=>a+by[id].te,0)),v:r4(p.reduce((a,id)=>a+by[id].v,0))})).sort((x,y)=>y.d-x.d||y.v-x.v);
+  const criticas=rutas.filter(r=>Math.abs(r.d-T)<0.005); const rc=criticas.slice().sort((x,y)=>y.v-x.v)[0]||{p:[],v:0};
+  return {by:by,order:ord,T:T,rutas:rutas,criticas:criticas,ruta:rc.p,var:rc.v,sd:Math.sqrt(rc.v)};
+}
+function erf(x){ const t=1/(1+0.3275911*Math.abs(x)); const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x); return x>=0?y:-y; }
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+function invPhi(p){ // Acklam
+  if(p<=0) return -Infinity; if(p>=1) return Infinity;
+  const a=[-39.69683028665376,220.9460984245205,-275.9285104469687,138.357751867269,-30.66479806614716,2.506628277459239],b=[-54.47609879822406,161.5858368580409,-155.6989798598866,66.80131188771972,-13.28068155288572],c=[-0.007784894002430293,-0.3223964580411365,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783],d=[0.007784695709041462,0.3224671290700398,2.445134137142996,3.754408661907416];
+  const pl=0.02425; let q,r;
+  if(p<pl){ q=Math.sqrt(-2*Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  if(p>1-pl){ q=Math.sqrt(-2*Math.log(1-p)); return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  q=p-0.5; r=q*q; return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+function crashInfo(a,modo){ const tn=teOf(a,modo), ta=num(a.ta), cn=num(a.cn), ca=num(a.ca); const ok=isFinite(ta)&&isFinite(ca)&&ta<tn-1e-9&&ca>=cn;
+  return {tn:tn,ta:ok?ta:tn,cap:ok?r2(tn-ta):0,cpd:ok?(ca-cn)/(tn-ta):null}; }
+function crashPlan(acts,modo,target){ // costo uniforme; pasos de hasta 1 día
+  const info={}; acts.forEach(a=>info[a.id]=crashInfo(a,modo));
+  const key=v=>acts.map(a=>r2(v[a.id]||0)).join('|'); const pq=[{c:0,v:{},steps:[]}]; const seen={}; let n=0;
+  while(pq.length&&n<30000){ let bi=0; for(let i=1;i<pq.length;i++) if(pq[i].c<pq[bi].c) bi=i; const s=pq.splice(bi,1)[0]; const k=key(s.v); if(seen[k]) continue; seen[k]=1; n++;
+    const ov={}; acts.forEach(a=>ov[a.id]=r2(info[a.id].tn-(s.v[a.id]||0))); const R=cpm(acts,modo,ov);
+    if(R.T<=target+0.005) return {cost:s.c,v:s.v,T:R.T,steps:s.steps};
+    acts.forEach(a=>{ if(!R.by[a.id].crit) return; const rem=r2(info[a.id].cap-(s.v[a.id]||0)); if(rem<=0.001) return; const d=Math.min(1,rem); const nv=Object.assign({},s.v); nv[a.id]=r2((nv[a.id]||0)+d);
+      pq.push({c:s.c+d*info[a.id].cpd,v:nv,steps:s.steps.concat([[a.id,d]])}); }); }
+  return null; }
+function minDuration(acts,modo){ const ov={}; acts.forEach(a=>ov[a.id]=crashInfo(a,modo).ta); return cpm(acts,modo,ov).T; }
+function npv(I,F,i){ return -I+F.reduce((s,f,t)=>s+f/Math.pow(1+i,t+1),0); }
+function irr(I,F){ let lo=-0.99,hi=10; const f=x=>npv(I,F,x); if(f(lo)*f(hi)>0) return null; for(let k=0;k<200;k++){ const m=(lo+hi)/2; if(f(lo)*f(m)<=0) hi=m; else lo=m; } return (lo+hi)/2; }
+function payback(I,F,i){ let acc=-I; for(let t=0;t<F.length;t++){ const f=i?F[t]/Math.pow(1+i,t+1):F[t]; if(acc+f>=0) return t+(-acc)/f; acc+=f; } return null; }
+function evm(R,acts,dia){ let BAC=0,PV=0,EV=0,AC=0; acts.forEach(a=>{ const cn=num(a.cn)||0, x=R.by[a.id]; BAC+=cn; const frac=x.te>0?Math.min(1,Math.max(0,(dia-x.IC)/x.te)):(dia>=x.IC?1:0); PV+=cn*frac; EV+=cn*(Math.min(100,Math.max(0,num(a.av)||0))/100); AC+=num(a.cr)||0; });
+  const SPI=PV>0?EV/PV:null, CPI=AC>0?EV/AC:null; return {BAC:BAC,PV:PV,EV:EV,AC:AC,SV:EV-PV,CV:EV-AC,SPI:SPI,CPI:CPI,EAC:CPI?BAC/CPI:null}; }
+
+/* =================== PUENTE SHEETS =================== */
+function jsonp(url){ return new Promise(res=>{ const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5); const s=document.createElement('script');
+  window[cb]=d=>{ res(d); delete window[cb]; s.remove(); }; s.onerror=()=>{ res({rows:[]}); delete window[cb]; s.remove(); };
+  s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb; document.body.appendChild(s); setTimeout(()=>{ if(window[cb]){ res({rows:[]}); delete window[cb]; s.remove(); } },12000); }); }
+function sheetGet(n){ return jsonp(SHEET_API_URL+'?sheet='+encodeURIComponent(n)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(n,row){ // contrato JSON del doPost {sheet,row:[...]} con Content-Type text/plain
+  return fetch(SHEET_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:n,row:Object.keys(row).map(k=>row[k])}),keepalive:true}).catch(()=>{}); }
+function parseRows(rows){ return rows.filter(r=>String(r.CasoId||'').indexOf(MODULE_ID+'_')===0).map(r=>{ let o={}; try{ o=JSON.parse(r.Texto); }catch(e){} return {tipo:String(r.CasoId).slice(MODULE_ID.length+1),nombre:String(r.Nombre||'').trim(),ts:String(r.Timestamp||''),d:o}; }).sort((a,b)=>a.ts<b.ts?-1:1); }
+function joinSaves(rows){ // proyectos guardados: último guardado completo por id
+  const by={}; rows.filter(r=>r.tipo==='save').forEach(r=>{ const k=r.d.pid+'#'+r.d.key; (by[k]=by[k]||[]).push(r); });
+  const out={}; Object.values(by).forEach(g=>{ const n=g[0].d.n; const parts=[]; g.forEach(x=>parts[x.d.part]=x.d.data); if(parts.filter(x=>x!==undefined).length!==n) return; let P; try{ P=JSON.parse(parts.join('')); }catch(e){ return; }
+    const prev=out[g[0].d.pid]; if(!prev||prev.ts<g[0].ts) out[g[0].d.pid]={ts:g[0].ts,autor:g[0].nombre,sec:g[0].d.sec,P:P}; });
+  rows.filter(r=>r.tipo==='del').forEach(r=>{ if(out[r.d.pid]&&out[r.d.pid].ts<r.ts) delete out[r.d.pid]; });
+  return out; }
+
+/* =================== ESTADO =================== */
+let user={name:'',sec:''}, P=null, tab='datos', dirty=false, remote={};
+const EJEMPLO=()=>({id:'P'+Date.now().toString(36),nombre:'Torneo deportivo del colegio',objetivo:'Organizar un torneo de fútbol sala entre secciones.',responsable:'',inicio:'',modo:'pert',fechaMeta:13,
+  indirecto:5000,tasa:10,inversion:1000000,flujos:'400000, 400000, 400000',dia:5,acts:[
+ {id:'A',n:'Definir reglas del torneo',pred:[],o:2,m:3,p:4,resp:'',cn:20000,ta:2,ca:40000,av:100,cr:22000},
+ {id:'B',n:'Reservar la cancha',pred:['A'],o:1,m:2,p:3,resp:'',cn:15000,ta:1,ca:30000,av:100,cr:15000},
+ {id:'C',n:'Inscribir equipos',pred:['A'],o:3,m:4,p:11,resp:'',cn:30000,ta:3,ca:90000,av:50,cr:12000},
+ {id:'D',n:'Comprar trofeos',pred:['A'],o:2,m:3,p:4,resp:'',cn:60000,ta:2,ca:65000,av:0,cr:0},
+ {id:'E',n:'Hacer publicidad',pred:['B'],o:2,m:4,p:6,resp:'',cn:25000,ta:2,ca:45000,av:20,cr:8000},
+ {id:'F',n:'Armar el calendario de partidos',pred:['C','E'],o:1,m:2,p:3,resp:'',cn:10000,ta:1,ca:35000,av:0,cr:0},
+ {id:'G',n:'Realizar el torneo',pred:['D','F'],o:1,m:1,p:1,resp:'',cn:80000,ta:1,ca:80000,av:0,cr:0}]});
+const NUEVO=()=>({id:'P'+Date.now().toString(36),nombre:'Nuevo proyecto',objetivo:'',responsable:user.name,inicio:'',modo:'pert',fechaMeta:'',indirecto:'',tasa:'',inversion:'',flujos:'',dia:0,
+  acts:['A','B','C'].map((id,i)=>({id:id,n:'',pred:i?[String.fromCharCode(64+i)]:[],o:'',m:'',p:'',resp:'',cn:'',ta:'',ca:'',av:0,cr:''}))});
+function lsSave(){ try{ localStorage.setItem('gproy_'+norm(user.name),JSON.stringify(P)); }catch(e){} }
+function lsLoad(){ try{ const s=localStorage.getItem('gproy_'+norm(user.name)); return s?JSON.parse(s):null; }catch(e){ return null; } }
+
+/* =================== VALIDACIÓN =================== */
+function validar(P){ const errs=[], ids=P.acts.map(a=>a.id);
+  P.acts.forEach(a=>{ if(!String(a.n||'').trim()) errs.push(a.id+': falta el nombre.');
+    a.pred.forEach(q=>{ if(ids.indexOf(q)<0) errs.push(a.id+': la predecesora «'+q+'» no existe.'); if(q===a.id) errs.push(a.id+': no puede ser su propia predecesora.'); });
+    if(P.modo==='cpm'){ if(!(num(a.m)>0)) errs.push(a.id+': duración inválida.'); }
+    else { const o=num(a.o),m=num(a.m),p=num(a.p); if(!(o>0&&m>0&&p>0)) errs.push(a.id+': faltan tiempos o, m, p.'); else if(!(o<=m&&m<=p)) errs.push(a.id+': debe cumplirse o ≤ m ≤ p.'); } });
+  if(!errs.length&&!topo(P.acts)) errs.push('Hay un ciclo en las predecesoras.'); return errs; }
+
+/* =================== GRÁFICOS SVG =================== */
+function lineChart(series,opt){ // series:[{pts:[[x,y]],color,label,dash}]
+  const W=opt.w||640,H=opt.h||260,L=64,Rr=16,T=16,B=40; const xs=[].concat(...series.map(s=>s.pts.map(p=>p[0]))), ys=[].concat(...series.map(s=>s.pts.map(p=>p[1])));
+  let x0=Math.min(...xs),x1=Math.max(...xs),y0=opt.y0!==undefined?opt.y0:Math.min(0,...ys),y1=opt.y1!==undefined?opt.y1:Math.max(...ys); if(x1===x0) x1=x0+1; if(y1===y0) y1=y0+1;
+  const X=x=>L+(x-x0)/(x1-x0)*(W-L-Rr), Y=y=>T+(1-(y-y0)/(y1-y0))*(H-T-B);
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" font-family="Poppins,sans-serif" font-size="10.5">`;
+  for(let i=0;i<=4;i++){ const y=y0+(y1-y0)*i/4; s+=`<line x1="${L}" x2="${W-Rr}" y1="${Y(y)}" y2="${Y(y)}" stroke="#eef1f6"/><text x="${L-6}" y="${Y(y)+3}" text-anchor="end" fill="#5b6478">${opt.fy?opt.fy(y):fd(y,0)}</text>`; }
+  for(let i=0;i<=5;i++){ const x=x0+(x1-x0)*i/5; s+=`<text x="${X(x)}" y="${H-B+16}" text-anchor="middle" fill="#5b6478">${opt.fx?opt.fx(x):fd(x,0)}</text>`; }
+  if(opt.zeroY&&y0<0&&y1>0) s+=`<line x1="${L}" x2="${W-Rr}" y1="${Y(0)}" y2="${Y(0)}" stroke="#9aa3b5"/>`;
+  (opt.vlines||[]).forEach(v=>{ s+=`<line x1="${X(v.x)}" x2="${X(v.x)}" y1="${T}" y2="${H-B}" stroke="${v.color}" stroke-dasharray="4 3"/><text x="${X(v.x)+4}" y="${T+10}" fill="${v.color}" font-weight="600">${esc(v.label)}</text>`; });
+  series.forEach(se=>{ s+=`<polyline fill="none" stroke="${se.color}" stroke-width="2.5" ${se.dash?'stroke-dasharray="6 4"':''} points="${se.pts.map(p=>X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1)).join(' ')}"/>`; if(se.dots) se.pts.forEach(p=>s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="3.5" fill="${se.color}"/>`); });
+  s+=`<text x="${(L+W)/2}" y="${H-6}" text-anchor="middle" fill="#1d2433" font-weight="600">${esc(opt.xl||'')}</text>`;
+  let lx=L; series.filter(x=>x.label).forEach(se=>{ s+=`<rect x="${lx}" y="${H-12}" width="0" height="0"/>`; });
+  s+='</svg>'; const leg=series.filter(x=>x.label).map(se=>`<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:12px"><i style="width:14px;height:3px;background:${se.color};display:inline-block"></i>${esc(se.label)}</span>`).join('');
+  return s+(leg?`<div>${leg}</div>`:''); }
+function netSVG(R,acts){
+  const lvl={}; R.order.forEach(id=>{ const x=R.by[id]; lvl[id]=x.pred.length?Math.max(...x.pred.map(p=>lvl[p]))+1:1; });
+  const cols={}; Object.keys(lvl).forEach(id=>(cols[lvl[id]]=cols[lvl[id]]||[]).push(id)); const maxL=Math.max(...Object.values(lvl))+1;
+  const W=168,H=86,gx=38,gy=22,maxRows=Math.max(...Object.values(cols).map(c=>c.length),1); const pos={};
+  Object.keys(cols).forEach(l=>cols[l].forEach((id,i)=>pos[id]={x:20+(+l)*(W+gx)-80,y:20+i*(H+gy)+(maxRows-cols[l].length)*(H+gy)/2}));
+  const width=20+maxL*(W+gx)+20, height=40+maxRows*(H+gy); pos.INI={x:20,y:height/2-H/2-10,w:70}; pos.FIN={x:20+maxL*(W+gx)-80,y:height/2-H/2-10,w:70};
+  let e=''; const ar=(a,b,c)=>{ const x1=pos[a].x+(pos[a].w||W), y1=pos[a].y+H/2, x2=pos[b].x, y2=pos[b].y+H/2; e+=`<path d="M${x1},${y1} C${x1+gx/1.4},${y1} ${x2-gx/1.4},${y2} ${x2},${y2}" fill="none" stroke="${c?'#d6453a':'#9aa3b5'}" stroke-width="${c?3:1.5}" marker-end="url(#m${c?'c':'n'})"/>`; };
+  acts.forEach(a=>{ const x=R.by[a.id]; if(!x.pred.length) ar('INI',a.id,x.crit); x.pred.forEach(p=>ar(p,a.id,x.crit&&R.by[p].crit&&Math.abs(x.IC-R.by[p].TC)<0.005)); if(!x.succ.length) ar(a.id,'FIN',x.crit); });
+  let n=['INI','FIN'].map(k=>`<rect x="${pos[k].x}" y="${pos[k].y}" width="70" height="${H}" rx="35" fill="#0E1B3D"/><text x="${pos[k].x+35}" y="${pos[k].y+H/2+4}" fill="#fff" text-anchor="middle" font-weight="600">${k==='INI'?'Inicio':'Fin'}</text>`).join('');
+  acts.forEach(a=>{ const x=R.by[a.id], p=pos[a.id], c=x.crit; n+=`<rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="10" fill="${c?'#fdf0ee':'#fff'}" stroke="${c?'#d6453a':'#0E1B3D'}" stroke-width="${c?2.6:1.4}"/>
+   <line x1="${p.x}" x2="${p.x+W}" y1="${p.y+26}" y2="${p.y+26}" stroke="#d9dde6"/><line x1="${p.x}" x2="${p.x+W}" y1="${p.y+60}" y2="${p.y+60}" stroke="#d9dde6"/>
+   <text x="${p.x+8}" y="${p.y+18}" font-size="10.5" fill="#5b6478">IC ${fd(x.IC)}</text><text x="${p.x+W/2}" y="${p.y+18}" font-size="10.5" text-anchor="middle" fill="#5b6478">te ${fd(x.te)}</text><text x="${p.x+W-8}" y="${p.y+18}" font-size="10.5" text-anchor="end" fill="#5b6478">TC ${fd(x.TC)}</text>
+   <text x="${p.x+8}" y="${p.y+47}" font-size="13" font-weight="700" fill="${c?'#d6453a':'#0E1B3D'}">${a.id}</text><text x="${p.x+26}" y="${p.y+47}" font-size="11">${esc(a.n.length>20?a.n.slice(0,19)+'…':a.n)}</text>
+   <text x="${p.x+8}" y="${p.y+77}" font-size="10.5" fill="#5b6478">IL ${fd(x.IL)}</text><text x="${p.x+W/2}" y="${p.y+77}" font-size="10.5" text-anchor="middle" fill="${c?'#d6453a':'#B8863C'}" font-weight="600">H ${fd(x.H)}</text><text x="${p.x+W-8}" y="${p.y+77}" font-size="10.5" text-anchor="end" fill="#5b6478">TL ${fd(x.TL)}</text>`; });
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" font-family="Poppins,sans-serif" font-size="12"><rect width="${width}" height="${height}" fill="#fff"/><defs><marker id="mn" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#9aa3b5"/></marker><marker id="mc" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#d6453a"/></marker></defs>${e}${n}</svg>`; }
+function ganttSVG(R,acts,P){
+  const T=Math.max(1,Math.ceil(R.T)), cw=Math.max(24,Math.min(48,Math.floor(820/T))), lw=250, rh=28, top=60, w=lw+cw*T+30, h=top+acts.length*rh+44;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" font-family="Poppins,sans-serif"><rect width="${w}" height="${h}" fill="#fff"/><text x="12" y="22" font-size="14" font-weight="700" fill="#0E1B3D">${esc(P.nombre)} · ${fd(R.T)} días</text>`;
+  for(let d=0;d<=T;d++){ const x=lw+d*cw; s+=`<line x1="${x}" y1="${top-8}" x2="${x}" y2="${top+acts.length*rh}" stroke="#eef1f6"/>`; if(d<T){ s+=`<text x="${x+cw/2}" y="${top-24}" font-size="9.5" text-anchor="middle" fill="#5b6478">${d+1}</text>`; if(P.inicio) s+=`<text x="${x+cw/2}" y="${top-12}" font-size="8.5" text-anchor="middle" fill="#9aa3b5">${fdate(addDays(P.inicio,d))}</text>`; } }
+  acts.forEach((a,i)=>{ const x=R.by[a.id], y=top+i*rh, c=x.crit, av=Math.min(100,Math.max(0,num(a.av)||0));
+    s+=`<text x="12" y="${y+18}" font-size="11.5" fill="${c?'#d6453a':'#1d2433'}" font-weight="${c?700:400}">${a.id} · ${esc(a.n.length>28?a.n.slice(0,27)+'…':a.n)}</text>`;
+    s+=`<rect x="${lw+x.IC*cw}" y="${y+5}" width="${Math.max(2,x.te*cw)}" height="${rh-10}" rx="4" fill="${c?'#f3b9b3':'#b7ebe2'}"/><rect x="${lw+x.IC*cw}" y="${y+5}" width="${Math.max(0,x.te*cw*av/100)}" height="${rh-10}" rx="4" fill="${c?'#d6453a':'#2FC2AD'}"/>`;
+    if(av>0) s+=`<text x="${lw+x.IC*cw+4}" y="${y+18}" font-size="9.5" fill="#fff" font-weight="700">${av}%</text>`;
+    if(x.H>0.005) s+=`<rect x="${lw+x.TC*cw}" y="${y+9}" width="${x.H*cw}" height="${rh-18}" rx="3" fill="none" stroke="#B8863C" stroke-dasharray="4 3"/>`; });
+  const dia=num(P.dia); if(dia>0&&dia<=T) s+=`<line x1="${lw+dia*cw}" x2="${lw+dia*cw}" y1="${top-8}" y2="${top+acts.length*rh}" stroke="#0E1B3D" stroke-width="2"/><text x="${lw+dia*cw+3}" y="${top+acts.length*rh+12}" font-size="10" fill="#0E1B3D" font-weight="600">Corte: día ${dia}</text>`;
+  s+=`<g font-size="10.5"><rect x="${lw}" y="${h-18}" width="14" height="9" fill="#d6453a"/><text x="${lw+18}" y="${h-10}">Crítica (avance en color fuerte)</text><rect x="${lw+210}" y="${h-18}" width="14" height="9" fill="#2FC2AD"/><text x="${lw+228}" y="${h-10}">No crítica</text><rect x="${lw+310}" y="${h-18}" width="14" height="9" fill="none" stroke="#B8863C" stroke-dasharray="3 2"/><text x="${lw+328}" y="${h-10}">Holgura</text></g></svg>`;
+  return s; }
+function svgToPng(svg,name){ const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=img.width*2; c.height=img.height*2; const x=c.getContext('2d'); x.scale(2,2); x.drawImage(img,0,0); const a=document.createElement('a'); a.download=name; a.href=c.toDataURL('image/png'); a.click(); }; img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); }
+
+/* =================== INICIO / LISTA =================== */
+function nombrePortal(){ try{ return (new URLSearchParams(location.search).get('nombre')||'').trim()||null; }catch(e){ return null; } }
+function portada(){
+  const np=nombrePortal(); $('topActs').innerHTML='';
+  $('app').innerHTML=`<div class="card" style="max-width:720px;margin:20px auto"><span class="pill teal">Software de administración de proyectos · 11°</span>
+   <h2 style="margin-top:10px">Gestor de Proyectos</h2><p>Registre las actividades de su proyecto y el programa calcula todo: <b>PERT, ruta crítica, diagrama de red, Gantt, probabilidad de terminar a tiempo, aceleración al menor costo, seguimiento de avance y costos (valor ganado) y evaluación financiera (VAN, TIR)</b>. Sus proyectos se guardan en la plataforma.</p>
+   <div class="grid g2"><div><label>Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}"></div><div><label>Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+   <div class="row" style="margin-top:12px"><button class="btn gold" id="bIn">Entrar</button><span id="mIn" class="mut"></span></div></div>`;
+  $('bIn').onclick=()=>{ const n=$('inNom').value.trim(), s=$('inSec').value; if(n.split(/\s+/).length<2||!s){ $('mIn').innerHTML='<span class="err">Nombre completo y sección.</span>'; return; }
+    user={name:n,sec:s}; $('mIn').textContent='Cargando…'; sheetGet(SH_DATA).then(rows=>{ remote=joinSaves(parseRows(rows)); lista(); }); };
+}
+function misProyectos(){ return Object.entries(remote).filter(([id,x])=>norm(x.autor)===norm(user.name)).map(([id,x])=>x).sort((a,b)=>a.ts<b.ts?1:-1); }
+function lista(){
+  $('subt').textContent=user.name+' · '+user.sec; $('topActs').innerHTML='';
+  const mis=misProyectos(); const local=lsLoad();
+  $('app').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Mis proyectos</h2><div style="margin-left:auto" class="row"><button class="btn gold" id="bNew">+ Nuevo proyecto</button><button class="btn ghost" id="bEj">Abrir ejemplo resuelto</button><label class="btn ghost" style="margin:0;display:inline-block">📂 Importar archivo<input type="file" id="fImp" accept=".json" class="hidden"></label></div></div>
+   ${local&&!mis.some(x=>x.P.id===local.id)?`<div class="warn">Hay un proyecto sin guardar en este dispositivo: <b>${esc(local.nombre)}</b>. <button class="btn sm" id="bLocal">Recuperar</button></div>`:''}
+   <div class="list" style="margin-top:10px">${mis.map((x,i)=>`<div class="it"><div style="flex:1"><b>${esc(x.P.nombre)}</b><div class="mut">${x.P.acts.length} actividades · guardado ${new Date(x.ts).toLocaleString('es-CR')}</div></div><button class="btn sm" data-o="${i}">Abrir</button><button class="btn ghost sm" data-c="${i}">Duplicar</button><button class="btn red sm" data-d="${i}">Eliminar</button></div>`).join('')||'<p class="mut">Aún no tiene proyectos guardados.</p>'}</div></div>`;
+  $('bNew').onclick=()=>abrir(NUEVO()); $('bEj').onclick=()=>{ const e=EJEMPLO(); e.responsable=user.name; abrir(e); };
+  if($('bLocal')) $('bLocal').onclick=()=>abrir(local);
+  $('fImp').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ const q=JSON.parse(rd.result); if(!q.acts) throw 0; q.id='P'+Date.now().toString(36); abrir(q); toast('Proyecto importado'); }catch(er){ alert('Archivo no válido.'); } }; rd.readAsText(f); };
+  document.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>abrir(JSON.parse(JSON.stringify(mis[+b.dataset.o].P))));
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ const q=JSON.parse(JSON.stringify(mis[+b.dataset.c].P)); q.id='P'+Date.now().toString(36); q.nombre+=' (copia)'; abrir(q); });
+  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ const x=mis[+b.dataset.d]; if(!confirm('¿Eliminar «'+x.P.nombre+'»?')) return; sheetPost(SH_DATA,{Timestamp:now(),CasoId:MODULE_ID+'_del',Nombre:user.name,Texto:JSON.stringify({pid:x.P.id})}); delete remote[x.P.id]; lista(); });
+}
+function guardar(){ const txt=JSON.stringify(P); const n=Math.max(1,Math.ceil(txt.length/CHUNK)); const key='k'+Date.now();
+  for(let i=0;i<n;i++) sheetPost(SH_DATA,{Timestamp:now(),CasoId:MODULE_ID+'_save',Nombre:user.name,Texto:JSON.stringify({pid:P.id,sec:user.sec,key:key,part:i,n:n,data:txt.slice(i*CHUNK,(i+1)*CHUNK)})});
+  sheetPost(SH_PROG,{Timestamp:now(),Estudiante:user.name,Modulo:MODULE_ID+'_guardado_paso',Score:String(P.acts.length),Total:'actividades'});
+  remote[P.id]={ts:now(),autor:user.name,sec:user.sec,P:JSON.parse(txt)}; dirty=false; lsSave(); toast('✓ Proyecto guardado en la plataforma'); topbar(); }
+function exportar(){ const a=document.createElement('a'); a.download=(P.nombre||'proyecto').replace(/[^\w]+/g,'_')+'.json'; a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(P,null,1)); a.click(); }
+function exportCSV(R){ const rows=[['Act','Actividad','Pred','o','m','p','te','var','IC','TC','IL','TL','H','Critica','Costo normal','Avance %','Costo real']];
+  P.acts.forEach(a=>{ const x=R?R.by[a.id]:{}; rows.push([a.id,a.n,a.pred.join(' '),a.o,a.m,a.p,x.te,x.v,x.IC,x.TC,x.IL,x.TL,x.H,x.crit?'SI':'NO',a.cn,a.av,a.cr]); });
+  const csv='﻿'+rows.map(r=>r.map(v=>'"'+String(v===undefined?'':v).replace(/"/g,'""')+'"').join(';')).join('\n'); const a=document.createElement('a'); a.download=(P.nombre||'proyecto').replace(/[^\w]+/g,'_')+'.csv'; a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.click(); }
+function topbar(){ if(user.name==='DOCENTE'){ $('topActs').innerHTML=`<span style="font-size:12px;color:#e3b94a">Solo lectura</span><button class="btn sm" id="tExp">⬇ Archivo</button><button class="btn sm" id="tPrint">🖨 Informe</button><button class="btn sm" id="tBack">← Volver al panel</button>`; $('tExp').onclick=exportar; $('tPrint').onclick=()=>{ tab='informe'; render(); setTimeout(()=>window.print(),400); }; $('tBack').onclick=()=>panelRender(user.sec); return; } $('topActs').innerHTML=`<span style="font-size:12px;color:${dirty?'#e3b94a':'#9fe3d6'}">${dirty?'● Cambios sin guardar':'✓ Guardado'}</span><button class="btn sm" id="tSave">💾 Guardar</button><button class="btn sm" id="tExp">⬇ Archivo</button><button class="btn sm" id="tPrint">🖨 Informe</button><button class="btn sm" id="tList">📁 Mis proyectos</button>`;
+  $('tSave').onclick=guardar; $('tExp').onclick=exportar; $('tPrint').onclick=()=>{ tab='informe'; render(); setTimeout(()=>window.print(),400); }; $('tList').onclick=()=>{ if(dirty&&!confirm('Hay cambios sin guardar. ¿Salir de todos modos?')) return; lista(); }; }
+function abrir(q){ P=q; P.acts.forEach(a=>{ a.pred=Array.isArray(a.pred)?a.pred:String(a.pred||'').split(/[,\s]+/).filter(Boolean); }); tab='datos'; dirty=false; render(); }
+function touch(){ if(user.name==='DOCENTE') return; dirty=true; lsSave(); const t=$('topActs').querySelector('span'); if(t){ t.textContent='● Cambios sin guardar'; t.style.color='#e3b94a'; } }
+
+/* =================== VISTA PRINCIPAL =================== */
+const TABS=[['datos','📝 Datos'],['pert','🧮 PERT / CPM'],['red','🕸 Red'],['gantt','📅 Gantt'],['prob','🎯 Probabilidad'],['acel','⚡ Aceleración'],['seg','📈 Seguimiento'],['fin','💰 Evaluación financiera'],['informe','🖨 Informe']];
+function render(){
+  topbar(); $('subt').textContent=user.name+' · '+(P.nombre||'');
+  const errs=validar(P); const R=errs.length?null:cpm(P.acts,P.modo);
+  const kp=R?`<div class="kpis"><div class="kpi red"><div class="l">Duración esperada</div><div class="v">${fd(R.T)} días</div><div class="s">${P.inicio?'Termina '+fdate(addDays(P.inicio,Math.ceil(R.T)-1)):'Defina fecha de inicio'}</div></div>
+   <div class="kpi red"><div class="l">Ruta crítica</div><div class="v" style="font-size:17px">${R.ruta.join('-')}</div><div class="s">${R.criticas.length>1?R.criticas.length+' rutas críticas':'1 ruta crítica'}</div></div>
+   <div class="kpi"><div class="l">Desviación estándar</div><div class="v">${fd(R.sd)}</div><div class="s">σ² = ${fd(R.var,4)}</div></div>
+   <div class="kpi gold"><div class="l">Prob. terminar en ${num(P.fechaMeta)>0?P.fechaMeta+' días':'la meta'}</div><div class="v">${num(P.fechaMeta)>0?(R.sd>0?fp(Phi((num(P.fechaMeta)-R.T)/R.sd)):(num(P.fechaMeta)>=R.T?'100 %':'0 %')):'—'}</div><div class="s">Fecha meta en Datos</div></div>
+   <div class="kpi"><div class="l">Presupuesto (BAC)</div><div class="v" style="font-size:18px">${fm(P.acts.reduce((s,a)=>s+(num(a.cn)||0),0))}</div><div class="s">Suma de costos normales</div></div></div>`:'';
+  $('app').innerHTML=`<div class="tabs">${TABS.map(t=>`<button class="tab ${tab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>${kp}${errs.length&&tab!=='datos'?`<div class="warn"><b>Complete o corrija los datos para ver los resultados:</b><ul style="margin:4px 0 0">${errs.slice(0,6).map(e=>'<li>'+esc(e)+'</li>').join('')}</ul></div>`:''}<div id="view"></div>`;
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ tab=b.dataset.t; render(); });
+  if(tab==='datos') vDatos(); else if(R) ({pert:vPert,red:vRed,gantt:vGantt,prob:vProb,acel:vAcel,seg:vSeg,fin:vFin,informe:vInforme})[tab](R);
+}
+
+/* ---------- Datos ---------- */
+function vDatos(){
+  const pert=P.modo!=='cpm';
+  $('view').innerHTML=`<div class="card"><h2>Datos generales</h2><div class="grid g3">
+   <div><label>Nombre del proyecto</label><input type="text" data-p="nombre" value="${esc(P.nombre)}"></div><div><label>Administrador/a</label><input type="text" data-p="responsable" value="${esc(P.responsable)}"></div><div><label>Fecha de inicio</label><input type="date" data-p="inicio" value="${esc(P.inicio)}"></div></div>
+   <label>Objetivo</label><input type="text" data-p="objetivo" value="${esc(P.objetivo)}">
+   <div class="grid g4" style="margin-top:4px"><div><label>Método de tiempos</label><div class="seg"><button data-m="pert" class="${pert?'on':''}">PERT (o, m, p)</button><button data-m="cpm" class="${!pert?'on':''}">CPM (1 tiempo)</button></div></div>
+   <div><label>Fecha meta (días)</label><input type="number" data-p="fechaMeta" value="${esc(P.fechaMeta)}"></div><div><label>Costo indirecto por día (₡)</label><input type="number" data-p="indirecto" value="${esc(P.indirecto)}"></div><div><label>Día de corte (seguimiento)</label><input type="number" data-p="dia" value="${esc(P.dia)}"></div></div></div>
+  <div class="card"><div class="row"><h2 style="margin:0">Actividades</h2><span class="mut">Las predecesoras se escriben con sus códigos separados por coma. El tiempo y el costo acelerados son opcionales (para la pestaña Aceleración).</span></div>
+   <div class="scroll" style="margin-top:8px"><table class="tb" id="tA"><tr><th>Cód.</th><th style="min-width:190px">Actividad</th><th>Predecesoras</th>${pert?'<th>o</th><th>m</th><th>p</th>':'<th>Duración</th>'}<th>Responsable</th><th>Costo normal ₡</th><th>Tiempo acelerado</th><th>Costo acelerado ₡</th><th>Avance %</th><th>Costo real ₡</th><th></th></tr>
+   ${P.acts.map((a,i)=>`<tr><td><b>${a.id}</b></td><td><input type="text" data-i="${i}" data-f="n" value="${esc(a.n)}"></td><td><input type="text" data-i="${i}" data-f="pred" value="${esc(a.pred.join(','))}" style="width:80px"></td>
+    ${(pert?['o','m','p']:['m']).map(f=>`<td><input type="text" data-i="${i}" data-f="${f}" value="${esc(a[f])}" style="width:56px"></td>`).join('')}
+    <td><input type="text" data-i="${i}" data-f="resp" value="${esc(a.resp)}" style="width:110px"></td>${['cn','ta','ca','av','cr'].map(f=>`<td><input type="text" data-i="${i}" data-f="${f}" value="${esc(a[f])}" style="width:${f==='ta'||f==='av'?60:96}px"></td>`).join('')}
+    <td><button class="btn red sm" data-del="${i}" ${P.acts.length<=2?'disabled':''}>✕</button></td></tr>`).join('')}</table></div>
+   <div class="row" style="margin-top:8px"><button class="btn ghost sm" id="aAdd">+ Agregar actividad</button><span id="vMsg"></span></div><div id="vErr"></div></div>`;
+  $('view').querySelectorAll('[data-p]').forEach(inp=>inp.oninput=()=>{ P[inp.dataset.p]=inp.value; touch(); if(inp.dataset.p==='nombre') $('subt').textContent=user.name+' · '+inp.value; });
+  $('view').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ P.modo=b.dataset.m; if(P.modo==='cpm') P.acts.forEach(a=>{ if(!num(a.m)&&num(a.o)) a.m=a.o; }); touch(); render(); });
+  $('view').querySelectorAll('input[data-i]').forEach(inp=>inp.oninput=()=>{ const a=P.acts[+inp.dataset.i], f=inp.dataset.f; a[f]=f==='pred'?inp.value.toUpperCase().split(/[,\s;]+/).filter(Boolean):inp.value; touch(); errores(); });
+  $('view').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.del, id=P.acts[i].id; P.acts.splice(i,1); P.acts.forEach(a=>a.pred=a.pred.filter(q=>q!==id)); touch(); render(); });
+  $('aAdd').onclick=()=>{ const used=P.acts.map(a=>a.id); let k=0,id; do{ id=k<26?String.fromCharCode(65+k):'A'+(k-25); k++; }while(used.indexOf(id)>-1); P.acts.push({id:id,n:'',pred:[],o:'',m:'',p:'',resp:'',cn:'',ta:'',ca:'',av:0,cr:''}); touch(); render(); };
+  function errores(){ const e=validar(P); $('vErr').innerHTML=e.length?`<div class="warn"><b>Por completar:</b> ${e.slice(0,5).map(esc).join(' · ')}${e.length>5?' …':''}</div>`:'<div class="tip">✓ Datos completos: revise los resultados en las demás pestañas.</div>'; }
+  errores();
+}
+
+/* ---------- PERT / CPM ---------- */
+function vPert(R){
+  const pert=P.modo!=='cpm';
+  $('view').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Tabla PERT / CPM</h2><button class="btn ghost sm" id="bCsv" style="margin-left:auto">⬇ Exportar a Excel (CSV)</button></div>
+   ${pert?'<div class="mut" style="margin:6px 0"><span class="formula">te = (o + 4m + p) / 6</span> <span class="formula">σ² = ((p − o) / 6)²</span> <span class="formula">IC = máx TC pred.</span> <span class="formula">TL = mín IL suc.</span> <span class="formula">H = IL − IC</span></div>':''}
+   <div class="scroll"><table class="tb"><tr><th>Act.</th><th>Actividad</th><th>Pred.</th>${pert?'<th>o</th><th>m</th><th>p</th>':''}<th>te</th>${pert?'<th>σ²</th>':''}<th>IC</th><th>TC</th><th>IL</th><th>TL</th><th>Holgura</th><th>¿Crítica?</th>${P.inicio?'<th>Inicio</th><th>Fin</th>':''}</tr>
+   ${P.acts.map(a=>{ const x=R.by[a.id]; return `<tr class="${x.crit?'crit':''}"><td><b>${a.id}</b></td><td>${esc(a.n)}</td><td>${a.pred.join(', ')||'—'}</td>${pert?`<td class="n">${a.o}</td><td class="n">${a.m}</td><td class="n">${a.p}</td>`:''}<td class="n"><b>${fd(x.te)}</b></td>${pert?`<td class="n">${fd(x.v,4)}</td>`:''}<td class="n">${fd(x.IC)}</td><td class="n">${fd(x.TC)}</td><td class="n">${fd(x.IL)}</td><td class="n">${fd(x.TL)}</td><td class="n"><b>${fd(x.H)}</b></td><td>${x.crit?'<span class="pill red">Sí</span>':'No'}</td>${P.inicio?`<td>${fdate(addDays(P.inicio,x.IC))}</td><td>${fdate(addDays(P.inicio,Math.max(0,x.TC-1)))}</td>`:''}</tr>`; }).join('')}</table></div></div>
+  <div class="card"><h2>Todas las rutas del proyecto</h2><table class="tb"><tr><th>#</th><th>Ruta</th><th>Duración</th>${pert?'<th>Varianza</th>':''}<th>Holgura de la ruta</th><th></th></tr>
+   ${R.rutas.slice(0,40).map((r,i)=>`<tr class="${Math.abs(r.d-R.T)<0.005?'crit':''}"><td>${i+1}</td><td><b>${r.p.join(' → ')}</b></td><td class="n">${fd(r.d)}</td>${pert?`<td class="n">${fd(r.v,4)}</td>`:''}<td class="n">${fd(R.T-r.d)}</td><td>${Math.abs(r.d-R.T)<0.005?'<span class="pill red">Crítica</span>':''}</td></tr>`).join('')}</table>
+   ${R.criticas.length>1?'<div class="tip">Hay más de una ruta crítica: para la probabilidad se usa la de <b>mayor varianza</b> ('+R.ruta.join('-')+'), que es la más conservadora.</div>':''}</div>`;
+  $('bCsv').onclick=()=>exportCSV(R);
+}
+/* ---------- Red ---------- */
+function vRed(R){ const s=netSVG(R,P.acts); $('view').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Diagrama de red (actividades en los nodos)</h2><button class="btn ghost sm" id="bPng" style="margin-left:auto">⬇ Imagen PNG</button></div><p class="mut">Cada nodo muestra IC · te · TC (arriba) e IL · H · TL (abajo). En rojo, la ruta crítica.</p><div class="box">${s}</div></div>`;
+  $('bPng').onclick=()=>svgToPng(s,'Red_'+(P.nombre||'proyecto').replace(/[^\w]+/g,'_')+'.png'); }
+/* ---------- Gantt ---------- */
+function vGantt(R){ const s=ganttSVG(R,P.acts,P); $('view').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Gráfica de Gantt</h2><button class="btn ghost sm" id="bPng" style="margin-left:auto">⬇ Imagen PNG</button></div>
+  <p class="mut">Las barras van del IC al TC. El color fuerte es el % de avance registrado; la línea negra es el día de corte; el recuadro punteado es la holgura.${P.inicio?'':' Defina la fecha de inicio en Datos para ver fechas del calendario.'}</p><div class="box">${s}</div></div>`;
+  $('bPng').onclick=()=>svgToPng(s,'Gantt_'+(P.nombre||'proyecto').replace(/[^\w]+/g,'_')+'.png'); }
+/* ---------- Probabilidad ---------- */
+function vProb(R){
+  const pert=P.modo!=='cpm';
+  if(!pert||R.sd===0){ $('view').innerHTML=`<div class="card"><h2>Probabilidad</h2><div class="warn">Con el método CPM (un solo tiempo) o sin varianza en la ruta crítica no hay incertidumbre: el proyecto dura exactamente ${fd(R.T)} días. Use PERT con tiempos o, m, p para calcular probabilidades.</div></div>`; return; }
+  const pts=[]; for(let k=0;k<=60;k++){ const d=R.T-3.2*R.sd+k*(6.4*R.sd/60); pts.push([d,Phi((d-R.T)/R.sd)*100]); }
+  $('view').innerHTML=`<div class="card"><h2>Probabilidad de terminar a tiempo</h2><div class="mut">Ruta usada: <b>${R.ruta.join('-')}</b> · Te = ${fd(R.T)} · σ² = ${fd(R.var,4)} · σ = ${fd(R.sd,4)} <span class="formula">Z = (D − Te) / σ</span></div>
+   <div class="grid g2" style="margin-top:8px"><div class="card" style="box-shadow:none;border:1.5px solid var(--line)"><h3 style="margin-top:0">¿Qué probabilidad hay de terminar en D días?</h3><label>D (días)</label><input type="number" id="pD" value="${esc(P.fechaMeta||Math.ceil(R.T))}"><div id="pOut1" style="margin-top:8px"></div></div>
+   <div class="card" style="box-shadow:none;border:1.5px solid var(--line)"><h3 style="margin-top:0">¿Cuántos días necesito para un nivel de confianza?</h3><label>Nivel de confianza (%)</label><input type="number" id="pC" value="95"><div id="pOut2" style="margin-top:8px"></div></div></div>
+   <h3>Curva de probabilidad acumulada</h3><div id="pCh"></div></div>`;
+  function c1(){ const D=num($('pD').value); if(!isFinite(D)){ $('pOut1').innerHTML=''; return; } const z=(D-R.T)/R.sd, pr=Phi(z);
+    $('pOut1').innerHTML=`<div class="tip">Z = (${fd(D)} − ${fd(R.T)}) / ${fd(R.sd,4)} = <b>${fd(z)}</b><br>Probabilidad = <b>${fp(pr)}</b>${z<0?' (Z negativo: 1 − tabla(|Z|))':''}</div>`; draw(D); }
+  function c2(){ const c=num($('pC').value)/100; if(!(c>0&&c<1)){ $('pOut2').innerHTML='<span class="err">Entre 1 y 99 %.</span>'; return; } const z=invPhi(c), D=R.T+z*R.sd;
+    $('pOut2').innerHTML=`<div class="tip">Z para ${fp(c)} = <b>${fd(z)}</b><br>D = ${fd(R.T)} + ${fd(z)} × ${fd(R.sd,4)} = <b>${fd(D)} días</b></div>`; }
+  function draw(D){ $('pCh').innerHTML=lineChart([{pts:pts,color:'#0E1B3D',label:'Probabilidad acumulada (%)'}],{xl:'Días',y0:0,y1:100,fy:y=>fd(y,0)+'%',fx:x=>fd(x,1),vlines:[{x:R.T,color:'#d6453a',label:'Te'}].concat(isFinite(D)&&D>=pts[0][0]&&D<=pts[60][0]?[{x:D,color:'#B8863C',label:'D'}]:[])}); }
+  $('pD').oninput=()=>{ P.fechaMeta=$('pD').value; touch(); c1(); }; $('pC').oninput=c2; c1(); c2();
+}
+/* ---------- Aceleración ---------- */
+function vAcel(R){
+  const info={}; P.acts.forEach(a=>info[a.id]=crashInfo(a,P.modo)); const Tmin=minDuration(P.acts,P.modo); const ind=num(P.indirecto)||0;
+  const bac=P.acts.reduce((s,a)=>s+(num(a.cn)||0),0);
+  $('view').innerHTML=`<div class="card"><h2>Trueque costo-tiempo y aceleración</h2><div class="mut"><span class="formula">Costo por día = (Costo acelerado − Costo normal) / (Tiempo normal − Tiempo acelerado)</span></div>
+   <div class="scroll" style="margin-top:6px"><table class="tb"><tr><th>Act.</th><th>Actividad</th><th>Tiempo normal</th><th>Tiempo acelerado</th><th>Días acelerables</th><th>Costo normal</th><th>Costo acelerado</th><th>Costo por día</th><th>¿Crítica?</th></tr>
+   ${P.acts.map(a=>{ const x=info[a.id]; return `<tr class="${R.by[a.id].crit?'crit':''}"><td><b>${a.id}</b></td><td>${esc(a.n)}</td><td class="n">${fd(x.tn)}</td><td class="n">${fd(x.ta)}</td><td class="n">${fd(x.cap)}</td><td class="n">${fm(num(a.cn))}</td><td class="n">${x.cpd===null?'—':fm(num(a.ca))}</td><td class="n"><b>${x.cpd===null?'no acelerable':fm(x.cpd)}</b></td><td>${R.by[a.id].crit?'<span class="pill red">Sí</span>':'No'}</td></tr>`; }).join('')}</table></div>
+   <div class="grid g3" style="margin-top:10px"><div><label>Duración deseada (días)</label><input type="number" id="cT" value="${Math.max(Math.ceil(Tmin),Math.floor(R.T)-1)}"></div><div class="mut" style="align-self:end">Duración normal: <b>${fd(R.T)}</b> · mínima posible (todo acelerado): <b>${fd(Tmin)}</b></div><div style="align-self:end"><button class="btn gold" id="cGo">Calcular aceleración óptima</button></div></div>
+   <div id="cOut"></div></div>
+  <div class="card"><h2>Curva de trueque costo-tiempo</h2><p class="mut">Costo directo (normales + aceleración)${ind?', costo indirecto ('+fm(ind)+' por día) y costo total':''} para cada duración posible.</p><div id="cCurve">Calculando…</div></div>`;
+  function plan(){ const t=num($('cT').value); if(!isFinite(t)) return; if(t<Tmin-0.005){ $('cOut').innerHTML=`<div class="warn">No es posible: aun acelerando todo, la duración mínima es ${fd(Tmin)} días.</div>`; return; }
+    const r=crashPlan(P.acts,P.modo,t); if(!r){ $('cOut').innerHTML='<div class="warn">No se encontró una solución (proyecto muy grande para la búsqueda).</div>'; return; }
+    let T=R.T, acc=0; const ov={}; P.acts.forEach(a=>ov[a.id]=info[a.id].tn);
+    const filas=r.steps.map(([id,d],k)=>{ ov[id]=r2(ov[id]-d); acc+=d*info[id].cpd; const RR=cpm(P.acts,P.modo,ov); return `<tr><td>${k+1}</td><td>Acelerar <b>${id}</b> ${fd(d)} día(s) (${fm(info[id].cpd)}/día)</td><td class="n">${fd(RR.T)}</td><td class="n">${fm(acc)}</td><td>${RR.criticas.map(c=>c.p.join('-')).join(' | ')}</td></tr>`; }).join('');
+    $('cOut').innerHTML=`<div class="tip">Para terminar en <b>${fd(t)} días</b> el costo mínimo de aceleración es <b>${fm(r.cost)}</b>. Costo directo total: <b>${fm(bac+r.cost)}</b>${ind?' · total con indirectos: <b>'+fm(bac+r.cost+ind*r.T)+'</b>':''}.</div>
+     <table class="tb"><tr><th>Paso</th><th>Acción</th><th>Nueva duración</th><th>Costo acumulado</th><th>Rutas críticas después del paso</th></tr>${filas||'<tr><td colspan="5" class="mut">No hace falta acelerar.</td></tr>'}</table>`; }
+  $('cGo').onclick=plan; plan();
+  setTimeout(()=>{ const pts=[], ptsI=[], ptsT=[]; for(let t=Math.floor(R.T);t>=Math.ceil(Tmin-1e-9);t--){ const r=t>=R.T?{cost:0,T:R.T}:crashPlan(P.acts,P.modo,t); if(!r) break; const d=t>=R.T?R.T:t; pts.push([d,bac+r.cost]); if(ind){ ptsI.push([d,ind*d]); ptsT.push([d,bac+r.cost+ind*d]); } }
+    if(R.T%1>0.005){ pts.unshift([R.T,bac]); if(ind){ ptsI.unshift([R.T,ind*R.T]); ptsT.unshift([R.T,bac+ind*R.T]); } }
+    pts.sort((a,b)=>a[0]-b[0]); ptsI.sort((a,b)=>a[0]-b[0]); ptsT.sort((a,b)=>a[0]-b[0]);
+    const ser=[{pts:pts,color:'#d6453a',label:'Costo directo',dots:true}]; if(ind){ ser.push({pts:ptsI,color:'#B8863C',label:'Costo indirecto',dash:true}); ser.push({pts:ptsT,color:'#0E1B3D',label:'Costo total',dots:true}); }
+    let best=''; if(ind&&ptsT.length){ const b=ptsT.slice().sort((x,y)=>x[1]-y[1])[0]; best=`<div class="tip">Duración de <b>menor costo total</b>: <b>${fd(b[0])} días</b> con ${fm(b[1])}.</div>`; }
+    $('cCurve').innerHTML=(pts.length>1?lineChart(ser,{xl:'Duración del proyecto (días)',fy:y=>'₡'+fd(y/1000,0)+'k',fx:x=>fd(x,0)}):'<p class="mut">Registre tiempos y costos acelerados para ver la curva.</p>')+best; },30);
+}
+/* ---------- Seguimiento ---------- */
+function vSeg(R){
+  const dia=num(P.dia)||0; const E=evm(R,P.acts,dia); const T=Math.ceil(R.T);
+  const pv=[]; for(let d=0;d<=T;d++) pv.push([d,evm(R,P.acts,d).PV]);
+  const est=(v,good,txt)=>`<span class="pill ${v===null?'':good?'teal':'red'}">${txt}</span>`;
+  $('view').innerHTML=`<div class="card"><h2>Seguimiento del avance y de los costos (valor ganado)</h2>
+   <div class="grid g3"><div><label>Día de corte</label><input type="number" id="sD" value="${dia}" min="0" max="${T}"></div><div class="mut" style="grid-column:span 2;align-self:end">Registre el <b>avance %</b> y el <b>costo real</b> de cada actividad aquí o en la pestaña Datos.</div></div>
+   <div class="kpis" style="margin-top:10px"><div class="kpi"><div class="l">Presupuesto total (BAC)</div><div class="v" style="font-size:18px">${fm(E.BAC)}</div></div><div class="kpi gold"><div class="l">Valor planeado (PV)</div><div class="v" style="font-size:18px">${fm(E.PV)}</div><div class="s">Lo que debía estar hecho</div></div>
+    <div class="kpi"><div class="l">Valor ganado (EV)</div><div class="v" style="font-size:18px">${fm(E.EV)}</div><div class="s">Lo realmente hecho</div></div><div class="kpi red"><div class="l">Costo real (AC)</div><div class="v" style="font-size:18px">${fm(E.AC)}</div><div class="s">Lo gastado</div></div></div>
+   <table class="tb"><tr><th>Indicador</th><th>Fórmula</th><th>Resultado</th><th>Interpretación</th></tr>
+    <tr><td>Variación del cronograma (SV)</td><td>EV − PV</td><td class="n">${fm(E.SV)}</td><td>${est(E.PV?1:null,E.SV>=0,E.SV>=0?'Adelantado o a tiempo':'Atrasado')}</td></tr>
+    <tr><td>Variación del costo (CV)</td><td>EV − AC</td><td class="n">${fm(E.CV)}</td><td>${est(E.AC?1:null,E.CV>=0,E.CV>=0?'Dentro del presupuesto':'Sobre el presupuesto')}</td></tr>
+    <tr><td>Índice de desempeño del cronograma (SPI)</td><td>EV / PV</td><td class="n">${E.SPI===null?'—':fd(E.SPI)}</td><td>${E.SPI===null?'—':E.SPI>=1?'Avanza al ritmo planeado o más rápido':'Avanza más lento de lo planeado'}</td></tr>
+    <tr><td>Índice de desempeño del costo (CPI)</td><td>EV / AC</td><td class="n">${E.CPI===null?'—':fd(E.CPI)}</td><td>${E.CPI===null?'—':E.CPI>=1?'Cada colón gastado rinde lo planeado':'Se gasta más de lo que se avanza'}</td></tr>
+    <tr><td>Estimación al terminar (EAC)</td><td>BAC / CPI</td><td class="n">${E.EAC===null?'—':fm(E.EAC)}</td><td>${E.EAC===null?'—':'Costo final proyectado si sigue igual'}</td></tr></table></div>
+  <div class="card"><h2>Registro de avance</h2><div class="scroll"><table class="tb"><tr><th>Act.</th><th>Actividad</th><th>Programado</th><th>Costo normal</th><th>Avance %</th><th>Costo real ₡</th><th>Estado al día ${dia}</th></tr>
+   ${P.acts.map((a,i)=>{ const x=R.by[a.id]; const plan=x.te>0?Math.min(1,Math.max(0,(dia-x.IC)/x.te)):0; const av=(num(a.av)||0)/100; const st=av>=1?'<span class="pill teal">Terminada</span>':av+1e-9<plan?'<span class="pill red">Atrasada</span>':av>0?'<span class="pill gold">En curso</span>':plan>0?'<span class="pill red">Sin iniciar</span>':'Pendiente';
+    return `<tr class="${x.crit?'crit':''}"><td><b>${a.id}</b></td><td>${esc(a.n)}</td><td>días ${fd(x.IC,1)}–${fd(x.TC,1)} · plan ${Math.round(plan*100)} %</td><td class="n">${fm(num(a.cn))}</td><td><input type="text" data-i="${i}" data-f="av" value="${esc(a.av)}" style="width:60px"></td><td><input type="text" data-i="${i}" data-f="cr" value="${esc(a.cr)}" style="width:100px"></td><td>${st}</td></tr>`; }).join('')}</table></div></div>
+  <div class="card"><h2>Curva S del presupuesto</h2><div id="sCh"></div></div>`;
+  $('sCh').innerHTML=lineChart([{pts:pv,color:'#B8863C',label:'Valor planeado acumulado (PV)'}],{xl:'Días',fy:y=>'₡'+fd(y/1000,0)+'k',fx:x=>fd(x,0),vlines:dia>0?[{x:Math.min(dia,T),color:'#0E1B3D',label:'Corte · EV '+fm(E.EV)}]:[]});
+  $('sD').onchange=()=>{ P.dia=$('sD').value; touch(); render(); };
+  $('view').querySelectorAll('input[data-i]').forEach(inp=>inp.onchange=()=>{ P.acts[+inp.dataset.i][inp.dataset.f]=inp.value; touch(); render(); });
+}
+/* ---------- Evaluación financiera ---------- */
+function vFin(){
+  $('view').innerHTML=`<div class="card"><h2>Evaluación financiera del proyecto</h2><div class="mut"><span class="formula">VAN = −I + Σ Ft / (1 + i)^t</span> <span class="formula">TIR: tasa con VAN = 0</span> <span class="formula">IR = VP flujos / I</span></div>
+   <div class="grid g3" style="margin-top:6px"><div><label>Inversión inicial (₡)</label><input type="text" data-p="inversion" value="${esc(P.inversion)}"></div><div><label>Tasa de descuento (%)</label><input type="text" data-p="tasa" value="${esc(P.tasa)}"></div><div><label>Flujos netos por periodo (₡, separados por coma)</label><input type="text" data-p="flujos" value="${esc(P.flujos)}"></div></div><div id="fOut"></div></div>`;
+  $('view').querySelectorAll('[data-p]').forEach(inp=>inp.oninput=()=>{ P[inp.dataset.p]=inp.value; touch(); calc(); });
+  function calc(){ const I=num(P.inversion), i=num(P.tasa)/100, flows=String(P.flujos||'').split(/\s*[,;]\s*/).map(num).filter(isFinite);
+    if(!(I>0)||!(i>=0)||!flows.length){ $('fOut').innerHTML='<p class="mut">Ingrese la inversión, la tasa y al menos un flujo.</p>'; return; }
+    const V=npv(I,flows,i), T=irr(I,flows), pb=payback(I,flows,0), pbd=payback(I,flows,i); const vp=V+I;
+    let acc=-I; const filas=flows.map((f,t)=>{ const fac=1/Math.pow(1+i,t+1), vpf=f*fac; acc+=vpf; return `<tr><td>${t+1}</td><td class="n">${fm(f)}</td><td class="n">${fd(fac,4)}</td><td class="n">${fm(vpf)}</td><td class="n">${fm(acc)}</td></tr>`; }).join('');
+    const prof=[]; const hi=Math.max(0.3,(T||0.2)*2); for(let k=0;k<=40;k++){ const r=k*hi/40; prof.push([r*100,npv(I,flows,r)]); }
+    $('fOut').innerHTML=`<div class="kpis" style="margin-top:10px"><div class="kpi ${V>=0?'':'red'}"><div class="l">VAN</div><div class="v" style="font-size:19px">${fm(V)}</div><div class="s">${V>0?'Conviene: supera la tasa exigida':V<0?'No conviene a esta tasa':'Indiferente'}</div></div>
+      <div class="kpi gold"><div class="l">TIR</div><div class="v">${T===null?'No existe':fp(T)}</div><div class="s">${T===null?'Los flujos no cambian de signo':T>i?'Mayor que la tasa: conviene':'Menor que la tasa: no conviene'}</div></div>
+      <div class="kpi"><div class="l">Índice de rentabilidad</div><div class="v">${fd(vp/I)}</div><div class="s">${vp/I>=1?'≥ 1: recupera y gana':'< 1: no recupera la inversión'}</div></div>
+      <div class="kpi"><div class="l">Recuperación</div><div class="v" style="font-size:17px">${pb===null?'No recupera':fd(pb)+' periodos'}</div><div class="s">Descontada: ${pbd===null?'no recupera':fd(pbd)+' periodos'}</div></div></div>
+     <table class="tb"><tr><th>Periodo</th><th>Flujo</th><th>Factor 1/(1+i)^t</th><th>Valor presente</th><th>VP acumulado (con −I)</th></tr><tr><td>0</td><td class="n">${fm(-I)}</td><td class="n">1,0000</td><td class="n">${fm(-I)}</td><td class="n">${fm(-I)}</td></tr>${filas}</table>
+     <h3>Perfil del VAN (VAN según la tasa)</h3>${lineChart([{pts:prof,color:'#0E1B3D',label:'VAN'}],{xl:'Tasa de descuento (%)',zeroY:true,fy:y=>'₡'+fd(y/1000,0)+'k',fx:x=>fd(x,0)+'%',vlines:(T!==null?[{x:T*100,color:'#B8863C',label:'TIR'}]:[]).concat([{x:i*100,color:'#d6453a',label:'i'}])})}`; }
+  calc();
+}
+/* ---------- Informe ---------- */
+function vInforme(R){
+  const pert=P.modo!=='cpm'; const pr=pert&&R.sd>0&&num(P.fechaMeta)>0?Phi((num(P.fechaMeta)-R.T)/R.sd):null; const E=evm(R,P.acts,num(P.dia)||0);
+  const I=num(P.inversion), i=num(P.tasa)/100, F=String(P.flujos||'').split(/\s*[,;]\s*/).map(num).filter(isFinite); const fin=I>0&&F.length?{V:npv(I,F,i),T:irr(I,F)}:null;
+  $('view').innerHTML=`<div class="card"><div class="row noprint"><button class="btn gold" id="bPr">🖨 Imprimir o guardar como PDF</button></div>
+   <h2 style="margin-top:8px">Informe del proyecto: ${esc(P.nombre)}</h2><p><b>Objetivo:</b> ${esc(P.objetivo)}<br><b>Administrador/a:</b> ${esc(P.responsable)} · <b>Método:</b> ${pert?'PERT':'CPM'}${P.inicio?' · <b>Inicio:</b> '+fdate(addDays(P.inicio,0)):''} · <b>Elaborado por:</b> ${esc(user.name)} (${esc(user.sec)})</p>
+   <table class="tb"><tr><th>Resultado</th><th>Valor</th></tr><tr><td>Duración esperada</td><td>${fd(R.T)} días</td></tr><tr><td>Ruta crítica</td><td>${R.criticas.map(c=>c.p.join('-')).join(' | ')}</td></tr>
+    ${pert?`<tr><td>Varianza / desviación de la ruta crítica</td><td>${fd(R.var,4)} / ${fd(R.sd,4)}</td></tr>`:''}${pr!==null?`<tr><td>Probabilidad de terminar en ${P.fechaMeta} días</td><td>${fp(pr)}</td></tr>`:''}
+    <tr><td>Presupuesto (BAC)</td><td>${fm(E.BAC)}</td></tr><tr><td>Seguimiento al día ${num(P.dia)||0}: PV / EV / AC</td><td>${fm(E.PV)} / ${fm(E.EV)} / ${fm(E.AC)} · SPI ${E.SPI===null?'—':fd(E.SPI)} · CPI ${E.CPI===null?'—':fd(E.CPI)}</td></tr>
+    ${fin?`<tr><td>VAN (i = ${fd(i*100)} %) / TIR</td><td>${fm(fin.V)} / ${fin.T===null?'no existe':fp(fin.T)}</td></tr>`:''}</table></div>
+  <div class="card"><h3 style="margin-top:0">Tabla PERT / CPM</h3><table class="tb"><tr><th>Act.</th><th>Actividad</th><th>Pred.</th><th>te</th>${pert?'<th>σ²</th>':''}<th>IC</th><th>TC</th><th>IL</th><th>TL</th><th>H</th></tr>
+   ${P.acts.map(a=>{ const x=R.by[a.id]; return `<tr class="${x.crit?'crit':''}"><td><b>${a.id}</b></td><td>${esc(a.n)}</td><td>${a.pred.join(', ')||'—'}</td><td class="n">${fd(x.te)}</td>${pert?`<td class="n">${fd(x.v,4)}</td>`:''}<td class="n">${fd(x.IC)}</td><td class="n">${fd(x.TC)}</td><td class="n">${fd(x.IL)}</td><td class="n">${fd(x.TL)}</td><td class="n">${fd(x.H)}</td></tr>`; }).join('')}</table></div>
+  <div class="card"><h3 style="margin-top:0">Diagrama de red</h3><div class="box">${netSVG(R,P.acts)}</div></div>
+  <div class="card"><h3 style="margin-top:0">Gráfica de Gantt</h3><div class="box">${ganttSVG(R,P.acts,P)}</div></div>`;
+  $('bPr').onclick=()=>window.print();
+}
+
+/* =================== PANEL DOCENTE =================== */
+function panel(){ const pin=prompt('PIN del panel docente:'); if(pin!==TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  $('app').innerHTML='<div class="card">Cargando…</div>'; sheetGet(SH_DATA).then(rows=>{ remote=joinSaves(parseRows(rows)); panelRender(SECCIONES[0]); }); }
+function panelRender(sec){
+  $('topActs').innerHTML=''; $('subt').textContent='Panel docente';
+  const list=Object.values(remote).filter(x=>x.sec===sec).sort((a,b)=>a.autor<b.autor?-1:1);
+  $('app').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · proyectos guardados</h2><select id="pS" style="width:auto;margin-left:auto">${SECCIONES.map(s=>`<option ${s===sec?'selected':''}>${s}</option>`).join('')}</select><button class="btn ghost sm" id="pO">Salir</button></div>
+   <table class="tb" style="margin-top:10px"><tr><th>Estudiante</th><th>Proyecto</th><th>Actividades</th><th>Duración</th><th>Ruta crítica</th><th>Guardado</th><th></th></tr>
+   ${list.map((x,i)=>{ const e=validar(x.P); const R=e.length?null:cpm(x.P.acts,x.P.modo); return `<tr><td><b>${esc(x.autor)}</b></td><td>${esc(x.P.nombre)}</td><td>${x.P.acts.length}</td><td>${R?fd(R.T)+' días':'<span class="err">incompleto</span>'}</td><td>${R?R.ruta.join('-'):'—'}</td><td>${new Date(x.ts).toLocaleString('es-CR')}</td><td><button class="btn sm" data-v="${i}">Abrir (solo lectura)</button></td></tr>`; }).join('')||'<tr><td colspan="7" class="mut">Sin proyectos en esta sección.</td></tr>'}</table></div>`;
+  $('pS').onchange=()=>panelRender($('pS').value); $('pO').onclick=()=>{ user={name:'',sec:''}; portada(); };
+  document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ const x=list[+b.dataset.v]; user={name:'DOCENTE',sec:sec}; abrir(JSON.parse(JSON.stringify(x.P))); }); }
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+window.__gp={cpm:cpm,crashPlan:crashPlan,minDuration:minDuration,npv:npv,irr:irr,payback:payback,evm:evm,Phi:Phi,invPhi:invPhi,EJEMPLO:EJEMPLO,getP:()=>P};
+portada();
+})();
+</script>
+</body>
+</html>
