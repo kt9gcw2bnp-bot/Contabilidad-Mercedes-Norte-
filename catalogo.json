@@ -220,6 +220,16 @@
     "Orden": 13
   },
   {
+    "Id": "proyecto_real_plan_real_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Proyecto real, plan real (PERT/CPM, Gantt y aceleración)",
+    "URL": "Proyecto_Real_Plan_Real_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 14
+  },
+  {
     "Id": "auditoria_12",
     "Nivel": "12",
     "Categoria": "Curso interactivo",

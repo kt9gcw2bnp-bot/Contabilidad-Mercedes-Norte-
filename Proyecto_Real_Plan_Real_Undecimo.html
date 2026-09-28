@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyecto real, plan real · Planificación y evaluación de proyectos · Undécimo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --navy:#0E1B3D; --navy2:#16295a; --gold:#B8863C; --gold2:#e3b94a; --teal:#2FC2AD; --teal2:#e6f7f4; --ink:#1d2433; --mut:#5b6478; --line:#d9dde6; --soft:#f5f6f9; --red:#c0392b; --bg:#eef1f6; --crit:#d6453a; }
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Poppins',system-ui,sans-serif; color:var(--ink); background:var(--bg); font-size:15px; line-height:1.55; }
+button,input,textarea,select{ font-family:inherit; font-size:14px; }
+.top{ background:var(--navy); color:#fff; padding:12px 18px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:20; }
+.top .logo{ width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--crit),var(--gold2)); display:grid; place-items:center; font-size:18px; }
+.top h1{ font-size:16px; margin:0; font-weight:600; } .top .who{ margin-left:auto; font-size:12.5px; color:#c9cfdc; text-align:right; }
+.wrap{ max-width:1080px; margin:0 auto; padding:18px 14px 60px; }
+.card{ background:#fff; border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(14,27,61,.07); margin-bottom:16px; }
+h2{ color:var(--navy); margin:0 0 6px; font-size:21px; } h3{ color:var(--navy); margin:16px 0 6px; font-size:16px; } h4{ color:var(--navy); margin:10px 0 4px; font-size:14.5px; }
+.mut{ color:var(--mut); font-size:13px; }
+.btn{ border:none; border-radius:10px; padding:10px 16px; font-weight:600; cursor:pointer; background:var(--navy); color:#fff; }
+.btn.gold{ background:var(--gold); } .btn.teal{ background:var(--teal); color:#062a25; } .btn.ghost{ background:#fff; color:var(--navy); border:1.5px solid var(--navy); } .btn.red{ background:#fff; color:var(--red); border:1.5px solid var(--red); }
+.btn.sm{ padding:6px 11px; font-size:12.5px; } .btn:disabled{ opacity:.45; cursor:not-allowed; }
+input[type=text],input[type=number],textarea,select{ width:100%; border:1.5px solid var(--line); border-radius:10px; padding:8px 10px; background:#fff; }
+textarea{ resize:vertical; } input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--teal); }
+input.okc{ border-color:var(--teal); background:var(--teal2); } input.badc{ border-color:var(--red); background:#fbeeea; }
+label{ font-weight:600; font-size:13.5px; display:block; margin:10px 0 4px; color:var(--navy); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; } .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+@media(max-width:760px){ .grid2,.grid3{ grid-template-columns:1fr; } }
+.steps{ display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; }
+.st{ flex:1 0 118px; background:#fff; border-radius:12px; padding:9px 11px; border:2px solid transparent; cursor:pointer; position:relative; }
+.st .n{ font-size:10.5px; color:var(--mut); font-weight:600; letter-spacing:.05em; } .st .t{ font-size:12.5px; font-weight:600; color:var(--navy); line-height:1.25; }
+.st.done{ background:var(--teal2); } .st.done::after{ content:"✓"; position:absolute; right:9px; top:7px; color:#0b6b5d; font-weight:700; }
+.st.cur{ border-color:var(--gold); } .st.lock{ opacity:.45; cursor:not-allowed; } .st.opt .n::after{ content:" · OPCIONAL"; color:var(--gold); }
+.pill{ display:inline-block; padding:2px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:var(--soft); color:var(--navy); }
+.pill.gold{ background:#f6ecd9; color:#7a5a24; } .pill.teal{ background:var(--teal2); color:#0b6b5d; } .pill.red{ background:#fbeeea; color:var(--crit); }
+.din{ background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; border-radius:12px; padding:12px 16px; margin:8px 0 14px; font-size:13.5px; } .din b{ color:var(--gold2); }
+.tip{ background:var(--teal2); border:1px solid #a9e3d9; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.warn{ background:#fdf1e6; border:1px solid #f0c9a3; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.ok{ color:#0b6b5d; font-weight:600; } .err{ color:var(--red); font-weight:600; }
+.formula{ background:#fff; border:1.5px dashed var(--gold); color:var(--navy); border-radius:10px; padding:8px 12px; font-family:'DejaVu Sans Mono',Consolas,monospace; font-size:13.5px; text-align:center; margin:8px 0; }
+.mono{ font-family:'DejaVu Sans Mono',Consolas,monospace; }
+/* antología */
+.anto{ display:grid; grid-template-columns:220px 1fr; gap:16px; } @media(max-width:820px){ .anto{ grid-template-columns:1fr; } }
+.toc{ background:#fff; border-radius:14px; padding:12px; align-self:start; position:sticky; top:74px; box-shadow:0 2px 10px rgba(14,27,61,.07); }
+.toc button{ display:block; width:100%; text-align:left; border:none; background:none; padding:7px 9px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--navy); }
+.toc button.on{ background:var(--navy); color:#fff; } .toc button.seen::after{ content:" ✓"; color:var(--teal); }
+.sec h3{ margin-top:0; }
+.def{ background:var(--soft); border-left:4px solid var(--teal); border-radius:8px; padding:10px 14px; margin:8px 0; }
+.ej{ border:1.5px solid var(--line); border-top:4px solid var(--gold); border-radius:10px; padding:10px 14px; margin:10px 0; }
+.gl-item{ border-bottom:1px solid var(--line); padding:8px 0; } .gl-item b{ color:var(--navy); }
+table.tb{ width:100%; border-collapse:collapse; font-size:13px; } table.tb th{ background:var(--navy); color:#fff; text-align:left; padding:7px 8px; font-weight:600; } table.tb td{ border-bottom:1px solid var(--line); padding:6px 8px; vertical-align:middle; }
+table.tb td input{ padding:6px 7px; font-size:13px; } table.tb tr.crit td{ background:#fdf0ee; }
+table.ztab{ border-collapse:collapse; font-size:11.5px; font-family:'DejaVu Sans Mono',monospace; } table.ztab td,table.ztab th{ border:1px solid var(--line); padding:2px 5px; text-align:right; } table.ztab th{ background:var(--soft); }
+.q{ border:1.5px solid var(--line); border-radius:12px; padding:12px; margin-bottom:10px; }
+.opts button{ display:block; width:100%; text-align:left; background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:8px 12px; margin:5px 0; cursor:pointer; font-size:14px; }
+.opts button.on{ border-color:var(--navy); background:#eef1f8; } .opts button.good{ border-color:var(--teal); background:var(--teal2); } .opts button.bad{ border-color:var(--red); background:#fbeeea; }
+.net,.gantt{ width:100%; overflow-x:auto; background:#fff; border:1.5px solid var(--line); border-radius:12px; }
+.node{ cursor:pointer; }
+.crashrow{ display:grid; grid-template-columns:40px 1fr 90px 90px 110px 120px; gap:8px; align-items:center; padding:6px 0; border-bottom:1px solid var(--line); font-size:13px; }
+@media(max-width:760px){ .crashrow{ grid-template-columns:30px 1fr 70px 70px; } .crashrow .hm{ display:none; } }
+.gal{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+.gcard{ border:1.5px solid var(--line); border-radius:12px; padding:12px; background:#fff; }
+.lv{ display:flex; gap:4px; } .lv button{ border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:4px 8px; cursor:pointer; font-weight:600; } .lv button.on{ background:var(--teal); border-color:var(--teal); color:#062a25; } .lv button.sug{ border-color:var(--gold); }
+#banner{ display:none; position:fixed; top:0; left:0; right:0; background:var(--red); color:#fff; text-align:center; padding:10px; font-weight:600; z-index:60; }
+footer{ text-align:center; color:var(--mut); font-size:12px; margin-top:24px; } .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+<div id="banner">⚠ Saliste de la pantalla del curso. Este evento queda registrado.</div>
+<div class="top"><div class="logo">📐</div><div><h1>Proyecto real, plan real</h1><div style="font-size:12px;color:#c9cfdc">Planificación y evaluación de proyectos · Gestión empresarial para contadores · 11°</div></div><div class="who" id="who"></div></div>
+<div class="wrap" id="app"></div>
+<footer>CTP Mercedes Norte · Especialidad de Contabilidad · <a href="#" id="lnkDocente">Panel docente</a></footer>
+<script>
+(function(){
+'use strict';
+/* ================= CONFIGURACIÓN ================= */
+const SHEET_API_URL="https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN="9986", MODULE_ID="pryct", SH_PROG="Progreso", SH_DATA="Casos";
+const SECCIONES=["11-1","11-2","11-3","11-4"];
+const STEPS=[
+ {key:"anto",label:"Antología y glosario"},{key:"crear",label:"1 · Crear el proyecto"},{key:"pert",label:"2 · Tiempos PERT"},
+ {key:"cpm",label:"3 · Ruta crítica"},{key:"gantt",label:"4 · Gantt"},{key:"crisis",label:"5 · Crisis y aceleración"},
+ {key:"reto",label:"6 · Intercambio"},{key:"feria",label:"7 · Presentación"},{key:"van",label:"8 · VAN y TIR",opt:true}
+];
+const SHARED=["crear","pert","cpm","gantt","crisis"]; // etapas del proyecto, compartidas por el grupo
+const RUBRICA=[
+ {id:"r1",ra:"RA1",crit:"Explica las principales características de la administración de proyectos.",n3:"Aprueba el chequeo de conceptos (7-8) y usa el vocabulario técnico con propiedad.",n2:"Aprueba con 5-6 aciertos.",n1:"4 aciertos o menos."},
+ {id:"r2",ra:"RA1",crit:"Planifica el proyecto según las técnicas establecidas e interpreta la gráfica de Gantt.",n3:"Estructura desglosada completa y lógica; interpreta el Gantt con la ruta crítica y las holguras.",n2:"Estructura con algunas debilidades o interpretación parcial.",n1:"Estructura incompleta o sin interpretación."},
+ {id:"r3",ra:"RA2",crit:"Resuelve ejercicios de diagramas, reglas de tiempo y programación; calcula holguras e identifica rutas críticas.",n3:"Calcula PERT, IC/TC/IL/TL, holguras, ruta crítica y probabilidad con pocos intentos.",n2:"Llega a los resultados con varios intentos o errores parciales.",n1:"No completa los cálculos."},
+ {id:"r4",ra:"RA2",crit:"Explica el trueque costo-tiempo y la aceleración del proyecto.",n3:"Acelera al costo mínimo (o muy cercano) y justifica sus decisiones.",n2:"Acelera, pero con costo mayor al mínimo o sin justificar.",n1:"No logra acelerar el proyecto."},
+ {id:"r5",ra:"RA3",crit:"Usa el software como herramienta para la administración de proyectos y sugiere formas de seguimiento del avance y de los costos.",n3:"Usa la plataforma en todas las etapas y propone un seguimiento concreto de avance y costos.",n2:"Uso parcial o propuesta de seguimiento general.",n1:"No propone seguimiento."}
+];
+
+/* ================= ANTOLOGÍA ================= */
+const EJ={acts:[
+ {id:"A",n:"Definir reglas del torneo",pred:[],o:2,m:3,p:4},{id:"B",n:"Reservar la cancha",pred:["A"],o:1,m:2,p:3},
+ {id:"C",n:"Inscribir equipos",pred:["A"],o:3,m:4,p:11},{id:"D",n:"Comprar trofeos",pred:["A"],o:2,m:3,p:4},
+ {id:"E",n:"Hacer publicidad",pred:["B"],o:2,m:4,p:6},{id:"F",n:"Armar el calendario de partidos",pred:["C","E"],o:1,m:2,p:3},
+ {id:"G",n:"Realizar el torneo",pred:["D","F"],o:1,m:1,p:1}]};
+const ANTO=[
+ {id:"a1",t:"1. Administración de proyectos",h:`<div class="def"><b>Proyecto:</b> esfuerzo temporal, con inicio y fin definidos, para lograr un resultado único (organizar una graduación, abrir un negocio, construir un aula).</div>
+  <div class="def"><b>Administración de proyectos:</b> planear, programar y controlar las actividades de un proyecto para cumplirlo <b>a tiempo</b>, <b>dentro del presupuesto</b> y con la <b>calidad</b> esperada (el «triángulo» tiempo–costo–alcance).</div>
+  <h4>Etapas</h4><ol><li><b>Planeación:</b> se define el objetivo, se nombra al <b>administrador del proyecto</b> (responsable de coordinar personas y recursos) y se arma la <b>estructura desglosada del trabajo</b>.</li>
+  <li><b>Programación:</b> se ordenan las actividades en el tiempo: quién, qué y cuándo (diagramas de red y gráfica de Gantt).</li><li><b>Control:</b> se da seguimiento al avance real frente a lo planeado y se corrige.</li></ol>`},
+ {id:"a2",t:"2. Estructura desglosada del trabajo (EDT)",h:()=>`<div class="def">Divide el proyecto en partes cada vez más pequeñas hasta llegar a <b>actividades</b> que se pueden asignar, estimar en tiempo y controlar.</div>
+  <p>Para cada actividad se define su <b>precedencia</b>: qué actividades deben terminar antes de que ella empiece. Si dos actividades no dependen entre sí, pueden hacerse <b>en paralelo</b>.</p>
+  <div class="ej"><b>Ejemplo · Torneo deportivo del colegio</b><table class="tb" style="margin-top:6px"><tr><th>Act.</th><th>Descripción</th><th>Predecesoras</th></tr>${EJ_ROWS()}</table></div>`},
+ {id:"a3",t:"3. Diagramas de red: AEN y AEF",h:`<div class="grid2"><div class="def"><b>Actividades en los nodos (AEN):</b> cada actividad es un nodo (caja) y las flechas muestran la precedencia. Es el enfoque que usa esta plataforma.</div>
+  <div class="def"><b>Actividades en las flechas (AEF):</b> cada actividad es una flecha y los nodos son eventos (inicio o fin). A veces requiere actividades ficticias.</div></div>
+  <p><b>Ruta:</b> secuencia de actividades desde el inicio hasta el fin. En el torneo hay tres rutas: A-B-E-F-G, A-C-F-G y A-D-G.</p>`},
+ {id:"a4",t:"4. PERT: tres estimaciones de tiempo",h:`<p>Cuando la duración es incierta, PERT usa tres estimaciones: <b>optimista (o)</b>, <b>más probable (m)</b> y <b>pesimista (p)</b>, que siguen una <b>distribución beta</b>.</p>
+  <div class="formula">Tiempo esperado  te = (o + 4m + p) / 6</div><div class="formula">Varianza  σ² = ((p − o) / 6)²</div>
+  <div class="ej"><b>Ejemplo:</b> Inscribir equipos: o = 3, m = 4, p = 11 días.<br>te = (3 + 16 + 11) / 6 = 30 / 6 = <b>5,00 días</b> · σ² = ((11 − 3) / 6)² = (1,333)² = <b>1,78</b></div>
+  <p class="mut">Redondee a dos decimales. Una varianza alta indica mucha incertidumbre en esa actividad.</p>`},
+ {id:"a5",t:"5. CPM: reglas de tiempo y holgura",h:()=>`<p>El <b>método de la ruta crítica (CPM)</b> calcula para cada actividad:</p>
+  <table class="tb"><tr><th>Sigla</th><th>Nombre</th><th>Regla</th></tr><tr><td><b>IC</b></td><td>Inicio más cercano</td><td>Pasada hacia adelante: IC = mayor TC de sus predecesoras (0 si no tiene)</td></tr>
+  <tr><td><b>TC</b></td><td>Terminación más cercana</td><td>TC = IC + te</td></tr><tr><td><b>TL</b></td><td>Terminación más lejana</td><td>Pasada hacia atrás: TL = menor IL de sus sucesoras (la duración del proyecto si no tiene)</td></tr>
+  <tr><td><b>IL</b></td><td>Inicio más lejano</td><td>IL = TL − te</td></tr><tr><td><b>H</b></td><td>Holgura</td><td>H = IL − IC (= TL − TC): cuánto se puede atrasar sin atrasar el proyecto</td></tr></table>
+  <div class="def"><b>Ruta crítica:</b> la ruta más larga; sus actividades tienen <b>holgura 0</b>. Si una actividad crítica se atrasa, <b>todo el proyecto se atrasa</b>.</div>
+  <div class="ej"><b>Torneo resuelto</b><table class="tb" style="margin-top:6px"><tr><th>Act.</th><th>te</th><th>σ²</th><th>IC</th><th>TC</th><th>IL</th><th>TL</th><th>H</th></tr>${EJ_CPM()}</table>
+  <p style="margin:6px 0 0">Duración del proyecto: <b>12 días</b>. Ruta crítica: <b>A-B-E-F-G</b>. «Comprar trofeos» (D) tiene 5 días de holgura.</p></div>`},
+ {id:"a6",t:"6. Probabilidad de terminar a tiempo",h:`<p>La varianza del proyecto es la suma de las varianzas de las actividades de la <b>ruta crítica</b>. Con ella se calcula Z y se busca la probabilidad en la tabla de la distribución normal.</p>
+  <div class="formula">σ²ruta = Σ σ² críticas · σ = √σ²ruta · Z = (Fecha deseada − Duración esperada) / σ</div>
+  <div class="ej"><b>¿Probabilidad de terminar el torneo en 13 días?</b><br>σ²ruta = 0,11 + 0,11 + 0,44 + 0,11 + 0,00 = 0,77 → σ = √0,77 = 0,88<br>Z = (13 − 12) / 0,88 = <b>1,14</b> → tabla: <b>0,8729</b> → hay un <b>87,29 %</b> de probabilidad de terminar en 13 días o menos.</div>
+  <p class="mut">Si la fecha deseada es menor que la duración esperada, Z es negativo y la probabilidad es menor que 50 % (se busca 1 − tabla(|Z|)).</p>`},
+ {id:"a7",t:"7. Gráfica de Gantt",h:`<div class="def">Gráfico de barras horizontales: cada actividad es una barra que empieza en su <b>IC</b> y termina en su <b>TC</b>. Permite ver de un vistazo qué se hace cada día, qué va en paralelo y dónde están las holguras.</div>
+  <p>Para <b>interpretarla</b>: las barras críticas no tienen margen; la holgura se dibuja como una extensión punteada; la última barra marca la duración total.</p>`},
+ {id:"a8",t:"8. Trueque costo-tiempo y aceleración",h:`<p><b>Acelerar (crashing)</b> es reducir la duración del proyecto agregando recursos (horas extra, más personal, pagar envío exprés), lo que aumenta el costo.</p>
+  <ol><li>Identificar la ruta crítica.</li><li>Acelerar la actividad <b>crítica</b> con el <b>menor costo por día</b> (acelerar una actividad no crítica no reduce el proyecto).</li>
+  <li>Recalcular: puede aparecer una nueva ruta crítica.</li><li>Repetir hasta llegar a la duración deseada o hasta que ya no se pueda acelerar (tiempo mínimo).</li></ol>
+  <div class="formula">Costo por día de aceleración = (Costo acelerado − Costo normal) / (Tiempo normal − Tiempo acelerado)</div>`},
+ {id:"a9",t:"9. Críticas a PERT/CPM y software",h:`<ul><li>Las estimaciones dependen del juicio de quien las da y pueden ser optimistas.</li><li>Supone actividades independientes y una relación de precedencia fija.</li>
+  <li>Considera solo la ruta crítica para la probabilidad e ignora rutas casi críticas.</li></ul>
+  <div class="def"><b>Software de administración de proyectos</b> (como esta plataforma, MS Project, GanttProject, Trello o Asana): crea el programa del proyecto, muestra vistas (red, Gantt, calendario), da <b>seguimiento al avance</b> (porcentaje completado, fechas reales) y controla <b>costos</b> (presupuestado vs. real).</div>`},
+ {id:"a10",t:"10. Extensión: VAN y TIR",h:`<p>Si el proyecto es un emprendimiento, además de <b>cuándo</b> termina interesa si <b>vale la pena</b> económicamente.</p>
+  <div class="formula">VAN = −Inversión + Σ Flujo_t / (1 + i)^t</div>
+  <div class="def"><b>VAN &gt; 0:</b> el proyecto gana más que la tasa exigida (i) → conviene. <b>TIR:</b> la tasa que hace el VAN igual a 0; si la TIR es mayor que i, el proyecto conviene.</div>
+  <div class="ej">Inversión ₡1 000 000; flujos: ₡400 000 por 3 años; i = 10 %.<br>VAN = −1 000 000 + 400 000/1,1 + 400 000/1,21 + 400 000/1,331 = <b>−₡5 259</b> (casi cero, no conviene) · TIR ≈ <b>9,70 %</b> &lt; 10 %.</div>`}
+];
+function EJ_ROWS(){ return EJ.acts.map(a=>`<tr><td><b>${a.id}</b></td><td>${a.n}</td><td>${a.pred.join(', ')||'—'}</td></tr>`).join(''); }
+function EJ_CPM(){ const r=cpm(EJ.acts); return EJ.acts.map(a=>{ const x=r.byId[a.id]; return `<tr class="${x.crit?'crit':''}"><td><b>${a.id}</b></td><td>${f2(x.te)}</td><td>${f2(x.v)}</td><td>${f2(x.IC)}</td><td>${f2(x.TC)}</td><td>${f2(x.IL)}</td><td>${f2(x.TL)}</td><td>${f2(x.H)}</td></tr>`; }).join(''); }
+const GLOSARIO=[
+ ["Actividad","Tarea con duración que consume recursos y forma parte del proyecto."],["Administrador del proyecto","Persona responsable de planear, coordinar y controlar el proyecto."],
+ ["AEF","Diagrama de red con las actividades en las flechas."],["AEN","Diagrama de red con las actividades en los nodos."],["Aceleración","Reducir la duración del proyecto agregando recursos a un costo mayor."],
+ ["Beta (distribución)","Distribución de probabilidad que usa PERT con las tres estimaciones de tiempo."],["CPM","Método de la ruta crítica: calcula tiempos, holguras y la ruta más larga."],
+ ["Duración pesimista (p)","Tiempo si todo sale mal (sin catástrofes)."],["Duración más probable (m)","Tiempo que ocurre con mayor frecuencia en condiciones normales."],["Duración optimista (o)","Tiempo si todo sale mejor de lo esperado."],
+ ["EDT","Estructura desglosada del trabajo: divide el proyecto en actividades manejables."],["Gantt","Gráfica de barras que muestra en el tiempo cuándo inicia y termina cada actividad."],
+ ["Holgura","Tiempo que una actividad puede atrasarse sin atrasar el proyecto (IL − IC)."],["IC","Inicio más cercano: lo antes que puede empezar una actividad."],["IL","Inicio más lejano: lo más tarde que puede empezar sin atrasar el proyecto."],
+ ["Pasada hacia adelante","Cálculo de IC y TC desde el inicio del proyecto."],["Pasada hacia atrás","Cálculo de TL e IL desde el final del proyecto."],["PERT","Técnica de evaluación y revisión de programas; usa tres estimaciones de tiempo."],
+ ["Precedencia","Relación que indica qué actividades deben terminar antes de iniciar otra."],["Ruta crítica","Ruta más larga del proyecto; sus actividades tienen holgura cero."],
+ ["TC","Terminación más cercana: IC + te."],["TIR","Tasa interna de retorno: tasa que hace el VAN igual a cero."],["TL","Terminación más lejana: lo más tarde que puede terminar sin atrasar el proyecto."],
+ ["Trueque costo-tiempo","Relación entre reducir tiempo y aumentar costo al acelerar."],["VAN","Valor actual neto: valor hoy de los flujos futuros menos la inversión."],["Varianza (σ²)","Medida de la incertidumbre de una duración: ((p − o)/6)²."],
+ ["Z","Número de desviaciones estándar entre la fecha deseada y la duración esperada."]
+];
+const CHEQUEO=[
+ {q:"¿Qué caracteriza a la ruta crítica?",ops:["Es la ruta con más actividades del diagrama","La más larga, con holgura cero","Es la ruta que tiene la mayor varianza de todas","Es la ruta que se programa primero en la EDT"],c:1},
+ {q:"Una actividad tiene o = 2, m = 5 y p = 14. ¿Cuál es su tiempo esperado?",ops:["7,00 días","5,00 días","6,00 días","6,33 días"],c:2},
+ {q:"Si una actividad tiene IC = 4, TC = 9, IL = 7 y TL = 12, su holgura es…",ops:["3 días: puede atrasarse 3 días sin atrasar el proyecto","5 días: es lo que dura la actividad programada en el Gantt","0 días: es una actividad de la ruta crítica","8 días: es la diferencia entre TL y el IC"],c:0},
+ {q:"En la pasada hacia adelante, cuando una actividad tiene dos predecesoras, su IC es…",ops:["el menor TC de las dos predecesoras","el promedio de los TC de las predecesoras","la suma de los TC de ambas predecesoras","el mayor TC de las dos predecesoras"],c:3},
+ {q:"¿Qué muestra una gráfica de Gantt?",ops:["La probabilidad de terminar el proyecto en la fecha deseada","El flujo de caja de cada periodo del proyecto","Cuándo inicia y termina cada actividad en el tiempo","Las varianzas de cada una de las actividades"],c:2},
+ {q:"Para acelerar un proyecto al menor costo, primero se reduce…",ops:["la actividad crítica con menor costo por día","la actividad con mayor holgura del proyecto","la actividad más barata aunque no sea crítica","la última actividad de cualquiera de las rutas"],c:0},
+ {q:"¿Qué función cumple la estructura desglosada del trabajo?",ops:["Calcular la probabilidad de terminar el proyecto","Dividir el proyecto en actividades manejables","Determinar el VAN y la TIR del proyecto","Asignar las holguras a las actividades"],c:1},
+ {q:"Z = −0,50 al calcular la probabilidad de terminar en la fecha deseada. Esto significa que…",ops:["la probabilidad es mayor al 50 % de cumplir la fecha","el proyecto ya terminó antes de lo esperado","la fecha deseada es menor que la duración esperada","la varianza del proyecto es un número negativo"],c:2}
+];
+const TIPOS=["Graduación o evento del colegio","Emprendimiento o negocio","Campaña ambiental o social","Torneo o actividad deportiva","Mejora de un espacio del colegio","Otro"];
+
+/* ================= CÁLCULOS ================= */
+const r2=x=>Math.round(x*100)/100; const f2=x=>(Math.round(x*100)/100).toFixed(2).replace('.',',');
+const num=v=>{ if(v===null||v===undefined) return NaN; const s=String(v).trim().replace(/\s/g,'').replace(',','.'); return s===''?NaN:+s; };
+function topo(acts){ const ids=acts.map(a=>a.id), seen={}, out=[], tmp={}; let cyc=false;
+  function visit(id){ if(seen[id]) return; if(tmp[id]){ cyc=true; return; } tmp[id]=1; const a=acts.find(x=>x.id===id); (a?a.pred:[]).forEach(visit); tmp[id]=0; seen[id]=1; out.push(id); }
+  ids.forEach(visit); return cyc?null:out; }
+function cpm(acts,override){ // override: {id:te} para aceleración
+  const ord=topo(acts); if(!ord) return null; const by={};
+  acts.forEach(a=>{ const te=override&&override[a.id]!==undefined?override[a.id]:r2((a.o+4*a.m+a.p)/6); by[a.id]={id:a.id,te:te,v:r2(Math.pow((a.p-a.o)/6,2)),pred:a.pred,succ:[]}; });
+  acts.forEach(a=>a.pred.forEach(p=>by[p].succ.push(a.id)));
+  ord.forEach(id=>{ const x=by[id]; x.IC=r2(Math.max(0,...x.pred.map(p=>by[p].TC))); x.TC=r2(x.IC+x.te); });
+  const T=r2(Math.max(...ord.map(id=>by[id].TC)));
+  ord.slice().reverse().forEach(id=>{ const x=by[id]; x.TL=x.succ.length?r2(Math.min(...x.succ.map(s=>by[s].IL))):T; x.IL=r2(x.TL-x.te); x.H=r2(x.IL-x.IC); x.crit=Math.abs(x.H)<0.005; });
+  // rutas críticas: caminos de actividades críticas desde un inicio hasta un final
+  const paths=[]; function dfs(id,path){ const x=by[id]; const nx=x.succ.filter(s=>by[s].crit&&Math.abs(by[s].IC-x.TC)<0.005); if(!nx.length){ if(!x.succ.length) paths.push(path.slice()); return; } nx.forEach(s=>{ path.push(s); dfs(s,path); path.pop(); }); }
+  ord.filter(id=>by[id].crit&&!by[id].pred.length).forEach(id=>dfs(id,[id]));
+  let best=paths[0]||[], bv=-1; paths.forEach(p=>{ const v=r2(p.reduce((a,id)=>a+by[id].v,0)); if(v>bv){ bv=v; best=p; } });
+  return {byId:by,order:ord,T:T,paths:paths,path:best,var:r2(Math.max(bv,0))};
+}
+function erf(x){ const t=1/(1+0.3275911*Math.abs(x)); const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x); return x>=0?y:-y; }
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+function zTable(){ let h='<table class="ztab"><tr><th>Z</th>'+[0,1,2,3,4,5,6,7,8,9].map(d=>'<th>.0'+d+'</th>').join('')+'</tr>';
+  for(let r=0;r<30;r++){ h+='<tr><th>'+(r/10).toFixed(1)+'</th>'; for(let d=0;d<10;d++) h+='<td>'+Phi(r/10+d/100).toFixed(4)+'</td>'; h+='</tr>'; } return h+'</table>'; }
+function crashOptimum(acts,target){ // búsqueda de costo uniforme sobre días acelerados
+  const base={}; acts.forEach(a=>base[a.id]=r2((a.o+4*a.m+a.p)/6));
+  const cap={}; acts.forEach(a=>cap[a.id]=Math.max(0,Math.floor(base[a.id]-a.tmin+1e-9)));
+  const key=v=>acts.map(a=>v[a.id]||0).join(','); const start={}; const pq=[[0,start]]; const seen={}; let n=0;
+  while(pq.length&&n<25000){ pq.sort((x,y)=>x[0]-y[0]); const [c,v]=pq.shift(); const k=key(v); if(seen[k]) continue; seen[k]=1; n++;
+    const ov={}; acts.forEach(a=>ov[a.id]=r2(base[a.id]-(v[a.id]||0))); const r=cpm(acts,ov); if(r.T<=target+0.005) return {cost:c,v:v,T:r.T};
+    acts.forEach(a=>{ if(!r.byId[a.id].crit) return; if((v[a.id]||0)>=cap[a.id]) return; const nv=Object.assign({},v); nv[a.id]=(nv[a.id]||0)+1; pq.push([c+a.ccost,nv]); }); }
+  return null; }
+function npv(I,flows,i){ return -I+flows.reduce((a,f,t)=>a+f/Math.pow(1+i,t+1),0); }
+function irr(I,flows){ let lo=-0.99,hi=10; if(npv(I,flows,lo)*npv(I,flows,hi)>0) return null; for(let k=0;k<200;k++){ const mid=(lo+hi)/2; if(npv(I,flows,lo)*npv(I,flows,mid)<=0) hi=mid; else lo=mid; } return (lo+hi)/2; }
+
+/* ================= PUENTE SHEETS ================= */
+function jsonp(url){ return new Promise(res=>{ const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5); const s=document.createElement('script');
+  window[cb]=d=>{ res(d); delete window[cb]; s.remove(); }; s.onerror=()=>{ res({rows:[]}); delete window[cb]; s.remove(); };
+  s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb; document.body.appendChild(s); setTimeout(()=>{ if(window[cb]){ res({rows:[]}); delete window[cb]; s.remove(); } },12000); }); }
+function sheetGet(n){ return jsonp(SHEET_API_URL+'?sheet='+encodeURIComponent(n)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(n,row){ // contrato JSON del doPost {sheet,row:[...]} con Content-Type text/plain
+  return fetch(SHEET_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:n,row:Object.keys(row).map(k=>row[k])}),keepalive:true}).catch(()=>{}); }
+const now=()=>new Date().toISOString();
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function postData(tipo,obj,who){ if(!who&&student.sec&&obj&&!obj.sec) obj.sec=student.sec; if(!who&&['proy','join','voto'].indexOf(tipo)<0) allRows.push({tipo:tipo,nombre:student.name,ts:now(),d:obj}); return sheetPost(SH_DATA,{Timestamp:now(),CasoId:MODULE_ID+'_'+tipo,Nombre:who||student.name,Texto:JSON.stringify(obj)}); }
+function postProg(key,score,total){ return sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:MODULE_ID+'_'+key+'_paso',Score:String(score),Total:String(total)}); }
+function parseRows(rows){ return rows.filter(r=>String(r.CasoId||'').indexOf(MODULE_ID+'_')===0).map(r=>{ let o={}; try{ o=JSON.parse(r.Texto); }catch(e){} return {tipo:String(r.CasoId).slice(MODULE_ID.length+1),nombre:String(r.Nombre||'').trim(),ts:String(r.Timestamp||''),d:o}; }).sort((a,b)=>a.ts<b.ts?-1:1); }
+
+/* ================= ESTADO ================= */
+let student={name:'',sec:''}, allRows=[], S={}, current='anto';
+function cut(n){ let t=''; allRows.forEach(r=>{ if(r.tipo==='reset'&&norm(r.d.nombre)===norm(n)&&r.ts>t) t=r.ts; }); return t; }
+function proyectoDe(n){ const c=cut(n); let p=null; allRows.filter(r=>norm(r.nombre)===norm(n)&&r.ts>c).forEach(r=>{ if(r.tipo==='proy') p=r.d; if(r.tipo==='join'){ const f=allRows.filter(x=>x.tipo==='proy'&&x.d.id===r.d.id).pop(); if(f) p=f.d; } });
+  if(p){ const upd=allRows.filter(r=>r.tipo==='proy'&&r.d.id===p.id).pop(); if(upd) p=upd.d; } return p; }
+function datos(n){ const c=cut(n); const o={done:{},intentos:{}}; const mine=allRows.filter(r=>norm(r.nombre)===norm(n)&&r.ts>c);
+  mine.forEach(r=>{ if(r.tipo==='paso') o.done[r.d.key]=true; if(r.tipo==='intento') o.intentos[r.d.key]=(o.intentos[r.d.key]||0)+1; ['chequeo','reto','voto','van','gantttxt'].forEach(k=>{ if(r.tipo===k) o[k]=r.d; }); });
+  o.proy=proyectoDe(n);
+  if(o.proy){ const pr=allRows.filter(r=>r.d&&r.d.pid===o.proy.id); pr.forEach(r=>{ if(r.tipo==='paso') o.done[r.d.key]=true; if(r.tipo==='intento') o.intentos[r.d.key]=(o.intentos[r.d.key]||0)+(norm(r.nombre)===norm(n)?0:1); ['crisisres','gantttxt'].forEach(k=>{ if(r.tipo===k) o[k]=r.d; }); });
+    o.miembros=[o.proy.creador].concat(allRows.filter(r=>r.tipo==='join'&&r.d.id===o.proy.id).map(r=>r.nombre)).filter((v,i,a)=>a.map(norm).indexOf(norm(v))===i); }
+  return o; }
+function load(){ return sheetGet(SH_DATA).then(r=>{ allRows=parseRows(r); S=datos(student.name); }); }
+function markStep(key,score,total){ if(S.done[key]) return; S.done[key]=true; const shared=SHARED.indexOf(key)>-1&&S.proy; postData('paso',{key:key,pid:shared?S.proy.id:''}); postProg(key,score,total); }
+function intento(key){ postData('intento',{key:key,pid:S.proy&&SHARED.indexOf(key)>-1?S.proy.id:''}); S.intentos[key]=(S.intentos[key]||0)+1; }
+function unlocked(k){ const i=STEPS.findIndex(s=>s.key===k); if(i===0) return true; if(k==='van') return !!S.done.cpm; return !!S.done[STEPS[i-1].key]; }
+
+/* ================= MONITOREO ================= */
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden||!student.name) return;
+  sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:'incidente_salida_pantalla_'+MODULE_ID,Score:'salida',Total:'1'});
+  const b=document.getElementById('banner'); b.style.display='block'; setTimeout(()=>b.style.display='none',6000); });
+
+/* ================= UI BASE ================= */
+const $=id=>document.getElementById(id);
+function nombrePortal(){ try{ return (new URLSearchParams(location.search).get('nombre')||'').trim()||null; }catch(e){ return null; } }
+function portada(){
+  const np=nombrePortal(); $('who').textContent='';
+  $('app').innerHTML=`<div class="card"><span class="pill red">Unidad: Planificación y evaluación de proyectos · RA 1, 2 y 3</span>
+  <h2 style="margin-top:10px">Proyecto real, plan real</h2><p>Su grupo va a <b>crear un proyecto propio</b> y planificarlo como lo haría una empresa: estructura del trabajo, tiempos PERT, ruta crítica, Gantt, una crisis que obliga a acelerar… y luego otro grupo tendrá que resolver <b>su</b> proyecto. Empiece por la antología: ahí están todas las herramientas.</p>
+  <div class="grid2"><div><label>Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}" placeholder="Nombre y apellidos"></div>
+  <div><label>Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+  <div class="row" style="margin-top:14px"><button class="btn gold" id="btnIn">Comenzar</button><span id="msgIn" class="mut"></span></div></div>`;
+  $('btnIn').onclick=()=>{ const n=$('inNom').value.trim(), s=$('inSec').value;
+    if(n.split(/\s+/).length<2){ $('msgIn').innerHTML='<span class="err">Escriba nombre y apellido.</span>'; return; }
+    if(!s){ $('msgIn').innerHTML='<span class="err">Seleccione la sección.</span>'; return; }
+    student={name:n,sec:s}; $('msgIn').textContent='Cargando…'; load().then(()=>{ const f=STEPS.find(x=>!x.opt&&!S.done[x.key]); current=f?f.key:'feria'; render(); }); };
+}
+function render(){
+  $('who').innerHTML=esc(student.name)+'<br>'+esc(student.sec)+(S.proy?' · '+esc(S.proy.nombre):'');
+  $('app').innerHTML=`<div class="steps">${STEPS.map((s,i)=>`<div class="st ${s.opt?'opt':''} ${S.done[s.key]?'done':''} ${current===s.key?'cur':''} ${unlocked(s.key)?'':'lock'}" data-k="${s.key}"><div class="n">${i===0?'INICIO':'ETAPA '+i}</div><div class="t">${s.label.replace(/^\d · /,'')}</div></div>`).join('')}</div><div id="stage"></div>`;
+  document.querySelectorAll('.st').forEach(el=>el.onclick=()=>{ if(!unlocked(el.dataset.k)) return; current=el.dataset.k; render(); });
+  ({anto:stAnto,crear:stCrear,pert:stPert,cpm:stCpm,gantt:stGantt,crisis:stCrisis,reto:stReto,feria:stFeria,van:stVan})[current]($('stage')); window.scrollTo(0,0);
+}
+function next(){ const i=STEPS.findIndex(s=>s.key===current); current=STEPS[Math.min(i+1,STEPS.length-1)].key; render(); }
+const nextBtn=t=>`<button class="btn gold" id="goNext" style="margin-top:10px">${t||'Continuar →'}</button>`;
+const doneBox=t=>`<div class="tip"><span class="ok">✓ Etapa completada.</span> ${t||''}</div>`;
+function acts(){ return (S.proy&&S.proy.acts)||[]; }
+
+/* ================= INICIO: ANTOLOGÍA ================= */
+function stAnto(el){
+  const seen=new Set(S.done.anto?ANTO.map(a=>a.id):[]); let cur='a1';
+  el.innerHTML=`<div class="anto"><div class="toc" id="toc"></div><div><div class="card sec" id="secBox"></div>
+   <div class="card"><h3 style="margin-top:0">📖 Glosario</h3><input type="text" id="glQ" placeholder="Buscar un término…"><div id="gl" style="margin-top:8px;max-height:320px;overflow:auto"></div></div>
+   <div class="card" id="chk"></div></div></div>`;
+  function toc(){ $('toc').innerHTML='<div class="mut" style="padding:4px 9px 8px">Meta-antología</div>'+ANTO.map(a=>`<button data-id="${a.id}" class="${a.id===cur?'on':''} ${seen.has(a.id)?'seen':''}">${a.t}</button>`).join('');
+    $('toc').querySelectorAll('button').forEach(b=>b.onclick=()=>{ cur=b.dataset.id; show(); }); }
+  function show(){ seen.add(cur); const a=ANTO.find(x=>x.id===cur); const i=ANTO.indexOf(a);
+    $('secBox').innerHTML=`<h3>${a.t}</h3>${typeof a.h==='function'?a.h():a.h}<div class="row" style="margin-top:12px">${i>0?'<button class="btn ghost sm" id="aPrev">← Anterior</button>':''}${i<ANTO.length-1?'<button class="btn sm" id="aNext">Siguiente →</button>':''}</div>`;
+    if($('aPrev')) $('aPrev').onclick=()=>{ cur=ANTO[i-1].id; show(); }; if($('aNext')) $('aNext').onclick=()=>{ cur=ANTO[i+1].id; show(); };
+    toc(); chk(); }
+  function gl(){ const q=norm($('glQ').value); $('gl').innerHTML=GLOSARIO.filter(g=>!q||norm(g[0]+' '+g[1]).indexOf(q)>-1).map(g=>`<div class="gl-item"><b>${g[0]}:</b> ${g[1]}</div>`).join('')||'<p class="mut">Sin resultados.</p>'; }
+  $('glQ').oninput=gl; gl();
+  function chk(){ const box=$('chk'); const faltan=ANTO.filter(a=>!seen.has(a.id)&&a.id!=='a10').length;
+    if(S.chequeo){ box.innerHTML=`<h3 style="margin-top:0">Chequeo de conceptos</h3><div class="tip">Resultado: <b>${S.chequeo.ok} de ${CHEQUEO.length}</b>.</div>`+nextBtn('Crear nuestro proyecto →'); $('goNext').onclick=next; return; }
+    if(faltan>0){ box.innerHTML=`<h3 style="margin-top:0">Chequeo de conceptos</h3><p class="mut">Lea las secciones 1 a 9 para habilitarlo. Le faltan ${faltan}.</p>`; return; }
+    const ans={};
+    box.innerHTML=`<h3 style="margin-top:0">Chequeo de conceptos</h3><p class="mut">8 preguntas, un intento. Necesita al menos 5 para continuar; si no, repase y el docente puede habilitarle otro intento.</p>
+     ${CHEQUEO.map((q,i)=>`<div class="q" data-i="${i}"><b>${i+1}. ${q.q}</b><div class="opts">${q.ops.map((o,j)=>`<button data-j="${j}">${String.fromCharCode(65+j)}) ${o}</button>`).join('')}</div></div>`).join('')}
+     <button class="btn gold" id="chOk">Enviar</button><span id="chMsg"></span>`;
+    box.querySelectorAll('.q').forEach(q=>q.querySelectorAll('button').forEach(b=>b.onclick=()=>{ ans[q.dataset.i]=+b.dataset.j; q.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }));
+    $('chOk').onclick=()=>{ if(Object.keys(ans).length<CHEQUEO.length){ $('chMsg').innerHTML=' <span class="err">Responda todas.</span>'; return; }
+      let ok=0; box.querySelectorAll('.q').forEach(q=>{ const i=+q.dataset.i, c=CHEQUEO[i].c; if(ans[i]===c) ok++; q.querySelectorAll('button').forEach(b=>{ b.disabled=true; const j=+b.dataset.j; b.classList.remove('on'); if(j===c) b.classList.add('good'); else if(j===ans[i]) b.classList.add('bad'); }); });
+      S.chequeo={ok:ok,resp:ans}; postData('chequeo',S.chequeo); if(ok>=5) markStep('anto',ok,CHEQUEO.length); else postProg('anto_intento',ok,CHEQUEO.length);
+      $('chOk').remove(); $('chMsg').outerHTML=`<div class="${ok>=5?'tip':'warn'}"><b>${ok} de ${CHEQUEO.length}.</b> ${ok>=5?'¡Listo para crear su proyecto!':'Repase la antología. Pídale al docente que le habilite otro intento (botón 🔄 en el panel).'}</div>`+(ok>=5?nextBtn('Crear nuestro proyecto →'):'');
+      if(ok>=5) $('goNext').onclick=next; };
+  }
+  show();
+}
+
+/* ================= ETAPA 1: CREAR ================= */
+function stCrear(el){
+  const p=S.proy;
+  if(!p){
+    const abiertos=allRows.filter(r=>r.tipo==='proy'&&r.d.sec===student.sec&&(r.d.equipo||[]).map(norm).indexOf(norm(student.name))>-1);
+    el.innerHTML=`<div class="card"><h2>Crear el proyecto del grupo</h2><div class="din">Solo <b>una persona</b> registra el proyecto e incluye a sus compañeros; los demás se unen desde su sesión.</div>
+     ${abiertos.length?`<div class="warn"><b>${esc(abiertos[abiertos.length-1].d.creador)}</b> lo incluyó en el proyecto <b>${esc(abiertos[abiertos.length-1].d.nombre)}</b>. <button class="btn teal sm" id="bJoin">Unirme</button></div>`:''}
+     <div class="grid2"><div><label>Nombre del proyecto</label><input type="text" id="cNom" maxlength="60" placeholder="Ej.: Graduación 11-3"></div><div><label>Tipo</label><select id="cTipo">${TIPOS.map(t=>`<option>${t}</option>`).join('')}</select></div></div>
+     <label>Objetivo (qué se quiere lograr, para quién y cuándo)</label><textarea id="cObj" rows="2" maxlength="300"></textarea>
+     <div class="grid2"><div><label>Administrador/a del proyecto</label><input type="text" id="cAdm" value="${esc(student.name)}"></div><div><label>Compañeros del grupo (nombre completo, separados por coma)</label><input type="text" id="cEq"></div></div>
+     <label>Fecha deseada de terminación (días desde el inicio)</label><input type="number" id="cFecha" min="5" style="max-width:200px">
+     <div class="row" style="margin-top:12px"><button class="btn gold" id="cOk">Registrar proyecto</button><span id="cMsg"></span></div></div>`;
+    if(abiertos.length) $('bJoin').onclick=()=>{ const d=abiertos[abiertos.length-1].d; postData('join',{id:d.id}); allRows.push({tipo:'join',nombre:student.name,ts:now(),d:{id:d.id}}); S=datos(student.name); render(); };
+    $('cOk').onclick=()=>{ const d={id:'P'+Date.now().toString(36)+Math.floor(Math.random()*999),sec:student.sec,creador:student.name,nombre:$('cNom').value.trim(),tipo:$('cTipo').value,objetivo:$('cObj').value.trim(),adm:$('cAdm').value.trim(),equipo:$('cEq').value.split(',').map(x=>x.trim()).filter(Boolean),fecha:num($('cFecha').value),acts:[]};
+      if(!d.nombre||d.objetivo.length<20||!d.adm||!(d.fecha>=5)){ $('cMsg').innerHTML=' <span class="err">Complete nombre, objetivo (con detalle), administrador y fecha deseada.</span>'; return; }
+      postData('proy',d); allRows.push({tipo:'proy',nombre:student.name,ts:now(),d:d}); S=datos(student.name); render(); };
+    return;
+  }
+  const L=p.acts&&p.acts.length?p.acts.map(a=>Object.assign({},a)):['A','B','C','D','E','F'].map(id=>({id:id,n:'',pred:[],o:'',m:'',p:'',tmin:'',ccost:''}));
+  const locked=!!S.done.crear;
+  el.innerHTML=`<div class="card"><h2>${esc(p.nombre)} <span class="pill">${esc(p.tipo)}</span></h2><p class="mut">${esc(p.objetivo)} · Administrador/a: <b>${esc(p.adm)}</b> · Fecha deseada: <b>${p.fecha} días</b> · Grupo: ${esc((S.miembros||[p.creador]).join(', '))}</p>
+   <div class="din"><b>Estructura desglosada del trabajo.</b> Escriba entre 6 y 12 actividades, sus predecesoras (códigos separados por coma) y sus tres tiempos en días. Para la etapa 5 indique también el <b>tiempo mínimo</b> al que se podría acelerar y cuánto cuesta cada día acelerado. Debe haber al menos dos rutas en paralelo.</div>
+   <div style="overflow-x:auto"><table class="tb" id="tAct"><tr><th>Cód.</th><th style="min-width:180px">Actividad</th><th>Predecesoras</th><th>o</th><th>m</th><th>p</th><th>Tiempo mínimo</th><th>₡ por día acelerado</th><th></th></tr></table></div>
+   <div class="row" style="margin-top:8px"><button class="btn ghost sm" id="aAdd">+ Actividad</button></div>
+   <div class="row" style="margin-top:12px"><button class="btn gold" id="aSave">Validar y guardar la estructura</button><span id="aMsg"></span></div><div id="aOut"></div></div>`;
+  function draw(){ $('tAct').innerHTML='<tr><th>Cód.</th><th style="min-width:180px">Actividad</th><th>Predecesoras</th><th>o</th><th>m</th><th>p</th><th>Tiempo mínimo</th><th>₡ por día acelerado</th><th></th></tr>'+L.map((a,i)=>`<tr><td><b>${a.id}</b></td>
+    <td><input type="text" data-i="${i}" data-f="n" value="${esc(a.n)}"></td><td><input type="text" data-i="${i}" data-f="pred" value="${esc((a.pred||[]).join(','))}" style="width:90px"></td>
+    ${['o','m','p','tmin','ccost'].map(f=>`<td><input type="number" data-i="${i}" data-f="${f}" value="${a[f]===''||a[f]===undefined?'':a[f]}" style="width:${f==='ccost'?110:70}px"></td>`).join('')}
+    <td>${L.length>6&&!locked?`<button class="btn ghost sm" data-del="${i}">✕</button>`:''}</td></tr>`).join('');
+    $('tAct').querySelectorAll('input').forEach(inp=>{ inp.disabled=locked; inp.oninput=()=>{ const a=L[+inp.dataset.i], f=inp.dataset.f; a[f]=f==='pred'?inp.value.toUpperCase().split(/[,\s]+/).filter(Boolean):f==='n'?inp.value:inp.value; }; });
+    $('tAct').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ L.splice(+b.dataset.del,1); L.forEach((a,i)=>{ const old=a.id; a.id=String.fromCharCode(65+i); if(old!==a.id) L.forEach(x=>x.pred=(x.pred||[]).map(q=>q===old?a.id:q)); }); draw(); }); }
+  draw();
+  $('aAdd').onclick=()=>{ if(L.length>=12||locked) return; L.push({id:String.fromCharCode(65+L.length),n:'',pred:[],o:'',m:'',p:'',tmin:'',ccost:''}); draw(); };
+  function validate(){ const errs=[]; const ids=L.map(a=>a.id); const A=L.map(a=>({id:a.id,n:String(a.n||'').trim(),pred:(a.pred||[]).filter(Boolean),o:num(a.o),m:num(a.m),p:num(a.p),tmin:num(a.tmin),ccost:num(a.ccost)}));
+    if(A.length<6) errs.push('Mínimo 6 actividades.');
+    A.forEach(a=>{ if(a.n.length<4) errs.push(a.id+': escriba el nombre de la actividad.'); a.pred.forEach(q=>{ if(ids.indexOf(q)<0) errs.push(a.id+': la predecesora '+q+' no existe.'); if(q===a.id) errs.push(a.id+': no puede ser su propia predecesora.'); });
+      if(!(a.o>0&&a.m>0&&a.p>0)) errs.push(a.id+': los tres tiempos deben ser mayores que 0.'); else if(!(a.o<=a.m&&a.m<=a.p)) errs.push(a.id+': debe cumplirse o ≤ m ≤ p.');
+      const te=(a.o+4*a.m+a.p)/6; if(!(a.tmin>0)||a.tmin>te+1e-9) errs.push(a.id+': el tiempo mínimo debe ser mayor que 0 y no mayor que su tiempo esperado ('+f2(te)+').'); if(!(a.ccost>0)) errs.push(a.id+': indique el costo por día acelerado.'); });
+    if(errs.length) return {errs:errs};
+    if(!topo(A)) return {errs:['Hay un ciclo en las predecesoras: una actividad termina dependiendo de sí misma.']};
+    const starts=A.filter(a=>!a.pred.length).length, ends=A.filter(a=>!A.some(x=>x.pred.indexOf(a.id)>-1)).length; const r=cpm(A);
+    if(r.paths.length+ (A.some(a=>!r.byId[a.id].crit)?1:0) <2) errs.push('Su proyecto es una sola fila de actividades: agregue actividades en paralelo (al menos dos rutas).');
+    return {errs:errs,A:A,starts:starts,ends:ends}; }
+  $('aSave').onclick=()=>{ const v=validate(); if(v.errs.length){ $('aMsg').innerHTML=''; $('aOut').innerHTML='<div class="warn"><b>Revise:</b><ul style="margin:4px 0 0">'+v.errs.slice(0,8).map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul></div>'; return; }
+    const np=Object.assign({},p,{acts:v.A}); postData('proy',np); allRows.push({tipo:'proy',nombre:student.name,ts:now(),d:np}); S.proy=np; markStep('crear',v.A.length,12);
+    $('aOut').innerHTML=doneBox('Estructura guardada para todo el grupo. A partir de aquí ya no se puede modificar.')+nextBtn('Calcular tiempos PERT →'); $('goNext').onclick=next; draw(); };
+  if(locked){ $('aSave').remove(); $('aAdd').remove(); $('aOut').innerHTML=doneBox('Estructura guardada.')+nextBtn('Ir a tiempos PERT →'); $('goNext').onclick=next; }
+}
+
+/* ================= ETAPA 2: PERT ================= */
+function stPert(el){
+  const A=acts(), R=cpm(A), done=!!S.done.pert;
+  el.innerHTML=`<div class="card"><h2>Tiempos PERT de «${esc(S.proy.nombre)}»</h2><div class="din">Calcule a mano (o con calculadora) el <b>tiempo esperado te = (o + 4m + p)/6</b> y la <b>varianza σ² = ((p − o)/6)²</b> de cada actividad, con 2 decimales. La plataforma revisa cada número.</div>
+   <div style="overflow-x:auto"><table class="tb"><tr><th>Act.</th><th>Actividad</th><th>o</th><th>m</th><th>p</th><th>te</th><th>σ²</th></tr>${A.map(a=>`<tr><td><b>${a.id}</b></td><td>${esc(a.n)}</td><td>${a.o}</td><td>${a.m}</td><td>${a.p}</td>
+    <td><input type="text" data-id="${a.id}" data-f="te" style="width:80px" value="${done?f2(R.byId[a.id].te):''}" ${done?'disabled class="okc"':''}></td><td><input type="text" data-id="${a.id}" data-f="v" style="width:80px" value="${done?f2(R.byId[a.id].v):''}" ${done?'disabled class="okc"':''}></td></tr>`).join('')}</table></div>
+   <div class="row" style="margin-top:12px"><button class="btn gold" id="pOk">Revisar</button><span id="pMsg" class="mut"></span></div><div id="pOut"></div></div>`;
+  if(done){ $('pOk').remove(); $('pOut').innerHTML=doneBox()+nextBtn('Ir a la ruta crítica →'); $('goNext').onclick=next; return; }
+  $('pOk').onclick=()=>{ let bad=0; el.querySelectorAll('input[data-id]').forEach(inp=>{ const x=R.byId[inp.dataset.id][inp.dataset.f], v=num(inp.value); const ok=!isNaN(v)&&Math.abs(v-x)<=0.011; inp.classList.toggle('okc',ok); inp.classList.toggle('badc',!ok); if(ok) inp.disabled=true; else bad++; });
+    intento('pert');
+    if(bad){ $('pMsg').innerHTML=`<span class="err">${bad} valor(es) por corregir.</span> Intento ${S.intentos.pert}. ${S.intentos.pert>=3?'Pista: calcule primero 4 × m y luego sume o y p antes de dividir entre 6.':''}`; return; }
+    markStep('pert',Math.max(1,4-S.intentos.pert),3); $('pOk').remove(); $('pMsg').textContent=''; $('pOut').innerHTML=doneBox('Todos los tiempos son correctos.')+nextBtn('Ir a la ruta crítica →'); $('goNext').onclick=next; };
+}
+
+/* ================= ETAPA 3: CPM ================= */
+function netSVG(R,A,showCrit,selSet){
+  const lvl={}; R.order.forEach(id=>{ const x=R.byId[id]; lvl[id]=x.pred.length?Math.max(...x.pred.map(p=>lvl[p]))+1:1; });
+  const maxL=Math.max(...Object.values(lvl))+1; const cols={}; Object.keys(lvl).forEach(id=>{ (cols[lvl[id]]=cols[lvl[id]]||[]).push(id); });
+  const W=150, H=74, gx=40, gy=26; const maxRows=Math.max(...Object.values(cols).map(c=>c.length),1);
+  const pos={}; Object.keys(cols).forEach(l=>cols[l].forEach((id,i)=>{ pos[id]={x:20+(+l)*(W+gx), y:20+i*(H+gy)+(maxRows-cols[l].length)*(H+gy)/2}; }));
+  const width=20+(maxL+1)*(W+gx), height=40+maxRows*(H+gy);
+  pos.INI={x:20,y:height/2-H/2-10}; pos.FIN={x:20+maxL*(W+gx),y:height/2-H/2-10};
+  const isC=id=>showCrit&&R.byId[id]&&R.byId[id].crit; const sel=id=>selSet&&selSet.has(id);
+  let e=''; const arrow=(a,b,c)=>{ const x1=pos[a].x+(a==='INI'?90:W), y1=pos[a].y+H/2, x2=pos[b].x, y2=pos[b].y+H/2; e+=`<path d="M${x1},${y1} C${x1+gx/1.5},${y1} ${x2-gx/1.5},${y2} ${x2},${y2}" fill="none" stroke="${c?'#d6453a':'#9aa3b5'}" stroke-width="${c?3:1.6}" marker-end="url(#ar${c?'c':''})"/>`; };
+  A.forEach(a=>{ if(!a.pred.length) arrow('INI',a.id,isC(a.id)); a.pred.forEach(p=>arrow(p,a.id,isC(a.id)&&isC(p)&&Math.abs(R.byId[a.id].IC-R.byId[p].TC)<0.005)); if(!R.byId[a.id].succ.length) arrow(a.id,'FIN',isC(a.id)); });
+  let n=`<g><rect x="${pos.INI.x}" y="${pos.INI.y}" width="90" height="${H}" rx="37" fill="#0E1B3D"/><text x="${pos.INI.x+45}" y="${pos.INI.y+H/2+5}" fill="#fff" text-anchor="middle" font-weight="600" font-size="13">Inicio</text></g>
+   <g><rect x="${pos.FIN.x}" y="${pos.FIN.y}" width="90" height="${H}" rx="37" fill="#0E1B3D"/><text x="${pos.FIN.x+45}" y="${pos.FIN.y+H/2+5}" fill="#fff" text-anchor="middle" font-weight="600" font-size="13">Fin</text></g>`;
+  A.forEach(a=>{ const p=pos[a.id], c=isC(a.id), s=sel(a.id); n+=`<g class="node" data-id="${a.id}"><rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="10" fill="${c?'#fdf0ee':s?'#fff4df':'#fff'}" stroke="${c?'#d6453a':s?'#B8863C':'#0E1B3D'}" stroke-width="${c||s?3:1.6}"/>
+    <text x="${p.x+10}" y="${p.y+20}" font-size="15" font-weight="700" fill="${c?'#d6453a':'#0E1B3D'}">${a.id}</text><text x="${p.x+W-10}" y="${p.y+20}" font-size="12" text-anchor="end" fill="#5b6478">te ${f2(R.byId[a.id].te)}</text>
+    <text x="${p.x+10}" y="${p.y+42}" font-size="11.5" fill="#1d2433">${esc(a.n.length>22?a.n.slice(0,21)+'…':a.n)}</text>
+    ${showCrit?`<text x="${p.x+10}" y="${p.y+62}" font-size="10.5" fill="#5b6478">IC ${f2(R.byId[a.id].IC)} · TC ${f2(R.byId[a.id].TC)} · H ${f2(R.byId[a.id].H)}</text>`:''}</g>`; });
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" font-family="Poppins, sans-serif"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9aa3b5"/></marker><marker id="arc" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#d6453a"/></marker></defs>${e}${n}</svg>`;
+}
+function stCpm(el){
+  const A=acts(), R=cpm(A), done=!!S.done.cpm, F=['IC','TC','IL','TL','H'];
+  const sel=new Set(); let phase=done?3:1;
+  el.innerHTML=`<div class="card"><h2>Ruta crítica de «${esc(S.proy.nombre)}»</h2><div class="din">1) Complete la <b>pasada hacia adelante</b> (IC, TC) y <b>hacia atrás</b> (IL, TL) y la <b>holgura</b>. 2) Marque en el diagrama las actividades críticas. 3) Calcule la probabilidad de terminar en su fecha deseada (${S.proy.fecha} días).</div>
+   <div class="net" id="net"></div>
+   <h3>1 · Reglas de tiempo</h3><div style="overflow-x:auto"><table class="tb"><tr><th>Act.</th><th>Pred.</th><th>te</th>${F.map(f=>`<th>${f}</th>`).join('')}</tr>${A.map(a=>`<tr><td><b>${a.id}</b></td><td>${a.pred.join(', ')||'—'}</td><td>${f2(R.byId[a.id].te)}</td>${F.map(f=>`<td><input type="text" data-id="${a.id}" data-f="${f}" style="width:72px"></td>`).join('')}</tr>`).join('')}</table></div>
+   <div class="row" style="margin-top:10px"><button class="btn gold" id="cOk">Revisar tiempos</button><span id="cMsg" class="mut"></span></div>
+   <div id="ph2"></div><div id="ph3"></div><div id="cOut"></div></div>`;
+  const drawNet=(crit)=>{ $('net').innerHTML=netSVG(R,A,crit,sel); $('net').querySelectorAll('.node').forEach(g=>g.onclick=()=>{ if(phase!==2) return; const id=g.dataset.id; if(sel.has(id)) sel.delete(id); else sel.add(id); drawNet(false); }); };
+  const fill=()=>el.querySelectorAll('input[data-id]').forEach(inp=>{ inp.value=f2(R.byId[inp.dataset.id][inp.dataset.f]); inp.disabled=true; inp.classList.add('okc'); });
+  function ph2(){ phase=2; drawNet(false);
+    $('ph2').innerHTML=`<h3>2 · Ruta crítica</h3><p class="mut">Toque en el diagrama las actividades que forman la ruta crítica y escriba la duración del proyecto.</p><div class="row"><input type="text" id="cT" placeholder="Duración (días)" style="max-width:180px"><button class="btn gold" id="cRc">Revisar ruta crítica</button><span id="cRm" class="mut"></span></div>`;
+    $('cRc').onclick=()=>{ const crit=A.filter(a=>R.byId[a.id].crit).map(a=>a.id); const ok=crit.length===sel.size&&crit.every(id=>sel.has(id)); const okT=Math.abs(num($('cT').value)-R.T)<=0.011; intento('cpm_ruta');
+      if(!ok||!okT){ $('cRm').innerHTML=`<span class="err">${!okT?'Revise la duración. ':''}${!ok?'Revise las actividades marcadas: las críticas tienen holgura 0.':''}</span>`; return; }
+      $('cRc').remove(); $('cT').disabled=true; $('cRm').innerHTML='<span class="ok">✓ ¡Correcto!</span>'; phase=3; drawNet(true); ph3(); }; }
+  function ph3(){
+    const sig=Math.sqrt(R.var), z=sig>0?(S.proy.fecha-R.T)/sig:null, prob=z===null?(S.proy.fecha>=R.T?1:0):Phi(z);
+    $('ph3').innerHTML=`<h3>3 · Probabilidad de terminar en ${S.proy.fecha} días</h3><p class="mut">Ruta usada para la varianza: <b>${R.path.join('-')}</b>${R.paths.length>1?' (hay varias rutas críticas: se usa la de mayor varianza)':''}.</p>
+     <div class="grid3"><div><label>σ² de la ruta crítica</label><input type="text" id="zV"></div><div><label>Z</label><input type="text" id="zZ"></div><div><label>Probabilidad (ej. 0,8729)</label><input type="text" id="zP"></div></div>
+     <details style="margin-top:8px"><summary class="mut" style="cursor:pointer">📊 Tabla de la distribución normal (Z positivo)</summary><div style="overflow-x:auto;margin-top:6px">${zTable()}</div></details>
+     <div class="row" style="margin-top:10px"><button class="btn gold" id="zOk">Revisar probabilidad</button><span id="zM" class="mut"></span></div>`;
+    if(sig===0){ $('ph3').insertAdjacentHTML('beforeend','<div class="warn">La ruta crítica no tiene varianza (tiempos sin incertidumbre): escriba 0 en σ² y Z, y 1 o 0 en probabilidad según si la fecha alcanza.</div>'); }
+    $('zOk').onclick=()=>{ const v=num($('zV').value), zz=num($('zZ').value), pp=num($('zP').value); intento('cpm_prob');
+      const okV=Math.abs(v-R.var)<=0.011, okZ=z===null?Math.abs(zz)<0.001:Math.abs(zz-z)<=0.021, okP=Math.abs(pp-prob)<=0.012;
+      [['zV',okV],['zZ',okZ],['zP',okP]].forEach(([i,o])=>{ $(i).classList.toggle('okc',o); $(i).classList.toggle('badc',!o); });
+      if(!(okV&&okZ&&okP)){ $('zM').innerHTML='<span class="err">Revise los valores marcados.</span>'+(z!==null&&z<0?' Recuerde: si Z es negativo, la probabilidad es 1 − tabla(|Z|).':''); return; }
+      const tries=(S.intentos.cpm||0)+(S.intentos.cpm_ruta||0)+(S.intentos.cpm_prob||0);
+      markStep('cpm',Math.max(1,9-tries),8); postData('cpmres',{pid:S.proy.id,T:R.T,prob:prob}); $('zOk').remove(); ['zV','zZ','zP'].forEach(i=>$(i).disabled=true);
+      $('cOut').innerHTML=doneBox(`Duración esperada ${f2(R.T)} días · probabilidad de terminar en ${S.proy.fecha} días: ${(prob*100).toFixed(2).replace('.',',')} %.`)+nextBtn('Ver la gráfica de Gantt →'); $('goNext').onclick=next; };
+  }
+  drawNet(done);
+  if(done){ fill(); $('cOk').remove(); phase=3; drawNet(true); $('cOut').innerHTML=doneBox(`Duración ${f2(R.T)} días · ruta crítica ${R.path.join('-')}.`)+nextBtn('Ver la gráfica de Gantt →'); $('goNext').onclick=next; return; }
+  $('cOk').onclick=()=>{ let bad=0; el.querySelectorAll('input[data-id]').forEach(inp=>{ const x=R.byId[inp.dataset.id][inp.dataset.f], v=num(inp.value); const ok=!isNaN(v)&&Math.abs(v-x)<=0.021; inp.classList.toggle('okc',ok); inp.classList.toggle('badc',!ok); if(ok) inp.disabled=true; else bad++; });
+    intento('cpm'); if(bad){ $('cMsg').innerHTML=`<span class="err">${bad} valor(es) por corregir.</span> ${S.intentos.cpm>=2?'Pista: IC = mayor TC de las predecesoras; TL = menor IL de las sucesoras.':''}`; return; }
+    $('cOk').remove(); $('cMsg').innerHTML='<span class="ok">✓ Tiempos correctos.</span>'; ph2(); };
+}
+
+/* ================= ETAPA 4: GANTT ================= */
+function ganttSVG(R,A,title){
+  const T=Math.ceil(R.T), cw=Math.max(22,Math.min(46,Math.floor(760/Math.max(T,1)))), lw=230, rh=30, top=54, w=lw+cw*T+30, h=top+A.length*rh+40;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" font-family="Poppins, sans-serif"><rect width="${w}" height="${h}" fill="#fff"/><text x="12" y="24" font-size="15" font-weight="700" fill="#0E1B3D">${esc(title)}</text>`;
+  for(let d=0;d<=T;d++){ const x=lw+d*cw; s+=`<line x1="${x}" y1="${top-8}" x2="${x}" y2="${top+A.length*rh}" stroke="#eef1f6"/>`+(d<T?`<text x="${x+cw/2}" y="${top-12}" font-size="10" text-anchor="middle" fill="#5b6478">${d+1}</text>`:''); }
+  A.forEach((a,i)=>{ const x=R.byId[a.id], y=top+i*rh; const c=x.crit;
+    s+=`<text x="12" y="${y+19}" font-size="12" fill="${c?'#d6453a':'#1d2433'}" font-weight="${c?700:400}">${a.id} · ${esc(a.n.length>26?a.n.slice(0,25)+'…':a.n)}</text>`;
+    s+=`<rect x="${lw+x.IC*cw}" y="${y+6}" width="${Math.max(2,x.te*cw)}" height="${rh-12}" rx="4" fill="${c?'#d6453a':'#2FC2AD'}"/>`;
+    if(x.H>0.005) s+=`<rect x="${lw+x.TC*cw}" y="${y+10}" width="${x.H*cw}" height="${rh-20}" rx="3" fill="none" stroke="#B8863C" stroke-dasharray="4 3"/>`; });
+  s+=`<rect x="${lw}" y="${h-26}" width="14" height="10" fill="#d6453a"/><text x="${lw+20}" y="${h-17}" font-size="11">Ruta crítica</text><rect x="${lw+110}" y="${h-26}" width="14" height="10" fill="#2FC2AD"/><text x="${lw+130}" y="${h-17}" font-size="11">No crítica</text><rect x="${lw+220}" y="${h-26}" width="14" height="10" fill="none" stroke="#B8863C" stroke-dasharray="4 3"/><text x="${lw+240}" y="${h-17}" font-size="11">Holgura</text><text x="${w-12}" y="${h-17}" font-size="11" text-anchor="end" fill="#5b6478">Días</text></svg>`;
+  return s; }
+function svgToPng(svg,name){ const img=new Image(); const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  img.onload=()=>{ const c=document.createElement('canvas'); c.width=img.width*2; c.height=img.height*2; const x=c.getContext('2d'); x.scale(2,2); x.drawImage(img,0,0); const a=document.createElement('a'); a.download=name; a.href=c.toDataURL('image/png'); a.click(); }; img.src=url; }
+function stGantt(el){
+  const A=acts(), R=cpm(A), g=ganttSVG(R,A,S.proy.nombre+' · '+f2(R.T)+' días'); const t=S.gantttxt;
+  el.innerHTML=`<div class="card"><h2>Gráfica de Gantt</h2><div class="din">La plataforma dibujó su Gantt con los tiempos calculados. <b>Interprételo</b>: eso es lo que evalúa esta etapa.</div>
+   <div class="gantt">${g}</div><div class="row" style="margin-top:8px"><button class="btn ghost sm" id="gDl">⬇ Descargar imagen PNG</button></div>
+   <label>¿Qué actividades se realizan en paralelo y en qué días?</label><textarea id="g1" rows="2" maxlength="500"></textarea>
+   <label>¿Cuál actividad no crítica tiene más holgura y qué significa eso para el grupo?</label><textarea id="g2" rows="2" maxlength="500"></textarea>
+   <label>Seguimiento: ¿cómo darían seguimiento al avance real y a los costos durante el proyecto? (reuniones, % de avance, presupuesto vs. real…)</label><textarea id="g3" rows="2" maxlength="500"></textarea>
+   <div class="row" style="margin-top:10px"><button class="btn gold" id="gOk">Guardar interpretación</button><span id="gMsg"></span></div><div id="gOut"></div></div>`;
+  $('gDl').onclick=()=>svgToPng(g,'Gantt_'+S.proy.nombre.replace(/[^\w]+/g,'_')+'.png');
+  if(t){ $('g1').value=t.g1; $('g2').value=t.g2; $('g3').value=t.g3; }
+  if(S.done.gantt){ ['g1','g2','g3','gOk'].forEach(i=>$(i).disabled=true); $('gOut').innerHTML=doneBox()+nextBtn('Enfrentar la crisis →'); $('goNext').onclick=next; return; }
+  $('gOk').onclick=()=>{ if(['g1','g2','g3'].some(i=>$(i).value.trim().length<25)){ $('gMsg').innerHTML=' <span class="err">Desarrolle las tres respuestas.</span>'; return; }
+    const d={pid:S.proy.id,g1:$('g1').value.trim(),g2:$('g2').value.trim(),g3:$('g3').value.trim()}; S.gantttxt=d; postData('gantttxt',d); markStep('gantt',1,1); stGantt(el); };
+}
+
+/* ================= ETAPA 5: CRISIS ================= */
+function crisisSec(){ const c=allRows.filter(r=>r.tipo==='crisis'&&r.d.sec===student.sec).pop(); return c?c.d:{dias:2,texto:'La institución informa que el espacio que necesitan solo está disponible antes de lo previsto.'}; }
+function stCrisis(el){
+  const A=acts(), base=cpm(A), cr=crisisSec(), target=r2(base.T-cr.dias); const res=S.crisisres; const v={};
+  const opt=crashOptimum(A,target);
+  el.innerHTML=`<div class="card"><h2>🚨 Crisis</h2><div class="warn" style="font-size:15px"><b>${esc(cr.texto)}</b><br>El proyecto debe terminar en <b>${f2(target)} días</b> (${cr.dias} días antes de los ${f2(base.T)} calculados).</div>
+   <div class="din">Acelere actividades de <b>un día a la vez</b>. Solo acelerar actividades <b>críticas</b> acorta el proyecto. Recuerde el trueque: cada día acelerado cuesta dinero. Busque el <b>menor costo</b>.</div>
+   <div id="cz"></div><div class="row" style="margin-top:10px"><button class="btn ghost sm" id="zRst">Reiniciar aceleración</button></div>
+   <label>Justifique: ¿por qué eligió esas actividades?</label><textarea id="zJ" rows="2" maxlength="500"></textarea>
+   <div class="row" style="margin-top:10px"><button class="btn gold" id="zOk">Presentar plan acelerado</button><button class="btn red sm" id="zNo">No es posible llegar</button><span id="zMsg"></span></div><div id="zOut"></div></div>`;
+  function state(){ const ov={}; A.forEach(a=>ov[a.id]=r2(base.byId[a.id].te-(v[a.id]||0))); return cpm(A,ov); }
+  function cost(){ return A.reduce((s,a)=>s+(v[a.id]||0)*a.ccost,0); }
+  function draw(){ const R=state();
+    $('cz').innerHTML=`<div class="row" style="margin-bottom:8px"><span class="pill ${R.T<=target+0.005?'teal':'red'}">Duración actual: ${f2(R.T)} días</span><span class="pill gold">Costo de aceleración: ₡${cost().toLocaleString('es-CR')}</span><span class="pill">Meta: ${f2(target)} días</span></div>
+     <div class="crashrow" style="font-weight:600;color:var(--navy)"><div>Act.</div><div>Actividad</div><div>te actual</div><div class="hm">Mínimo</div><div class="hm">₡ / día</div><div></div></div>`+
+     A.map(a=>{ const x=R.byId[a.id], cap=Math.floor(base.byId[a.id].te-a.tmin+1e-9)-(v[a.id]||0); return `<div class="crashrow" style="${x.crit?'color:#d6453a;font-weight:600':''}"><div>${a.id}</div><div>${esc(a.n)}${x.crit?' · crítica':''}</div><div>${f2(x.te)}</div><div class="hm">${a.tmin}</div><div class="hm">₡${(+a.ccost).toLocaleString('es-CR')}</div>
+      <div class="row" style="gap:4px"><button class="btn sm" data-add="${a.id}" ${cap<=0||res?'disabled':''}>−1 día</button>${v[a.id]?`<button class="btn ghost sm" data-sub="${a.id}" ${res?'disabled':''}>↺</button>`:''}</div></div>`; }).join('');
+    $('cz').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ v[b.dataset.add]=(v[b.dataset.add]||0)+1; draw(); });
+    $('cz').querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{ v[b.dataset.sub]=(v[b.dataset.sub]||0)-1; draw(); }); }
+  $('zRst').onclick=()=>{ Object.keys(v).forEach(k=>delete v[k]); draw(); };
+  function finish(d){ S.crisisres=d; postData('crisisres',d); const sc=d.logra?(d.optimo?3:2):(d.imposibleOk?3:1); markStep('crisis',sc,3); showRes(d); }
+  function showRes(d){ ['zOk','zNo','zRst'].forEach(i=>$(i)&&($(i).disabled=true)); $('zJ').value=d.just||''; $('zJ').disabled=true;
+    const txt=d.logra?(d.optimo?`¡Excelente! Llegó a la meta con el <b>costo mínimo posible</b> (₡${d.costo.toLocaleString('es-CR')}).`:`Llegó a la meta con ₡${d.costo.toLocaleString('es-CR')}. El costo mínimo posible era <b>₡${(d.min||0).toLocaleString('es-CR')}</b>: revise qué actividad crítica era más barata.`)
+      :(d.imposibleOk?'Correcto: con los tiempos mínimos que definieron no era posible llegar a la meta. En la vida real habría que renegociar la fecha o el alcance.':'Sí era posible llegar a la meta: revise las actividades críticas que todavía se podían acelerar.');
+    $('zOut').innerHTML=`<div class="${d.logra&&d.optimo||d.imposibleOk?'tip':'warn'}">${txt}</div>`+nextBtn('Ir al intercambio →'); $('goNext').onclick=next; }
+  $('zOk').onclick=()=>{ const R=state(); if(R.T>target+0.005){ $('zMsg').innerHTML=' <span class="err">Todavía no llega a la meta.</span>'; return; } if($('zJ').value.trim().length<25){ $('zMsg').innerHTML=' <span class="err">Justifique su elección.</span>'; return; }
+    const c=cost(); finish({pid:S.proy.id,logra:true,costo:c,min:opt?opt.cost:null,optimo:!!opt&&c<=opt.cost,dias:Object.assign({},v),just:$('zJ').value.trim(),meta:target}); };
+  $('zNo').onclick=()=>{ if($('zJ').value.trim().length<25){ $('zMsg').innerHTML=' <span class="err">Justifique por qué no es posible.</span>'; return; }
+    finish({pid:S.proy.id,logra:false,imposibleOk:!opt,just:$('zJ').value.trim(),min:opt?opt.cost:null,meta:target}); };
+  if(res){ Object.assign(v,res.dias||{}); draw(); showRes(res); return; }
+  draw(); window.__crisisDebug={opt:opt,v:v,draw:draw,target:target};
+}
+
+/* ================= ETAPA 6: INTERCAMBIO ================= */
+function stReto(el){
+  const mine=S.proy?S.proy.id:''; const pool=allRows.filter(r=>r.tipo==='proy'&&r.d.sec===student.sec&&r.d.acts&&r.d.acts.length&&r.d.id!==mine);
+  const by={}; pool.forEach(r=>by[r.d.id]=r.d); const lista=Object.values(by).filter(p=>allRows.some(r=>r.tipo==='paso'&&r.d.key==='cpm'&&r.d.pid===p.id));
+  const done=S.reto;
+  if(done){ const p=done.proy; el.innerHTML=`<div class="card"><h2>Intercambio de proyectos</h2>${doneBox(`Resolvió el proyecto «${esc(p.nombre)}» en ${done.intentos} intento(s).`)}${nextBtn('Ir a la presentación →')}</div>`; $('goNext').onclick=next; return; }
+  if(!lista.length){ el.innerHTML=`<div class="card"><h2>Intercambio de proyectos</h2><div class="warn">Todavía ningún otro grupo de su sección terminó su ruta crítica. Vuelva en unos minutos.</div><button class="btn ghost sm" id="rRef">↻ Actualizar</button></div>`; $('rRef').onclick=()=>load().then(()=>stReto(el)); return; }
+  // asignación estable: el proyecto ajeno que menos veces se ha resuelto
+  const cnt=p=>allRows.filter(r=>r.tipo==='reto'&&r.d.proy&&r.d.proy.id===p.id).length; lista.sort((a,b)=>cnt(a)-cnt(b)||(a.id<b.id?-1:1)); const P=lista[0];
+  const R=cpm(P.acts); let tries=0; const sig=Math.sqrt(R.var); const z=sig>0?(P.fecha-R.T)/sig:null; const prob=z===null?(P.fecha>=R.T?1:0):Phi(z);
+  el.innerHTML=`<div class="card"><h2>Reto: resuelva el proyecto de otro grupo</h2><div class="din">Le tocó <b>«${esc(P.nombre)}»</b> (${esc(P.tipo)}), creado por ${esc(P.creador)}. Calcule en su cuaderno y responda. Un buen resultado suma puntos para usted y demuestra que el otro grupo planificó con claridad.</div>
+   <div style="overflow-x:auto"><table class="tb"><tr><th>Act.</th><th>Actividad</th><th>Pred.</th><th>o</th><th>m</th><th>p</th></tr>${P.acts.map(a=>`<tr><td><b>${a.id}</b></td><td>${esc(a.n)}</td><td>${a.pred.join(', ')||'—'}</td><td>${a.o}</td><td>${a.m}</td><td>${a.p}</td></tr>`).join('')}</table></div>
+   <div class="grid3"><div><label>Duración esperada (días)</label><input type="text" id="xT"></div><div><label>Ruta crítica (ej. A-B-E)</label><input type="text" id="xR"></div><div><label>Probabilidad de terminar en ${P.fecha} días</label><input type="text" id="xP"></div></div>
+   <details style="margin-top:8px"><summary class="mut" style="cursor:pointer">📊 Tabla de la distribución normal</summary><div style="overflow-x:auto;margin-top:6px">${zTable()}</div></details>
+   <div class="row" style="margin-top:10px"><button class="btn gold" id="xOk">Revisar</button><span id="xM" class="mut"></span></div>
+   <label>Califique la claridad del proyecto del otro grupo (1 a 5) y deje un comentario</label><div class="row"><select id="xC" style="width:90px">${[5,4,3,2,1].map(n=>`<option>${n}</option>`).join('')}</select><input type="text" id="xCom" maxlength="200" style="flex:1" placeholder="Ej.: las actividades estaban claras, pero…"></div></div>`;
+  $('xOk').onclick=()=>{ tries++; const okT=Math.abs(num($('xT').value)-R.T)<=0.021; const rr=String($('xR').value).toUpperCase().replace(/[^A-Z]/g,''); const okR=R.paths.some(p=>p.join('')===rr); const okP=Math.abs(num($('xP').value)-prob)<=0.012;
+    [['xT',okT],['xR',okR],['xP',okP]].forEach(([i,o])=>{ $(i).classList.toggle('okc',o); $(i).classList.toggle('badc',!o); });
+    if(!(okT&&okR&&okP)){ $('xM').innerHTML='<span class="err">Revise los valores marcados.</span> Intento '+tries+'.'; return; }
+    if($('xCom').value.trim().length<10){ $('xM').innerHTML='<span class="err">Deje un comentario para el otro grupo.</span>'; return; }
+    const d={proy:{id:P.id,nombre:P.nombre,creador:P.creador},intentos:tries,claridad:+$('xC').value,comentario:$('xCom').value.trim()}; S.reto=d; postData('reto',d); markStep('reto',Math.max(1,4-tries),3); stReto(el); };
+}
+
+/* ================= ETAPA 7: PRESENTACIÓN ================= */
+function stFeria(el){
+  const byId={}; allRows.filter(r=>r.tipo==='proy'&&r.d.sec===student.sec&&r.d.acts&&r.d.acts.length).forEach(r=>byId[r.d.id]=r.d);
+  const ps=Object.values(byId).filter(p=>allRows.some(r=>r.tipo==='paso'&&r.d.key==='gantt'&&r.d.pid===p.id));
+  const votos={}; const last={}; allRows.filter(r=>r.tipo==='voto'&&r.d.sec===student.sec).forEach(r=>last[norm(r.nombre)]=r.d.id); Object.values(last).forEach(id=>votos[id]=(votos[id]||0)+1);
+  const mio=S.voto?S.voto.id:''; const own=S.proy?S.proy.id:'';
+  el.innerHTML=`<div class="card"><h2>Presentación de proyectos · ${esc(student.sec)}</h2><div class="din">Cada grupo presenta su plan con el Gantt. Después, vote por el <b>proyecto mejor planificado</b> (no el suyo).</div><button class="btn ghost sm" id="fRef">↻ Actualizar</button>
+   <div class="gal" style="margin-top:12px">${ps.map(p=>{ const R=cpm(p.acts); const cr=allRows.filter(r=>r.tipo==='crisisres'&&r.d.pid===p.id).pop(); const rt=allRows.filter(r=>r.tipo==='reto'&&r.d.proy&&r.d.proy.id===p.id);
+     return `<div class="gcard"><b style="color:var(--navy)">${esc(p.nombre)}</b> ${p.id===own?'<span class="pill gold">Suyo</span>':''}<div class="mut">${esc(p.tipo)} · ${p.acts.length} actividades · ${f2(R.T)} días · ruta ${R.path.join('-')}</div>
+      <div style="overflow-x:auto;margin:8px 0;border:1px solid var(--line);border-radius:8px">${ganttSVG(R,p.acts,p.nombre)}</div>
+      <div class="mut">${cr?'Crisis: '+(cr.d.logra?'acelerado con ₡'+cr.d.costo.toLocaleString('es-CR'):'no era posible'):''}${rt.length?' · Claridad según otros grupos: '+(rt.reduce((a,r)=>a+r.d.claridad,0)/rt.length).toFixed(1)+'/5':''}</div>
+      <div class="row" style="margin-top:8px"><span class="pill teal">${votos[p.id]||0} voto(s)</span>${p.id!==own?`<button class="btn sm ${mio===p.id?'teal':''}" data-v="${p.id}">${mio===p.id?'★ Su voto':'Votar'}</button>`:''}</div></div>`; }).join('')||'<p class="mut">Aún no hay proyectos con Gantt en su sección.</p>'}</div><div id="fOut"></div></div>`;
+  el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ const d={id:b.dataset.v,sec:student.sec}; S.voto=d; postData('voto',d); allRows.push({tipo:'voto',nombre:student.name,ts:now(),d:d}); markStep('feria',1,1); stFeria(el); });
+  $('fRef').onclick=()=>load().then(()=>stFeria(el));
+  if(S.done.feria) $('fOut').innerHTML=doneBox('¡Completó el recorrido! Si su proyecto es un emprendimiento, puede hacer la etapa opcional de VAN y TIR.');
+}
+
+/* ================= ETAPA 8: VAN Y TIR ================= */
+function stVan(el){
+  const d=S.van;
+  el.innerHTML=`<div class="card"><h2>Extensión: ¿vale la pena económicamente? <span class="pill gold">Opcional</span></h2><div class="din">Estime la inversión inicial y los flujos netos de efectivo de su proyecto para 3 a 5 años, y la tasa que exigirían. Luego calcule el <b>VAN</b> y la <b>TIR</b>. Si su proyecto no genera ingresos, use el caso de ejemplo de la antología.</div>
+   <div class="grid3"><div><label>Inversión inicial (₡)</label><input type="number" id="vI"></div><div><label>Tasa exigida (%)</label><input type="number" id="vT"></div><div><label>Flujos por año (₡, separados por coma)</label><input type="text" id="vF" placeholder="400000, 450000, 500000"></div></div>
+   <div class="grid3"><div><label>Su VAN (₡)</label><input type="text" id="vV"></div><div><label>Su TIR (%)</label><input type="text" id="vR" placeholder="o «no existe»"></div><div><label>Decisión</label><select id="vD"><option value="">…</option><option>Conviene</option><option>No conviene</option></select></div></div>
+   <div class="row" style="margin-top:10px"><button class="btn gold" id="vOk">Revisar</button><span id="vM" class="mut"></span></div><div id="vOut"></div></div>`;
+  if(d){ $('vI').value=d.I; $('vT').value=d.i; $('vF').value=d.F.join(', '); $('vV').value=Math.round(d.van); $('vR').value=d.tir===null?'no existe':d.tir.toFixed(2); $('vD').value=d.dec; ['vI','vT','vF','vV','vR','vD','vOk'].forEach(i=>$(i).disabled=true); $('vOut').innerHTML=doneBox('VAN y TIR correctos.'); return; }
+  $('vOk').onclick=()=>{ const I=num($('vI').value), i=num($('vT').value)/100, F=$('vF').value.split(',').map(num).filter(x=>!isNaN(x));
+    if(!(I>0)||!(i>0)||F.length<3||F.length>5){ $('vM').innerHTML='<span class="err">Datos incompletos: inversión, tasa y de 3 a 5 flujos.</span>'; return; }
+    const V=npv(I,F,i), T=irr(I,F); const vv=num($('vV').value), tt=String($('vR').value).trim().toLowerCase();
+    const okV=Math.abs(vv-V)<=Math.max(1000,Math.abs(V)*0.01); const okT=T===null?tt.indexOf('no')===0:Math.abs(num(tt)-T*100)<=0.2; const dec=V>0?'Conviene':'No conviene'; const okD=$('vD').value===dec;
+    [['vV',okV],['vR',okT],['vD',okD]].forEach(([k,o])=>{ $(k).classList.toggle('okc',o); $(k).classList.toggle('badc',!o); }); intento('van');
+    if(!(okV&&okT&&okD)){ $('vM').innerHTML='<span class="err">Revise los valores marcados.</span> '+(S.intentos.van>=2?'Pista: descuente cada flujo con (1 + i) elevado al número de año.':''); return; }
+    S.van={I:I,i:i*100,F:F,van:V,tir:T===null?null:T*100,dec:dec}; postData('van',S.van); markStep('van',1,1); stVan(el); };
+}
+
+/* ================= PANEL DOCENTE ================= */
+function panel(){ const pin=prompt('PIN del panel docente:'); if(pin!==TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  $('app').innerHTML='<div class="card">Cargando…</div>'; Promise.all([sheetGet(SH_DATA),sheetGet(SH_PROG)]).then(([r,p])=>{ allRows=parseRows(r); window.__prog=p; panelRender(SECCIONES[0]); }); }
+function evalDe(n){ return (allRows.filter(r=>r.tipo==='eval'&&norm(r.d.nombre)===norm(n)).pop()||{}).d||{niveles:{}}; }
+function panelRender(sec){
+  const lista=[]; allRows.forEach(r=>{ if(r.d&&r.d.sec===sec&&norm(r.nombre)!=='docente'&&lista.map(norm).indexOf(norm(r.nombre))<0) lista.push(r.nombre); });
+  const sal={}; (window.__prog||[]).forEach(r=>{ if(String(r.Modulo)==='incidente_salida_pantalla_'+MODULE_ID){ const k=norm(r.Estudiante); sal[k]=(sal[k]||0)+1; } });
+  const cr=allRows.filter(r=>r.tipo==='crisis'&&r.d.sec===sec).pop(); const crd=cr?cr.d:{dias:2,texto:'La institución informa que el espacio que necesitan solo está disponible antes de lo previsto.'};
+  $('who').textContent='Panel docente';
+  $('app').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Proyecto real, plan real</h2><select id="pSec" style="width:auto;margin-left:auto">${SECCIONES.map(s=>`<option ${s===sec?'selected':''}>${s}</option>`).join('')}</select><button class="btn ghost sm" id="pOut">Salir</button></div></div>
+  <div class="card"><h3 style="margin-top:0">🚨 Crisis de la sección ${esc(sec)}</h3><div class="grid2"><div><label>Mensaje de la crisis</label><input type="text" id="kT" value="${esc(crd.texto)}"></div><div><label>Días que deben reducir</label><input type="number" id="kD" min="1" max="5" value="${crd.dias}" style="max-width:120px"></div></div>
+   <div class="row" style="margin-top:8px"><button class="btn gold sm" id="kOk">Lanzar / actualizar crisis</button><span class="mut">Aplica a los grupos que todavía no han resuelto la etapa 5.</span></div></div>
+  <div class="card"><h3 style="margin-top:0">Estudiantes y rúbrica (1–3)</h3><p class="mut">Borde dorado = nivel sugerido. Las etapas 1 a 5 son del grupo.</p><div style="overflow-x:auto"><table class="tb"><tr><th>Estudiante</th><th>Proyecto</th><th>Chequeo</th><th>Intentos PERT/CPM</th><th>Crisis</th><th>Reto</th>${RUBRICA.map(c=>`<th title="${esc(c.crit)}">${c.ra}</th>`).join('')}<th>Salidas</th><th></th></tr>
+  ${lista.map(n=>{ const o=datos(n), ev=evalDe(n); const it=(o.intentos.pert||0)+(o.intentos.cpm||0)+(o.intentos.cpm_ruta||0)+(o.intentos.cpm_prob||0);
+    const g=o.gantttxt, c=o.crisisres;
+    const sg={r1:o.chequeo?(o.chequeo.ok>=7?3:o.chequeo.ok>=5?2:1):0, r2:o.done.gantt?(g&&g.g1.length+g.g2.length>=120?3:2):(o.done.crear?1:0), r3:o.done.cpm?(it<=6?3:2):(o.done.pert?1:0), r4:c?(c.logra?(c.optimo?3:2):(c.imposibleOk?3:1)):0, r5:o.done.gantt?(g&&g.g3.length>=60?3:2):0};
+    return `<tr><td><b>${esc(n)}</b></td><td>${o.proy?esc(o.proy.nombre):'—'}</td><td>${o.chequeo?o.chequeo.ok+'/8':'—'}</td><td>${it||'—'}</td><td>${c?(c.logra?'₡'+c.costo.toLocaleString('es-CR')+(c.optimo?' (mínimo)':' (mín. ₡'+(c.min||0).toLocaleString('es-CR')+')'):(c.imposibleOk?'No posible ✓':'Se rindió ✗')):'—'}</td><td>${o.reto?o.reto.intentos+' int.':'—'}</td>
+    ${RUBRICA.map(c=>`<td><div class="lv" data-n="${esc(n)}" data-c="${c.id}">${[1,2,3].map(k=>`<button class="${ev.niveles[c.id]==k?'on':''} ${sg[c.id]===k?'sug':''}" data-k="${k}">${k}</button>`).join('')}</div></td>`).join('')}
+    <td>${sal[norm(n)]||0}</td><td><button class="btn ghost sm" data-ver="${esc(n)}">Ver</button> <button class="btn ghost sm" data-reset="${esc(n)}">🔄</button></td></tr>`; }).join('')||'<tr><td colspan="13" class="mut">Sin datos en esta sección.</td></tr>'}</table></div>
+  <details style="margin-top:10px"><summary class="mut" style="cursor:pointer">Ver criterios de la rúbrica</summary><table class="tb" style="margin-top:6px"><tr><th>RA · Indicador</th><th>3 · Logrado</th><th>2 · En proceso</th><th>1 · No logrado</th></tr>${RUBRICA.map(c=>`<tr><td><b>${c.ra}</b> · ${c.crit}</td><td>${c.n3}</td><td>${c.n2}</td><td>${c.n1}</td></tr>`).join('')}</table></details></div>
+  <div class="card" id="detalle"></div>`;
+  $('kOk').onclick=()=>{ const d={sec:sec,dias:Math.max(1,Math.min(5,Math.round(num($('kD').value)||2))),texto:$('kT').value.trim()||crd.texto}; postData('crisis',d,'DOCENTE'); allRows.push({tipo:'crisis',nombre:'DOCENTE',ts:now(),d:d}); alert('Crisis lanzada para '+sec+': reducir '+d.dias+' día(s).'); };
+  document.querySelectorAll('.lv button').forEach(b=>b.onclick=()=>{ const box=b.parentElement, n=box.dataset.n; const ev=JSON.parse(JSON.stringify(evalDe(n))); ev.nombre=n; ev.niveles[box.dataset.c]=+b.dataset.k;
+    postData('eval',ev,'DOCENTE'); allRows.push({tipo:'eval',nombre:'DOCENTE',ts:now(),d:ev}); box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    if(RUBRICA.every(c=>ev.niveles[c.id])){ const s=RUBRICA.reduce((a,c)=>a+ev.niveles[c.id],0);
+      sheetPost(SH_PROG,{Timestamp:now(),Estudiante:n,Modulo:MODULE_ID+'_rubrica_paso',Score:String(s),Total:String(RUBRICA.length*3)});
+      ['RA1','RA2','RA3'].forEach(ra=>{ const cs=RUBRICA.filter(c=>c.ra===ra); sheetPost(SH_PROG,{Timestamp:now(),Estudiante:n,Modulo:MODULE_ID+'_rubrica_ra_'+encodeURIComponent(ra)+'_paso',Score:String(cs.reduce((a,c)=>a+ev.niveles[c.id],0)),Total:String(cs.length*3)}); }); } });
+  document.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{ const n=b.dataset.ver, o=datos(n);
+    if(!o.proy||!o.proy.acts||!o.proy.acts.length){ $('detalle').innerHTML=`<h3 style="margin-top:0">${esc(n)}</h3><p class="mut">Aún no tiene proyecto con actividades.</p>`; return; }
+    const R=cpm(o.proy.acts);
+    $('detalle').innerHTML=`<h3 style="margin-top:0">${esc(n)} · ${esc(o.proy.nombre)}</h3><p class="mut">${esc(o.proy.objetivo)} · Grupo: ${esc((o.miembros||[]).join(', '))}</p><div class="gantt">${ganttSVG(R,o.proy.acts,o.proy.nombre)}</div>
+     ${o.gantttxt?`<p><b>Paralelo:</b> ${esc(o.gantttxt.g1)}</p><p><b>Holgura:</b> ${esc(o.gantttxt.g2)}</p><p><b>Seguimiento:</b> ${esc(o.gantttxt.g3)}</p>`:''}
+     ${o.crisisres?`<p><b>Justificación de la aceleración:</b> ${esc(o.crisisres.just)}</p>`:''}${o.reto?`<p><b>Comentó al otro grupo:</b> ${esc(o.reto.comentario)}</p>`:''}${o.van?`<p><b>VAN:</b> ₡${Math.round(o.van.van).toLocaleString('es-CR')} · <b>TIR:</b> ${o.van.tir===null?'no existe':o.van.tir.toFixed(2)+' %'}</p>`:''}`;
+    $('detalle').scrollIntoView({behavior:'smooth'}); });
+  document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{ const n=b.dataset.reset; if(!confirm('¿Reiniciar el recorrido de '+n+'? (Si el grupo ya tiene proyecto, el estudiante deberá volver a unirse.)')) return;
+    postData('reset',{nombre:n},'DOCENTE'); allRows.push({tipo:'reset',nombre:'DOCENTE',ts:now(),d:{nombre:n}}); alert('Reinicio registrado.'); panelRender(sec); });
+  $('pSec').onchange=()=>panelRender($('pSec').value); $('pOut').onclick=()=>{ student={name:'',sec:''}; portada(); };
+}
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+window.__calc={cpm:cpm,crashOptimum:crashOptimum,npv:npv,irr:irr,Phi:Phi};
+portada();
+})();
+</script>
+</body>
+</html>
