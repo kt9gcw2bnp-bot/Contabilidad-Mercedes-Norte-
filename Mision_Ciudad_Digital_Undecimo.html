@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Misión Ciudad Digital · Gobierno Digital · Undécimo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --navy:#0E1B3D; --navy2:#16295a; --gold:#B8863C; --gold2:#e3b94a; --teal:#2FC2AD; --teal2:#e6f7f4; --ink:#1d2433; --mut:#5b6478; --line:#d9dde6; --soft:#f5f6f9; --red:#c0392b; --bg:#eef1f6; --sky:#1f6feb; }
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Poppins',system-ui,sans-serif; color:var(--ink); background:var(--bg); font-size:15px; line-height:1.55; }
+button,input,textarea,select{ font-family:inherit; font-size:14px; }
+.top{ background:var(--navy); color:#fff; padding:12px 18px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:20; }
+.top .logo{ width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--sky),var(--teal)); display:grid; place-items:center; font-size:18px; }
+.top h1{ font-size:16px; margin:0; font-weight:600; } .top .who{ margin-left:auto; font-size:12.5px; color:#c9cfdc; text-align:right; }
+.wrap{ max-width:1000px; margin:0 auto; padding:18px 14px 60px; }
+.card{ background:#fff; border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(14,27,61,.07); margin-bottom:16px; }
+h2{ color:var(--navy); margin:0 0 6px; font-size:21px; } h3{ color:var(--navy); margin:14px 0 6px; font-size:16px; }
+.mut{ color:var(--mut); font-size:13px; }
+.btn{ border:none; border-radius:10px; padding:10px 16px; font-weight:600; cursor:pointer; background:var(--navy); color:#fff; }
+.btn.gold{ background:var(--gold); } .btn.teal{ background:var(--teal); color:#062a25; } .btn.ghost{ background:#fff; color:var(--navy); border:1.5px solid var(--navy); }
+.btn.sm{ padding:6px 11px; font-size:12.5px; } .btn:disabled{ opacity:.45; cursor:not-allowed; }
+input[type=text],textarea,select{ width:100%; border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; background:#fff; }
+textarea{ resize:vertical; } input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--teal); }
+label{ font-weight:600; font-size:13.5px; display:block; margin:10px 0 4px; color:var(--navy); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; } @media(max-width:760px){ .grid2{ grid-template-columns:1fr; } }
+.steps{ display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; }
+.st{ flex:1 0 130px; background:#fff; border-radius:12px; padding:10px 12px; border:2px solid transparent; cursor:pointer; position:relative; }
+.st .n{ font-size:11px; color:var(--mut); font-weight:600; letter-spacing:.05em; } .st .t{ font-size:13px; font-weight:600; color:var(--navy); line-height:1.25; }
+.st.done{ background:var(--teal2); } .st.done::after{ content:"✓"; position:absolute; right:10px; top:8px; color:#0b6b5d; font-weight:700; }
+.st.cur{ border-color:var(--gold); } .st.lock{ opacity:.45; cursor:not-allowed; }
+.pill{ display:inline-block; padding:2px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:var(--soft); color:var(--navy); }
+.pill.gold{ background:#f6ecd9; color:#7a5a24; } .pill.teal{ background:var(--teal2); color:#0b6b5d; } .pill.sky{ background:#e3edff; color:#1348a8; }
+.din{ background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; border-radius:12px; padding:12px 16px; margin:8px 0 14px; font-size:13.5px; } .din b{ color:var(--gold2); }
+.tip{ background:var(--teal2); border:1px solid #a9e3d9; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.warn{ background:#fdf1e6; border:1px solid #f0c9a3; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.ok{ color:#0b6b5d; font-weight:600; } .err{ color:var(--red); font-weight:600; }
+.flips{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
+.flip{ perspective:900px; height:175px; cursor:pointer; } .flip .in{ position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; } .flip.on .in{ transform:rotateY(180deg); }
+.flip .f,.flip .b{ position:absolute; inset:0; border-radius:12px; padding:14px; backface-visibility:hidden; display:flex; flex-direction:column; justify-content:center; }
+.flip .f{ background:linear-gradient(135deg,var(--navy),var(--sky)); color:#fff; font-weight:600; font-size:16px; text-align:center; align-items:center; } .flip .f small{ font-weight:400; font-size:11px; color:#c9cfdc; margin-top:6px; }
+.flip .b{ background:#fff; border:2px solid var(--sky); transform:rotateY(180deg); font-size:12.8px; }
+.chk{ display:flex; gap:8px; align-items:flex-start; border:1.5px solid var(--line); border-radius:10px; padding:8px 12px; margin:6px 0; cursor:pointer; font-size:14px; }
+.chk.on{ border-color:var(--sky); background:#eef4ff; } .chk.good{ border-color:var(--teal); background:var(--teal2); } .chk.bad{ border-color:var(--red); background:#fbeeea; }
+/* ciudad */
+#city{ width:100%; max-width:920px; display:block; margin:0 auto; background:linear-gradient(#cfe3ff,#eef6ff 60%,#d9efe0 60%); border-radius:16px; }
+.bld{ cursor:pointer; } .bld:hover .box{ stroke:#B8863C; stroke-width:4; }
+.mis{ border:2px solid var(--sky); border-radius:14px; padding:16px; margin-top:14px; background:#fff; }
+.mis .per{ display:flex; gap:12px; align-items:center; } .mis .per .ic{ font-size:38px; }
+.qq{ margin:12px 0; } .qq b{ display:block; margin-bottom:4px; }
+.ops button{ display:block; width:100%; text-align:left; background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:8px 12px; margin:5px 0; cursor:pointer; font-size:14px; }
+.ops button.on{ border-color:var(--sky); background:#eef4ff; } .ops button.good{ border-color:var(--teal); background:var(--teal2); } .ops button.bad{ border-color:var(--red); background:#fbeeea; }
+.fb{ font-size:13px; margin-top:4px; }
+/* auditoría */
+.crit{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; border-bottom:1px solid var(--line); padding:8px 0; }
+.lvl{ display:flex; gap:4px; } .lvl button{ border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:5px 10px; cursor:pointer; font-weight:600; } .lvl button.on{ background:var(--sky); border-color:var(--sky); color:#fff; }
+.rank{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); } .rank .bar{ height:10px; border-radius:6px; background:var(--sky); }
+table.tb{ width:100%; border-collapse:collapse; font-size:13px; } table.tb th{ background:var(--navy); color:#fff; text-align:left; padding:8px; font-weight:600; } table.tb td{ border-bottom:1px solid var(--line); padding:7px 8px; vertical-align:top; }
+.lv{ display:flex; gap:4px; } .lv button{ border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:4px 8px; cursor:pointer; font-weight:600; } .lv button.on{ background:var(--teal); border-color:var(--teal); color:#062a25; } .lv button.sug{ border-color:var(--gold); }
+#banner{ display:none; position:fixed; top:0; left:0; right:0; background:var(--red); color:#fff; text-align:center; padding:10px; font-weight:600; z-index:60; }
+footer{ text-align:center; color:var(--mut); font-size:12px; margin-top:24px; } .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+<div id="banner">⚠ Saliste de la pantalla del curso. Este evento queda registrado.</div>
+<div class="top"><div class="logo">🏙</div><div><h1>Misión Ciudad Digital</h1><div style="font-size:12px;color:#c9cfdc">Gobierno Digital · Gestión empresarial para contadores · 11° · RA 6</div></div><div class="who" id="who"></div></div>
+<div class="wrap" id="app"></div>
+<footer>CTP Mercedes Norte · Especialidad de Contabilidad · <a href="#" id="lnkDocente">Panel docente</a></footer>
+<script>
+(function(){
+'use strict';
+const SHEET_API_URL="https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN="9986", MODULE_ID="ciudig", SH_PROG="Progreso", SH_DATA="Casos";
+const SECCIONES=["11-1","11-2","11-3","11-4"];
+const STEPS=[{key:"radio",label:"Radiografía digital"},{key:"ciudad",label:"Misiones en la ciudad"},{key:"audit",label:"Auditoría de un portal"},{key:"planeta",label:"Ciudadano planetario"}];
+const RUBRICA=[
+ {id:"i1",crit:"Reconoce la importancia del Gobierno Digital.",n3:"Resuelve correctamente las misiones y fundamenta su auditoría con evidencia del portal.",n2:"Resuelve la mayoría de misiones o su auditoría tiene poca evidencia.",n1:"No identifica los servicios ni su importancia."},
+ {id:"i2",crit:"Explica la realidad de la persona como ciudadano planetario, en el marco del Gobierno Digital.",n3:"Explica con claridad el concepto y propone una acción viable contra la brecha digital.",n2:"La explicación o la acción son generales.",n1:"No explica el concepto ni propone acciones."},
+ {id:"i3",crit:"Enumera los requisitos para que se desarrolle el gobierno electrónico.",n3:"Identifica todos los requisitos y los aplica en las misiones.",n2:"Identifica la mayoría de los requisitos.",n1:"Identifica pocos requisitos."}
+];
+/* ---------- contenido ---------- */
+const CARDS=[
+ ["Gobierno digital","Uso de las tecnologías digitales para que el Estado brinde servicios, información y participación a la ciudadanía de forma más ágil, transparente y eficiente."],
+ ["Front office","La «ventanilla» que ve la ciudadanía: portales, apps y servicios en línea donde la persona hace su trámite."],
+ ["Back office","Los procesos internos que no se ven: bases de datos, sistemas y el intercambio de información entre instituciones."],
+ ["Estrategia de Transformación Digital 2023-2027","Plan del país liderado por el MICITT, con dos ejes: ciudadanía digital (firma e identidad digital, servicios y competencias) y buena gobernanza (datos, interoperabilidad, normativa)."],
+ ["Índice de Gobierno Electrónico de la ONU","Mide a los países con tres componentes: servicios en línea, infraestructura de telecomunicaciones y capital humano."],
+ ["Ley 8454","Ley de Certificados, Firmas Digitales y Documentos Electrónicos: da a la firma digital la misma validez que la firma manuscrita."],
+ ["Ley 8220","Protege a la ciudadanía del exceso de requisitos y trámites administrativos: el Estado no debe pedir documentos que ya tiene."],
+ ["Ciudadano planetario","Persona que se reconoce parte de una comunidad global: usa la tecnología con responsabilidad, respeta derechos, cuida el ambiente y ayuda a cerrar brechas."]
+];
+const REQS=[
+ {t:"Conectividad e infraestructura de telecomunicaciones",v:true},{t:"Identidad digital y firma digital",v:true},{t:"Interoperabilidad: que las instituciones compartan datos",v:true},
+ {t:"Marco legal y normativa actualizada",v:true},{t:"Alfabetización y capacitación digital de la ciudadanía",v:true},{t:"Seguridad de la información y protección de datos",v:true},
+ {t:"Que cada institución tenga su propio sistema aislado de las demás",v:false},{t:"Que todos los trámites exijan presentar documentos en papel",v:false}
+];
+const MISIONES=[
+ {id:"m1",ic:"👵",lugar:"EBAIS",x:62,y:165,persona:"Doña Carmen, 68 años",txt:"Necesita sacar una cita en el EBAIS y revisar cuáles medicamentos le recetaron.",
+  qs:[{q:"¿Qué servicio digital debe usar?",ops:["La app EDUS, de la Caja Costarricense","La Oficina Virtual de TRIBU-CR","El portal de compras SICOP","Las certificaciones del Registro Nacional"],c:0,e:"EDUS (Expediente Digital Único en Salud) de la CCSS permite ver citas, medicamentos y resultados."},
+      {q:"Doña Carmen dice: «yo no sé usar esas cosas del celular». ¿Qué requisito del gobierno electrónico está fallando?",ops:["La interoperabilidad entre la CCSS y Hacienda","La alfabetización y capacitación digital","El marco legal de la firma digital","La seguridad de la información"],c:1,e:"Sin competencias digitales en la población, los servicios en línea no llegan a todas las personas."}]},
+ {id:"m2",ic:"👩‍💼",lugar:"Hacienda",x:187,y:115,persona:"Valeria, emprendedora",txt:"Tiene una pequeña tienda y debe declarar el IVA de su negocio este mes.",
+  qs:[{q:"¿Dónde presenta su declaración?",ops:["En la app EDUS de la CCSS","En TRIBU-CR, de Hacienda en línea","En el portal del Registro Nacional","En SINPE Móvil del Banco Central"],c:1,e:"Desde octubre de 2025, TRIBU-CR es la plataforma única de Hacienda para inscripción, declaraciones y pagos."},
+      {q:"Valeria llena su declaración en la plataforma. ¿Eso es front office o back office?",ops:["Front office","Back office"],c:0,e:"Es la parte visible donde la persona realiza su trámite."},
+      {q:"Hacienda compara automáticamente las facturas electrónicas de Valeria con su declaración, sin pedirle papeles. ¿Qué lo hace posible?",ops:["La interoperabilidad de los datos","La alfabetización digital de Valeria","El Índice de Gobierno Electrónico de la ONU","La Ley 7600 de accesibilidad web"],c:0,e:"Los sistemas comparten e integran datos internamente (back office)."}]},
+ {id:"m3",ic:"🏫",lugar:"Municipalidad",x:312,y:155,persona:"Don Luis, proveedor de muebles",txt:"La municipalidad compra 200 pupitres y él quiere ofertar en línea.",
+  qs:[{q:"¿En qué plataforma se hace la compra pública?",ops:["En TRIBU-CR","En la app EDUS","En SICOP","En el portal del TSE"],c:2,e:"SICOP es la plataforma única y obligatoria de compras del Estado."},
+      {q:"¿Qué le da validez legal a la oferta que Don Luis envía en línea?",ops:["Una fotografía de su cédula de identidad","Un correo electrónico de confirmación","Su firma digital (Ley 8454)","El sello oficial de la municipalidad"],c:2,e:"La Ley 8454 da a la firma digital certificada el mismo valor que la firma manuscrita."}]},
+ {id:"m4",ic:"🧑‍🎓",lugar:"Registro",x:437,y:120,persona:"Andrés, 19 años",txt:"Su familia va a solicitar un préstamo y le piden una certificación de la propiedad.",
+  qs:[{q:"¿Dónde obtiene la certificación sin hacer fila?",ops:["En el Registro Nacional, en línea","En SICOP, la plataforma de compras","En SINPE Móvil del Banco Central","En la app EDUS de la CCSS"],c:0,e:"El Registro Nacional emite certificaciones digitales en línea."},
+      {q:"Otra institución le pide a Andrés una certificación que el Estado ya tiene en sus sistemas. ¿Qué ley lo protege?",ops:["La Ley 8454","La Ley 8968","La Ley 8262","La Ley 8220"],c:3,e:"La Ley 8220 protege a la ciudadanía del exceso de requisitos y trámites."}]},
+ {id:"m5",ic:"📡",lugar:"Torre",x:562,y:150,persona:"Familia Mora, zona rural",txt:"Viven en una comunidad alejada donde no llega la señal de internet; no pueden usar ningún servicio en línea.",
+  qs:[{q:"¿Qué requisito del gobierno electrónico no se cumple?",ops:["La firma digital certificada","La conectividad a internet de calidad","La interoperabilidad entre instituciones","El marco legal y normativo"],c:1,e:"Sin conectividad no hay acceso a los servicios digitales: es la base de todo."},
+      {q:"¿Qué fondo financia proyectos para llevar conectividad a zonas sin cobertura?",ops:["El FODEMIPYME del Banco Popular","El PROPYME del MICITT","El FONATEL, de la SUTEL","El FODESAF del Ministerio de Trabajo"],c:2,e:"El Fondo Nacional de Telecomunicaciones (FONATEL) financia el acceso y servicio universal."}]},
+ {id:"m6",ic:"📱",lugar:"Banco Central",x:687,y:105,persona:"Sofía, estudiante",txt:"Quiere pagarle a una compañera su parte de la merienda desde el celular.",
+  qs:[{q:"¿Qué servicio usa?",ops:["TRIBU-CR, de Hacienda","SINPE Móvil, por teléfono","SICOP, de compras públicas","EDUS, de la CCSS"],c:1,e:"SINPE Móvil permite transferencias usando el número de teléfono."},
+      {q:"¿Qué ley protege el tratamiento de sus datos personales en estos servicios?",ops:["La Ley 8968 de datos personales","La Ley 8220 de exceso de trámites","La Ley 8454 de firma digital","La Ley 9986 de contratación pública"],c:0,e:"La Ley 8968 regula el tratamiento de los datos personales."}]},
+ {id:"m7",ic:"🗄",lugar:"Centro de datos",x:812,y:140,persona:"Proceso interno del Estado",txt:"Antes de adjudicar una compra, el sistema consulta automáticamente si la empresa está al día con la CCSS y con Hacienda.",
+  qs:[{q:"¿Esta consulta es front office o back office?",ops:["Front office","Back office"],c:1,e:"Ocurre dentro de los sistemas, sin que la persona haga nada."},
+      {q:"¿Qué requisito del gobierno electrónico lo permite?",ops:["La alfabetización digital del personal","La conectividad en zonas rurales","La interoperabilidad de los sistemas","La firma manuscrita de cada gerente"],c:2,e:"Las instituciones intercambian datos entre sus sistemas."}]}
+];
+const PORTALES=["TRIBU-CR · Ministerio de Hacienda","EDUS · CCSS","Registro Nacional (certificaciones digitales)","SICOP · Compras públicas","MEP","Tribunal Supremo de Elecciones","Municipalidad de mi cantón"];
+const CRITERIOS=[
+ {t:"Encuentro la información que busco con facilidad",c:"Servicios en línea"},{t:"Puedo hacer un trámite completo en línea",c:"Servicios en línea"},{t:"Permite pagar en línea",c:"Servicios en línea"},
+ {t:"Se ve y funciona bien en el celular",c:"Infraestructura"},{t:"Es seguro (https y candado en el navegador)",c:"Infraestructura"},
+ {t:"Es accesible: letra legible, contraste, textos alternativos (Ley 7600)",c:"Capital humano"},{t:"Ofrece ayuda: chat, preguntas frecuentes o tutoriales",c:"Capital humano"},{t:"Publica información de transparencia o datos abiertos",c:"Servicios en línea"}
+];
+const COMPROMISOS=["Uso mi firma digital y mis contraseñas con responsabilidad","Ayudo a una persona mayor de mi familia a usar un servicio en línea","Reporto información falsa en lugar de compartirla","Prefiero trámites digitales para reducir el uso de papel","Protejo los datos personales míos y de otras personas","Participo en consultas ciudadanas en línea de mi municipalidad"];
+
+/* ---------- puente sheets ---------- */
+function jsonp(url){ return new Promise(res=>{ const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5); const s=document.createElement('script');
+  window[cb]=d=>{ res(d); delete window[cb]; s.remove(); }; s.onerror=()=>{ res({rows:[]}); delete window[cb]; s.remove(); };
+  s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb; document.body.appendChild(s); setTimeout(()=>{ if(window[cb]){ res({rows:[]}); delete window[cb]; s.remove(); } },12000); }); }
+function sheetGet(n){ return jsonp(SHEET_API_URL+'?sheet='+encodeURIComponent(n)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(n,row){ return fetch(SHEET_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:n,row:Object.keys(row).map(k=>row[k])}),keepalive:true}).catch(()=>{}); }
+const now=()=>new Date().toISOString();
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function postData(tipo,obj,who){ if(!who&&student.sec&&obj&&!obj.sec) obj.sec=student.sec; return sheetPost(SH_DATA,{Timestamp:now(),CasoId:MODULE_ID+'_'+tipo,Nombre:who||student.name,Texto:JSON.stringify(obj)}); }
+function postProg(key,score,total){ return sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:MODULE_ID+'_'+key+'_paso',Score:String(score),Total:String(total)}); }
+function parseRows(rows){ return rows.filter(r=>String(r.CasoId||'').indexOf(MODULE_ID+'_')===0).map(r=>{ let o={}; try{ o=JSON.parse(r.Texto); }catch(e){} return {tipo:String(r.CasoId).slice(MODULE_ID.length+1),nombre:String(r.Nombre||'').trim(),ts:String(r.Timestamp||''),d:o}; }).sort((a,b)=>a.ts<b.ts?-1:1); }
+
+/* ---------- estado ---------- */
+let student={name:'',sec:''}, allRows=[], S={}, current='radio';
+function cut(n){ let t=''; allRows.forEach(r=>{ if(r.tipo==='reset'&&norm(r.d.nombre)===norm(n)&&r.ts>t) t=r.ts; }); return t; }
+function datos(n){ const c=cut(n); const o={done:{},mis:{}}; allRows.filter(r=>norm(r.nombre)===norm(n)&&r.ts>c).forEach(r=>{
+  if(r.tipo==='paso') o.done[r.d.key]=true; if(r.tipo==='mision'&&!o.mis[r.d.id]) o.mis[r.d.id]=r.d; ['reqs','audit','planeta'].forEach(k=>{ if(r.tipo===k&&!o[k]) o[k]=r.d; }); }); return o; }
+function load(){ return sheetGet(SH_DATA).then(r=>{ allRows=parseRows(r); S=datos(student.name); }); }
+function markStep(key,score,total){ if(S.done[key]) return; S.done[key]=true; postData('paso',{key:key}); postProg(key,score,total); }
+function unlocked(k){ const i=STEPS.findIndex(s=>s.key===k); return i===0||!!S.done[STEPS[i-1].key]; }
+
+/* ---------- monitoreo (en la auditoría visitar el portal es parte de la tarea) ---------- */
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden||!student.name) return;
+  if(current==='audit'){ postProg('visita_portal','salida','1'); return; }
+  sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:'incidente_salida_pantalla_'+MODULE_ID,Score:'salida',Total:'1'});
+  const b=document.getElementById('banner'); b.style.display='block'; setTimeout(()=>b.style.display='none',6000); });
+
+/* ---------- UI ---------- */
+const $=id=>document.getElementById(id);
+function nombrePortal(){ try{ return (new URLSearchParams(location.search).get('nombre')||'').trim()||null; }catch(e){ return null; } }
+function portada(){
+  const np=nombrePortal(); $('who').textContent='';
+  $('app').innerHTML=`<div class="card"><span class="pill sky">RA 6 · Fortalecer la identidad de ciudadano planetario en el marco del Gobierno Digital</span>
+  <h2 style="margin-top:10px">Bienvenido a Ciudad Digital</h2>
+  <p>La ciudad está conectando sus servicios públicos, pero sus habitantes necesitan ayuda. Usted será agente de <b>Gobierno Digital</b>: resolverá misiones, auditará un portal real del Estado y se comprometerá como ciudadano planetario.</p>
+  <div class="grid2"><div><label>Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}" placeholder="Nombre y apellidos"></div>
+  <div><label>Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+  <div class="row" style="margin-top:14px"><button class="btn gold" id="btnIn">Entrar a la ciudad</button><span id="msgIn" class="mut"></span></div></div>`;
+  $('btnIn').onclick=()=>{ const n=$('inNom').value.trim(), s=$('inSec').value;
+    if(n.split(/\s+/).length<2){ $('msgIn').innerHTML='<span class="err">Escriba nombre y apellido.</span>'; return; }
+    if(!s){ $('msgIn').innerHTML='<span class="err">Seleccione la sección.</span>'; return; }
+    student={name:n,sec:s}; $('msgIn').textContent='Cargando…'; load().then(()=>{ const f=STEPS.find(x=>!S.done[x.key]); current=f?f.key:'planeta'; render(); }); };
+}
+function render(){
+  $('who').innerHTML=esc(student.name)+'<br>'+esc(student.sec);
+  $('app').innerHTML=`<div class="steps">${STEPS.map((s,i)=>`<div class="st ${S.done[s.key]?'done':''} ${current===s.key?'cur':''} ${unlocked(s.key)?'':'lock'}" data-k="${s.key}"><div class="n">PARTE ${i+1}</div><div class="t">${s.label}</div></div>`).join('')}</div><div id="stage"></div>`;
+  document.querySelectorAll('.st').forEach(el=>el.onclick=()=>{ if(!unlocked(el.dataset.k)) return; current=el.dataset.k; render(); });
+  ({radio:stRadio,ciudad:stCiudad,audit:stAudit,planeta:stPlaneta})[current]($('stage')); window.scrollTo(0,0);
+}
+function next(){ const i=STEPS.findIndex(s=>s.key===current); current=STEPS[Math.min(i+1,STEPS.length-1)].key; render(); }
+const nextBtn=t=>`<button class="btn gold" id="goNext" style="margin-top:10px">${t||'Continuar →'}</button>`;
+
+/* ---------- 1. radiografía ---------- */
+function stRadio(el){
+  const sel=new Set(); const seen=new Set();
+  el.innerHTML=`<div class="card"><h2>Radiografía del gobierno digital</h2><p class="mut">Gire las 8 tarjetas. Son sus herramientas para las misiones.</p>
+  <div class="flips">${CARDS.map((c,i)=>`<div class="flip" data-i="${i}"><div class="in"><div class="f">${c[0]}<small>toque para girar</small></div><div class="b"><b style="color:var(--sky)">${c[0]}</b>${c[1]}</div></div></div>`).join('')}</div></div>
+  <div class="card" id="reqBox"></div>`;
+  el.querySelectorAll('.flip').forEach(f=>f.onclick=()=>{ f.classList.toggle('on'); seen.add(f.dataset.i); req(); });
+  const orden=[0,6,1,2,7,3,4,5];
+  function req(){
+    const box=$('reqBox');
+    const lista=r=>orden.map(i=>{ const q=REQS[i]; let cl='chk'; if(r){ const s=r.indexOf(i)>-1; cl+=q.v?(s?' good':' bad'):(s?' bad':''); } return `<div class="${cl}" data-i="${i}"><input type="checkbox" ${r&&r.indexOf(i)>-1?'checked':''} ${r?'disabled':''}> ${q.t}</div>`; }).join('');
+    if(S.reqs){ box.innerHTML=`<h3 style="margin-top:0">Reto: requisitos del gobierno electrónico</h3>${lista(S.reqs.sel)}<div class="tip">Aciertos: <b>${S.reqs.ok} de ${REQS.length}</b>. Son requisitos: conectividad, identidad y firma digital, interoperabilidad, marco legal, alfabetización digital y seguridad de la información.</div>`+nextBtn('Ir a la ciudad →'); $('goNext').onclick=next; return; }
+    if(seen.size<CARDS.length){ box.innerHTML=`<h3 style="margin-top:0">Reto: requisitos del gobierno electrónico</h3><p class="mut">Tarjetas giradas: ${seen.size} / ${CARDS.length}</p>`; return; }
+    box.innerHTML=`<h3 style="margin-top:0">Reto: requisitos del gobierno electrónico</h3><p class="mut">Marque <b>todos</b> los que son requisitos para que un país desarrolle el gobierno electrónico. Un solo intento.</p><div id="rq">${lista(null)}</div><button class="btn gold" id="rqOk">Comprobar</button>`;
+    box.querySelectorAll('.chk').forEach(c=>c.onclick=e=>{ const i=+c.dataset.i; if(sel.has(i)) sel.delete(i); else sel.add(i); c.classList.toggle('on',sel.has(i)); c.querySelector('input').checked=sel.has(i); e.preventDefault(); });
+    $('rqOk').onclick=()=>{ const s=[...sel]; const ok=REQS.filter((q,i)=>q.v===(s.indexOf(i)>-1)).length; S.reqs={sel:s,ok:ok}; postData('reqs',S.reqs); markStep('radio',ok,REQS.length); req(); };
+  }
+  req();
+}
+
+/* ---------- 2. ciudad ---------- */
+function stCiudad(el){
+  const done=id=>!!S.mis[id]; const nDone=MISIONES.filter(m=>done(m.id)).length;
+  const svg=`<svg id="city" viewBox="0 0 920 330"><rect x="0" y="235" width="920" height="16" fill="#9aa3b5"/><g stroke="#fff" stroke-width="3" stroke-dasharray="14 12"><line x1="0" y1="243" x2="920" y2="243"/></g>
+   ${MISIONES.map(m=>{ const d=done(m.id); return `<g class="bld" data-id="${m.id}"><rect class="box" x="${m.x-48}" y="${m.y-10}" width="96" height="${235-m.y+10}" rx="8" fill="${d?'#2FC2AD':'#0E1B3D'}" stroke="#fff" stroke-width="2"/>
+    ${[0,1,2].map(r=>[0,1].map(c=>`<rect x="${m.x-34+c*42}" y="${m.y+28+r*26}" width="26" height="14" rx="2" fill="${d?'#e6f7f4':'#e3b94a'}" opacity="${m.y+28+r*26+14<230?1:0}"/>`).join('')).join('')}
+    <text x="${m.x}" y="${m.y+14}" text-anchor="middle" font-size="22">${m.ic}</text><text x="${m.x}" y="${m.y-18}" text-anchor="middle" font-size="12" font-weight="600" fill="#0E1B3D">${m.lugar}${d?' ✓':''}</text></g>`; }).join('')}</svg>`;
+  el.innerHTML=`<div class="card"><h2>Misiones en Ciudad Digital</h2><div class="din">Toque cada edificio y ayude a la persona que lo espera. Cuando complete las <b>${MISIONES.length} misiones</b>, la ciudad quedará conectada. Cada respuesta se guarda al confirmar la misión.</div>
+  ${svg}<p class="mut" style="text-align:center">Misiones completadas: <b>${nDone} / ${MISIONES.length}</b></p><div id="mis"></div><div id="ciOut"></div></div>`;
+  el.querySelectorAll('.bld').forEach(g=>g.onclick=()=>open(g.dataset.id));
+  function open(id){
+    const m=MISIONES.find(x=>x.id===id); const prev=S.mis[id]; const ans={};
+    $('mis').innerHTML=`<div class="mis"><div class="per"><div class="ic">${m.ic}</div><div><b>${m.persona}</b><div class="mut">${m.lugar}</div></div></div><p>${m.txt}</p>
+     ${m.qs.map((q,i)=>`<div class="qq" data-i="${i}"><b>${i+1}. ${q.q}</b><div class="ops">${q.ops.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb"></div></div>`).join('')}
+     ${prev?'':'<button class="btn gold" id="mOk">Confirmar misión</button> <span id="mMsg"></span>'}</div>`;
+    const show=r=>{ let ok=0; $('mis').querySelectorAll('.qq').forEach(qd=>{ const i=+qd.dataset.i, q=m.qs[i], g=r[i]===q.c; if(g) ok++;
+      qd.querySelectorAll('button').forEach(b=>{ b.disabled=true; const j=+b.dataset.j; if(j===q.c) b.classList.add('good'); else if(j===r[i]) b.classList.add('bad'); });
+      qd.querySelector('.fb').innerHTML=(g?'<span class="ok">✓</span> ':'<span class="err">✗</span> ')+q.e; }); return ok; };
+    if(prev){ show(prev.resp); $('mis').scrollIntoView({behavior:'smooth'}); return; }
+    $('mis').querySelectorAll('.qq').forEach(qd=>qd.querySelectorAll('button').forEach(b=>b.onclick=()=>{ ans[qd.dataset.i]=+b.dataset.j; qd.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }));
+    $('mOk').onclick=()=>{ if(Object.keys(ans).length<m.qs.length){ $('mMsg').innerHTML='<span class="err">Responda todo.</span>'; return; }
+      const ok=show(ans); const d={id:id,resp:ans,ok:ok,total:m.qs.length}; S.mis[id]=d; postData('mision',d); $('mOk').remove(); $('mMsg').remove();
+      setTimeout(()=>stCiudad(el),1600); };
+    $('mis').scrollIntoView({behavior:'smooth'});
+  }
+  if(nDone===MISIONES.length){ const ok=MISIONES.reduce((a,m)=>a+S.mis[m.id].ok,0), tot=MISIONES.reduce((a,m)=>a+m.qs.length,0);
+    markStep('ciudad',ok,tot); $('ciOut').innerHTML=`<div class="tip">🎉 ¡Ciudad conectada! Aciertos: <b>${ok} de ${tot}</b>.</div>`+nextBtn('Ir a la auditoría →'); $('goNext').onclick=next; }
+  window.__ciuDebug={open:open};
+}
+
+/* ---------- 3. auditoría ---------- */
+function stAudit(el){
+  const a=S.audit; const lv={};
+  el.innerHTML=`<div class="card"><h2>Auditoría de un portal real del Estado</h2>
+  <div class="din">Elija un portal, <b>ábralo en otra pestaña</b> y evalúelo como lo haría la ONU. En esta parte salir a visitar el portal no se considera salida indebida. Nivel: <b>1</b> no cumple · <b>2</b> cumple a medias · <b>3</b> cumple bien.</div>
+  <label>Portal que audita</label><select id="aPor"><option value="">Seleccione…</option>${PORTALES.map(p=>`<option>${p}</option>`).join('')}</select>
+  <label>¿Qué trámite o servicio intentó hacer o consultar?</label><input type="text" id="aTra" maxlength="200">
+  <h3>Criterios</h3>${CRITERIOS.map((c,i)=>`<div class="crit"><div>${c.t}<br><span class="pill sky" style="font-size:10.5px">${c.c}</span></div><div class="lvl" data-i="${i}">${[1,2,3].map(n=>`<button data-n="${n}">${n}</button>`).join('')}</div></div>`).join('')}
+  <label>Hallazgo principal (evidencia concreta de lo que encontró)</label><textarea id="aHal" rows="2" maxlength="500"></textarea>
+  <label>Mejora que propondría a la institución</label><textarea id="aMej" rows="2" maxlength="500"></textarea>
+  <div class="row" style="margin-top:12px"><button class="btn gold" id="aOk">Enviar auditoría</button><button class="btn ghost sm" id="aRef">↻ Ver ranking de la sección</button><span id="aMsg"></span></div>
+  <div id="rk" style="margin-top:12px"></div><div id="aOut"></div></div>`;
+  el.querySelectorAll('.lvl').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{ lv[g.dataset.i]=+b.dataset.n; g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }));
+  function ranking(){
+    const au=allRows.filter(r=>r.tipo==='audit'&&r.d.sec===student.sec); const by={};
+    au.forEach(r=>{ const k=r.d.portal; by[k]=by[k]||{n:0,s:0}; by[k].n++; by[k].s+=r.d.prom; });
+    const list=Object.keys(by).map(k=>({k:k,p:by[k].s/by[k].n,n:by[k].n})).sort((x,y)=>y.p-x.p);
+    $('rk').innerHTML=`<h3>Ranking de portales · ${esc(student.sec)}</h3>`+(list.map((x,i)=>`<div class="rank"><b style="width:22px">${i+1}</b><div style="flex:1"><div>${esc(x.k)} <span class="mut">(${x.n} auditoría${x.n>1?'s':''})</span></div><div class="bar" style="width:${x.p/3*100}%"></div></div><b>${x.p.toFixed(2)}</b></div>`).join('')||'<p class="mut">Aún no hay auditorías.</p>');
+  }
+  $('aRef').onclick=()=>load().then(ranking);
+  if(a){ $('aPor').value=a.portal; $('aTra').value=a.tramite; $('aHal').value=a.hallazgo; $('aMej').value=a.mejora; a.niveles.forEach((n,i)=>{ const g=el.querySelector(`.lvl[data-i="${i}"]`); g.querySelectorAll('button').forEach(b=>{ b.disabled=true; b.classList.toggle('on',+b.dataset.n===n); }); });
+    ['aPor','aTra','aHal','aMej','aOk'].forEach(i=>$(i).disabled=true); ranking(); $('aOut').innerHTML=`<div class="tip">Auditoría enviada · promedio <b>${a.prom.toFixed(2)} / 3</b>.</div>`+nextBtn(); $('goNext').onclick=next; return; }
+  $('aOk').onclick=()=>{
+    if(!$('aPor').value||$('aTra').value.trim().length<8){ $('aMsg').innerHTML=' <span class="err">Indique el portal y el trámite.</span>'; return; }
+    if(Object.keys(lv).length<CRITERIOS.length){ $('aMsg').innerHTML=' <span class="err">Evalúe los 8 criterios.</span>'; return; }
+    if($('aHal').value.trim().length<25||$('aMej').value.trim().length<20){ $('aMsg').innerHTML=' <span class="err">Escriba su hallazgo y su mejora con más detalle.</span>'; return; }
+    const niv=CRITERIOS.map((_,i)=>lv[i]); const prom=niv.reduce((x,y)=>x+y,0)/niv.length;
+    const d={sec:student.sec,portal:$('aPor').value,tramite:$('aTra').value.trim(),niveles:niv,prom:prom,hallazgo:$('aHal').value.trim(),mejora:$('aMej').value.trim()};
+    S.audit=d; postData('audit',d); allRows.push({tipo:'audit',nombre:student.name,ts:now(),d:d}); markStep('audit',1,1); stAudit(el); };
+  ranking();
+}
+
+/* ---------- 4. ciudadano planetario ---------- */
+function stPlaneta(el){
+  const p=S.planeta; const sel=new Set(p?p.comp:[]);
+  el.innerHTML=`<div class="card"><h2>Ciudadano planetario en la era digital</h2>
+  <div class="din">Un ciudadano planetario entiende que sus acciones digitales tienen efectos en su comunidad y en el mundo: usa la tecnología con ética, protege los derechos, cuida el ambiente y ayuda a que <b>nadie se quede fuera</b> del gobierno digital.</div>
+  <h3>Caso: la brecha digital</h3><p>En Costa Rica todavía hay personas sin internet, sin dispositivo o sin las habilidades para usar los servicios en línea. Mientras tanto, cada vez más trámites son digitales.</p>
+  <label>Con sus palabras: ¿qué significa ser ciudadano planetario en el marco del Gobierno Digital?</label><textarea id="pDef" rows="3" maxlength="600"></textarea>
+  <label>Proponga una acción concreta para reducir la brecha digital en su comunidad (qué, quiénes, cómo)</label><textarea id="pAcc" rows="3" maxlength="600"></textarea>
+  <h3>Mis compromisos digitales</h3><p class="mut">Elija al menos 3.</p>${COMPROMISOS.map((c,i)=>`<div class="chk ${sel.has(i)?'on':''}" data-i="${i}"><input type="checkbox" ${sel.has(i)?'checked':''} ${p?'disabled':''}> ${c}</div>`).join('')}
+  <div class="row" style="margin-top:12px"><button class="btn gold" id="pOk">Firmar mi compromiso</button><span id="pMsg"></span></div><div id="pOut"></div></div>`;
+  if(p){ $('pDef').value=p.def; $('pAcc').value=p.acc; ['pDef','pAcc','pOk'].forEach(i=>$(i).disabled=true); $('pOut').innerHTML='<div class="tip"><span class="ok">✓ Misión cumplida.</span> Sus compromisos quedaron firmados.</div>'; return; }
+  el.querySelectorAll('.chk').forEach(c=>c.onclick=e=>{ const i=+c.dataset.i; if(sel.has(i)) sel.delete(i); else sel.add(i); c.classList.toggle('on',sel.has(i)); c.querySelector('input').checked=sel.has(i); e.preventDefault(); });
+  $('pOk').onclick=()=>{ if($('pDef').value.trim().length<40||$('pAcc').value.trim().length<40){ $('pMsg').innerHTML=' <span class="err">Desarrolle más sus respuestas.</span>'; return; }
+    if(sel.size<3){ $('pMsg').innerHTML=' <span class="err">Elija al menos 3 compromisos.</span>'; return; }
+    S.planeta={def:$('pDef').value.trim(),acc:$('pAcc').value.trim(),comp:[...sel]}; postData('planeta',S.planeta); markStep('planeta',1,1); stPlaneta(el); };
+}
+
+/* ---------- panel docente ---------- */
+function panel(){ const pin=prompt('PIN del panel docente:'); if(pin!==TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  $('app').innerHTML='<div class="card">Cargando…</div>'; Promise.all([sheetGet(SH_DATA),sheetGet(SH_PROG)]).then(([r,p])=>{ allRows=parseRows(r); window.__prog=p; panelRender(SECCIONES[0]); }); }
+function evalDe(n){ return (allRows.filter(r=>r.tipo==='eval'&&norm(r.d.nombre)===norm(n)).pop()||{}).d||{niveles:{}}; }
+function panelRender(sec){
+  const lista=[]; allRows.forEach(r=>{ if(r.d&&r.d.sec===sec&&norm(r.nombre)!=='docente'&&lista.map(norm).indexOf(norm(r.nombre))<0) lista.push(r.nombre); });
+  const sal={}; (window.__prog||[]).forEach(r=>{ if(String(r.Modulo)==='incidente_salida_pantalla_'+MODULE_ID){ const k=norm(r.Estudiante); sal[k]=(sal[k]||0)+1; } });
+  const tot=MISIONES.reduce((a,m)=>a+m.qs.length,0);
+  $('who').textContent='Panel docente';
+  $('app').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Misión Ciudad Digital</h2><select id="pSec" style="width:auto;margin-left:auto">${SECCIONES.map(s=>`<option ${s===sec?'selected':''}>${s}</option>`).join('')}</select><button class="btn ghost sm" id="pOut">Salir</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Resultados y rúbrica (1–3) · RA 6</h3><p class="mut">Borde dorado = nivel sugerido por los datos.</p>
+  <table class="tb"><tr><th>Estudiante</th><th>Requisitos</th><th>Misiones</th><th>Portal auditado</th>${RUBRICA.map((c,i)=>`<th title="${esc(c.crit)}">Ind. ${i+1}</th>`).join('')}<th>Salidas</th><th></th></tr>
+  ${lista.map(n=>{ const o=datos(n), ev=evalDe(n); const mok=MISIONES.reduce((a,m)=>a+(o.mis[m.id]?o.mis[m.id].ok:0),0), mdone=Object.keys(o.mis).length;
+    const sg={i1:(mdone===MISIONES.length&&o.audit)?(mok>=tot-2&&o.audit.hallazgo.length>=60?3:2):(mdone?1:0), i2:o.planeta?((o.planeta.acc.length>=100&&o.planeta.def.length>=80)?3:2):0, i3:o.reqs?(o.reqs.ok>=8?3:o.reqs.ok>=6?2:1):0};
+    return `<tr><td><b>${esc(n)}</b></td><td>${o.reqs?o.reqs.ok+'/8':'—'}</td><td>${mdone}/${MISIONES.length} · ${mok}/${tot}</td><td>${o.audit?esc(o.audit.portal)+'<br><span class="mut">'+o.audit.prom.toFixed(2)+' / 3</span>':'—'}</td>
+    ${RUBRICA.map(c=>`<td><div class="lv" data-n="${esc(n)}" data-c="${c.id}">${[1,2,3].map(k=>`<button class="${ev.niveles[c.id]==k?'on':''} ${sg[c.id]===k?'sug':''}" data-k="${k}">${k}</button>`).join('')}</div></td>`).join('')}
+    <td>${sal[norm(n)]||0}</td><td><button class="btn ghost sm" data-ver="${esc(n)}">Ver</button> <button class="btn ghost sm" data-reset="${esc(n)}">🔄</button></td></tr>`; }).join('')||'<tr><td colspan="9" class="mut">Sin datos en esta sección.</td></tr>'}</table>
+  <details style="margin-top:10px"><summary class="mut" style="cursor:pointer">Ver criterios de la rúbrica</summary><table class="tb" style="margin-top:6px"><tr><th>Indicador</th><th>3 · Logrado</th><th>2 · En proceso</th><th>1 · No logrado</th></tr>${RUBRICA.map((c,i)=>`<tr><td><b>${i+1}.</b> ${c.crit}</td><td>${c.n3}</td><td>${c.n2}</td><td>${c.n1}</td></tr>`).join('')}</table></details></div>
+  <div class="card"><h3 style="margin-top:0">📊 Misiones con más errores (para la plenaria)</h3>${MISIONES.map(m=>{ const rs=lista.map(n=>datos(n).mis[m.id]).filter(Boolean); const p=rs.length?rs.reduce((a,r)=>a+r.ok,0)/(rs.length*m.qs.length):0;
+    return `<div class="rank"><span style="font-size:20px">${m.ic}</span><div style="flex:1"><div>${m.lugar} · ${esc(m.persona)} <span class="mut">(${rs.length} resp.)</span></div><div class="bar" style="width:${p*100}%;background:${p>=.8?'#2FC2AD':p>=.5?'#e3b94a':'#c0392b'}"></div></div><b>${Math.round(p*100)} %</b></div>`; }).join('')}</div>
+  <div class="card" id="detalle"></div>`;
+  document.querySelectorAll('.lv button').forEach(b=>b.onclick=()=>{ const box=b.parentElement, n=box.dataset.n; const ev=JSON.parse(JSON.stringify(evalDe(n))); ev.nombre=n; ev.niveles[box.dataset.c]=+b.dataset.k;
+    postData('eval',ev,'DOCENTE'); allRows.push({tipo:'eval',nombre:'DOCENTE',ts:now(),d:ev}); box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    if(RUBRICA.every(c=>ev.niveles[c.id])){ const s=RUBRICA.reduce((a,c)=>a+ev.niveles[c.id],0);
+      sheetPost(SH_PROG,{Timestamp:now(),Estudiante:n,Modulo:MODULE_ID+'_rubrica_paso',Score:String(s),Total:String(RUBRICA.length*3)});
+      RUBRICA.forEach(c=>sheetPost(SH_PROG,{Timestamp:now(),Estudiante:n,Modulo:MODULE_ID+'_rubrica_ra_'+encodeURIComponent('RA6-'+c.id)+'_paso',Score:String(ev.niveles[c.id]),Total:'3'})); } });
+  document.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{ const n=b.dataset.ver, o=datos(n);
+    $('detalle').innerHTML=`<h3 style="margin-top:0">${esc(n)}</h3>${o.audit?`<p><b>Auditoría de ${esc(o.audit.portal)}:</b> ${esc(o.audit.tramite)}<br>${CRITERIOS.map((c,i)=>c.t+': <b>'+o.audit.niveles[i]+'</b>').join(' · ')}</p><p><b>Hallazgo:</b> ${esc(o.audit.hallazgo)}</p><p><b>Mejora:</b> ${esc(o.audit.mejora)}</p>`:''}
+    ${o.planeta?`<p><b>Ciudadano planetario:</b> ${esc(o.planeta.def)}</p><p><b>Acción contra la brecha digital:</b> ${esc(o.planeta.acc)}</p><p><b>Compromisos:</b> ${o.planeta.comp.map(i=>COMPROMISOS[i]).join('; ')}</p>`:''}`; $('detalle').scrollIntoView({behavior:'smooth'}); });
+  document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{ const n=b.dataset.reset; if(!confirm('¿Reiniciar la actividad para '+n+'?')) return;
+    postData('reset',{nombre:n},'DOCENTE'); allRows.push({tipo:'reset',nombre:'DOCENTE',ts:now(),d:{nombre:n}}); alert('Reinicio registrado.'); panelRender(sec); });
+  $('pSec').onchange=()=>panelRender($('pSec').value); $('pOut').onclick=()=>{ student={name:'',sec:''}; portada(); };
+}
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+portada();
+})();
+</script>
+</body>
+</html>

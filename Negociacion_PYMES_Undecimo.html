@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesa de Negociación PYME · Undécimo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --navy:#0E1B3D; --navy2:#16295a; --gold:#B8863C; --gold2:#e3b94a; --teal:#2FC2AD; --teal2:#e6f7f4; --ink:#1d2433; --mut:#5b6478; --line:#d9dde6; --soft:#f5f6f9; --red:#c0392b; --bg:#eef1f6; }
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Poppins',system-ui,sans-serif; color:var(--ink); background:var(--bg); font-size:15px; line-height:1.55; }
+button,input,textarea,select{ font-family:inherit; font-size:14px; }
+.top{ background:var(--navy); color:#fff; padding:12px 18px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:20; }
+.top .logo{ width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--gold2),var(--teal)); display:grid; place-items:center; font-size:18px; }
+.top h1{ font-size:16px; margin:0; font-weight:600; } .top .who{ margin-left:auto; font-size:12.5px; color:#c9cfdc; text-align:right; }
+.wrap{ max-width:980px; margin:0 auto; padding:18px 14px 60px; }
+.card{ background:#fff; border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(14,27,61,.07); margin-bottom:16px; }
+h2{ color:var(--navy); margin:0 0 6px; font-size:21px; } h3{ color:var(--navy); margin:14px 0 6px; font-size:16px; }
+.mut{ color:var(--mut); font-size:13px; }
+.btn{ border:none; border-radius:10px; padding:10px 16px; font-weight:600; cursor:pointer; background:var(--navy); color:#fff; }
+.btn.gold{ background:var(--gold); } .btn.teal{ background:var(--teal); color:#062a25; } .btn.ghost{ background:#fff; color:var(--navy); border:1.5px solid var(--navy); } .btn.red{ background:#fff; color:var(--red); border:1.5px solid var(--red); }
+.btn.sm{ padding:6px 11px; font-size:12.5px; } .btn:disabled{ opacity:.45; cursor:not-allowed; }
+input[type=text],input[type=number],textarea,select{ width:100%; border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; background:#fff; }
+textarea{ resize:vertical; } input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--teal); }
+label{ font-weight:600; font-size:13.5px; display:block; margin:10px 0 4px; color:var(--navy); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; } .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+@media(max-width:760px){ .grid2,.grid3{ grid-template-columns:1fr; } }
+.steps{ display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; }
+.st{ flex:1 0 128px; background:#fff; border-radius:12px; padding:10px 12px; border:2px solid transparent; cursor:pointer; position:relative; }
+.st .n{ font-size:11px; color:var(--mut); font-weight:600; letter-spacing:.05em; } .st .t{ font-size:13px; font-weight:600; color:var(--navy); line-height:1.25; }
+.st.done{ background:var(--teal2); } .st.done::after{ content:"✓"; position:absolute; right:10px; top:8px; color:#0b6b5d; font-weight:700; }
+.st.cur{ border-color:var(--gold); } .st.lock{ opacity:.45; cursor:not-allowed; }
+.pill{ display:inline-block; padding:2px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:var(--soft); color:var(--navy); }
+.pill.gold{ background:#f6ecd9; color:#7a5a24; } .pill.teal{ background:var(--teal2); color:#0b6b5d; } .pill.red{ background:#fbeeea; color:var(--red); }
+.din{ background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; border-radius:12px; padding:12px 16px; margin:8px 0 14px; font-size:13.5px; } .din b{ color:var(--gold2); }
+.tip{ background:var(--teal2); border:1px solid #a9e3d9; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.warn{ background:#fdf1e6; border:1px solid #f0c9a3; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.ok{ color:#0b6b5d; font-weight:600; } .err{ color:var(--red); font-weight:600; }
+/* pasaporte */
+.pass{ background:linear-gradient(160deg,#0f2a4d,#16295a); color:#fff; border-radius:16px; padding:18px; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+.stamps{ display:flex; gap:10px; flex-wrap:wrap; }
+.stamp{ width:64px; height:64px; border-radius:50%; border:3px dashed rgba(255,255,255,.35); display:grid; place-items:center; font-size:11px; text-align:center; color:rgba(255,255,255,.5); font-weight:600; }
+.stamp.on{ border:3px solid var(--gold2); color:var(--gold2); transform:rotate(-12deg); background:rgba(227,185,74,.12); }
+.stamp.off{ border:3px solid #e07a6e; color:#e07a6e; transform:rotate(8deg); }
+.q{ border:1.5px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px; }
+.opts button{ display:block; width:100%; text-align:left; background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:9px 12px; margin:6px 0; cursor:pointer; font-size:14px; }
+.opts button.on{ border-color:var(--navy); background:#eef1f8; }
+.opts button.good{ border-color:var(--teal); background:var(--teal2); } .opts button.bad{ border-color:var(--red); background:#fbeeea; }
+.fb{ font-size:13px; margin-top:6px; }
+/* negociación */
+.deal{ display:grid; grid-template-columns:260px 1fr; gap:14px; } @media(max-width:820px){ .deal{ grid-template-columns:1fr; } }
+.side{ background:#fff; border-radius:14px; padding:16px; box-shadow:0 2px 10px rgba(14,27,61,.07); align-self:start; position:sticky; top:74px; }
+.av{ width:64px; height:64px; border-radius:50%; background:var(--soft); display:grid; place-items:center; font-size:34px; margin-bottom:6px; }
+.meter .trk{ height:10px; background:var(--soft); border-radius:6px; overflow:hidden; margin-top:4px; } .meter .fil{ height:100%; border-radius:6px; transition:width .5s; }
+.chat{ background:#fff; border-radius:14px; padding:16px; box-shadow:0 2px 10px rgba(14,27,61,.07); min-height:300px; }
+.msg{ max-width:82%; padding:10px 13px; border-radius:14px; margin:8px 0; font-size:14px; }
+.msg.them{ background:var(--soft); border-top-left-radius:4px; } .msg.me{ background:var(--navy); color:#fff; margin-left:auto; border-top-right-radius:4px; }
+.msg.sys{ max-width:100%; background:#fdf6e6; border:1px dashed #e3c47a; font-size:13px; text-align:center; }
+.msg .amt{ font-family:'DejaVu Sans Mono',Consolas,monospace; font-weight:700; }
+.moves{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.moves button{ border:1.5px solid var(--line); background:#fff; border-radius:10px; padding:8px 11px; cursor:pointer; font-size:13px; text-align:left; }
+.moves button:hover{ border-color:var(--gold); } .moves button:disabled{ opacity:.35; cursor:not-allowed; }
+.res{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px; }
+.res div{ background:var(--soft); border-radius:10px; padding:10px; text-align:center; } .res b{ display:block; font-size:20px; color:var(--navy); }
+table.tb{ width:100%; border-collapse:collapse; font-size:13px; } table.tb th{ background:var(--navy); color:#fff; text-align:left; padding:8px; font-weight:600; } table.tb td{ border-bottom:1px solid var(--line); padding:7px 8px; vertical-align:top; }
+.lv{ display:flex; gap:4px; } .lv button{ border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:4px 8px; cursor:pointer; font-weight:600; } .lv button.on{ background:var(--teal); border-color:var(--teal); color:#062a25; } .lv button.sug{ border-color:var(--gold); }
+#banner{ display:none; position:fixed; top:0; left:0; right:0; background:var(--red); color:#fff; text-align:center; padding:10px; font-weight:600; z-index:60; }
+footer{ text-align:center; color:var(--mut); font-size:12px; margin-top:24px; } .hidden{ display:none !important; }
+.zopa{ position:relative; height:54px; margin:18px 6px 6px; }
+.zopa .ln{ position:absolute; left:0; right:0; top:24px; height:6px; background:var(--soft); border-radius:4px; }
+.zopa .z{ position:absolute; top:20px; height:14px; background:rgba(47,194,173,.35); border:1.5px solid var(--teal); border-radius:4px; }
+.zopa .mk{ position:absolute; top:0; transform:translateX(-50%); font-size:11px; font-weight:600; text-align:center; white-space:nowrap; }
+.zopa .mk i{ display:block; width:2px; height:16px; margin:2px auto 0; }
+</style>
+</head>
+<body>
+<div id="banner">⚠ Saliste de la pantalla del curso. Este evento queda registrado.</div>
+<div class="top"><div class="logo">🤝</div><div><h1>Mesa de Negociación PYME</h1><div style="font-size:12px;color:#c9cfdc">Gestión empresarial para contadores · Gestión pública · 11° · RA 5</div></div><div class="who" id="who"></div></div>
+<div class="wrap" id="app"></div>
+<footer>CTP Mercedes Norte · Especialidad de Contabilidad · <a href="#" id="lnkDocente">Panel docente</a></footer>
+<script>
+(function(){
+'use strict';
+/* ================= CONFIGURACIÓN ================= */
+const SHEET_API_URL="https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN="9986", MODULE_ID="negpyme", SH_PROG="Progreso", SH_DATA="Casos";
+const SECCIONES=["11-1","11-2","11-3","11-4"];
+const STEPS=[{key:"pasaporte",label:"Pasaporte PYME"},{key:"prep",label:"Preparar la negociación"},{key:"r1",label:"Ronda 1 · Proveedor"},{key:"r2",label:"Ronda 2 · Banco"},{key:"r3",label:"Ronda 3 · Cliente"},{key:"cierre",label:"Balance final"}];
+const RUBRICA=[
+ {id:"i1",crit:"Distingue las principales características de la Ley 8262 y sus reformas.",n3:"Obtiene 6 o más sellos del pasaporte y explica los beneficios de la condición PYME.",n2:"Obtiene 4 o 5 sellos.",n1:"Obtiene 3 sellos o menos."},
+ {id:"i2",crit:"Demuestra la capacidad de negociación en las operaciones de una PYME al resolver escenarios empresariales sencillos.",n3:"Cierra acuerdos favorables en las 3 rondas (o se retira con razón), cuidando el precio de reserva y la relación.",n2:"Cierra acuerdos, pero cede de más o deteriora la relación.",n1:"No logra acuerdos o acepta condiciones que perjudican a la PYME."},
+ {id:"i3",crit:"Aplica conceptos de negociación (MAAN, precio de reserva, ZOPA, ganar-ganar).",n3:"Identifica correctamente MAAN, reserva y ZOPA y usa intercambios de valor.",n2:"Identifica algunos conceptos o los aplica de forma parcial.",n1:"No aplica los conceptos."}
+];
+/* ---- Pasaporte (Ley 8262) ---- */
+const PASAPORTE=[
+ {q:"Según la Ley 8262, ¿qué es una PYME?",ops:["Una unidad productiva permanente que opera con personal, como persona física o jurídica","Solo las sociedades anónimas con menos de cien trabajadores inscritos en la CCSS","Toda empresa familiar que venda productos agrícolas en ferias y mercados locales","Cualquier emprendimiento informal que tenga menos de un año de operar en el país"],c:0,e:"Artículo 3: unidad productiva de carácter permanente que dispone de recursos humanos, los maneja y opera, como persona física o jurídica."},
+ {q:"Para ser considerada PYME, además, la empresa debe cumplir al menos…",ops:["una de estas: patente municipal o permiso de salud al día","dos de tres: cargas sociales, obligaciones tributarias o laborales","todas estas: tener sociedad inscrita, contador privado y cuenta bancaria","dos de estas tres: tener página web, logotipo registrado y datáfono"],c:1,e:"La ley exige cumplir al menos dos de tres: pago de cargas sociales, obligaciones tributarias y obligaciones laborales."},
+ {q:"¿Qué institución es el ente rector de las políticas de apoyo a las PYMES?",ops:["El Banco Central de Costa Rica, por medio del SINPE","El Ministerio de Hacienda y su Dirección de Tributación","El Ministerio de Economía, Industria y Comercio (MEIC)","La Caja Costarricense de Seguro Social y el INS"],c:2,e:"La Ley 8262 designa al MEIC como ente rector; ahí se tramita el registro PYME."},
+ {q:"¿Cómo se determina si una PYME es micro, pequeña o mediana?",ops:["Solo por la cantidad de años que lleva operando en el mercado","Por el número de socios que aparecen en la escritura constitutiva","Por la provincia y el cantón donde tiene su local principal","Con un puntaje que combina el personal, las ventas y los activos"],c:3,e:"El reglamento clasifica con una fórmula que pondera el personal, las ventas y los activos de la empresa."},
+ {q:"Una PYME necesita un préstamo, pero no tiene suficientes garantías. ¿Qué apoyo de la Ley 8262 le sirve?",ops:["El FODEMIPYME, con avales y créditos del Banco Popular","El PROPYME, que financia viajes de promoción turística al extranjero","El Fondo de Asignaciones Familiares, que paga las cargas sociales","El SINPE Móvil, que presta dinero sin intereses a las empresas"],c:0,e:"El FODEMIPYME, administrado por el Banco Popular, otorga avales, garantías y financiamiento a PYMES."},
+ {q:"¿Para qué sirve el programa PROPYME?",ops:["Para condonar las deudas tributarias de las PYMES morosas","Para apoyar proyectos de innovación y desarrollo tecnológico","Para registrar marcas comerciales sin costo en el Registro Nacional","Para pagar el aguinaldo de los trabajadores de las microempresas"],c:1,e:"PROPYME apoya con recursos no reembolsables proyectos de innovación, desarrollo tecnológico y mejora de las PYMES."},
+ {q:"¿Qué beneficio en compras del Estado promueve la política PYME?",ops:["Que las PYMES no paguen impuestos cuando venden a instituciones","Que únicamente las PYMES puedan participar como oferentes en SICOP","Que se fomente la participación de las PYMES como proveedoras","Que el Estado pague a las PYMES por adelantado todos los contratos"],c:2,e:"La ley promueve la participación de las PYMES en las compras públicas, que hoy se realizan por medio de SICOP."},
+ {q:"Una pastelería tiene 4 trabajadores, está al día con Hacienda y con la CCSS, pero no ha pagado las vacaciones de un empleado. ¿Puede tener condición PYME?",ops:["No, porque debe cumplir las tres obligaciones sin excepción","No, porque tiene menos de cinco trabajadores en planilla","Sí, porque cumple dos de las tres obligaciones legales exigidas","Sí, porque la condición PYME no exige ninguna obligación"],c:2,e:"Cumple cargas sociales y obligaciones tributarias: dos de tres. Aun así debe corregir la obligación laboral pendiente."}
+];
+/* ---- Rondas de negociación ---- */
+const RONDAS={
+ r1:{who:"Don Rafael · Molinos del Valle",av:"🧔",rol:"Proveedor de harina",unit:"₡",por:"por saco de 45 kg",dir:"down",start:24000,res:21500,step:600,round:100,
+   intro:"Su panadería compra 25 sacos de harina al mes. Don Rafael le ofrece un nuevo contrato y abre con su precio de lista.",
+   maan:23000, maanTxt:"Otra distribuidora le cotizó ₡22 500 por saco, pero cobra ₡500 de transporte: su MAAN real es ₡23 000.",
+   trades:[{id:"vol",t:"Ofrecer comprar 40 sacos al mes si mejora el precio",res:-500,cur:-700,trust:6,say:"¿40 sacos al mes? Eso me sirve para la planificación del molino. Puedo bajar un poco."},
+           {id:"cont",t:"Pagar de contado en lugar de crédito a 30 días",res:-400,cur:-500,trust:4,say:"El pago de contado me ayuda con la liquidez. Le reconozco un descuento."},
+           {id:"plazo",t:"Firmar contrato por 6 meses",res:-300,cur:-400,trust:10,say:"Un contrato de seis meses me da seguridad. Trato hecho en eso."}]},
+ r2:{who:"Licda. Vargas · Banco Comunal",av:"👩‍💼",rol:"Ejecutiva de crédito PYME",unit:"%",por:"de tasa de interés anual",dir:"down",start:16,res:11,step:0.5,round:0.25,
+   intro:"Necesita ₡5 000 000 para un horno industrial. La ejecutiva ofrece un crédito, pero su panadería no tiene una propiedad para dar como garantía.",
+   maan:18, maanTxt:"Una financiera privada le presta sin garantía al 18 %: es un MAAN débil. Por eso conviene fortalecer su posición con otros argumentos.",
+   trades:[{id:"aval",t:"Presentar el aval del FODEMIPYME como garantía",res:-2.5,cur:-3,trust:8,say:"¿Tiene aval del FODEMIPYME? Eso reduce mucho el riesgo para el banco. Podemos mejorar la tasa."},
+           {id:"meic",t:"Mostrar el registro PYME del MEIC y los estados financieros al día",res:-1,cur:-1,trust:8,say:"Con la condición PYME acreditada y sus estados financieros ordenados, califica en nuestra línea PYME."},
+           {id:"planilla",t:"Pasar la planilla de la panadería al banco",res:-0.5,cur:-0.5,trust:5,say:"Si trae la planilla, gana un punto con nosotros. Le mejoro un poco."}]},
+ r3:{who:"Sr. Solano · Comedor del Colegio",av:"👨‍🍳",rol:"Encargado de compras del comedor",unit:"₡",por:"por pan (su costo es ₡60)",dir:"up",start:70,res:88,step:3,round:1,cost:60,
+   intro:"El comedor escolar quiere comprarle 800 panes diarios. Ahora usted vende: quiere el precio más alto, y nunca por debajo de su costo de ₡60.",
+   maan:80, maanTxt:"Las pulperías de la zona le compran el pan a ₡80: ese es su MAAN. Aceptar menos no le conviene.",
+   trades:[{id:"hora",t:"Garantizar entrega diaria antes de las 6:30 a. m.",res:4,cur:3,trust:6,say:"Si me asegura la entrega temprano, puedo pagar un poco más."},
+           {id:"integral",t:"Ofrecer pan integral fortificado para los estudiantes",res:5,cur:4,trust:8,say:"Pan integral fortificado… eso lo pide la nutricionista. Vale más, claro."},
+           {id:"factura",t:"Facturar electrónicamente y recibir pago por SINPE",res:2,cur:1,trust:6,say:"Con factura electrónica me facilita la liquidación. Bien."}]}
+};
+
+/* ================= PUENTE SHEETS ================= */
+function jsonp(url){ return new Promise(res=>{ const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5); const s=document.createElement('script');
+  window[cb]=d=>{ res(d); delete window[cb]; s.remove(); }; s.onerror=()=>{ res({rows:[]}); delete window[cb]; s.remove(); };
+  s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb; document.body.appendChild(s); setTimeout(()=>{ if(window[cb]){ res({rows:[]}); delete window[cb]; s.remove(); } },12000); }); }
+function sheetGet(n){ return jsonp(SHEET_API_URL+'?sheet='+encodeURIComponent(n)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(n,row){ // contrato JSON del doPost {sheet,row:[...]} con Content-Type text/plain
+  return fetch(SHEET_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:n,row:Object.keys(row).map(k=>row[k])}),keepalive:true}).catch(()=>{}); }
+const now=()=>new Date().toISOString();
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function postData(tipo,obj,who){ return sheetPost(SH_DATA,{Timestamp:now(),CasoId:MODULE_ID+'_'+tipo,Nombre:who||student.name,Texto:JSON.stringify(obj)}); }
+function postProg(key,score,total){ return sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:MODULE_ID+'_'+key+'_paso',Score:String(score),Total:String(total)}); }
+function parseRows(rows){ return rows.filter(r=>String(r.CasoId||'').indexOf(MODULE_ID+'_')===0).map(r=>{ let o={}; try{ o=JSON.parse(r.Texto); }catch(e){} return {tipo:String(r.CasoId).slice(MODULE_ID.length+1),nombre:String(r.Nombre||'').trim(),ts:String(r.Timestamp||''),d:o}; }).sort((a,b)=>a.ts<b.ts?-1:1); }
+
+/* ================= ESTADO ================= */
+let student={name:'',sec:''}, allRows=[], S={}, current='pasaporte';
+function cut(n){ let t=''; allRows.forEach(r=>{ if(r.tipo==='reset'&&norm(r.d.nombre)===norm(n)&&r.ts>t) t=r.ts; }); return t; }
+function datos(n){ const c=cut(n); const o={done:{},ronda:{}}; allRows.filter(r=>norm(r.nombre)===norm(n)&&r.ts>c).forEach(r=>{
+  if(r.tipo==='paso') o.done[r.d.key]=true; if(r.tipo==='ronda'&&!o.ronda[r.d.key]) o.ronda[r.d.key]=r.d;
+  ['pasaporte','prep','reflex'].forEach(k=>{ if(r.tipo===k&&!o[k]) o[k]=r.d; }); }); return o; }
+function load(){ return sheetGet(SH_DATA).then(r=>{ allRows=parseRows(r); S=datos(student.name); }); }
+function markStep(key,score,total){ if(S.done[key]) return; S.done[key]=true; postData('paso',{key:key}); postProg(key,score,total); }
+function unlocked(k){ const i=STEPS.findIndex(s=>s.key===k); return i===0||!!S.done[STEPS[i-1].key]; }
+const fmt=(v,u)=>u==='%'?(Math.round(v*100)/100).toLocaleString('es-CR')+' %':'₡'+Math.round(v).toLocaleString('es-CR');
+
+/* ================= MONITOREO ================= */
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden||!student.name) return;
+  sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:'incidente_salida_pantalla_'+MODULE_ID,Score:'salida',Total:'1'});
+  const b=document.getElementById('banner'); b.style.display='block'; setTimeout(()=>b.style.display='none',6000); });
+
+/* ================= UI ================= */
+const $=id=>document.getElementById(id);
+function nombrePortal(){ try{ return (new URLSearchParams(location.search).get('nombre')||'').trim()||null; }catch(e){ return null; } }
+function portada(){
+  const np=nombrePortal(); $('who').textContent='';
+  $('app').innerHTML=`<div class="card"><span class="pill gold">RA 5 · Desarrollar capacidad de negociación en las operaciones relativas a las PYMES</span>
+  <h2 style="margin-top:10px">Usted es gerente de la Panadería La Espiga</h2>
+  <p>Es una PYME familiar de Mercedes Norte que quiere crecer. Primero va a obtener su <b>pasaporte PYME</b> (Ley 8262). Después se sentará a negociar con un proveedor, con un banco y con un cliente. <b>Cada negociación es real: si ofende a la otra parte, se levanta de la mesa.</b></p>
+  <div class="grid2"><div><label>Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}" placeholder="Nombre y apellidos"></div>
+  <div><label>Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+  <div class="row" style="margin-top:14px"><button class="btn gold" id="btnIn">Entrar a la panadería</button><span id="msgIn" class="mut"></span></div></div>`;
+  $('btnIn').onclick=()=>{ const n=$('inNom').value.trim(), s=$('inSec').value;
+    if(n.split(/\s+/).length<2){ $('msgIn').innerHTML='<span class="err">Escriba nombre y apellido.</span>'; return; }
+    if(!s){ $('msgIn').innerHTML='<span class="err">Seleccione la sección.</span>'; return; }
+    student={name:n,sec:s}; $('msgIn').textContent='Cargando…';
+    load().then(()=>{ const f=STEPS.find(x=>!S.done[x.key]); current=f?f.key:'cierre'; render(); }); };
+}
+function render(){
+  $('who').innerHTML=esc(student.name)+'<br>'+esc(student.sec);
+  $('app').innerHTML=`<div class="steps">${STEPS.map((s,i)=>`<div class="st ${S.done[s.key]?'done':''} ${current===s.key?'cur':''} ${unlocked(s.key)?'':'lock'}" data-k="${s.key}"><div class="n">PASO ${i+1}</div><div class="t">${s.label}</div></div>`).join('')}</div><div id="stage"></div>`;
+  document.querySelectorAll('.st').forEach(el=>el.onclick=()=>{ if(!unlocked(el.dataset.k)) return; current=el.dataset.k; render(); });
+  const k=current; ({pasaporte:stPass,prep:stPrep,r1:stRonda,r2:stRonda,r3:stRonda,cierre:stCierre})[k]($('stage'),k); window.scrollTo(0,0);
+}
+function next(){ const i=STEPS.findIndex(s=>s.key===current); current=STEPS[Math.min(i+1,STEPS.length-1)].key; render(); }
+const nextBtn=t=>`<button class="btn gold" id="goNext" style="margin-top:10px">${t||'Continuar →'}</button>`;
+
+/* ================= 1. PASAPORTE ================= */
+function stPass(el){
+  const res=S.pasaporte?S.pasaporte.resp:null; const ans={};
+  el.innerHTML=`<div class="pass"><div style="flex:1;min-width:220px"><div style="font-size:12px;letter-spacing:.15em;color:var(--gold2);font-weight:600">REPÚBLICA DE COSTA RICA · LEY 8262</div><h2 style="color:#fff;margin:4px 0">Pasaporte PYME</h2><div style="color:#c9cfdc;font-size:13px">Panadería La Espiga · Gerente: ${esc(student.name)}</div></div>
+  <div class="stamps" id="stamps">${PASAPORTE.map((_,i)=>`<div class="stamp" id="sp${i}">${i+1}</div>`).join('')}</div></div>
+  <div class="card" style="margin-top:14px"><div class="din">Responda las 8 preguntas del trámite. Cada respuesta correcta es un <b>sello</b> en su pasaporte. Solo tiene un intento.</div>
+  ${PASAPORTE.map((p,i)=>`<div class="q" data-i="${i}"><b>${i+1}. ${p.q}</b><div class="opts">${p.ops.map((o,j)=>`<button data-j="${j}">${String.fromCharCode(65+j)}) ${o}</button>`).join('')}</div><div class="fb"></div></div>`).join('')}
+  <button class="btn gold" id="psOk">Presentar el trámite</button><span id="psMsg"></span><div id="psOut"></div></div>`;
+  el.querySelectorAll('.q').forEach(q=>q.querySelectorAll('button').forEach(b=>b.onclick=()=>{ ans[q.dataset.i]=+b.dataset.j; q.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }));
+  function show(r){ let ok=0; el.querySelectorAll('.q').forEach(q=>{ const i=+q.dataset.i, p=PASAPORTE[i], g=r[i]===p.c; if(g) ok++;
+      q.querySelectorAll('button').forEach(b=>{ b.disabled=true; const j=+b.dataset.j; b.classList.remove('on'); if(j===p.c) b.classList.add('good'); else if(j===r[i]) b.classList.add('bad'); });
+      q.querySelector('.fb').innerHTML=(g?'<span class="ok">✓ Sello obtenido.</span> ':'<span class="err">✗ Sin sello.</span> ')+p.e; $('sp'+i).className='stamp '+(g?'on':'off'); $('sp'+i).textContent=g?'MEIC ✓':'✗'; }); return ok; }
+  const fin=ok=>{ $('psOut').innerHTML=`<div class="tip"><b>${ok} de ${PASAPORTE.length} sellos.</b> ${ok>=6?'¡Condición PYME acreditada! Úsela en sus negociaciones.':'Repase la Ley 8262: sus beneficios le darán ventaja en las rondas.'}</div>`+nextBtn(); $('goNext').onclick=next; };
+  if(res){ $('psOk').remove(); fin(show(res)); return; }
+  $('psOk').onclick=()=>{ if(Object.keys(ans).length<PASAPORTE.length){ $('psMsg').innerHTML=' <span class="err">Responda todas las preguntas.</span>'; return; }
+    const ok=show(ans); S.pasaporte={resp:ans,ok:ok}; postData('pasaporte',S.pasaporte); markStep('pasaporte',ok,PASAPORTE.length); $('psOk').remove(); $('psMsg').remove(); fin(ok); };
+}
+
+/* ================= 2. PREPARACIÓN ================= */
+function stPrep(el){
+  el.innerHTML=`<div class="card"><h2>Antes de sentarse a negociar</h2>
+  <div class="din">Nadie negocia bien sin prepararse. Tres conceptos clave:<br>
+  <b>MAAN</b> (mejor alternativa a un acuerdo negociado): lo que hará si no hay acuerdo. <b>Precio de reserva:</b> el límite a partir del cual prefiere su MAAN. <b>ZOPA</b> (zona de posible acuerdo): el espacio entre su límite y el límite de la otra parte.</div>
+  <h3>Caso: la harina</h3><p>Don Rafael, de Molinos del Valle, vende la harina a <b>₡24 000</b> el saco. Otra distribuidora le cotizó <b>₡22 500</b>, pero le cobra <b>₡500 de transporte</b> por saco. Usted quisiera pagar <b>₡21 000</b>.</p>
+  <div class="grid3"><div><label>Su objetivo (₡)</label><input type="number" id="pObj" placeholder="¿Cuánto quisiera pagar?"></div><div><label>Su MAAN (₡)</label><input type="number" id="pMaan" placeholder="Costo real de la otra opción"></div><div><label>Su precio de reserva (₡)</label><input type="number" id="pRes" placeholder="Lo máximo que pagaría"></div></div>
+  <label>Una concesión que podría ofrecer a cambio de un mejor precio (ganar-ganar)</label><input type="text" id="pCon" maxlength="200" placeholder="Ej.: …">
+  <div class="row" style="margin-top:12px"><button class="btn gold" id="prOk">Revisar mi preparación</button><span id="prMsg"></span></div><div id="prOut"></div></div>`;
+  function feedback(p){
+    const okM=Math.abs(p.maan-23000)<=1, okR=p.res<=23000&&p.res>=p.obj, okO=p.obj<=23000;
+    const L=20000,R=25000,x=v=>((Math.min(Math.max(v,L),R)-L)/(R-L)*100).toFixed(1);
+    return `<div class="${okM&&okR?'tip':'warn'}"><b>Revisión:</b><br>${okM?'✓':'✗'} MAAN: la otra opción cuesta 22 500 + 500 = <b>₡23 000</b>. ${okM?'':'Recuerde sumar el transporte: el MAAN es el costo real de la alternativa.'}<br>
+    ${okR?'✓':'✗'} Precio de reserva: no debe superar su MAAN (₡23 000); pagar más que eso no tiene sentido porque le conviene la otra distribuidora.<br>
+    ${okO?'✓':'✗'} Objetivo: debe ser ambicioso pero creíble, por debajo de su reserva.</div>
+    <p class="mut">Así se ve la ZOPA si el límite (secreto) de Don Rafael fuera ₡21 500:</p>
+    <div class="zopa"><div class="ln"></div><div class="z" style="left:${x(21500)}%;width:${x(Math.min(p.res||23000,23000))-x(21500)}%"></div>
+    <div class="mk" style="left:${x(21500)}%;color:#0b6b5d">Límite de él<br>₡21 500<i style="background:#0b6b5d"></i></div>
+    <div class="mk" style="left:${x(23000)}%;color:#7a5a24">Su MAAN<br>₡23 000<i style="background:#B8863C"></i></div>
+    <div class="mk" style="left:${x(24000)}%;color:#0E1B3D">Precio de lista<br>₡24 000<i style="background:#0E1B3D"></i></div></div>
+    <p class="mut" style="margin-top:24px">La zona verde es la ZOPA: cualquier acuerdo ahí conviene a ambas partes. En la mesa usted no conoce el límite de él: tendrá que descubrirlo.</p>`;
+  }
+  if(S.prep){ const p=S.prep; $('pObj').value=p.obj; $('pMaan').value=p.maan; $('pRes').value=p.res; $('pCon').value=p.con; ['pObj','pMaan','pRes','pCon','prOk'].forEach(i=>$(i).disabled=true); $('prOut').innerHTML=feedback(p)+nextBtn('Sentarse a negociar →'); $('goNext').onclick=next; return; }
+  $('prOk').onclick=()=>{ const p={obj:+$('pObj').value,maan:+$('pMaan').value,res:+$('pRes').value,con:$('pCon').value.trim()};
+    if(!p.obj||!p.maan||!p.res||p.con.length<10){ $('prMsg').innerHTML=' <span class="err">Complete los cuatro campos.</span>'; return; }
+    const pts=(Math.abs(p.maan-23000)<=1?1:0)+(p.res<=23000&&p.res>=p.obj?1:0)+(p.obj<=23000?1:0); p.pts=pts;
+    S.prep=p; postData('prep',p); markStep('prep',pts,3); ['pObj','pMaan','pRes','pCon','prOk'].forEach(i=>$(i).disabled=true);
+    $('prOut').innerHTML=feedback(p)+nextBtn('Sentarse a negociar →'); $('goNext').onclick=next; };
+}
+
+/* ================= 3. RONDAS ================= */
+function stRonda(el,key){
+  const R=RONDAS[key], sg=R.dir==='down'?1:-1; // sg=1: nos conviene un valor menor
+  const better=(a,b)=>sg*(a-b)<0;              // a es mejor para nosotros que b
+  const rnd=v=>Math.round(v/R.round)*R.round;
+  const done=S.ronda[key];
+  let st={cur:R.start,res:R.res,trust:60,turn:0,used:{},log:[],over:false};
+  el.innerHTML=`<div class="deal"><div class="side"><div class="av">${R.av}</div><b>${R.who}</b><div class="mut">${R.rol}</div>
+   <div class="meter" style="margin-top:12px"><div class="mut" style="display:flex;justify-content:space-between"><span>Confianza</span><span id="trV"></span></div><div class="trk"><div class="fil" id="trB"></div></div></div>
+   <div style="margin-top:12px" class="mut">Oferta actual de la otra parte</div><div style="font-size:24px;font-weight:700;color:var(--navy)" id="curV"></div><div class="mut">${R.por}</div>
+   <div class="mut" style="margin-top:8px">Turno <b id="tuV"></b> de 7</div>
+   <div class="warn" style="font-size:12.5px"><b>Su MAAN:</b> ${R.maanTxt}</div></div>
+   <div><div class="chat" id="chat"></div><div class="card" id="ctrl" style="margin-top:12px"></div></div></div>`;
+  function paint(){ $('trV').textContent=Math.round(st.trust)+' / 100'; $('trB').style.width=st.trust+'%'; $('trB').style.background=st.trust>=60?'#2FC2AD':st.trust>=35?'#e3b94a':'#c0392b'; $('curV').textContent=fmt(st.cur,R.unit); $('tuV').textContent=Math.min(st.turn+1,7); }
+  function say(who,txt){ st.log.push([who,txt]); const d=document.createElement('div'); d.className='msg '+who; d.innerHTML=txt; $('chat').appendChild(d); d.scrollIntoView({block:'nearest'}); }
+  function finish(deal,value,motivo){
+    st.over=true; const span=Math.abs(R.start-R.res);
+    let cap; if(deal){ cap=sg*(R.start-value)/span; } else { cap=(sg*(R.maan-st.cur)<0)?0.5:0.1; }
+    if(R.cost&&deal&&value<R.cost) cap=0;
+    const score=Math.max(0,Math.round(100*(0.65*Math.min(Math.max(cap,0),1.15)/1.15+0.35*st.trust/100)));
+    const r={key:key,deal:deal,value:deal?value:null,trust:Math.round(st.trust),turns:st.turn,trades:Object.keys(st.used),score:score,motivo:motivo,sec:student.sec};
+    S.ronda[key]=r; postData('ronda',r); markStep(key,score,100); ctrlResult(r);
+  }
+  function ctrlResult(r){
+    const verd = r.deal ? (sg*(r.value-R.maan)<=0 ? 'Acuerdo mejor que su MAAN: buena negociación.' : 'Acordó algo peor que su MAAN: le convenía la alternativa.') : (r.motivo==='trust'?'La otra parte se levantó de la mesa por falta de confianza.':'Se retiró y usó su MAAN.');
+    $('ctrl').innerHTML=`<h3 style="margin-top:0">Resultado de la ronda</h3><div class="res"><div>Acuerdo<b>${r.deal?'Sí':'No'}</b></div><div>Valor final<b>${r.deal?fmt(r.value,R.unit):'—'}</b></div><div>Confianza<b>${r.trust}</b></div><div>Puntaje<b>${r.score}</b></div></div>
+    <div class="tip">${verd} ${r.trades.length?'Usó '+r.trades.length+' intercambio(s) de valor (ganar-ganar).':'No usó intercambios de valor: la próxima vez ofrezca algo que a la otra parte le sirva.'}</div>`+nextBtn(key==='r3'?'Ver balance final →':'Siguiente ronda →');
+    $('goNext').onclick=next; paint();
+  }
+  if(done){ st.trust=done.trust; st.cur=done.value||st.cur; say('sys','Esta ronda ya se negoció. Su resultado quedó registrado.'); paint(); ctrlResult(done); return; }
+  function controls(){
+    if(st.over) return;
+    $('ctrl').innerHTML=`<div class="row"><div style="flex:1;min-width:180px"><label style="margin-top:0">Su contraoferta (${R.unit==='%'?'tasa %':'₡'})</label><input type="number" id="ofV" step="${R.round}" placeholder="${R.unit==='%'?'Ej.: 12':'Ej.: '+rnd((R.start+R.res)/2)}"></div><button class="btn" id="ofB" style="align-self:flex-end">Proponer</button></div>
+    <div class="mut" style="margin-top:10px">O use una jugada:</div><div class="moves">
+     ${R.trades.map(t=>`<button data-t="${t.id}" ${st.used[t.id]?'disabled':''}>🔁 ${t.t}</button>`).join('')}
+     <button data-m="maan">📣 Mencionar su alternativa (MAAN)</button></div>
+    <div class="row" style="margin-top:12px"><button class="btn teal" id="acB">✔ Aceptar ${fmt(st.cur,R.unit)}</button><button class="btn red" id="wkB">✖ Retirarse y usar su MAAN</button></div>`;
+    $('ofB').onclick=()=>{ const v=parseFloat($('ofV').value); if(isNaN(v)||v<=0) return; offer(v); };
+    $('ofV').onkeydown=e=>{ if(e.key==='Enter') $('ofB').click(); };
+    $('ctrl').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>trade(R.trades.find(t=>t.id===b.dataset.t)));
+    $('ctrl').querySelector('[data-m]').onclick=maan;
+    $('acB').onclick=()=>{ say('me','Acepto: '+fmt(st.cur,R.unit)+'.'); say('them','¡Perfecto! Tenemos un acuerdo. 🤝'); finish(true,st.cur,'acepta'); };
+    $('wkB').onclick=()=>{ say('me','Gracias, pero voy a tomar otra opción.'); say('them','Entiendo. Quedamos a la orden.'); finish(false,null,'retiro'); };
+  }
+  function tick(){ st.turn++; st.trust=Math.max(0,Math.min(100,st.trust)); paint();
+    if(st.trust<25){ say('them','Mire, así no podemos seguir. Mejor lo dejamos aquí.'); finish(false,null,'trust'); return true; }
+    if(st.turn>=7){ say('sys','Último turno: la otra parte hace su oferta final.'); say('them',`Mi oferta final es <span class="amt">${fmt(st.cur,R.unit)}</span>. ¿La toma o la deja?`);
+      $('ctrl').innerHTML=`<div class="row"><button class="btn teal" id="acB">✔ Aceptar ${fmt(st.cur,R.unit)}</button><button class="btn red" id="wkB">✖ Retirarse y usar su MAAN</button></div>`;
+      $('acB').onclick=()=>{ say('me','Acepto.'); finish(true,st.cur,'final'); }; $('wkB').onclick=()=>{ say('me','No me conviene.'); finish(false,null,'retiro'); }; return true; }
+    return false; }
+  function offer(v){
+    v=rnd(v); say('me',`Le propongo <span class="amt">${fmt(v,R.unit)}</span>.`);
+    if(R.cost&&v<R.cost) say('sys','⚠ Ojo: ese precio está por debajo de su costo de ₡'+R.cost+'. Estaría perdiendo dinero.');
+    if(!better(v,st.cur)){ say('them','¡Con mucho gusto! Trato hecho.'); finish(true,v,'oferta'); return; }
+    const span=Math.abs(R.start-R.res);
+    if(better(v,st.res)){ const far=sg*(st.res-v)/span;
+      if(far>0.35){ st.trust-=16; say('them','Con todo respeto, esa oferta no es seria. Así no hay forma.'); }
+      else { st.trust-=4; say('them','No puedo llegar a ese número, me sale perdiendo.'); }
+      const nc=rnd(st.cur-sg*R.step); st.cur=better(nc,st.res)?st.res:nc;
+      if(!tick()) { say('them',`Lo más que puedo es <span class="amt">${fmt(st.cur,R.unit)}</span>.`); controls(); } return; }
+    if(Math.abs(st.cur-v)<=R.step+1e-9){ say('them','Está bien, acepto su propuesta.'); st.trust+=4; finish(true,v,'oferta'); return; }
+    const mid=rnd((st.cur+v)/2); st.cur=better(mid,st.res)?st.res:mid; st.trust+=2;
+    if(!tick()){ say('them',`Nos acercamos. Le puedo dejar <span class="amt">${fmt(st.cur,R.unit)}</span>.`); controls(); }
+  }
+  function trade(t){
+    if(st.used[t.id]) return; st.used[t.id]=1; say('me',t.t+'.');
+    st.res=rnd(st.res+t.res); // el intercambio mueve el límite de la otra parte a nuestro favor
+    const nc=rnd(st.cur+t.cur); st.cur=better(nc,st.res)?st.res:nc; st.trust+=t.trust;
+    if(!tick()){ say('them',t.say+` Queda en <span class="amt">${fmt(st.cur,R.unit)}</span>.`); controls(); }
+  }
+  function maan(){
+    say('me','Tengo otra opción: '+(R.dir==='down'?'me ofrecen ':'me pagan ')+'<span class="amt">'+fmt(R.maan,R.unit)+'</span>.');
+    if(better(R.maan,st.cur)){ const tgt=rnd(R.maan-sg*R.round); const nc=better(tgt,st.res)?st.res:tgt; st.cur=nc; st.trust-=1;
+      if(!tick()){ say('them',`Bueno, no quiero perderlo como cliente. Le igualo: <span class="amt">${fmt(st.cur,R.unit)}</span>.`); controls(); } }
+    else { st.trust-=3; if(!tick()){ say('them','Pero mi oferta ya es mejor que esa opción… ¿de verdad le conviene?'); controls(); } }
+  }
+  say('sys',R.intro); say('them',`Buenos días. Mi propuesta es <span class="amt">${fmt(st.cur,R.unit)}</span> ${R.por}.`);
+  paint(); controls();
+  window.__negDebug={ offer:offer, trade:id=>trade(R.trades.find(t=>t.id===id)), maan:maan, st:()=>st };
+}
+
+/* ================= 4. BALANCE ================= */
+function stCierre(el){
+  const rs=['r1','r2','r3'].map(k=>S.ronda[k]).filter(Boolean); const prom=rs.length?Math.round(rs.reduce((a,r)=>a+r.score,0)/rs.length):0;
+  el.innerHTML=`<div class="card"><h2>Balance final de la Panadería La Espiga</h2>
+  <table class="tb"><tr><th>Ronda</th><th>Acuerdo</th><th>Valor</th><th>Confianza</th><th>Intercambios</th><th>Puntaje</th></tr>
+  ${['r1','r2','r3'].map(k=>{ const r=S.ronda[k], R=RONDAS[k]; return r?`<tr><td>${R.rol}</td><td>${r.deal?'Sí':'No'}</td><td>${r.deal?fmt(r.value,R.unit):'MAAN'}</td><td>${r.trust}</td><td>${r.trades.length}</td><td><b>${r.score}</b></td></tr>`:''; }).join('')}</table>
+  <div class="tip">Puntaje promedio de negociación: <b>${prom} / 100</b> · Sellos del pasaporte: <b>${S.pasaporte?S.pasaporte.ok:0} / ${PASAPORTE.length}</b></div>
+  <label>¿En cuál ronda aplicó mejor una estrategia ganar-ganar? Explique qué dio y qué recibió.</label><textarea id="r1" rows="3" maxlength="600"></textarea>
+  <label>¿Cómo le ayudó (o le habría ayudado) la condición PYME de la Ley 8262 en estas negociaciones?</label><textarea id="r2" rows="3" maxlength="600"></textarea>
+  <div class="row" style="margin-top:10px"><button class="btn gold" id="rOk">Enviar balance</button><span id="rMsg"></span></div><div id="rOut"></div></div>`;
+  if(S.reflex){ $('r1').value=S.reflex.r1; $('r2').value=S.reflex.r2; ['r1','r2','rOk'].forEach(i=>$(i).disabled=true); $('rOut').innerHTML='<div class="tip"><span class="ok">✓ Actividad completada.</span></div>'; return; }
+  $('rOk').onclick=()=>{ if($('r1').value.trim().length<30||$('r2').value.trim().length<30){ $('rMsg').innerHTML=' <span class="err">Desarrolle más sus respuestas.</span>'; return; }
+    S.reflex={r1:$('r1').value.trim(),r2:$('r2').value.trim(),prom:prom}; postData('reflex',S.reflex); markStep('cierre',prom,100); stCierre(el); };
+}
+
+/* ================= PANEL DOCENTE ================= */
+function panel(){ const pin=prompt('PIN del panel docente:'); if(pin!==TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  $('app').innerHTML='<div class="card">Cargando…</div>'; Promise.all([sheetGet(SH_DATA),sheetGet(SH_PROG)]).then(([r,p])=>{ allRows=parseRows(r); window.__prog=p; panelRender(SECCIONES[0]); }); }
+function evalDe(n){ return (allRows.filter(r=>r.tipo==='eval'&&norm(r.d.nombre)===norm(n)).pop()||{}).d||{niveles:{}}; }
+function panelRender(sec){
+  const nombres=[]; allRows.forEach(r=>{ if(r.tipo==='ronda'&&r.d.sec===sec&&nombres.map(norm).indexOf(norm(r.nombre))<0) nombres.push(r.nombre); });
+  const sal={}; (window.__prog||[]).forEach(r=>{ if(String(r.Modulo)==='incidente_salida_pantalla_'+MODULE_ID){ const k=norm(r.Estudiante); sal[k]=(sal[k]||0)+1; } });
+  $('who').textContent='Panel docente';
+  $('app').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Mesa de Negociación PYME</h2><select id="pSec" style="width:auto;margin-left:auto">${SECCIONES.map(s=>`<option ${s===sec?'selected':''}>${s}</option>`).join('')}</select><button class="btn ghost sm" id="pOut">Salir</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Resultados y rúbrica (1–3)</h3><p class="mut">Borde dorado = nivel sugerido por los datos. Confirme con un clic.</p>
+  <table class="tb"><tr><th>Estudiante</th><th>Sellos</th><th>Prep.</th><th>Proveedor</th><th>Banco</th><th>Cliente</th>${RUBRICA.map((c,i)=>`<th title="${esc(c.crit)}">Ind. ${i+1}</th>`).join('')}<th>Salidas</th><th></th></tr>
+  ${nombres.map(n=>{ const o=datos(n), ev=evalDe(n); const rs=['r1','r2','r3'].map(k=>o.ronda[k]);
+    const cel=(r,k)=>r?`${r.deal?fmt(r.value,RONDAS[k].unit):'Sin acuerdo'}<br><span class="mut">${r.score} pts · conf. ${r.trust}</span>`:'—';
+    const avg=rs.filter(Boolean).reduce((a,r)=>a+r.score,0)/Math.max(1,rs.filter(Boolean).length); const tr=rs.filter(Boolean).reduce((a,r)=>a+r.trades.length,0);
+    const sg={i1:o.pasaporte?(o.pasaporte.ok>=6?3:o.pasaporte.ok>=4?2:1):0, i2:rs.every(Boolean)?(avg>=70?3:avg>=45?2:1):0, i3:o.prep?((o.prep.pts>=3&&tr>=3)?3:(o.prep.pts>=2||tr>=2)?2:1):0};
+    return `<tr><td><b>${esc(n)}</b></td><td>${o.pasaporte?o.pasaporte.ok+'/8':'—'}</td><td>${o.prep?o.prep.pts+'/3':'—'}</td><td>${cel(rs[0],'r1')}</td><td>${cel(rs[1],'r2')}</td><td>${cel(rs[2],'r3')}</td>
+    ${RUBRICA.map(c=>`<td><div class="lv" data-n="${esc(n)}" data-c="${c.id}">${[1,2,3].map(k=>`<button class="${ev.niveles[c.id]==k?'on':''} ${sg[c.id]===k?'sug':''}" data-k="${k}">${k}</button>`).join('')}</div></td>`).join('')}
+    <td>${sal[norm(n)]||0}</td><td><button class="btn ghost sm" data-ver="${esc(n)}">Ver</button> <button class="btn ghost sm" data-reset="${esc(n)}">🔄</button></td></tr>`; }).join('')||'<tr><td colspan="11" class="mut">Sin datos en esta sección.</td></tr>'}</table>
+  <details style="margin-top:10px"><summary class="mut" style="cursor:pointer">Ver criterios de la rúbrica</summary><table class="tb" style="margin-top:6px"><tr><th>Indicador</th><th>3 · Logrado</th><th>2 · En proceso</th><th>1 · No logrado</th></tr>${RUBRICA.map((c,i)=>`<tr><td><b>${i+1}.</b> ${c.crit}</td><td>${c.n3}</td><td>${c.n2}</td><td>${c.n1}</td></tr>`).join('')}</table></details></div>
+  <div class="card" id="detalle"></div>`;
+  document.querySelectorAll('.lv button').forEach(b=>b.onclick=()=>{ const box=b.parentElement, n=box.dataset.n; const ev=JSON.parse(JSON.stringify(evalDe(n))); ev.nombre=n; ev.niveles[box.dataset.c]=+b.dataset.k;
+    postData('eval',ev,'DOCENTE'); allRows.push({tipo:'eval',nombre:'DOCENTE',ts:now(),d:ev}); box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    if(RUBRICA.every(c=>ev.niveles[c.id])){ const s=RUBRICA.reduce((a,c)=>a+ev.niveles[c.id],0);
+      sheetPost(SH_PROG,{Timestamp:now(),Estudiante:n,Modulo:MODULE_ID+'_rubrica_paso',Score:String(s),Total:String(RUBRICA.length*3)});
+      RUBRICA.forEach(c=>sheetPost(SH_PROG,{Timestamp:now(),Estudiante:n,Modulo:MODULE_ID+'_rubrica_ra_'+encodeURIComponent('RA5-'+c.id)+'_paso',Score:String(ev.niveles[c.id]),Total:'3'})); } });
+  document.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{ const n=b.dataset.ver, o=datos(n);
+    $('detalle').innerHTML=`<h3 style="margin-top:0">${esc(n)}</h3><p><b>Preparación:</b> objetivo ${o.prep?fmt(o.prep.obj,'₡'):'—'} · MAAN ${o.prep?fmt(o.prep.maan,'₡'):'—'} · reserva ${o.prep?fmt(o.prep.res,'₡'):'—'}<br><b>Concesión propuesta:</b> ${esc(o.prep?o.prep.con:'—')}</p>
+    ${['r1','r2','r3'].map(k=>{ const r=o.ronda[k]; return r?`<p><b>${RONDAS[k].rol}:</b> ${r.deal?'acuerdo en '+fmt(r.value,RONDAS[k].unit):'sin acuerdo ('+r.motivo+')'} · ${r.turns} turnos · intercambios: ${r.trades.length?r.trades.map(t=>RONDAS[k].trades.find(x=>x.id===t).t).join('; '):'ninguno'}</p>`:''; }).join('')}
+    <p><b>Ganar-ganar:</b> ${esc(o.reflex?o.reflex.r1:'—')}</p><p><b>Condición PYME:</b> ${esc(o.reflex?o.reflex.r2:'—')}</p>`; $('detalle').scrollIntoView({behavior:'smooth'}); });
+  document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{ const n=b.dataset.reset; if(!confirm('¿Reiniciar la actividad para '+n+'?')) return;
+    postData('reset',{nombre:n},'DOCENTE'); allRows.push({tipo:'reset',nombre:'DOCENTE',ts:now(),d:{nombre:n}}); alert('Reinicio registrado.'); panelRender(sec); });
+  $('pSec').onchange=()=>panelRender($('pSec').value); $('pOut').onclick=()=>{ student={name:'',sec:''}; portada(); };
+}
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+portada();
+})();
+</script>
+</body>
+</html>
