@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Apps con IA · Décimo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --navy:#0E1B3D; --navy2:#16295a; --gold:#B8863C; --gold2:#e3b94a; --teal:#2FC2AD; --teal2:#e6f7f4; --ink:#1d2433; --mut:#5b6478; --line:#d9dde6; --soft:#f5f6f9; --red:#c0392b; --bg:#eef1f6; }
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Poppins',system-ui,sans-serif; color:var(--ink); background:var(--bg); font-size:15px; line-height:1.5; }
+button,input,textarea,select{ font-family:inherit; font-size:14px; }
+.top{ background:var(--navy); color:#fff; padding:12px 18px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:20; }
+.top .logo{ width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--teal),var(--gold2)); display:grid; place-items:center; font-weight:700; color:var(--navy); }
+.top h1{ font-size:16px; margin:0; font-weight:600; }
+.top .who{ margin-left:auto; font-size:12.5px; color:#c9cfdc; text-align:right; }
+.wrap{ max-width:1060px; margin:0 auto; padding:18px 14px 60px; }
+.card{ background:#fff; border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(14,27,61,.07); margin-bottom:16px; }
+h2{ color:var(--navy); margin:0 0 6px; font-size:21px; }
+h3{ color:var(--navy); margin:14px 0 6px; font-size:16px; }
+.mut{ color:var(--mut); font-size:13px; }
+.btn{ border:none; border-radius:10px; padding:10px 16px; font-weight:600; cursor:pointer; background:var(--navy); color:#fff; }
+.btn.gold{ background:var(--gold); color:#fff; }
+.btn.teal{ background:var(--teal); color:#062a25; }
+.btn.ghost{ background:#fff; color:var(--navy); border:1.5px solid var(--navy); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+.btn.sm{ padding:6px 11px; font-size:12.5px; }
+input[type=text],textarea,select{ width:100%; border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; background:#fff; }
+textarea{ resize:vertical; }
+input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--teal); }
+label{ font-weight:600; font-size:13.5px; display:block; margin:10px 0 4px; color:var(--navy); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:760px){ .grid2{ grid-template-columns:1fr; } }
+/* mapa de etapas */
+.steps{ display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; }
+.st{ flex:1 0 128px; background:#fff; border-radius:12px; padding:10px 12px; border:2px solid transparent; cursor:pointer; position:relative; }
+.st .n{ font-size:11px; color:var(--mut); font-weight:600; letter-spacing:.05em; }
+.st .t{ font-size:13px; font-weight:600; color:var(--navy); line-height:1.25; }
+.st.done{ background:var(--teal2); }
+.st.done::after{ content:"✓"; position:absolute; right:10px; top:8px; color:#0b6b5d; font-weight:700; }
+.st.cur{ border-color:var(--gold); }
+.st.lock{ opacity:.45; cursor:not-allowed; }
+.pill{ display:inline-block; padding:2px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:var(--soft); color:var(--navy); }
+.pill.gold{ background:#f6ecd9; color:#7a5a24; }
+.pill.teal{ background:var(--teal2); color:#0b6b5d; }
+.din{ background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; border-radius:12px; padding:12px 16px; margin:8px 0 14px; font-size:13.5px; }
+.din b{ color:var(--gold2); }
+.tip{ background:var(--teal2); border:1px solid #a9e3d9; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.warn{ background:#fdf1e6; border:1px solid #f0c9a3; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.ok{ color:#0b6b5d; font-weight:600; }
+.err{ color:var(--red); font-weight:600; }
+/* post-its */
+.wall{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; min-height:60px; }
+.postit{ width:150px; min-height:100px; padding:10px; font-size:13px; box-shadow:0 3px 8px rgba(0,0,0,.12); transform:rotate(-1.5deg); border-radius:3px; }
+.postit:nth-child(3n){ transform:rotate(1.2deg); }
+.postit small{ display:block; margin-top:6px; color:rgba(0,0,0,.5); font-size:11px; }
+.pc0{ background:#fff59d; } .pc1{ background:#b2ebf2; } .pc2{ background:#f8bbd0; } .pc3{ background:#c5e1a5; } .pc4{ background:#ffe0b2; }
+/* 9 puntos */
+#nineBox{ display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start; }
+#nine{ background:#fff; border:1.5px solid var(--line); border-radius:12px; touch-action:none; max-width:100%; }
+/* boceto */
+#sketch{ background:#fff; border:1.5px solid var(--line); border-radius:12px; touch-action:none; max-width:100%; }
+/* editor */
+.editor{ font-family:'DejaVu Sans Mono',Consolas,monospace; font-size:12.5px; min-height:260px; background:#0f172a; color:#e2e8f0; border-color:#0f172a; }
+.preview{ width:100%; height:460px; border:2px solid var(--navy); border-radius:12px; background:#fff; }
+.promptbox{ background:#0f172a; color:#e2e8f0; border-radius:10px; padding:12px; font-family:'DejaVu Sans Mono',Consolas,monospace; font-size:12.5px; white-space:pre-wrap; }
+.bit{ border-left:4px solid var(--gold); background:var(--soft); border-radius:8px; padding:8px 12px; margin:8px 0; font-size:13px; }
+/* galería */
+.gal{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px; }
+.app{ background:#fff; border-radius:12px; border:1.5px solid var(--line); overflow:hidden; display:flex; flex-direction:column; }
+.app .thumb{ height:140px; background:var(--soft); position:relative; overflow:hidden; }
+.app .thumb iframe{ width:400%; height:400%; transform:scale(.25); transform-origin:0 0; border:0; pointer-events:none; }
+.app .b{ padding:10px 12px; flex:1; display:flex; flex-direction:column; gap:6px; }
+.app .nm{ font-weight:600; color:var(--navy); }
+.modal{ position:fixed; inset:0; background:rgba(8,12,24,.7); display:none; align-items:center; justify-content:center; z-index:50; padding:14px; }
+.modal.on{ display:flex; }
+.modal .in{ background:#fff; border-radius:14px; width:min(980px,100%); max-height:94vh; overflow:auto; padding:16px; }
+table.tb{ width:100%; border-collapse:collapse; font-size:13px; }
+table.tb th{ background:var(--navy); color:#fff; text-align:left; padding:8px; font-weight:600; }
+table.tb td{ border-bottom:1px solid var(--line); padding:7px 8px; vertical-align:top; }
+.lv{ display:flex; gap:4px; }
+.lv button{ border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:4px 8px; cursor:pointer; font-weight:600; }
+.lv button.on{ background:var(--teal); border-color:var(--teal); color:#062a25; }
+#banner{ display:none; position:fixed; top:0; left:0; right:0; background:var(--red); color:#fff; text-align:center; padding:10px; font-weight:600; z-index:60; }
+.rank{ display:flex; align-items:center; gap:10px; padding:10px; border-bottom:1px solid var(--line); }
+.rank .pos{ width:34px; height:34px; border-radius:50%; background:var(--gold); color:#fff; display:grid; place-items:center; font-weight:700; }
+.bar{ height:10px; background:var(--teal); border-radius:6px; }
+footer{ text-align:center; color:var(--mut); font-size:12px; margin-top:24px; }
+.hidden{ display:none !important; }
+</style>
+</head>
+<body>
+<div id="banner">⚠ Saliste de la pantalla del laboratorio. Este evento queda registrado.</div>
+<div class="top"><div class="logo">IA</div><div><h1>Laboratorio de Apps con IA</h1><div style="font-size:12px;color:#c9cfdc">Gestión en tecnologías digitales contables · 10° · RA 4</div></div><div class="who" id="who"></div></div>
+<div class="wrap" id="app"></div>
+<div class="modal" id="modal"><div class="in" id="modalIn"></div></div>
+<footer>CTP Mercedes Norte · Especialidad de Contabilidad · <a href="#" id="lnkDocente">Panel docente</a></footer>
+
+<script>
+(function(){
+'use strict';
+/* ================= CONFIGURACIÓN ================= */
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN = "9986";
+const MODULE_ID = "labia";           // prefijo único de este recurso
+const SH_PROG = "Progreso";           // hoja Curso_Progreso_Datos (SHEET_MAP)
+const SH_DATA = "Casos";              // hoja Curso_Casos_Datos (SHEET_MAP)
+const CHUNK = 30000;                  // margen seguro: la celda de Sheets admite 50 000 caracteres (el JSON agrega escapes)
+const SECCIONES = ["10-1","10-2","10-3","10-4"];
+const STEPS = [
+  {key:"calentamiento", label:"Calentamiento", din:"Fuera de la caja"},
+  {key:"idea",          label:"1 · Idea",      din:"Tormenta de post-it"},
+  {key:"diseno",        label:"2 · Diseño",    din:"Solución ideal + dibujo incompleto"},
+  {key:"programa",      label:"3 · Programar con IA", din:"Uso de software para generar pensamiento creativo"},
+  {key:"depura",        label:"4 · Depurar",   din:"El camino más largo"},
+  {key:"feria",         label:"5 · Feria",     din:"Presentación y votación"}
+];
+const RUBRICA = [
+  {id:"c1", crit:"Pensamiento creativo", ind:"Resuelve ejercicios de pensamiento creativo.",
+   n3:"Resuelve el reto de los 9 puntos y propone una idea original y útil para un problema contable real.",
+   n2:"Resuelve el reto con ayuda o propone una idea poco novedosa.", n1:"No resuelve el reto y la idea no responde a un problema."},
+  {id:"c2", crit:"Uso de la IA como herramienta", ind:"Genera pensamiento creativo usando herramientas tecnológicas.",
+   n3:"Sus instrucciones (prompts) son claras y específicas; mejora la app en al menos dos iteraciones documentadas.",
+   n2:"Usa la IA con instrucciones generales y una sola iteración.", n1:"Copia código sin instrucciones propias ni bitácora."},
+  {id:"c3", crit:"Funcionalidad y depuración", ind:"Genera pensamiento creativo usando herramientas tecnológicas.",
+   n3:"La app funciona, se ve bien en celular y los errores encontrados se corrigieron.",
+   n2:"La app funciona parcialmente o con errores menores.", n1:"La app no funciona."},
+  {id:"c4", crit:"Relación con la contabilidad", ind:"Distingue la importancia de las herramientas digitales en la contabilidad.",
+   n3:"Resuelve correctamente un proceso contable (cálculos y conceptos exactos).",
+   n2:"El proceso contable tiene imprecisiones.", n1:"No se relaciona con la contabilidad."}
+];
+
+/* ================= PUENTE CON GOOGLE SHEETS ================= */
+function jsonpRequest(url){
+  return new Promise((resolve)=>{
+    const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5);
+    const s=document.createElement('script');
+    window[cb]=function(d){ resolve(d); delete window[cb]; s.remove(); };
+    s.onerror=function(){ resolve({rows:[]}); delete window[cb]; s.remove(); };
+    s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb;
+    document.body.appendChild(s);
+    setTimeout(()=>{ if(window[cb]){ resolve({rows:[]}); delete window[cb]; s.remove(); } }, 12000);
+  });
+}
+function sheetGet(name){ return jsonpRequest(SHEET_API_URL+'?sheet='+encodeURIComponent(name)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(name,row){
+  // Contrato JSON del doPost: { sheet, row:[valores en orden de columnas] } con Content-Type text/plain (sin preflight).
+  const payload={ sheet:name, row:Object.keys(row).map(k=>row[k]) };
+  return fetch(SHEET_API_URL,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload), keepalive:true }).catch(()=>{});
+}
+const now=()=>new Date().toISOString();
+function postData(tipo,obj){ return sheetPost(SH_DATA,{ Timestamp:now(), CasoId:MODULE_ID+'_'+tipo, Nombre:student.name, Texto:JSON.stringify(obj) }); }
+function postProg(key,score,total){ return sheetPost(SH_PROG,{ Timestamp:now(), Estudiante:student.name, Modulo:MODULE_ID+'_'+key+'_paso', Score:String(score), Total:String(total) }); }
+function postChunks(tipo,base,text){
+  const n=Math.max(1,Math.ceil(text.length/CHUNK)); const ps=[];
+  for(let i=0;i<n;i++) ps.push(postData(tipo,Object.assign({},base,{part:i,n:n,data:text.slice(i*CHUNK,(i+1)*CHUNK)})));
+  return Promise.all(ps);
+}
+function parseRows(rows){
+  return rows.filter(r=>String(r.CasoId||'').indexOf(MODULE_ID+'_')===0).map(r=>{
+    let o={}; try{ o=JSON.parse(r.Texto); }catch(e){}
+    return { tipo:String(r.CasoId).slice(MODULE_ID.length+1), nombre:String(r.Nombre||'').trim(), ts:String(r.Timestamp||''), d:o };
+  }).sort((a,b)=>a.ts<b.ts?-1:1);
+}
+function joinChunks(items){ // items: filas con d.part/d.n; devuelve texto del último juego completo
+  if(!items.length) return '';
+  const byKey={}; items.forEach(it=>{ const k=it.d.key; (byKey[k]=byKey[k]||[]).push(it); });
+  const keys=Object.keys(byKey).sort((a,b)=>{ const ta=byKey[a][0].ts, tb=byKey[b][0].ts; return ta<tb?-1:1; });
+  for(let i=keys.length-1;i>=0;i--){ const g=byKey[keys[i]]; const n=g[0].d.n; const parts=[]; g.forEach(x=>parts[x.d.part]=x.d.data); if(parts.filter(x=>x!==undefined).length===n) return parts.join(''); }
+  return '';
+}
+
+/* ================= ESTADO ================= */
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let student={name:'',sec:''};
+let S={}; // estado derivado del servidor
+let current='calentamiento';
+let allRows=[];
+
+function resetCut(name){ // último reinicio del docente para ese estudiante
+  let t=''; allRows.forEach(r=>{ if(r.tipo==='reset' && norm(r.d.nombre)===norm(name) && r.ts>t) t=r.ts; }); return t;
+}
+function derive(){
+  const me=norm(student.name); const cut=resetCut(student.name);
+  const mine=allRows.filter(r=>norm(r.nombre)===me && r.ts>cut);
+  S={ done:{}, postits:[], proyecto:null, votos:[] };
+  mine.forEach(r=>{ if(r.tipo==='paso') S.done[r.d.key]=true; });
+  // proyecto: creado por mí o al que me uní (y no reiniciado)
+  const proys=allRows.filter(r=>r.tipo==='proy');
+  let p=null;
+  mine.forEach(r=>{ if(r.tipo==='proy') p=r.d; if(r.tipo==='join'){ const f=proys.find(x=>x.d.id===r.d.id); if(f) p=f.d; } });
+  S.proyecto=p;
+  if(p){
+    const pr=allRows.filter(r=>r.d && r.d.id===p.id);
+    S.diseno=null; pr.forEach(r=>{ if(r.tipo==='diseno') S.diseno=r.d; });
+    S.boceto=joinChunks(pr.filter(r=>r.tipo==='img'));
+    S.bits=pr.filter(r=>r.tipo==='bit').map(r=>Object.assign({autor:r.nombre,ts:r.ts},r.d));
+    const codes=pr.filter(r=>r.tipo==='code');
+    S.v1=joinChunks(codes.filter(r=>r.d.ver===1)); S.v2=joinChunks(codes.filter(r=>r.d.ver===2));
+    S.miembros=[p.creador].concat(allRows.filter(r=>r.tipo==='join'&&r.d.id===p.id).map(r=>r.nombre)).filter((v,i,a)=>a.map(norm).indexOf(norm(v))===i);
+    // pasos de proyecto compartidos con la pareja
+    ['diseno','programa','depura'].forEach(k=>{ if(pr.some(r=>r.tipo==='paso'&&r.d.key===k)) S.done[k]=true; });
+  }
+  S.votos=mine.filter(r=>r.tipo==='voto').map(r=>r.d);
+}
+function load(){ return sheetGet(SH_DATA).then(rows=>{ allRows=parseRows(rows); derive(); }); }
+function markStep(key,score,total){
+  S.done[key]=true;
+  postData('paso',{key:key,id:S.proyecto?S.proyecto.id:''});
+  postProg(key,score,total);
+}
+function unlocked(key){
+  const i=STEPS.findIndex(s=>s.key===key); if(i===0) return true;
+  return !!S.done[STEPS[i-1].key];
+}
+
+/* ================= MONITOREO DE SALIDA ================= */
+// En las etapas 3 y 4 salir a la IA es parte de la actividad: se registra como uso de IA, sin alerta.
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden||!student.name) return;
+  const ia=(current==='programa'||current==='depura');
+  if(ia){ postProg('uso_ia_'+current,'salida','1'); return; }
+  sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:'incidente_salida_pantalla_'+MODULE_ID,Score:'salida',Total:'1'});
+  const b=document.getElementById('banner'); b.style.display='block'; setTimeout(()=>b.style.display='none',6000);
+});
+
+/* ================= INICIO ================= */
+const $=id=>document.getElementById(id);
+function nombreDesdePortal(){ try{ const n=(new URLSearchParams(location.search).get('nombre')||'').trim(); return n||null; }catch(e){ return null; } }
+function portada(){
+  const np=nombreDesdePortal();
+  $('who').textContent='';
+  $('app').innerHTML=`<div class="card">
+   <span class="pill gold">Hackatón contable · RA 4 · Utilizar tecnología en el desarrollo de pensamiento creativo</span>
+   <h2 style="margin-top:10px">Programá tu propia app contable… sin saber programar</h2>
+   <p>En parejas van a crear una aplicación web que resuelva un problema contable real. <b>La IA escribe el código; ustedes piensan, deciden y corrigen.</b> Cada etapa usa una dinámica de pensamiento creativo.</p>
+   <div class="row" style="gap:6px;margin:6px 0 12px">${STEPS.map(s=>`<span class="pill">${s.label} · ${s.din}</span>`).join('')}</div>
+   <div class="grid2"><div><label for="inNom">Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}" placeholder="Nombre y apellidos"></div>
+   <div><label for="inSec">Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+   <div class="row" style="margin-top:14px"><button class="btn gold" id="btnIn">Entrar al laboratorio</button><span id="msgIn" class="mut"></span></div>
+   <div class="tip" style="margin-top:14px">Recuerde: la IA es su herramienta, pero la idea, las decisiones y las correcciones son suyas. Todo lo que le pida a la IA queda en su <b>bitácora</b>.</div></div>`;
+  $('btnIn').onclick=()=>{
+    const n=$('inNom').value.trim(), s=$('inSec').value;
+    if(n.split(/\s+/).length<2){ $('msgIn').innerHTML='<span class="err">Escriba nombre y apellido.</span>'; return; }
+    if(!s){ $('msgIn').innerHTML='<span class="err">Seleccione la sección.</span>'; return; }
+    student={name:n,sec:s}; $('msgIn').textContent='Cargando…';
+    load().then(()=>{ current=STEPS.find(x=>!S.done[x.key])?STEPS.find(x=>!S.done[x.key]).key:'feria'; render(); });
+  };
+}
+function render(){
+  $('who').innerHTML=`${esc(student.name)}<br>${esc(student.sec)}${S.proyecto?' · '+esc(S.proyecto.nombreApp):''}`;
+  const map=STEPS.map((s,i)=>`<div class="st ${S.done[s.key]?'done':''} ${current===s.key?'cur':''} ${unlocked(s.key)?'':'lock'}" data-k="${s.key}"><div class="n">${i===0?'RETO':'ETAPA '+i}</div><div class="t">${s.label.replace(/^\d · /,'')}</div></div>`).join('');
+  $('app').innerHTML=`<div class="steps">${map}</div><div id="stage"></div>`;
+  document.querySelectorAll('.st').forEach(el=>el.onclick=()=>{ const k=el.dataset.k; if(!unlocked(k)) return; current=k; render(); });
+  ({calentamiento:stCal,idea:stIdea,diseno:stDiseno,programa:stProg,depura:stDep,feria:stFeria})[current]($('stage'));
+  window.scrollTo(0,0);
+}
+function next(){ const i=STEPS.findIndex(s=>s.key===current); if(i<STEPS.length-1){ current=STEPS[i+1].key; } render(); }
+function doneBox(txt){ return `<div class="tip"><span class="ok">✓ Etapa completada.</span> ${txt||''}</div>`; }
+
+/* ================= RETO: 9 PUNTOS ================= */
+function stCal(el){
+  el.innerHTML=`<div class="card"><span class="pill teal">Reto de calentamiento</span><h2 style="margin-top:8px">Los 9 puntos</h2>
+  <div class="din">Dinámica: <b>Fuera de la caja</b>. Una los 9 puntos con <b>4 líneas rectas seguidas</b>, sin levantar el lápiz. Toque la cuadrícula para marcar cada esquina del trazo (5 toques = 4 líneas).</div>
+  <div id="nineBox"><canvas id="nine" width="340" height="340"></canvas>
+  <div style="flex:1;min-width:220px"><p id="nineMsg" class="mut">Líneas trazadas: 0 / 4</p>
+  <div class="row"><button class="btn ghost sm" id="nineUndo">Deshacer</button><button class="btn ghost sm" id="nineReset">Reiniciar</button><button class="btn ghost sm" id="nineHint">Pista</button></div>
+  <p id="nineHintTxt" class="mut hidden" style="margin-top:10px">💡 Nadie dijo que las líneas deben quedarse dentro del cuadro que forman los puntos.</p>
+  <div id="nineOut"></div></div></div></div>`;
+  const cv=$('nine'), cx=cv.getContext('2d'); const G=[-1,0,1,2,3], step=68, off=34; const pts=[]; let tries=0;
+  const P=(v)=>off+(v+1)*step;
+  const dots=[]; for(let x=0;x<3;x++)for(let y=0;y<3;y++)dots.push([x,y]);
+  function onSeg(p,a,b){ if((b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0])!==0) return false; return Math.min(a[0],b[0])<=p[0]&&p[0]<=Math.max(a[0],b[0])&&Math.min(a[1],b[1])<=p[1]&&p[1]<=Math.max(a[1],b[1]); }
+  function draw(){
+    cx.clearRect(0,0,340,340);
+    G.forEach(x=>G.forEach(y=>{ cx.fillStyle='#d9dde6'; cx.beginPath(); cx.arc(P(x),P(y),3,0,7); cx.fill(); }));
+    cx.strokeStyle='#B8863C'; cx.lineWidth=4; cx.lineCap='round';
+    if(pts.length>1){ cx.beginPath(); cx.moveTo(P(pts[0][0]),P(pts[0][1])); pts.slice(1).forEach(p=>cx.lineTo(P(p[0]),P(p[1]))); cx.stroke(); }
+    dots.forEach(d=>{ const hit=pts.length>1&&pts.some((p,i)=>i>0&&onSeg(d,pts[i-1],p)); cx.fillStyle=hit?'#2FC2AD':'#0E1B3D'; cx.beginPath(); cx.arc(P(d[0]),P(d[1]),11,0,7); cx.fill(); });
+    pts.forEach((p,i)=>{ cx.fillStyle='#B8863C'; cx.beginPath(); cx.arc(P(p[0]),P(p[1]),6,0,7); cx.fill(); });
+    $('nineMsg').textContent='Líneas trazadas: '+Math.max(0,pts.length-1)+' / 4';
+  }
+  function check(){
+    if(pts.length<5) return;
+    tries++;
+    const segs=[]; for(let i=1;i<5;i++) segs.push([pts[i-1],pts[i]]);
+    const ok=dots.every(d=>segs.some(s=>onSeg(d,s[0],s[1])));
+    if(ok){ $('nineOut').innerHTML=doneBox('¡Pensó fuera de la caja! Así se resuelven también los problemas de una empresa: saliendo del límite que uno mismo se pone.')+`<button class="btn gold" id="goNext">Continuar a la etapa 1 →</button>`;
+      if(!S.done.calentamiento) markStep('calentamiento',1,1); $('goNext').onclick=next; }
+    else $('nineOut').innerHTML=`<p class="err">Quedan puntos sin unir. Intento ${tries}. ¡Pruebe otra vez!</p>`;
+  }
+  cv.onpointerdown=(e)=>{
+    if(pts.length>=5) return;
+    const r=cv.getBoundingClientRect(), sx=340/r.width;
+    const gx=Math.round(((e.clientX-r.left)*sx-off)/step)-1, gy=Math.round(((e.clientY-r.top)*sx-off)/step)-1;
+    if(gx<-1||gx>3||gy<-1||gy>3) return;
+    const l=pts[pts.length-1]; if(l&&l[0]===gx&&l[1]===gy) return;
+    pts.push([gx,gy]); draw(); check();
+  };
+  $('nineUndo').onclick=()=>{ pts.pop(); $('nineOut').innerHTML=''; draw(); };
+  $('nineReset').onclick=()=>{ pts.length=0; $('nineOut').innerHTML=''; draw(); };
+  $('nineHint').onclick=()=>$('nineHintTxt').classList.remove('hidden');
+  draw();
+  if(S.done.calentamiento){ $('nineOut').innerHTML=doneBox('Ya resolvió este reto.')+`<button class="btn gold" id="goNext">Ir a la etapa 1 →</button>`; $('goNext').onclick=next; }
+  window.__nineDebug={ solve:()=>{ pts.length=0; [[-1,-1],[2,2],[-1,2],[2,-1],[2,1]].forEach(p=>pts.push(p)); draw(); check(); } };
+}
+
+/* ================= ETAPA 1: IDEA ================= */
+const EJEMPLOS=["Una soda no sabe cuánto IVA debe declarar","Mi tía no controla la caja chica de su pulpería","Un trabajador no sabe cuánto le toca de aguinaldo","Una tienda no sabe cuándo volver a comprar inventario","Un emprendedor confunde el tipo de cambio de compra y de venta","Nadie recuerda las fechas para declarar en TRIBU-CR"];
+function stIdea(el){
+  el.innerHTML=`<div class="card"><span class="pill teal">Etapa 1</span><h2 style="margin-top:8px">Tormenta de ideas: ¿qué problema contable resolvemos?</h2>
+  <div class="din">Dinámica: <b>Tormenta de post-it</b>. Publique al menos <b>3 problemas</b> que tenga una persona o pyme con su contabilidad, sus impuestos o su dinero. Todos los post-its de su sección aparecen en el muro en vivo. No hay ideas malas.</div>
+  <div class="row"><input type="text" id="piTxt" maxlength="140" placeholder="Ej.: ${esc(EJEMPLOS[Math.floor(Math.random()*EJEMPLOS.length)])}" style="flex:1;min-width:220px"><button class="btn teal" id="piAdd">Pegar post-it</button><button class="btn ghost sm" id="piRef">↻ Actualizar muro</button></div>
+  <p class="mut" id="piCount"></p><div class="wall" id="wall"></div></div>
+  <div class="card" id="proyBox"></div>`;
+  const mine=()=>allRows.filter(r=>r.tipo==='postit'&&norm(r.nombre)===norm(student.name)&&r.ts>resetCut(student.name)).length;
+  function wall(){
+    const ps=allRows.filter(r=>r.tipo==='postit'&&r.d.sec===student.sec);
+    $('wall').innerHTML=ps.map((p,i)=>`<div class="postit pc${i%5}">${esc(p.d.txt)}<small>${esc(p.nombre.split(' ')[0])}</small></div>`).join('')||'<p class="mut">El muro está vacío. ¡Sea la primera persona en pegar una idea!</p>';
+    $('piCount').innerHTML=`Sus post-its: <b>${mine()}</b> / 3 mínimo`;
+    proy();
+  }
+  $('piAdd').onclick=()=>{
+    const t=$('piTxt').value.trim(); if(t.length<8) return;
+    const d={sec:student.sec,txt:t}; postData('postit',d); allRows.push({tipo:'postit',nombre:student.name,ts:now(),d:d}); $('piTxt').value=''; wall();
+  };
+  $('piTxt').onkeydown=e=>{ if(e.key==='Enter') $('piAdd').click(); };
+  $('piRef').onclick=()=>load().then(wall);
+  function proy(){
+    const box=$('proyBox');
+    if(S.proyecto){
+      box.innerHTML=`<h3>Proyecto registrado</h3><p><b>${esc(S.proyecto.nombreApp)}</b> — ${esc(S.proyecto.problema)}</p><p class="mut">Integrantes: ${esc((S.miembros||[S.proyecto.creador]).join(', '))}</p>`+(S.done.idea?doneBox():'')+`<button class="btn gold" id="goNext">Continuar a la etapa 2 →</button>`;
+      if(!S.done.idea) markStep('idea',1,1);
+      $('goNext').onclick=next; return;
+    }
+    if(mine()<3){ box.innerHTML='<h3>Registrar el proyecto de la pareja</h3><p class="mut">Se habilita cuando publique sus 3 post-its.</p>'; return; }
+    const abiertos=allRows.filter(r=>r.tipo==='proy'&&r.d.sec===student.sec&&norm(r.d.pareja)===norm(student.name));
+    box.innerHTML=`<h3>Registrar el proyecto de la pareja</h3>
+     ${abiertos.length?`<div class="warn">Su compañero/a <b>${esc(abiertos[abiertos.length-1].d.creador)}</b> ya registró el proyecto <b>${esc(abiertos[abiertos.length-1].d.nombreApp)}</b> y lo/la incluyó a usted. <button class="btn teal sm" id="btnJoin">Unirme a ese proyecto</button></div><p class="mut">…o registre uno nuevo:</p>`:''}
+     <p class="mut">Solo <b>una persona</b> de la pareja registra el proyecto; la otra se une desde su propia sesión.</p>
+     <div class="grid2"><div><label>Nombre completo de su pareja</label><input type="text" id="pPar" placeholder="Nombre y apellidos"></div>
+     <div><label>Nombre de la app</label><input type="text" id="pNom" maxlength="40" placeholder="Ej.: IVA Fácil"></div></div>
+     <label>Problema elegido del muro (puede redactarlo mejor)</label><input type="text" id="pProb" maxlength="180">
+     <label>¿Por qué eligieron este problema? ¿A quién le ayuda?</label><textarea id="pPq" rows="2" maxlength="300"></textarea>
+     <div class="row" style="margin-top:12px"><button class="btn gold" id="pSave">Registrar proyecto</button><span id="pMsg"></span></div>`;
+    if(abiertos.length) $('btnJoin').onclick=()=>{ const p=abiertos[abiertos.length-1].d; postData('join',{id:p.id}); allRows.push({tipo:'join',nombre:student.name,ts:now(),d:{id:p.id}}); derive(); proy(); };
+    $('pSave').onclick=()=>{
+      const d={ id:'P'+Date.now().toString(36)+Math.floor(Math.random()*999), sec:student.sec, creador:student.name, pareja:$('pPar').value.trim(), nombreApp:$('pNom').value.trim(), problema:$('pProb').value.trim(), porque:$('pPq').value.trim() };
+      if(!d.nombreApp||d.problema.length<10||d.porque.length<10){ $('pMsg').innerHTML='<span class="err">Complete todos los campos.</span>'; return; }
+      postData('proy',d); allRows.push({tipo:'proy',nombre:student.name,ts:now(),d:d}); derive(); render();
+    };
+  }
+  wall();
+}
+
+/* ================= ETAPA 2: DISEÑO ================= */
+function stDiseno(el){
+  const p=S.proyecto; const d=S.diseno||{};
+  el.innerHTML=`<div class="card"><span class="pill teal">Etapa 2</span><h2 style="margin-top:8px">Diseño: la solución ideal</h2>
+  <div class="din">Dinámicas: <b>Solución ideal</b> (imagine la app perfecta, sin límites) y <b>dibujo incompleto</b> (complete la pantalla del celular dibujando cómo se verá su app).</div>
+  <p><b>${esc(p.nombreApp)}</b> · ${esc(p.problema)}</p>
+  <div class="grid2"><div>
+   <label>¿Quién la va a usar?</label><input type="text" id="dUs" maxlength="120" value="${esc(d.usuario||'')}" placeholder="Ej.: dueña de una soda que no sabe de impuestos">
+   <label>Función 1 (lo más importante que debe hacer)</label><input type="text" id="dF1" maxlength="160" value="${esc((d.funciones||[])[0]||'')}" placeholder="Ej.: calcular el IVA de una venta">
+   <label>Función 2</label><input type="text" id="dF2" maxlength="160" value="${esc((d.funciones||[])[1]||'')}">
+   <label>Función 3</label><input type="text" id="dF3" maxlength="160" value="${esc((d.funciones||[])[2]||'')}">
+   <label>Datos que la persona escribe</label><input type="text" id="dIn" maxlength="160" value="${esc(d.entradas||'')}" placeholder="Ej.: monto de la venta, tarifa">
+   <label>Resultado que muestra la app</label><input type="text" id="dOut" maxlength="160" value="${esc(d.salidas||'')}" placeholder="Ej.: IVA, total a cobrar">
+   <label>Colores o estilo</label><input type="text" id="dSt" maxlength="100" value="${esc(d.estilo||'')}" placeholder="Ej.: azul oscuro y dorado, botones grandes">
+   <label>La idea "loca" de la solución ideal (algo que la haría única)</label><input type="text" id="dLoca" maxlength="160" value="${esc(d.loca||'')}">
+  </div><div>
+   <label>Boceto de la pantalla</label>
+   <canvas id="sketch" width="300" height="520"></canvas>
+   <div class="row" style="margin-top:6px"><button class="btn ghost sm" id="skClr">Borrar mis trazos</button><button class="btn ghost sm" data-c="#0E1B3D">Azul</button><button class="btn ghost sm" data-c="#B8863C">Dorado</button><button class="btn ghost sm" data-c="#c0392b">Rojo</button></div>
+  </div></div>
+  <div class="row" style="margin-top:14px"><button class="btn gold" id="dSave">Guardar diseño</button><span id="dMsg"></span></div>
+  <div id="dOutBox"></div></div>`;
+  const cv=$('sketch'), cx=cv.getContext('2d'); let color='#0E1B3D', drawing=false, strokes=0;
+  function base(){
+    cx.fillStyle='#fff'; cx.fillRect(0,0,300,520);
+    cx.strokeStyle='#5b6478'; cx.lineWidth=3; cx.beginPath(); cx.roundRect?cx.roundRect(20,10,260,500,28):cx.rect(20,10,260,500); cx.stroke();
+    cx.strokeStyle='#d9dde6'; cx.setLineDash([6,6]); cx.strokeRect(40,60,220,40); cx.strokeRect(40,120,220,40); cx.beginPath(); cx.arc(150,440,24,0,7); cx.stroke(); cx.setLineDash([]);
+    cx.fillStyle='#8a93a6'; cx.font='12px Poppins, sans-serif'; cx.fillText('¿título?',120,50); cx.fillText('¿qué va aquí?',110,84); cx.fillText('¿y aquí?',125,144); cx.fillText('¿botón?',127,480);
+  }
+  if(S.boceto){ const im=new Image(); im.onload=()=>cx.drawImage(im,0,0,300,520); im.src=S.boceto; } else base();
+  const pos=e=>{ const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)*300/r.width,(e.clientY-r.top)*520/r.height]; };
+  cv.onpointerdown=e=>{ drawing=true; strokes++; const [x,y]=pos(e); cx.strokeStyle=color; cx.lineWidth=3; cx.lineCap='round'; cx.beginPath(); cx.moveTo(x,y); };
+  cv.onpointermove=e=>{ if(!drawing) return; const [x,y]=pos(e); cx.lineTo(x,y); cx.stroke(); };
+  window.addEventListener('pointerup',()=>drawing=false);
+  $('skClr').onclick=()=>{ strokes=0; base(); };
+  el.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>color=b.dataset.c);
+  $('dSave').onclick=()=>{
+    const f=[$('dF1').value.trim(),$('dF2').value.trim(),$('dF3').value.trim()].filter(Boolean);
+    const dd={ id:p.id, usuario:$('dUs').value.trim(), funciones:f, entradas:$('dIn').value.trim(), salidas:$('dOut').value.trim(), estilo:$('dSt').value.trim(), loca:$('dLoca').value.trim() };
+    if(!dd.usuario||f.length<2||!dd.entradas||!dd.salidas){ $('dMsg').innerHTML='<span class="err">Complete usuario, al menos 2 funciones, datos y resultado.</span>'; return; }
+    if(strokes===0&&!S.boceto){ $('dMsg').innerHTML='<span class="err">Dibuje el boceto de la pantalla.</span>'; return; }
+    const img=cv.toDataURL('image/jpeg',0.55);
+    postData('diseno',dd); postChunks('img',{id:p.id,key:'k'+Date.now()},img);
+    S.diseno=dd; S.boceto=img; if(!S.done.diseno) markStep('diseno',1,1);
+    $('dOutBox').innerHTML=doneBox('Diseño guardado para la pareja.')+`<button class="btn gold" id="goNext">Continuar a la etapa 3 →</button>`; $('goNext').onclick=next;
+  };
+  if(S.done.diseno){ $('dOutBox').innerHTML=doneBox('Pueden ajustar el diseño y guardarlo de nuevo.')+`<button class="btn gold" id="goNext">Ir a la etapa 3 →</button>`; $('goNext').onclick=next; }
+}
+
+/* ================= ETAPA 3: PROGRAMAR CON IA ================= */
+function promptBase(){
+  const p=S.proyecto, d=S.diseno||{};
+  return `Actúa como programador web y profesor paciente.
+Crea una aplicación web en UN SOLO archivo HTML (HTML, CSS y JavaScript juntos, sin librerías ni enlaces externos, sin imágenes externas).
+
+Nombre de la app: ${p.nombreApp}
+Problema que resuelve: ${p.problema}
+Usuario: ${d.usuario||''}
+Funciones:
+${(d.funciones||[]).map((f,i)=>(i+1)+'. '+f).join('\n')}
+Datos que escribe la persona: ${d.entradas||''}
+Resultados que muestra: ${d.salidas||''}
+Estilo visual: ${d.estilo||'moderno y claro'}
+Detalle especial: ${d.loca||'—'}
+
+Requisitos:
+- Todo el texto en español de Costa Rica y montos en colones (₡) con separador de miles.
+- Diseño adaptado a celular, botones grandes.
+- Validar que los datos estén completos y sean números cuando corresponda.
+- No pedir datos personales reales ni guardar información en servidores.
+- Usa la normativa contable/tributaria vigente de Costa Rica y explica en un comentario la fórmula que usaste.
+Entrégame solo el código completo del archivo.`;
+}
+function codeChecks(code){
+  const c=[]; const low=code.toLowerCase();
+  c.push([/<html|<body|<div|<script/.test(low),'Es código HTML']);
+  c.push([!/<script[^>]+src=|<link[^>]+href=["']?http/.test(low),'No usa archivos externos']);
+  c.push([code.length<=3*CHUNK,'Tamaño adecuado ('+code.length.toLocaleString('es-CR')+' caracteres)']);
+  c.push([/<script/.test(low),'Tiene lógica en JavaScript']);
+  return c;
+}
+function editorBlock(prefix,val){
+  return `<label>Pegue aquí el código completo que le dio la IA</label>
+  <textarea id="${prefix}Code" class="editor" spellcheck="false" placeholder="<!DOCTYPE html> ...">${esc(val||'')}</textarea>
+  <div class="row" style="margin-top:8px"><button class="btn teal" id="${prefix}Run">▶ Ejecutar</button><span id="${prefix}Chk" class="mut"></span></div>
+  <label>Vista previa (así se ve y funciona su app)</label><iframe id="${prefix}Prev" class="preview" sandbox="allow-scripts allow-forms allow-modals"></iframe>`;
+}
+function wireEditor(prefix){
+  $(prefix+'Run').onclick=()=>{
+    const code=$(prefix+'Code').value; $(prefix+'Prev').srcdoc=code;
+    $(prefix+'Chk').innerHTML=codeChecks(code).map(([ok,t])=>`<span class="${ok?'ok':'err'}">${ok?'✓':'✗'} ${t}</span>`).join(' &nbsp; ');
+  };
+  if($(prefix+'Code').value) $(prefix+'Run').click();
+}
+function bitList(){ return (S.bits||[]).length?(S.bits||[]).map((b,i)=>`<div class="bit"><b>Iteración ${i+1}</b> · ${esc(b.autor.split(' ')[0])} · versión ${b.ver}<br><b>Instrucción a la IA:</b> ${esc(b.prompt)}<br><b>¿Qué pasó?</b> ${esc(b.resultado)}${b.error?`<br><b>Error encontrado:</b> ${esc(b.error)}`:''}</div>`).join(''):'<p class="mut">Aún no hay iteraciones registradas.</p>'; }
+function stProg(el){
+  el.innerHTML=`<div class="card"><span class="pill teal">Etapa 3</span><h2 style="margin-top:8px">Programar con IA: versión 1</h2>
+  <div class="din">Dinámica: <b>uso de un software para generar pensamiento creativo</b>. La IA es su programadora; ustedes son quienes diseñan y deciden. En esta etapa puede salir a la IA: no se considera una salida indebida.</div>
+  <h3>Paso A · Copie esta instrucción inicial y péguela en la IA</h3>
+  <p class="mut">Se armó con su diseño. Puede editarla antes de copiarla: mejor instrucción = mejor app.</p>
+  <textarea id="prBase" rows="14" class="editor">${esc(promptBase())}</textarea>
+  <div class="row" style="margin-top:8px"><button class="btn ghost sm" id="prCopy">📋 Copiar instrucción</button><span id="prMsg" class="mut"></span></div>
+  <h3>Paso B · Traiga el código y pruébelo</h3>${editorBlock('v1',S.v1)}
+  <h3>Paso C · Bitácora de la iteración</h3>
+  <label>¿Qué cambió de la instrucción o qué le pidió a la IA? (con sus palabras)</label><textarea id="bP" rows="2" maxlength="600"></textarea>
+  <label>¿Qué hizo la IA? ¿Funcionó como esperaban?</label><textarea id="bR" rows="2" maxlength="600"></textarea>
+  <div class="row" style="margin-top:12px"><button class="btn gold" id="v1Save">Guardar versión 1</button><span id="v1Msg"></span></div>
+  <div id="v1Out"></div></div>`;
+  wireEditor('v1');
+  $('prCopy').onclick=()=>{ const t=$('prBase').value; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('prMsg').innerHTML='<span class="ok">Copiada. Péguela en la IA.</span>').catch(()=>{ $('prBase').select(); document.execCommand('copy'); $('prMsg').textContent='Copiada.'; }); };
+  $('v1Save').onclick=()=>{
+    const code=$('v1Code').value; const ck=codeChecks(code);
+    if(!ck[0][0]||!ck[2][0]){ $('v1Msg').innerHTML='<span class="err">Pegue un código HTML válido y de tamaño adecuado.</span>'; return; }
+    if($('bP').value.trim().length<15||$('bR').value.trim().length<15){ $('v1Msg').innerHTML='<span class="err">Complete la bitácora con sus propias palabras.</span>'; return; }
+    const id=S.proyecto.id; const b={id:id,ver:1,prompt:$('bP').value.trim(),resultado:$('bR').value.trim(),base:$('prBase').value.slice(0,3000)};
+    postChunks('code',{id:id,ver:1,key:'k'+Date.now()},code); postData('bit',b);
+    S.v1=code; S.bits=(S.bits||[]).concat([Object.assign({autor:student.name},b)]); if(!S.done.programa) markStep('programa',1,1);
+    $('v1Out').innerHTML=doneBox('Versión 1 guardada.')+`<button class="btn gold" id="goNext">Continuar a depurar →</button>`; $('goNext').onclick=next;
+  };
+  if(S.done.programa){ $('v1Out').innerHTML=doneBox('Ya existe una versión 1. Si la reemplazan, registren también la bitácora.')+`<button class="btn gold" id="goNext">Ir a la etapa 4 →</button>`; $('goNext').onclick=next; }
+}
+
+/* ================= ETAPA 4: DEPURAR ================= */
+const PRUEBAS=["Probé la app con un ejemplo que calculé a mano (o en calculadora) y el resultado coincide.","Probé dejando campos vacíos o escribiendo letras donde van números.","Probé la app en el celular y se ve bien.","Los textos no tienen errores de ortografía y los montos usan ₡.","La app hace las funciones que definimos en el diseño."];
+function stDep(el){
+  el.innerHTML=`<div class="card"><span class="pill teal">Etapa 4</span><h2 style="margin-top:8px">Depurar: el camino más largo</h2>
+  <div class="din">Dinámica: <b>El camino más largo</b>. Casi nunca la primera versión es la mejor. Pruébenla como si fueran el cliente más exigente, encuentren errores y pídanle a la IA que los corrija. Mínimo <b>2 iteraciones</b> en total.</div>
+  <h3>Lista de pruebas</h3>${PRUEBAS.map((t,i)=>`<label style="font-weight:400;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" class="pr" data-i="${i}"> ${t}</label>`).join('')}
+  <label>Ejemplo de prueba (datos que usaron y resultado esperado)</label><input type="text" id="dEj" maxlength="200" placeholder="Ej.: venta de ₡10 000 → IVA ₡1 300, total ₡11 300">
+  <h3>Nueva iteración</h3>
+  <label>Error o mejora encontrada</label><textarea id="bE" rows="2" maxlength="500"></textarea>
+  <label>Instrucción que le dieron a la IA para corregirlo</label><textarea id="bP2" rows="2" maxlength="600"></textarea>
+  <label>¿Qué pasó después?</label><textarea id="bR2" rows="2" maxlength="600"></textarea>
+  <button class="btn ghost sm" id="bAdd" style="margin-top:8px">+ Registrar iteración</button><span id="bMsg" class="mut"></span>
+  <h3>Bitácora del proyecto</h3><div id="bitBox">${bitList()}</div>
+  <h3>Versión final</h3>${editorBlock('v2',S.v2||S.v1)}
+  <div class="row" style="margin-top:12px"><button class="btn gold" id="v2Save">Publicar versión final en la feria</button><span id="v2Msg"></span></div><div id="v2Out"></div></div>`;
+  wireEditor('v2');
+  $('bAdd').onclick=()=>{
+    const b={id:S.proyecto.id,ver:2,error:$('bE').value.trim(),prompt:$('bP2').value.trim(),resultado:$('bR2').value.trim()};
+    if(b.error.length<10||b.prompt.length<10||b.resultado.length<5){ $('bMsg').innerHTML=' <span class="err">Complete los tres campos.</span>'; return; }
+    postData('bit',b); S.bits=(S.bits||[]).concat([Object.assign({autor:student.name},b)]); $('bitBox').innerHTML=bitList(); ['bE','bP2','bR2'].forEach(i=>$(i).value=''); $('bMsg').innerHTML=' <span class="ok">Iteración registrada.</span>';
+  };
+  $('v2Save').onclick=()=>{
+    const code=$('v2Code').value; const ck=codeChecks(code); const nPr=document.querySelectorAll('.pr:checked').length;
+    if(!ck[0][0]||!ck[2][0]){ $('v2Msg').innerHTML='<span class="err">Código no válido.</span>'; return; }
+    if((S.bits||[]).length<2){ $('v2Msg').innerHTML='<span class="err">Registre al menos una iteración de corrección (2 en total).</span>'; return; }
+    if(nPr<4||$('dEj').value.trim().length<8){ $('v2Msg').innerHTML='<span class="err">Marque al menos 4 pruebas y escriba su ejemplo de prueba.</span>'; return; }
+    const id=S.proyecto.id; postChunks('code',{id:id,ver:2,key:'k'+Date.now()},code); postData('prueba',{id:id,pruebas:nPr,ejemplo:$('dEj').value.trim()});
+    S.v2=code; if(!S.done.depura) markStep('depura',S.bits.length,2);
+    $('v2Out').innerHTML=doneBox('¡Su app está en la feria!')+`<button class="btn gold" id="goNext">Ir a la feria →</button>`; $('goNext').onclick=next;
+  };
+  if(S.done.depura){ $('v2Out').innerHTML=doneBox('Su versión final ya está publicada. Pueden publicar una mejora antes de la feria.')+`<button class="btn gold" id="goNext">Ir a la feria →</button>`; $('goNext').onclick=next; }
+}
+
+/* ================= ETAPA 5: FERIA ================= */
+function appsDe(sec){
+  const proys=allRows.filter(r=>r.tipo==='proy'&&(!sec||r.d.sec===sec)).map(r=>r.d);
+  return proys.map(p=>{ const pr=allRows.filter(r=>r.d&&r.d.id===p.id); const codes=pr.filter(r=>r.tipo==='code');
+    const v2=joinChunks(codes.filter(r=>r.d.ver===2)), v1=joinChunks(codes.filter(r=>r.d.ver===1));
+    const miembros=[p.creador].concat(allRows.filter(r=>r.tipo==='join'&&r.d.id===p.id).map(r=>r.nombre));
+    return {p:p, code:v2||v1, final:!!v2, miembros:miembros, bits:pr.filter(r=>r.tipo==='bit'), img:joinChunks(pr.filter(r=>r.tipo==='img')), prueba:(pr.filter(r=>r.tipo==='prueba').pop()||{}).d, diseno:(pr.filter(r=>r.tipo==='diseno').pop()||{}).d};
+  }).filter(a=>a.code);
+}
+function votosDe(sec){ const v={}; allRows.filter(r=>r.tipo==='voto'&&(!sec||r.d.sec===sec)).forEach(r=>{ const k=r.d.id+'|'+r.d.cat; const who=norm(r.nombre)+'|'+r.d.cat; v.__seen=v.__seen||{}; if(v.__seen[who]) { const prev=v.__seen[who]; v[prev]--; } v.__seen[who]=k; v[k]=(v[k]||0)+1; }); delete v.__seen; return v; }
+function openApp(a,extra){
+  $('modalIn').innerHTML=`<div class="row"><h2 style="margin:0">${esc(a.p.nombreApp)}</h2><button class="btn ghost sm" style="margin-left:auto" id="mClose">Cerrar ✕</button></div>
+  <p class="mut">${esc(a.p.problema)} · ${esc(a.miembros.join(', '))}</p><iframe class="preview" sandbox="allow-scripts allow-forms allow-modals" id="mPrev"></iframe>${extra||''}`;
+  $('mPrev').srcdoc=a.code; $('modal').classList.add('on'); $('mClose').onclick=()=>$('modal').classList.remove('on');
+}
+function stFeria(el){
+  const apps=appsDe(student.sec); const myId=S.proyecto?S.proyecto.id:''; const v=votosDe(student.sec);
+  const miVoto=cat=>{ const x=(S.votos||[]).filter(z=>z.cat===cat).pop(); return x?x.id:''; };
+  el.innerHTML=`<div class="card"><span class="pill teal">Etapa 5</span><h2 style="margin-top:8px">Feria de apps · ${esc(student.sec)}</h2>
+  <div class="din">Pruebe las apps de sus compañeros. Tiene <b>1 voto a la más útil</b> y <b>1 voto a la más creativa</b> (no puede votar por la suya). Al votar, deje una recomendación de mejora.</div>
+  <div class="row"><button class="btn ghost sm" id="fRef">↻ Actualizar</button><span class="mut">${apps.length} apps publicadas</span></div>
+  <div class="gal" id="gal" style="margin-top:12px">${apps.map((a,i)=>`<div class="app"><div class="thumb"><iframe sandbox="allow-scripts" data-i="${i}"></iframe></div><div class="b"><div class="nm">${esc(a.p.nombreApp)} ${a.p.id===myId?'<span class="pill gold">Suya</span>':''}</div><div class="mut">${esc(a.p.problema)}</div>
+    <div class="row" style="margin-top:auto"><button class="btn sm" data-open="${i}">Probar</button>${a.p.id!==myId?`<button class="btn ghost sm" data-v="${i}|util">${miVoto('util')===a.p.id?'★ ':''}Útil</button><button class="btn ghost sm" data-v="${i}|creativa">${miVoto('creativa')===a.p.id?'★ ':''}Creativa</button>`:''}</div>
+    <div class="mut">Votos: útil ${v[a.p.id+'|util']||0} · creativa ${v[a.p.id+'|creativa']||0}</div></div></div>`).join('')||'<p class="mut">Todavía no hay apps publicadas en su sección.</p>'}</div></div>`;
+  el.querySelectorAll('iframe[data-i]').forEach(f=>f.srcdoc=apps[+f.dataset.i].code);
+  el.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openApp(apps[+b.dataset.open]));
+  el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{
+    const [i,cat]=b.dataset.v.split('|'); const a=apps[+i];
+    openApp(a,`<label>Recomendación de mejora para esta app (obligatoria)</label><textarea id="vCom" rows="2" maxlength="300"></textarea><div class="row" style="margin-top:8px"><button class="btn gold" id="vOk">Confirmar voto: más ${cat==='util'?'útil':'creativa'}</button><span id="vMsg"></span></div>`);
+    $('vOk').onclick=()=>{ const c=$('vCom').value.trim(); if(c.length<10){ $('vMsg').innerHTML=' <span class="err">Escriba una recomendación.</span>'; return; }
+      const d={sec:student.sec,id:a.p.id,cat:cat,comentario:c}; postData('voto',d); allRows.push({tipo:'voto',nombre:student.name,ts:now(),d:d}); S.votos.push(d);
+      if(!S.done.feria&&['util','creativa'].every(k=>S.votos.some(z=>z.cat===k))) markStep('feria',2,2);
+      $('modal').classList.remove('on'); stFeria(el); };
+  });
+  $('fRef').onclick=()=>load().then(()=>stFeria(el));
+  if(S.done.feria) el.insertAdjacentHTML('beforeend',doneBox('¡Completó el laboratorio! Sus votos pueden cambiarse hasta que el docente cierre la feria.'));
+}
+
+/* ================= PANEL DOCENTE ================= */
+function panel(){
+  const pin=prompt('PIN del panel docente:'); if(pin!==TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  $('app').innerHTML='<div class="card">Cargando datos…</div>';
+  Promise.all([sheetGet(SH_DATA),sheetGet(SH_PROG)]).then(([rows,prog])=>{ allRows=parseRows(rows); window.__prog=prog; panelRender(SECCIONES[0]); });
+}
+function evalDe(id){ return (allRows.filter(r=>r.tipo==='eval'&&r.d.id===id).pop()||{}).d||{niveles:{}}; }
+function panelRender(sec){
+  const apps=appsDe(sec); const v=votosDe(sec);
+  const salidas={}; (window.__prog||[]).forEach(r=>{ if(String(r.Modulo)==='incidente_salida_pantalla_'+MODULE_ID){ const k=norm(r.Estudiante); salidas[k]=(salidas[k]||0)+1; } });
+  const est={}; allRows.forEach(r=>{ if(r.tipo==='postit'&&r.d.sec===sec){ est[norm(r.nombre)]=est[norm(r.nombre)]||{nombre:r.nombre,postits:0}; est[norm(r.nombre)].postits++; } });
+  const pasos={}; allRows.filter(r=>r.tipo==='paso').forEach(r=>{ (pasos[norm(r.nombre)]=pasos[norm(r.nombre)]||{})[r.d.key]=true; });
+  // etapas de proyecto (diseño, programación, depuración) se comparten con la pareja
+  const pasoProy={}; allRows.filter(r=>r.tipo==='paso'&&r.d.id&&['diseno','programa','depura'].indexOf(r.d.key)>-1).forEach(r=>{ (pasoProy[r.d.id]=pasoProy[r.d.id]||{})[r.d.key]=true; });
+  const proyDe={}; allRows.forEach(r=>{ if(r.tipo==='proy') proyDe[norm(r.nombre)]=r.d.id; if(r.tipo==='join') proyDe[norm(r.nombre)]=r.d.id; });
+  Object.keys(proyDe).forEach(k=>{ const pp=pasoProy[proyDe[k]]||{}; pasos[k]=Object.assign({},pasos[k]||{},pp); });
+  $('who').textContent='Panel docente';
+  $('app').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Laboratorio de Apps con IA</h2><select id="pSec" style="width:auto;margin-left:auto">${SECCIONES.map(s=>`<option ${s===sec?'selected':''}>${s}</option>`).join('')}</select><button class="btn gold sm" id="pFeria">📺 Modo feria</button><button class="btn ghost sm" id="pOut">Salir</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Avance por estudiante</h3><table class="tb"><tr><th>Estudiante</th><th>Post-its</th>${STEPS.map(s=>`<th>${s.label.replace(/^\d · /,'')}</th>`).join('')}<th>Salidas</th><th></th></tr>
+  ${Object.values(est).map(e=>{ const p=pasos[norm(e.nombre)]||{}; return `<tr><td>${esc(e.nombre)}</td><td>${e.postits}</td>${STEPS.map(s=>`<td>${p[s.key]?'✅':'—'}</td>`).join('')}<td>${salidas[norm(e.nombre)]||0}</td><td><button class="btn ghost sm" data-reset="${esc(e.nombre)}">🔄 Repetir</button></td></tr>`; }).join('')||'<tr><td colspan="10" class="mut">Sin datos en esta sección.</td></tr>'}</table>
+  <p class="mut">Las salidas a la IA en las etapas 3 y 4 no se cuentan como incidentes.</p></div>
+  <div class="card"><h3 style="margin-top:0">Proyectos y rúbrica (escala 1–3)</h3>${apps.map((a,i)=>{ const ev=evalDe(a.p.id); const nb=a.bits.length;
+    return `<div style="border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px"><div class="row"><b style="color:var(--navy)">${esc(a.p.nombreApp)}</b><span class="pill">${esc(a.miembros.join(' · '))}</span><span class="pill ${a.final?'teal':'gold'}">${a.final?'Versión final':'Solo versión 1'}</span><span class="pill">${nb} iteraciones</span><span class="pill">Útil ${v[a.p.id+'|util']||0} · Creativa ${v[a.p.id+'|creativa']||0}</span><button class="btn sm" style="margin-left:auto" data-ver="${i}">Ver app y bitácora</button></div>
+    <table class="tb" style="margin-top:8px"><tr><th>Criterio (RA 4)</th><th style="width:150px">Nivel</th></tr>${RUBRICA.map(c=>`<tr><td><b>${c.crit}</b><br><span class="mut">3: ${c.n3}</span></td><td><div class="lv" data-id="${a.p.id}" data-c="${c.id}">${[1,2,3].map(n=>`<button class="${ev.niveles[c.id]==n?'on':''}" data-n="${n}">${n}</button>`).join('')}</div></td></tr>`).join('')}</table>
+    <div class="row" style="margin-top:6px"><span class="mut" id="tot_${a.p.id}"></span></div></div>`; }).join('')||'<p class="mut">Aún no hay apps publicadas.</p>'}</div>`;
+  const lvTxt=['','No logrado','En proceso','Logrado'];
+  function tot(id){ const ev=evalDe(id); const s=RUBRICA.reduce((a,c)=>a+(+ev.niveles[c.id]||0),0); const e=$('tot_'+id); if(e) e.textContent=`Puntaje: ${s} / ${RUBRICA.length*3} (${Math.round(s/(RUBRICA.length*3)*100)} %)`; }
+  apps.forEach(a=>tot(a.p.id));
+  document.querySelectorAll('.lv button').forEach(b=>b.onclick=()=>{
+    const box=b.parentElement, id=box.dataset.id; const ev=JSON.parse(JSON.stringify(evalDe(id))); ev.id=id; ev.niveles[box.dataset.c]=+b.dataset.n;
+    const tmp=student.name; student.name='DOCENTE'; postData('eval',ev); student.name=tmp;
+    allRows.push({tipo:'eval',nombre:'DOCENTE',ts:now(),d:ev}); box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); tot(id);
+    const a=apps.find(x=>x.p.id===id); const s=RUBRICA.reduce((q,c)=>q+(+ev.niveles[c.id]||0),0);
+    if(RUBRICA.every(c=>ev.niveles[c.id])) a.miembros.forEach(m=>sheetPost(SH_PROG,{Timestamp:now(),Estudiante:m,Modulo:MODULE_ID+'_rubrica_paso',Score:String(s),Total:String(RUBRICA.length*3)}));
+  });
+  document.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>{ const a=apps[+b.dataset.ver];
+    const d=a.diseno||{};
+    openApp(a,`<div class="grid2" style="margin-top:12px"><div><h3>Diseño</h3><p class="mut"><b>Usuario:</b> ${esc(d.usuario)}<br><b>Funciones:</b> ${esc((d.funciones||[]).join(' · '))}<br><b>Idea especial:</b> ${esc(d.loca)}<br><b>Prueba:</b> ${esc((a.prueba||{}).ejemplo||'—')} (${(a.prueba||{}).pruebas||0}/5 pruebas)</p>${a.img?`<img src="${a.img}" style="max-width:180px;border:1px solid #ddd;border-radius:10px">`:''}</div>
+     <div><h3>Bitácora</h3>${a.bits.map((x,i)=>`<div class="bit"><b>Iteración ${i+1}</b> · ${esc(x.nombre)}<br><b>Instrucción:</b> ${esc(x.d.prompt)}<br><b>Resultado:</b> ${esc(x.d.resultado)}${x.d.error?`<br><b>Error:</b> ${esc(x.d.error)}`:''}</div>`).join('')}</div></div>
+     <h3>Recomendaciones recibidas</h3>${allRows.filter(r=>r.tipo==='voto'&&r.d.id===a.p.id).map(r=>`<div class="bit">${esc(r.d.comentario)} <span class="mut">(${r.d.cat})</span></div>`).join('')||'<p class="mut">Sin votos aún.</p>'}`); });
+  document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{ const n=b.dataset.reset; if(!confirm('¿Reiniciar el laboratorio para '+n+'? Deberá rehacer todas las etapas.')) return;
+    const tmp=student.name; student.name='DOCENTE'; postData('reset',{nombre:n}); student.name=tmp; allRows.push({tipo:'reset',nombre:'DOCENTE',ts:now(),d:{nombre:n}}); alert('Reinicio registrado.'); });
+  $('pSec').onchange=()=>panelRender($('pSec').value);
+  $('pOut').onclick=()=>{ student={name:'',sec:''}; portada(); };
+  $('pFeria').onclick=()=>feriaMode($('pSec').value);
+}
+function feriaMode(sec){
+  let timer=null;
+  function draw(){
+    const apps=appsDe(sec), v=votosDe(sec);
+    const col=cat=>apps.map(a=>({a:a,n:v[a.p.id+'|'+cat]||0})).sort((x,y)=>y.n-x.n);
+    const max=Math.max(1,...apps.map(a=>Math.max(v[a.p.id+'|util']||0,v[a.p.id+'|creativa']||0)));
+    const list=(arr)=>arr.map((x,i)=>`<div class="rank"><div class="pos">${i+1}</div><div style="flex:1"><b>${esc(x.a.p.nombreApp)}</b><div class="mut">${esc(x.a.miembros.join(', '))}</div><div class="bar" style="width:${x.n/max*100}%"></div></div><b style="font-size:20px">${x.n}</b></div>`).join('')||'<p class="mut">Sin votos aún.</p>';
+    $('app').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">📺 Feria de apps · ${esc(sec)}</h2><span class="mut">Se actualiza cada 10 s</span><button class="btn ghost sm" style="margin-left:auto" id="fBack">← Panel</button></div></div>
+     <div class="grid2"><div class="card"><h3 style="margin-top:0">🏆 App más útil</h3>${list(col('util'))}</div><div class="card"><h3 style="margin-top:0">✨ App más creativa</h3>${list(col('creativa'))}</div></div>`;
+    $('fBack').onclick=()=>{ clearInterval(timer); panelRender(sec); };
+  }
+  draw(); timer=setInterval(()=>sheetGet(SH_DATA).then(r=>{ allRows=parseRows(r); if($('fBack')) draw(); else clearInterval(timer); }),10000);
+}
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+portada();
+})();
+</script>
+</body>
+</html>

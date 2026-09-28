@@ -70,6 +70,26 @@
     "Orden": 7
   },
   {
+    "Id": "laboratorio_apps_ia_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Hackatón: Laboratorio de Apps con IA (Pensamiento creativo)",
+    "URL": "Laboratorio_Apps_IA_Decimo.html",
+    "Activo": "SI",
+    "Orden": 8
+  },
+  {
+    "Id": "equidad_genero_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Tus decisiones cuentan: Equidad y género",
+    "URL": "Curso_Equidad_Genero_Decimo.html",
+    "Activo": "SI",
+    "Orden": 9
+  },
+  {
     "Id": "gobdigital_11",
     "Nivel": "11",
     "Categoria": "Curso interactivo",
