@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atención al Cliente Digital · Décimo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --navy:#0E1B3D; --navy2:#16295a; --gold:#B8863C; --gold2:#e3b94a; --teal:#2FC2AD; --teal2:#e6f7f4; --ink:#1d2433; --mut:#5b6478; --line:#d9dde6; --soft:#f5f6f9; --red:#c0392b; --bg:#eef1f6; --wa:#e7ffdb; --wa2:#efeae2; }
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Poppins',system-ui,sans-serif; color:var(--ink); background:var(--bg); font-size:15px; line-height:1.5; }
+button,input,textarea,select{ font-family:inherit; font-size:14px; }
+.top{ background:var(--navy); color:#fff; padding:12px 18px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:20; }
+.top .logo{ width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--teal),var(--gold2)); display:grid; place-items:center; font-weight:700; color:var(--navy); font-size:13px; }
+.top h1{ font-size:16px; margin:0; font-weight:600; }
+.top .who{ margin-left:auto; font-size:12.5px; color:#c9cfdc; text-align:right; }
+.wrap{ max-width:980px; margin:0 auto; padding:18px 14px 60px; }
+.card{ background:#fff; border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(14,27,61,.07); margin-bottom:16px; }
+h2{ color:var(--navy); margin:0 0 6px; font-size:21px; }
+h3{ color:var(--navy); margin:14px 0 6px; font-size:16px; }
+.mut{ color:var(--mut); font-size:13px; }
+.btn{ border:none; border-radius:10px; padding:10px 16px; font-weight:600; cursor:pointer; background:var(--navy); color:#fff; }
+.btn.gold{ background:var(--gold); color:#fff; }
+.btn.teal{ background:var(--teal); color:#062a25; }
+.btn.ghost{ background:#fff; color:var(--navy); border:1.5px solid var(--navy); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+.btn.sm{ padding:6px 11px; font-size:12.5px; }
+input[type=text],textarea,select{ width:100%; border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; background:#fff; }
+textarea{ resize:vertical; min-height:130px; }
+input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--teal); }
+label{ font-weight:600; font-size:13.5px; display:block; margin:10px 0 4px; color:var(--navy); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:760px){ .grid2{ grid-template-columns:1fr; } }
+.pill{ display:inline-block; padding:2px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:var(--soft); color:var(--navy); }
+.pill.gold{ background:#f6ecd9; color:#7a5a24; }
+.pill.teal{ background:var(--teal2); color:#0b6b5d; }
+.pill.rose{ background:#fbe4ec; color:#8a2a4d; }
+.tip{ background:var(--teal2); border:1px solid #a9e3d9; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.warn{ background:#fdf1e6; border:1px solid #f0c9a3; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.bad{ background:#fdecea; border:1px solid #f3b7b0; border-radius:10px; padding:10px 13px; font-size:13.5px; margin:10px 0; }
+.ok{ color:#0b6b5d; font-weight:600; }
+.err{ color:var(--red); font-weight:600; }
+/* mapa de casos */
+.map{ display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; }
+.mc-dot{ flex:0 0 auto; min-width:44px; height:44px; border-radius:12px; background:#fff; display:grid; place-items:center; font-weight:700; color:var(--navy); border:2px solid transparent; cursor:pointer; font-size:14px; }
+.mc-dot.done{ background:var(--teal2); color:#0b6b5d; }
+.mc-dot.cur{ border-color:var(--gold); }
+.mc-dot.lock{ opacity:.4; cursor:not-allowed; }
+.mc-dot.fin{ min-width:70px; font-size:12px; }
+/* chat */
+.phone{ background:var(--wa2); border-radius:14px; padding:12px; border:1.5px solid var(--line); }
+.phone .bar{ background:#075e54; color:#fff; margin:-12px -12px 10px; padding:9px 12px; border-radius:13px 13px 0 0; font-size:13px; font-weight:600; display:flex; gap:8px; align-items:center; }
+.phone .bar .av{ width:28px; height:28px; border-radius:50%; background:#cfd8dc; color:#37474f; display:grid; place-items:center; font-size:12px; }
+.msg{ background:#fff; border-radius:0 10px 10px 10px; padding:8px 11px; margin:6px 0; max-width:88%; font-size:13.5px; box-shadow:0 1px 1px rgba(0,0,0,.08); }
+.msg.me{ background:var(--wa); margin-left:auto; border-radius:10px 0 10px 10px; }
+.msg small{ display:block; text-align:right; color:#8696a0; font-size:10.5px; }
+.mail{ border:1.5px solid var(--line); border-radius:12px; overflow:hidden; }
+.mail .h{ background:var(--soft); padding:9px 13px; font-size:12.5px; border-bottom:1px solid var(--line); }
+.mail .b{ padding:12px 14px; font-size:13.5px; }
+.scene{ background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; border-radius:12px; padding:14px 16px; font-size:14px; }
+.scene b{ color:var(--gold2); }
+/* comprobante */
+.rcpt{ background:#fff; border:1.5px solid var(--line); border-radius:14px; max-width:330px; margin:6px auto; overflow:hidden; font-size:13px; box-shadow:0 4px 14px rgba(0,0,0,.08); }
+.rcpt .hd{ background:#1f6f5c; color:#fff; padding:12px 14px; text-align:center; }
+.rcpt .hd .ck{ width:36px; height:36px; border-radius:50%; background:#fff; color:#1f6f5c; display:grid; place-items:center; margin:0 auto 4px; font-weight:700; }
+.rcpt .amt{ font-size:24px; font-weight:700; }
+.rcpt table{ width:100%; border-collapse:collapse; }
+.rcpt td{ padding:6px 14px; border-bottom:1px dashed var(--line); vertical-align:top; }
+.rcpt td:first-child{ color:var(--mut); width:42%; }
+.rcpt .ft{ text-align:center; color:var(--mut); font-size:11px; padding:8px; }
+.bank{ background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; font-size:13px; }
+.bank .mv{ display:flex; justify-content:space-between; border-bottom:1px solid var(--soft); padding:5px 0; }
+/* opciones */
+.opts{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.opt{ text-align:left; background:#fff; border:1.5px solid var(--line); border-radius:11px; padding:10px 13px; cursor:pointer; font-size:14px; color:var(--ink); font-weight:400; display:flex; gap:10px; align-items:flex-start; }
+.opt .k{ flex:0 0 26px; height:26px; border-radius:50%; background:var(--soft); display:grid; place-items:center; font-weight:700; color:var(--navy); font-size:12.5px; }
+.opt:hover:not(:disabled){ border-color:var(--teal); }
+.opt.sel{ border-color:var(--navy); background:#f1f4fb; }
+.opt.right{ border-color:#2e9e83; background:var(--teal2); }
+.opt.wrong{ border-color:var(--red); background:#fdecea; }
+.opt:disabled{ cursor:default; }
+.chk{ font-weight:400; color:var(--ink); display:flex; gap:9px; align-items:flex-start; padding:8px 10px; border:1.5px solid var(--line); border-radius:10px; margin:6px 0; cursor:pointer; font-size:13.5px; background:#fff; }
+.chk input{ margin-top:3px; }
+.chk.right{ border-color:#2e9e83; background:var(--teal2); }
+.chk.wrong{ border-color:var(--red); background:#fdecea; }
+.guide{ background:var(--soft); border-radius:10px; padding:10px 13px; font-size:13px; }
+.guide li{ margin:3px 0; }
+/* resultados */
+.meter{ margin:10px 0; }
+.meter .lbl{ display:flex; justify-content:space-between; font-size:13.5px; font-weight:600; color:var(--navy); }
+.meter .tr{ height:14px; background:var(--soft); border-radius:8px; overflow:hidden; }
+.meter .fl{ height:100%; border-radius:8px; }
+table.tb{ width:100%; border-collapse:collapse; font-size:13px; }
+table.tb th{ background:var(--navy); color:#fff; text-align:left; padding:8px; font-weight:600; }
+table.tb td{ border-bottom:1px solid var(--line); padding:7px 8px; vertical-align:top; }
+table.tb td.c{ text-align:center; }
+.lv{ display:flex; gap:4px; }
+.lv button{ border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:4px 9px; cursor:pointer; font-weight:600; }
+.lv button.on{ background:var(--teal); border-color:var(--teal); color:#062a25; }
+.modal{ position:fixed; inset:0; background:rgba(8,12,24,.7); display:none; align-items:center; justify-content:center; z-index:50; padding:14px; }
+.modal.on{ display:flex; }
+.modal .in{ background:#fff; border-radius:14px; width:min(1000px,100%); max-height:94vh; overflow:auto; padding:16px; }
+.ans{ background:var(--soft); border-left:4px solid var(--gold); border-radius:8px; padding:8px 12px; white-space:pre-wrap; font-size:13px; margin:6px 0; }
+#banner{ display:none; position:fixed; top:0; left:0; right:0; background:var(--red); color:#fff; text-align:center; padding:10px; font-weight:600; z-index:60; }
+footer{ text-align:center; color:var(--mut); font-size:12px; margin-top:24px; }
+.lvl{ font-weight:700; }
+.lvl.l3{ color:#0b6b5d; } .lvl.l2{ color:#9a6b12; } .lvl.l1{ color:var(--red); }
+</style>
+</head>
+<body>
+<div id="banner">⚠ Saliste de la pantalla del simulador. Este evento queda registrado.</div>
+<div class="top"><div class="logo">AC</div><div><h1>Simulador: Atención al Cliente Digital</h1><div style="font-size:12px;color:#c9cfdc">Gestión en Tecnologías Digitales Contables · 10° · SINPE · Etiqueta y protocolo · Equidad de género</div></div><div class="who" id="who"></div></div>
+<div class="wrap" id="app"></div>
+<div class="modal" id="modal"><div class="in" id="modalIn"></div></div>
+<footer>CTP Mercedes Norte · Especialidad de Contabilidad · <a href="#" id="lnkDocente">Panel docente</a></footer>
+
+<script>
+(function(){
+'use strict';
+/* ================= CONFIGURACIÓN ================= */
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN = "9986";
+const MODULE_ID = "atcdig";          // prefijo único de este recurso
+const SH_PROG = "Progreso";           // hoja Curso_Progreso_Datos (SHEET_MAP)
+const SH_DATA = "Casos";              // hoja Curso_Casos_Datos (SHEET_MAP)
+const SECCIONES = ["10-1","10-2","10-3","10-4"];
+const PYME = { nombre:"Repostería Dulce Hogar", tel:"7012-3456", lugar:"Mercedes Norte, Heredia" };
+
+/* Dimensiones = criterios de la rúbrica (escala 1–3) */
+const DIMS = [
+  { id:"etq", ra:"RA3", nombre:"Servicio, etiqueta y protocolo", color:"#B8863C",
+    ind:"Aplica normas de etiqueta y protocolo en la atención presencial y digital, incluida la atención a personas adultas mayores y con discapacidad (Ley 7600).",
+    n3:"Responde con cortesía, en el canal y horario adecuados, con un mensaje completo (saludo, disculpa o respuesta, solución y cierre) y trato digno a todas las personas.",
+    n2:"Responde con cortesía, pero el mensaje está incompleto o el canal, el tono o la forma de atender no son los más adecuados.",
+    n1:"Responde con descortesía, de forma incompleta o sin considerar las necesidades de la persona usuaria." },
+  { id:"sinpe", ra:"SINPE", nombre:"Seguridad en cobros con SINPE", color:"#2FC2AD",
+    ind:"Utiliza el SINPE Móvil de forma segura: verifica pagos en la cuenta propia, reconoce comprobantes alterados y evita fraudes (phishing).",
+    n3:"Verifica cada pago en la cuenta de la pyme antes de entregar, identifica todas las señales de un comprobante alterado y rechaza los intentos de fraude.",
+    n2:"Reconoce algunas señales de riesgo, pero omite verificaciones o identifica solo parte de las alteraciones.",
+    n1:"Confía en capturas sin verificar o entrega datos ante mensajes fraudulentos." },
+  { id:"eq", ra:"RA5", nombre:"Equidad de género y ciudadanía digital", color:"#8a2a4d",
+    ind:"Muestra los principios de la ciudadanía digital con equidad en temas afines a la equidad y género.",
+    n3:"Usa lenguaje inclusivo y no sexista, elimina requisitos discriminatorios y responde a comentarios sexistas con respeto y firmeza.",
+    n2:"Corrige parte de los sesgos, pero mantiene alguna expresión o requisito discriminatorio, o su respuesta es poco firme.",
+    n1:"Mantiene o reproduce estereotipos, requisitos discriminatorios o lenguaje sexista." }
+];
+
+/* ================= CASOS ================= */
+const RCPT_OK = { titulo:"Transferencia SINPE Móvil exitosa", monto:"₡12 500,00", fecha:"06/10/2026 · 10:14 a. m.", origen:"Marta Solano Vega", destinoTel:PYME.tel, destinoNom:"Reposteria Dulce Hogar", ref:"2026100615221004587", concepto:"Queque chocolate" };
+const RCPT_FAKE = { titulo:"Transferencia SINPE Móvil exitosa", monto:"₡18 500,00", fecha:"02/10/2026 · 03:41 p. m.", origen:"Kevin Arias Mora", destinoTel:"7012-3465", destinoNom:"Reposteria Dulce Hogar", ref:"2026100215414400912", concepto:"Pedido pastel" };
+
+const CASOS = [
+  { key:"c1", dim:"etq", tipo:"mc", titulo:"Mensaje fuera de horario", canal:"WhatsApp Business",
+    escena:()=>chat("Cliente · 8845-2210",[["Buenas noches 🙂 ¿todavía hacen pasteles para mañana en la tarde?","9:47 p. m."]])+`<p class="mut" style="margin-top:8px">El horario de atención de la pyme es de 7:00 a. m. a 6:00 p. m. Usted es la persona encargada del WhatsApp Business.</p>`,
+    pregunta:"¿Cuál es la forma más adecuada de atender este mensaje?",
+    opciones:[
+      "Activar un mensaje automático que agradece, indica el horario y promete confirmar a primera hora",
+      "Contestar en ese momento con “sí hay, mande el sinpe pa apartar” para no perder la venta de mañana",
+      "Dejar el mensaje en visto y contestarle hasta el día siguiente, cuando la pyme ya esté abierta al público",
+      "Responder a las 10 p. m. con un audio largo que explique todos los sabores, precios y formas de pago"],
+    correcta:0,
+    explica:"La etiqueta digital respeta el horario de atención sin dejar a la persona sin respuesta: un mensaje automático cordial informa el horario y deja claro cuándo se le atenderá." },
+
+  { key:"c2", dim:"sinpe", tipo:"mc", titulo:"Cobro con SINPE Móvil", canal:"Mostrador",
+    escena:()=>`<div class="grid2"><div>${chat("Doña Marta · 8701-4432",[["Listo, ya le hice el SINPE del queque 👇","10:15 a. m."],["[Captura de pantalla]","10:15 a. m."]])}</div><div>${rcpt(RCPT_OK)}</div></div><p class="mut">El pedido de doña Marta es un queque de chocolate de ₡12 500. Ella espera en el mostrador.</p>`,
+    pregunta:"La captura coincide con el pedido. ¿Qué hace antes de entregar el queque?",
+    opciones:[
+      "Entregar el queque de inmediato, porque el monto, la fecha y el número de la captura coinciden",
+      "Revisar en la app o en la notificación del banco de la pyme que el dinero sí ingresó, y luego entregar",
+      "Pedirle a doña Marta que reenvíe la misma captura por correo electrónico para tener un respaldo formal",
+      "Solicitarle una foto de la cédula para confirmar que ella es la dueña de la cuenta de donde pagó"],
+    correcta:1,
+    explica:"Una captura de pantalla se puede editar o reutilizar. La única prueba confiable del pago es ver el ingreso en la cuenta de la pyme (app, banca en línea o notificación oficial del banco)." },
+
+  { key:"c3", dim:"sinpe", tipo:"rcpt", titulo:"¿Comprobante real o alterado?", canal:"WhatsApp Business",
+    escena:()=>`<div class="grid2"><div>${chat("Kevin · 6120-9087",[["Hola, voy por el pastel de cumpleaños. Ya pagué, ahí le va el comprobante","3:40 p. m."],["[Captura de pantalla]","3:40 p. m."]])}
+      <div class="bank" style="margin-top:10px"><b>App del banco de la pyme · Últimos movimientos</b><div class="mut">Cuenta asociada al SINPE Móvil ${PYME.tel} · hoy martes 06/10/2026</div>
+      <div class="mv"><span>SINPE · Marta Solano V.</span><b>+₡12 500</b></div><div class="mv"><span>SINPE · Luis Campos R.</span><b>+₡4 800</b></div><div class="mv"><span>Pago proveedor harina</span><b>−₡35 000</b></div></div></div>
+      <div>${rcpt(RCPT_FAKE)}</div></div><p class="mut">Hoy es martes 6 de octubre de 2026, 3:42 p. m. El pedido de Kevin es un pastel de ₡18 500. El SINPE Móvil de la pyme es el <b>${PYME.tel}</b>.</p>`,
+    pregunta:"Marque TODAS las señales de alerta que observa y luego tome una decisión.",
+    senales:[
+      {t:"La fecha del comprobante no corresponde a hoy.", v:true},
+      {t:"El número de teléfono del destino no es el de la pyme.", v:true},
+      {t:"El pago no aparece en los movimientos de la cuenta de la pyme.", v:true},
+      {t:"El comprobante tiene un número de referencia.", v:false},
+      {t:"El cliente lo envió como captura de pantalla por WhatsApp.", v:false},
+      {t:"El concepto dice “Pedido pastel”.", v:false}],
+    decisiones:["Entregar el pastel: el monto coincide con el pedido","No entregar todavía: explicar con cortesía que el pago no se refleja y pedir que lo verifique"],
+    correctaDec:1,
+    explica:"Las tres alertas reales son la fecha, el número de destino (7012-3465 en vez de 7012-3456) y que el dinero no aparece en la cuenta. Tener referencia, concepto o enviarlo por captura es normal. Se responde con cortesía, sin acusar, y no se entrega hasta ver el ingreso." },
+
+  { key:"c4", dim:"eq", tipo:"open", titulo:"Un aviso de empleo con sesgos", canal:"Redes sociales",
+    escena:()=>`<div class="scene">La dueña quiere publicar en Facebook este aviso para contratar a alguien en caja:<br><br><b>«Se busca muchacha para cajera, de buena presencia, soltera y menor de 25 años. Interesadas enviar foto.»</b></div>`,
+    pregunta:"Reescriba el aviso completo con lenguaje inclusivo y sin requisitos discriminatorios.",
+    guia:["Use una forma que incluya a cualquier persona (por ejemplo, “persona cajera” o “se busca cajero o cajera”).","Elimine requisitos que no tienen relación con el puesto (apariencia, estado civil, edad, foto).","Incluya requisitos reales del puesto: manejo de caja, SINPE Móvil, atención al cliente, horario.","Indique cómo postularse de manera respetuosa."],
+    minimo:80 },
+
+  { key:"c5", dim:"etq", tipo:"open", titulo:"Responder un reclamo por correo", canal:"Correo electrónico",
+    escena:()=>`<div class="mail"><div class="h"><b>De:</b> Andrea Rojas &lt;andrea.rojas@correo.com&gt;<br><b>Asunto:</b> Pésimo servicio</div><div class="b">Buenas. Pedí un pastel para el cumpleaños de mi hija y llegó 40 minutos tarde y con el nombre mal escrito (“Valentína” en lugar de “Valentina”). La fiesta ya había empezado. Muy decepcionada.</div></div>`,
+    pregunta:"Redacte el correo de respuesta de la pyme.",
+    guia:["Saludo formal con el nombre de la clienta.","Disculpa sincera, reconociendo los dos errores sin poner excusas.","Una solución concreta (reposición, descuento, devolución parcial…).","Cierre cordial y firma con nombre, puesto y nombre de la pyme."],
+    minimo:150 },
+
+  { key:"c6", dim:"eq", tipo:"mc", titulo:"Un comentario sexista en caja", canal:"Mostrador",
+    escena:()=>`<div class="scene">Un cliente le dice a la cajera, frente a otras personas:<br><br><b>«Mejor que me atienda el muchacho; las mujeres no entienden de facturas electrónicas.»</b></div>`,
+    pregunta:"¿Cuál es la respuesta más adecuada de la pyme?",
+    opciones:[
+      "Llamar al compañero para que atienda al cliente, porque lo importante es que se vaya contento",
+      "Que la cajera le conteste en el mismo tono para dejarle claro frente a todos que está equivocado",
+      "Que la cajera responda con calma que está capacitada y haga la factura, con respaldo de su jefatura",
+      "Ignorar el comentario y luego publicar en las redes de la pyme una indirecta sobre clientes machistas"],
+    correcta:2,
+    explica:"La equidad se defiende con respeto y firmeza: la cajera mantiene su función (no se le reemplaza por ser mujer), atiende con profesionalismo y la pyme respalda a su personal." },
+
+  { key:"c7", dim:"etq", tipo:"mc", titulo:"Atención a una persona adulta mayor", canal:"Mostrador",
+    escena:()=>`<div class="scene">Don Rafael, de 78 años, llega en silla de ruedas con su nieta. La entrada tiene un escalón. Quiere comprar pan dulce, pero no tiene celular inteligente ni usa SINPE Móvil.</div>`,
+    pregunta:"¿Cómo lo atiende, según la etiqueta y la Ley 7600?",
+    opciones:[
+      "Pedirle que vuelva otro día con alguien joven que pueda hacer el SINPE por él y agilizar la venta",
+      "Explicarle por qué debería instalar SINPE Móvil, ya que la pyme prefiere no manejar efectivo",
+      "Dirigirse a su nieta para todas las preguntas, porque así se le evita a don Rafael una molestia",
+      "Atenderlo en un punto accesible, hablarle a él directamente y ofrecerle efectivo o datáfono"],
+    correcta:3,
+    explica:"La Ley 7600 exige acceso en igualdad de condiciones: se atiende en un lugar accesible, se le habla directamente a la persona (no a su acompañante) y se le ofrecen medios de pago que pueda usar." },
+
+  { key:"c8", dim:"sinpe", tipo:"mc", titulo:"Mensaje sospechoso", canal:"SMS",
+    escena:()=>chat("+506 6094-1187",[["BCCR-SINPE: Su SINPE Movil sera SUSPENDIDO hoy. Valide sus datos en sinpe-validacion.co y digite el codigo que le llegara por mensaje.","11:02 a. m."]],"SMS"),
+    pregunta:"El celular de la pyme recibe este mensaje. ¿Qué debe hacer?",
+    opciones:[
+      "Abrir el enlace solo para revisar si la página tiene el logo del banco, sin escribir ningún dato",
+      "No abrir el enlace ni dar códigos, reportarlo y llamar al banco al número de su sitio oficial",
+      "Responder el mensaje preguntando si es real y esperar sus instrucciones antes de hacer algo",
+      "Ingresar los datos rápido para evitar la suspensión, porque sin SINPE la pyme no puede cobrar"],
+    correcta:1,
+    explica:"Es phishing: urgencia, un enlace que no es oficial y la petición de un código. Los bancos y el BCCR nunca piden códigos ni claves por mensaje. Se reporta y, ante dudas, se llama al número oficial." },
+
+  { key:"c9", dim:"eq", tipo:"mc", titulo:"Fotos para las redes de la pyme", canal:"Redes sociales",
+    escena:()=>`<div class="scene">El dueño quiere dos fotos para Instagram: <b>solo mujeres en la foto de “repostería”</b> y <b>solo hombres en la foto de “entregas a domicilio”</b>. En la pyme, ambas tareas las hacen hombres y mujeres.</div>`,
+    pregunta:"¿Qué propuesta presenta usted?",
+    opciones:[
+      "Mostrar a mujeres y hombres en ambas tareas, tal como se reparte el trabajo en la pyme",
+      "Aceptar la idea, porque en publicidad lo importante es que las fotos se vean atractivas",
+      "Quitar a todas las personas de las fotos y mostrar solo productos para evitar discusiones",
+      "Publicar las fotos que pidió el dueño y añadir un texto que diga que la pyme apoya la equidad"],
+    correcta:0,
+    explica:"La publicidad no debe reforzar estereotipos sobre qué tareas son “de hombres” o “de mujeres”. Mostrar la realidad de la pyme, con ambos en ambas tareas, comunica equidad con hechos." }
+];
+const MC_PTS = 2, RCPT_SEN = 3, RCPT_DEC = 1;
+function maxDe(c){ return c.tipo==='mc'?MC_PTS:(c.tipo==='rcpt'?RCPT_SEN+RCPT_DEC:0); }
+
+/* ================= PUENTE CON GOOGLE SHEETS ================= */
+function jsonpRequest(url){
+  return new Promise((resolve)=>{
+    const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5);
+    const s=document.createElement('script');
+    window[cb]=function(d){ resolve(d); delete window[cb]; s.remove(); };
+    s.onerror=function(){ resolve({rows:[]}); delete window[cb]; s.remove(); };
+    s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb;
+    document.body.appendChild(s);
+    setTimeout(()=>{ if(window[cb]){ resolve({rows:[]}); delete window[cb]; s.remove(); } }, 12000);
+  });
+}
+function sheetGet(name){ return jsonpRequest(SHEET_API_URL+'?sheet='+encodeURIComponent(name)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(name,row){
+  // Contrato JSON del doPost: { sheet, row:[valores en orden de columnas] } con Content-Type text/plain (sin preflight). NO cambiar.
+  const payload={ sheet:name, row:Object.keys(row).map(k=>row[k]) };
+  return fetch(SHEET_API_URL,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload), keepalive:true }).catch(()=>{});
+}
+const now=()=>new Date().toISOString();
+function postData(tipo,obj,nombre){ return sheetPost(SH_DATA,{ Timestamp:now(), CasoId:MODULE_ID+'_'+tipo, Nombre:nombre||student.name, Texto:JSON.stringify(obj) }); }
+function postProg(nombre,key,score,total){ return sheetPost(SH_PROG,{ Timestamp:now(), Estudiante:nombre, Modulo:MODULE_ID+'_'+key+'_paso', Score:String(score), Total:String(total) }); }
+function postProgRA(nombre,key,ra,score,total){ return sheetPost(SH_PROG,{ Timestamp:now(), Estudiante:nombre, Modulo:MODULE_ID+'_'+key+'_ra_'+encodeURIComponent(ra)+'_paso', Score:String(score), Total:String(total) }); }
+function parseRows(rows){
+  return rows.filter(r=>String(r.CasoId||'').indexOf(MODULE_ID+'_')===0).map(r=>{
+    let o={}; try{ o=JSON.parse(r.Texto); }catch(e){}
+    return { tipo:String(r.CasoId).slice(MODULE_ID.length+1), nombre:String(r.Nombre||'').trim(), ts:String(r.Timestamp||''), d:o };
+  }).sort((a,b)=>a.ts<b.ts?-1:1);
+}
+
+/* ================= UTILIDADES ================= */
+const $=id=>document.getElementById(id);
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function seedRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return function(){ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); return ((h^=h>>>16)>>>0)/4294967296; }; }
+function orden(key,n){ const r=seedRand(norm(student.name)+'|'+key); const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function chat(titulo,msgs,tipo){ return `<div class="phone"><div class="bar"><div class="av">👤</div>${esc(titulo)}<span style="margin-left:auto;font-weight:400;font-size:11px">${tipo||'WhatsApp'}</span></div>${msgs.map(m=>`<div class="msg">${esc(m[0])}<small>${esc(m[1])}</small></div>`).join('')}</div>`; }
+function rcpt(r){ return `<div class="rcpt"><div class="hd"><div class="ck">✓</div><div style="font-size:12px">${esc(r.titulo)}</div><div class="amt">${esc(r.monto)}</div></div><table>
+  <tr><td>Fecha y hora</td><td>${esc(r.fecha)}</td></tr><tr><td>Origen</td><td>${esc(r.origen)}</td></tr>
+  <tr><td>Teléfono destino</td><td>${esc(r.destinoTel)}</td></tr><tr><td>Nombre destino</td><td>${esc(r.destinoNom)}</td></tr>
+  <tr><td>Concepto</td><td>${esc(r.concepto)}</td></tr><tr><td>Referencia</td><td style="font-size:11.5px">${esc(r.ref)}</td></tr></table>
+  <div class="ft">Banco Ejemplo S.A. · Comprobante ilustrativo para fines educativos</div></div>`; }
+function nivelDe(pct){ return pct>=80?3:(pct>=60?2:1); }
+const NIVEL_TXT={3:"Logrado",2:"En proceso",1:"No logrado"};
+
+/* ================= ESTADO ================= */
+let student={name:'',sec:''};
+let allRows=[];
+let R={};            // respuestas propias: key -> {score,total,data}
+let current='c1';
+const LS_KEY=()=>'atcdig_'+norm(student.name);
+
+function resetCut(name){ let t=''; allRows.forEach(r=>{ if(r.tipo==='reset' && norm(r.d.nombre)===norm(name) && r.ts>t) t=r.ts; }); return t; }
+function derive(){
+  const me=norm(student.name), cut=resetCut(student.name);
+  R={};
+  allRows.filter(r=>r.tipo==='resp' && norm(r.nombre)===me && r.ts>cut).forEach(r=>{ if(!R[r.d.key]) R[r.d.key]=r.d; });
+  // respaldo local (por si la lectura del servidor tarda): solo si no hubo reinicio posterior
+  try{ const loc=JSON.parse(localStorage.getItem(LS_KEY())||'{}'); if(!(cut && loc.__ts && loc.__ts<cut)){ Object.keys(loc).forEach(k=>{ if(k!=='__ts' && !R[k]) R[k]=loc[k]; }); } else localStorage.removeItem(LS_KEY()); }catch(e){}
+}
+function saveLocal(){ try{ const o=Object.assign({},R,{__ts:now()}); localStorage.setItem(LS_KEY(),JSON.stringify(o)); }catch(e){} }
+function load(){ return sheetGet(SH_DATA).then(rows=>{ allRows=parseRows(rows); derive(); }); }
+function isLocked(key){ return !!R[key]; }
+function unlocked(key){ const i=CASOS.findIndex(c=>c.key===key); if(key==='fin') return CASOS.every(c=>R[c.key]); return i===0 || !!R[CASOS[i-1].key]; }
+function registrar(c,score,total,data){
+  const d={key:c.key,dim:c.dim,sec:student.sec,score:score,total:total,data:data};
+  R[c.key]=d; saveLocal();
+  postData('resp',d);
+  if(c.tipo!=='open'){ postProg(student.name,c.key,score,total); const dim=DIMS.find(x=>x.id===c.dim); postProgRA(student.name,c.key,dim.ra,score,total); }
+  else postProg(student.name,c.key,'pendiente','3');
+}
+
+/* ================= MONITOREO DE SALIDA ================= */
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden||!student.name) return;
+  sheetPost(SH_PROG,{Timestamp:now(),Estudiante:student.name,Modulo:'incidente_salida_pantalla_'+MODULE_ID,Score:'salida',Total:'1'});
+  const b=$('banner'); b.style.display='block'; setTimeout(()=>b.style.display='none',6000);
+});
+
+/* ================= PORTADA ================= */
+function nombreDesdePortal(){ try{ const n=(new URLSearchParams(location.search).get('nombre')||'').trim(); return n||null; }catch(e){ return null; } }
+function portada(){
+  const np=nombreDesdePortal();
+  $('who').textContent='';
+  $('app').innerHTML=`<div class="card">
+   <span class="pill gold">Actividad · 1–2 lecciones · 9 casos</span>
+   <h2 style="margin-top:10px">Hoy usted atiende los canales digitales de una pyme</h2>
+   <p>Usted es la persona encargada de ventas y cobros de <b>${PYME.nombre}</b> (${PYME.lugar}). Atenderá clientes por WhatsApp, correo, redes sociales y en el mostrador. En cada caso decide o redacta la respuesta.</p>
+   <div class="row" style="gap:6px;margin:6px 0 12px">${DIMS.map(d=>`<span class="pill" style="border-left:4px solid ${d.color}">${d.nombre}</span>`).join('')}</div>
+   <div class="warn"><b>Importante:</b> cada caso se responde <b>una sola vez</b>. Lea con calma antes de confirmar. Los casos de redacción los revisa su docente.</div>
+   <div class="grid2"><div><label for="inNom">Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}" placeholder="Nombre y apellidos"></div>
+   <div><label for="inSec">Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+   <div class="row" style="margin-top:14px"><button class="btn gold" id="btnIn">Empezar el turno</button><span id="msgIn" class="mut"></span></div></div>
+   <div class="card"><h3 style="margin-top:0">Rúbrica de evaluación</h3>${rubricaTabla()}</div>`;
+  $('btnIn').onclick=()=>{
+    const n=$('inNom').value.trim(), s=$('inSec').value;
+    if(n.split(/\s+/).length<2){ $('msgIn').innerHTML='<span class="err">Escriba nombre y apellido.</span>'; return; }
+    if(!s){ $('msgIn').innerHTML='<span class="err">Seleccione la sección.</span>'; return; }
+    student={name:n,sec:s}; $('msgIn').textContent='Cargando…'; $('btnIn').disabled=true;
+    load().then(()=>{ const p=CASOS.find(c=>!R[c.key]); current=p?p.key:'fin'; render(); });
+  };
+}
+function rubricaTabla(){
+  return `<table class="tb"><tr><th>Criterio</th><th>Logrado (3)</th><th>En proceso (2)</th><th>No logrado (1)</th></tr>${DIMS.map(d=>`<tr><td><b>${d.nombre}</b><div class="mut">${d.ra==='SINPE'?'Unidad SINPE':d.ra} · ${d.ind}</div></td><td>${d.n3}</td><td>${d.n2}</td><td>${d.n1}</td></tr>`).join('')}</table>`;
+}
+
+/* ================= NAVEGACIÓN ================= */
+function render(){
+  $('who').innerHTML=`${esc(student.name)}<br>${esc(student.sec)}`;
+  const map=CASOS.map((c,i)=>`<div class="mc-dot ${R[c.key]?'done':''} ${current===c.key?'cur':''} ${unlocked(c.key)?'':'lock'}" data-k="${c.key}" title="${esc(c.titulo)}">${i+1}</div>`).join('')
+    +`<div class="mc-dot fin ${current==='fin'?'cur':''} ${unlocked('fin')?'':'lock'}" data-k="fin">Resultados</div>`;
+  $('app').innerHTML=`<div class="map">${map}</div><div id="stage"></div>`;
+  document.querySelectorAll('.mc-dot').forEach(el=>el.onclick=()=>{ const k=el.dataset.k; if(!unlocked(k)) return; current=k; render(); });
+  if(current==='fin') renderFin($('stage')); else renderCaso($('stage'),CASOS.find(c=>c.key===current));
+  window.scrollTo(0,0);
+}
+function siguiente(){ const i=CASOS.findIndex(c=>c.key===current); current=(i<CASOS.length-1)?CASOS[i+1].key:'fin'; render(); }
+function cabecera(c){ const i=CASOS.indexOf(c); const d=DIMS.find(x=>x.id===c.dim);
+  return `<div class="row"><span class="pill">Caso ${i+1} de ${CASOS.length}</span><span class="pill" style="border-left:4px solid ${d.color}">${d.nombre}</span><span class="pill gold">${c.canal}</span></div><h2 style="margin-top:8px">${c.titulo}</h2>`; }
+
+/* ================= CASOS ================= */
+function renderCaso(el,c){
+  el.innerHTML=`<div class="card">${cabecera(c)}<div style="margin:10px 0">${c.escena()}</div><h3>${c.pregunta}</h3><div id="zona"></div></div>`;
+  const z=$('zona');
+  if(c.tipo==='mc') casoMC(z,c); else if(c.tipo==='rcpt') casoRcpt(z,c); else casoOpen(z,c);
+}
+function casoMC(z,c){
+  const ord=orden(c.key,c.opciones.length); const L='ABCD';
+  const locked=isLocked(c.key); const prev=locked?R[c.key].data:null;
+  z.innerHTML=`<div class="opts">${ord.map((oi,pos)=>`<button class="opt" data-i="${oi}"><span class="k">${L[pos]}</span><span>${esc(c.opciones[oi])}</span></button>`).join('')}</div>
+   <div id="fb"></div><div class="row" style="margin-top:12px" id="act">${locked?'':'<button class="btn" id="btnOk" disabled>Confirmar respuesta</button>'}</div>`;
+  let sel=null;
+  const pintar=(elegida)=>{ z.querySelectorAll('.opt').forEach(b=>{ b.disabled=true; const i=+b.dataset.i; if(i===c.correcta) b.classList.add('right'); else if(i===elegida) b.classList.add('wrong'); });
+    const bien=elegida===c.correcta;
+    $('fb').innerHTML=`<div class="${bien?'tip':'bad'}" style="margin-top:12px">${bien?'<span class="ok">✓ ¡Correcto!</span>':'<span class="err">✗ No era la mejor opción.</span>'} ${esc(c.explica)}</div>`;
+    const last=CASOS.indexOf(c)===CASOS.length-1; $('act').innerHTML=`<button class="btn gold" id="btnSig">${last?'Ver mis resultados →':'Siguiente caso →'}</button>`; $('btnSig').onclick=siguiente; };
+  if(locked){ pintar(prev.elegida); $('fb').insertAdjacentHTML('afterbegin','<div class="mut">✓ Caso ya respondido. Puntaje guardado: '+R[c.key].score+' / '+R[c.key].total+'</div>'); return; }
+  z.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ z.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sel=+b.dataset.i; $('btnOk').disabled=false; });
+  $('btnOk').onclick=()=>{ if(sel===null||isLocked(c.key)) return; const sc=sel===c.correcta?MC_PTS:0; registrar(c,sc,MC_PTS,{elegida:sel,texto:c.opciones[sel]}); pintar(sel); };
+}
+function casoRcpt(z,c){
+  const ord=orden(c.key,c.senales.length); const locked=isLocked(c.key); const prev=locked?R[c.key].data:null;
+  z.innerHTML=`${ord.map(i=>`<label class="chk" data-i="${i}"><input type="checkbox" value="${i}"> <span>${esc(c.senales[i].t)}</span></label>`).join('')}
+   <h3>Decisión</h3><div class="opts">${c.decisiones.map((t,i)=>`<button class="opt" data-d="${i}"><span class="k">${i+1}</span><span>${esc(t)}</span></button>`).join('')}</div>
+   <div id="fb"></div><div class="row" style="margin-top:12px" id="act">${locked?'':'<button class="btn" id="btnOk" disabled>Confirmar análisis</button>'}</div>`;
+  let dec=null;
+  const pintar=(marcadas,decision,score,total)=>{
+    z.querySelectorAll('.chk').forEach(l=>{ const i=+l.dataset.i, inp=l.querySelector('input'); inp.disabled=true; inp.checked=marcadas.indexOf(i)>-1; if(c.senales[i].v) l.classList.add('right'); else if(inp.checked) l.classList.add('wrong'); });
+    z.querySelectorAll('.opt').forEach(b=>{ b.disabled=true; const i=+b.dataset.d; if(i===c.correctaDec) b.classList.add('right'); else if(i===decision) b.classList.add('wrong'); });
+    $('fb').innerHTML=`<div class="${score===total?'tip':(score>0?'warn':'bad')}" style="margin-top:12px"><b>Puntaje: ${score} / ${total}.</b> ${esc(c.explica)}</div>`;
+    $('act').innerHTML=`<button class="btn gold" id="btnSig">Siguiente caso →</button>`; $('btnSig').onclick=siguiente; };
+  if(locked){ pintar(prev.marcadas,prev.decision,R[c.key].score,R[c.key].total); return; }
+  z.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ z.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); dec=+b.dataset.d; $('btnOk').disabled=false; });
+  $('btnOk').onclick=()=>{ if(dec===null||isLocked(c.key)) return;
+    const marcadas=[...z.querySelectorAll('.chk input:checked')].map(x=>+x.value);
+    const buenas=marcadas.filter(i=>c.senales[i].v).length, malas=marcadas.length-buenas;
+    const sen=Math.max(0,buenas-malas); const score=sen+(dec===c.correctaDec?RCPT_DEC:0), total=RCPT_SEN+RCPT_DEC;
+    registrar(c,score,total,{marcadas:marcadas,decision:dec}); pintar(marcadas,dec,score,total); };
+}
+function casoOpen(z,c){
+  const locked=isLocked(c.key);
+  z.innerHTML=`<div class="guide"><b>Su respuesta debe incluir:</b><ul style="margin:6px 0 0;padding-left:20px">${c.guia.map(g=>`<li>${esc(g)}</li>`).join('')}</ul></div>
+   ${locked?`<h3>Su respuesta enviada</h3><div class="ans">${esc(R[c.key].data.texto)}</div><div class="tip">✓ Respuesta enviada. Su docente la revisará con la rúbrica.</div><button class="btn gold" id="btnSig">${CASOS.indexOf(c)===CASOS.length-1?'Ver mis resultados →':'Siguiente caso →'}</button>`
+   :`<label for="txt">Su respuesta</label><textarea id="txt" placeholder="Escriba aquí con sus propias palabras…"></textarea><div class="row"><span class="mut" id="cnt">0 caracteres (mínimo ${c.minimo})</span></div>
+   <div class="row" style="margin-top:10px"><button class="btn" id="btnOk" disabled>Enviar respuesta</button></div>`}`;
+  if(locked){ $('btnSig').onclick=siguiente; return; }
+  const t=$('txt');
+  t.addEventListener('paste',e=>{ e.preventDefault(); $('cnt').innerHTML='<span class="err">En esta actividad se escribe con sus propias palabras; pegar texto está deshabilitado.</span>'; });
+  t.oninput=()=>{ const n=t.value.trim().length; $('cnt').textContent=n+' caracteres (mínimo '+c.minimo+')'; $('btnOk').disabled=n<c.minimo; };
+  $('btnOk').onclick=()=>{ if(isLocked(c.key)) return; if(!confirm('¿Enviar la respuesta? No podrá modificarla después.')) return; registrar(c,0,0,{texto:t.value.trim()}); render(); };
+}
+
+/* ================= RESULTADOS ================= */
+function puntosDim(resp,dimId){ let s=0,t=0; CASOS.filter(c=>c.dim===dimId && c.tipo!=='open').forEach(c=>{ t+=maxDe(c); if(resp[c.key]) s+=+resp[c.key].score||0; }); return {s:s,t:t}; }
+function renderFin(el){
+  el.innerHTML=`<div class="card"><h2>Resultados del turno</h2><p class="mut">${esc(student.name)} · ${esc(student.sec)}</p>
+   ${DIMS.map(d=>{ const p=puntosDim(R,d.id); const pct=p.t?Math.round(p.s/p.t*100):0; const abiertos=CASOS.filter(c=>c.dim===d.id&&c.tipo==='open').length;
+     return `<div class="meter"><div class="lbl"><span>${d.nombre}</span><span>${p.s} / ${p.t} · ${pct} %</span></div><div class="tr"><div class="fl" style="width:${pct}%;background:${d.color}"></div></div>${abiertos?`<div class="mut">+ ${abiertos} caso de redacción pendiente de revisión docente</div>`:''}</div>`; }).join('')}
+   <div class="tip">Su calificación final por criterio la asigna su docente combinando los casos automáticos y sus respuestas redactadas, según la rúbrica.</div></div>
+   <div class="card"><h3 style="margin-top:0">Rúbrica de evaluación</h3>${rubricaTabla()}</div>`;
+}
+
+/* ================= PANEL DOCENTE ================= */
+function evalDe(nombre,key){ let lv=0; allRows.filter(r=>r.tipo==='eval'&&norm(r.d.nombre)===norm(nombre)&&r.d.key===key).forEach(r=>{ if(r.ts>resetCut(nombre)) lv=+r.d.nivel; }); return lv; }
+function respDe(nombre){ const cut=resetCut(nombre), o={}; allRows.filter(r=>r.tipo==='resp'&&norm(r.nombre)===norm(nombre)&&r.ts>cut).forEach(r=>{ if(!o[r.d.key]) o[r.d.key]=Object.assign({ts:r.ts},r.d); }); return o; }
+function nivelRA(nombre,resp,d){
+  const p=puntosDim(resp,d.id); let s=p.s, t=p.t;
+  const ab=CASOS.filter(c=>c.dim===d.id&&c.tipo==='open');
+  for(const c of ab){ const lv=evalDe(nombre,c.key); if(!lv) return null; s+=lv/3*4; t+=4; }
+  return t?nivelDe(s/t*100):null;
+}
+function panel(){
+  const pin=prompt('PIN del panel docente:'); if(pin!==TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  $('modal').classList.add('on'); $('modalIn').innerHTML='<p>Cargando datos…</p>';
+  Promise.all([sheetGet(SH_DATA),sheetGet(SH_PROG)]).then(([rows,prog])=>{ allRows=parseRows(rows); window.__prog=prog; panelRender(SECCIONES[0]); });
+}
+function panelRender(sec){
+  const salidas={}; (window.__prog||[]).forEach(r=>{ if(String(r.Modulo)==='incidente_salida_pantalla_'+MODULE_ID){ const k=norm(r.Estudiante); salidas[k]=(salidas[k]||0)+1; } });
+  const est={}; allRows.forEach(r=>{ if(r.tipo==='resp'&&r.d.sec===sec) est[norm(r.nombre)]=r.nombre; });
+  const nombres=Object.values(est).sort((a,b)=>a.localeCompare(b,'es'));
+  const abiertos=CASOS.filter(c=>c.tipo==='open');
+  $('modalIn').innerHTML=`<div class="row"><h2 style="margin:0">Panel docente · Atención al Cliente Digital</h2><button class="btn ghost sm" style="margin-left:auto" id="pClose">Cerrar ✕</button></div>
+   <div class="row" style="margin:10px 0">${SECCIONES.map(s=>`<button class="btn sm ${s===sec?'':'ghost'}" data-sec="${s}">${s}</button>`).join('')}<button class="btn teal sm" id="pCsv" style="margin-left:auto">Descargar CSV</button></div>
+   <div style="overflow-x:auto"><table class="tb"><tr><th>Estudiante</th><th>Casos</th>${DIMS.map(d=>`<th>${d.nombre}<br><span style="font-weight:400;font-size:11px">auto · nivel RA</span></th>`).join('')}<th>Salidas</th><th></th></tr>
+   ${nombres.map(n=>{ const r=respDe(n); const hechos=CASOS.filter(c=>r[c.key]).length;
+     return `<tr><td>${esc(n)}</td><td class="c">${hechos}/${CASOS.length}</td>${DIMS.map(d=>{ const p=puntosDim(r,d.id); const lv=nivelRA(n,r,d); return `<td>${p.s}/${p.t} · ${lv?`<span class="lvl l${lv}">${NIVEL_TXT[lv]}</span>`:'<span class="mut">pendiente</span>'}</td>`; }).join('')}
+     <td class="c">${salidas[norm(n)]||0}</td><td><div class="row" style="gap:4px"><button class="btn sm" data-ver="${esc(n)}">Revisar</button><button class="btn ghost sm" data-reset="${esc(n)}">🔄 Repetir</button></div></td></tr>`; }).join('')||`<tr><td colspan="${DIMS.length+4}" class="mut">Sin datos en esta sección.</td></tr>`}</table></div>
+   <div id="pDet" style="margin-top:14px"></div>
+   <details style="margin-top:12px"><summary class="mut">Ver rúbrica</summary>${rubricaTabla()}</details>`;
+  $('pClose').onclick=()=>$('modal').classList.remove('on');
+  $('modalIn').querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>panelRender(b.dataset.sec));
+  $('modalIn').querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{ const n=b.dataset.reset; if(!confirm('¿Reiniciar todos los casos de '+n+'? Podrá volver a hacer la actividad.')) return;
+    postData('reset',{nombre:n},'DOCENTE'); allRows.push({tipo:'reset',nombre:'DOCENTE',ts:now(),d:{nombre:n}}); alert('Reinicio registrado.'); panelRender(sec); });
+  $('modalIn').querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>detalle(b.dataset.ver,sec));
+  $('pCsv').onclick=()=>{ const rows=[['Estudiante','Sección','Casos'].concat(DIMS.map(d=>d.nombre+' (auto)'),DIMS.map(d=>d.nombre+' (nivel)'),['Salidas'])];
+    nombres.forEach(n=>{ const r=respDe(n); rows.push([n,sec,CASOS.filter(c=>r[c.key]).length].concat(DIMS.map(d=>{const p=puntosDim(r,d.id); return p.s+'/'+p.t;}),DIMS.map(d=>{ const lv=nivelRA(n,r,d); return lv?lv+' '+NIVEL_TXT[lv]:'pendiente'; }),[salidas[norm(n)]||0])); });
+    const csv='﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='AtencionClienteDigital_'+sec+'.csv'; a.click(); };
+  function detalle(n,sec){
+    const r=respDe(n);
+    $('pDet').innerHTML=`<div class="card" style="border:1.5px solid var(--line)"><h3 style="margin-top:0">${esc(n)}</h3>
+     ${abiertos.map(c=>{ const lv=evalDe(n,c.key); const d=DIMS.find(x=>x.id===c.dim);
+       return `<div style="margin-bottom:14px"><b>${esc(c.titulo)}</b> <span class="pill">${d.nombre}</span>${r[c.key]?`<div class="ans">${esc(r[c.key].data.texto)}</div>
+       <div class="row"><span class="mut">Nivel:</span><div class="lv" data-k="${c.key}">${[3,2,1].map(x=>`<button class="${lv===x?'on':''}" data-lv="${x}">${x} · ${NIVEL_TXT[x]}</button>`).join('')}</div></div>
+       <div class="mut" style="margin-top:4px">3: ${esc(d.n3)}<br>2: ${esc(d.n2)}<br>1: ${esc(d.n1)}</div>`:'<div class="mut">Aún no responde este caso.</div>'}</div>`; }).join('')}
+     <h3>Casos automáticos</h3><table class="tb"><tr><th>Caso</th><th>Criterio</th><th>Puntaje</th></tr>${CASOS.filter(c=>c.tipo!=='open').map(c=>`<tr><td>${esc(c.titulo)}</td><td>${DIMS.find(x=>x.id===c.dim).nombre}</td><td>${r[c.key]?r[c.key].score+' / '+r[c.key].total:'—'}</td></tr>`).join('')}</table></div>`;
+    $('pDet').querySelectorAll('.lv button').forEach(b=>b.onclick=()=>{
+      const key=b.parentNode.dataset.k, lv=+b.dataset.lv, c=CASOS.find(x=>x.key===key), d=DIMS.find(x=>x.id===c.dim);
+      postData('eval',{nombre:n,key:key,nivel:lv},'DOCENTE'); allRows.push({tipo:'eval',nombre:'DOCENTE',ts:now(),d:{nombre:n,key:key,nivel:lv}});
+      postProg(n,key,lv,3); postProgRA(n,key,d.ra,lv,3);
+      panelRender(sec); detalle(n,sec);
+    });
+    $('pDet').scrollIntoView({behavior:'smooth'});
+  }
+}
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+
+/* gancho de pruebas automatizadas */
+window.__atcdig={ CASOS:CASOS, getR:()=>R };
+portada();
+})();
+</script>
+</body>
+</html>
