@@ -688,5 +688,15 @@
   "URL": "Antologia_GestionPublica_01_SICOP_ContNacional_Tesoreria_Cartel_PYMES_Undecimo.pdf",
   "Activo": "SI",
   "Orden": 221
+ },
+ {
+  "Id": "taller_plataforma_ia_11",
+  "Nivel": "11",
+  "Categoria": "Trabajo en clase",
+  "Subarea": "Gestión Empresarial para Contadores",
+  "Titulo": "Taller IA: Construí tu plataforma de Gobierno Digital",
+  "URL": "Taller_IA_Plataforma_GobiernoDigital_Undecimo.html",
+  "Activo": "SI",
+  "Orden": 12
  }
 ]

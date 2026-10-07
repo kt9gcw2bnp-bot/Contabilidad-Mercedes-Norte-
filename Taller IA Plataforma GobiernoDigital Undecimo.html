@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller IA Gobierno Digital</title>
+<style>
+:root{--navy:#0E1B3D;--navy2:#16285a;--gold:#e3b94a;--teal:#2FC2AD;--txt:#0f172a;--muted:#64748b;--bg:#f4f6fb;--card:#fff;--line:#e2e8f0;--bad:#dc2626;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'Segoe UI',Arial,sans-serif;line-height:1.55}
+#app{max-width:860px;margin:0 auto;padding:16px 14px 60px}
+h1{margin:6px 0;font-size:1.7rem;line-height:1.2}
+h2{color:var(--navy);margin:4px 0 8px;font-size:1.35rem}
+h3{color:var(--navy);margin:0 0 10px;font-size:1.05rem}
+.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:16px;padding:22px 20px;margin-bottom:14px}
+.hero-tag{display:inline-block;background:var(--gold);color:var(--navy);font-weight:800;font-size:.72rem;letter-spacing:.08em;padding:4px 10px;border-radius:20px}
+.hero-sub{color:#c8d3f0;margin:0}
+.card{background:var(--card);border-radius:14px;box-shadow:0 3px 14px rgba(14,27,61,.07);padding:18px;margin:12px 0}
+.reto{font-size:1rem;margin-top:0}
+.reglas{padding-left:20px;margin:0 0 14px}.reglas li{margin:4px 0}
+label{display:block;font-weight:600;margin:12px 0 4px;font-size:.92rem}
+input[type=text],input[type=url],textarea{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;font-size:.95rem;background:#fff}
+input[readonly]{background:#eef2f7;color:var(--navy);font-weight:600}
+textarea{resize:vertical}
+.btn{display:block;width:100%;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:14px}
+.btn:hover{background:var(--navy2)}.btn:disabled{opacity:.6}
+.btn-sec{background:#e2e8f0;color:var(--txt);border:none;border-radius:9px;padding:9px 14px;font-size:.92rem;cursor:pointer;margin:6px 0}
+.btn-link{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;display:block;margin:10px auto}
+.btn-mini{background:#e2e8f0;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:.8rem}
+.nota{color:var(--muted);font-size:.85rem;margin:6px 0}
+.barra{background:#dfe5f2;border-radius:6px;height:10px;overflow:hidden}
+.barra-fill{background:var(--teal);height:100%;transition:width .3s}
+.barra-txt{font-size:.8rem;color:var(--muted);margin:4px 0 10px}
+.titulo-sec{margin-top:6px}
+.fases{display:flex;flex-direction:column;gap:10px}
+.fase{display:flex;align-items:center;gap:14px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;font:inherit;color:inherit}
+.fase.abierta{border-color:var(--gold);box-shadow:0 0 0 3px rgba(227,185,74,.2)}
+.fase.hecha{border-color:var(--teal);background:#f0fbf9}
+.fase.cerrada{opacity:.55;cursor:default}
+.fase-ico{font-size:1.7rem;width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:#eef2fb;border-radius:12px;flex-shrink:0}
+.fase-ico.grande{width:56px;height:56px;font-size:2rem}
+.fase-body{display:flex;flex-direction:column}
+.fase-num{font-size:.72rem;font-weight:800;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.fase-tit{font-weight:700;color:var(--navy)}
+.fase-est{font-size:.8rem;color:var(--muted)}
+.fase.hecha .fase-est{color:#0f9d78;font-weight:700}
+.fase-head{display:flex;align-items:center;gap:14px;margin:10px 0}
+.objetivo{background:#fff8e6;border-left:5px solid var(--gold)}
+.texto ul{padding-left:20px}
+.prompt{background:var(--navy);color:#e6ecff;border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-word;font-family:Consolas,'Courier New',monospace;font-size:.82rem;line-height:1.5;margin:12px 0 4px;border-left:4px solid var(--teal)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:500;margin:8px 0}
+.check input{margin-top:4px;width:18px;height:18px;flex-shrink:0}
+.cont{font-size:.78rem;color:var(--bad);margin:2px 0 0}.cont.ok{color:#0f9d78}
+.msg{color:var(--bad);font-weight:600;margin:8px 0 0}
+.bloqueada{border:1px solid var(--teal);background:#f0fbf9}
+.entregado{white-space:pre-wrap;word-break:break-word;background:#f8fafc;border-radius:8px;padding:10px;font-size:.82rem;font-family:inherit}
+.tabla-wrap{overflow-x:auto}
+table.rub{width:100%;border-collapse:collapse;font-size:.82rem;min-width:520px}
+table.rub th,table.rub td{border:1px solid var(--line);padding:7px 8px;vertical-align:top;text-align:left}
+table.rub th{background:#eef2fb;color:var(--navy)}
+table.panel td.c,table.panel th{text-align:center}
+.ok{color:#0f9d78;font-weight:800}
+.detalle{max-height:420px;overflow:auto}
+.aviso-flot{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#475569;color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:9999;transition:opacity .3s;max-width:90vw;text-align:center}
+.aviso-flot.ok{background:#0f9d78}
+.cert{text-align:center;border:8px double var(--navy);background:#fffdf5}
+.cert-tag{font-size:.75rem;color:var(--muted);letter-spacing:.05em}
+.cert-nombre{font-size:1.5rem;font-weight:800;color:var(--navy);margin:6px 0}
+.cert-curso{font-weight:700;color:var(--navy)}
+@media print{body.imprimiendo #app > *:not(#cert){display:none!important} body.imprimiendo .aviso-flot{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const TALLER = {
+  moduleId: "taller_plataforma_ia_gobdigital_undecimo_v1",
+  titulo: "Taller IA: Construí tu plataforma de Gobierno Digital",
+  subtitulo: "Proyecto 11° · Negociación PYME + Gobierno Digital · CTP Mercedes Norte",
+  reto: `Con ayuda de la inteligencia artificial, cada estudiante va a <strong>construir una plataforma web real</strong> que una en un solo lugar los trámites de las instituciones públicas que necesita una PYME: Registro Nacional, Hacienda, CCSS, INS, Ministerio de Salud, Municipalidad, MEIC y SICOP. La IA escribe el código; <strong>usted toma las decisiones, verifica la información y explica por qué</strong>.`,
+  reglas: [
+    "Use la IA que tenga disponible: ChatGPT, Gemini, Claude o Copilot.",
+    "Su plataforma es un <strong>prototipo educativo</strong>: debe decirlo en pantalla, usar datos ficticios y no usar logos oficiales. Nunca pida contraseñas ni datos reales.",
+    "Todo dato sobre trámites que dé la IA se verifica en el sitio oficial de la institución.",
+    "Cada fase se entrega una sola vez. Lea, piense y responda con sus palabras: se evalúa su razonamiento, no lo que copió."
+  ],
+  rubrica: [
+    {criterio:"Investigación y verificación", n1:"Copia lo que dice la IA sin verificar.", n2:"Verifica algunos datos, con fuentes incompletas.", n3:"Verifica los trámites clave en fuentes oficiales y corrige a la IA cuando se equivoca."},
+    {criterio:"Diseño centrado en el usuario", n1:"Las pantallas no responden a un usuario concreto.", n2:"Hay un usuario definido, pero la ruta de trámites tiene vacíos.", n3:"La ruta de trámites tiene un orden lógico y justificado para un usuario concreto."},
+    {criterio:"Construcción con IA", n1:"La plataforma no funciona o no se puede abrir.", n2:"Funciona parcialmente; faltan módulos.", n3:"Funciona en celular e incluye todas las instituciones y módulos pedidos."},
+    {criterio:"Interoperabilidad y datos", n1:"Pide los mismos datos en cada trámite.", n2:"Reutiliza datos, pero sin aviso de consentimiento.", n3:"Pide los datos una sola vez, con consentimiento claro y protección de datos."},
+    {criterio:"Negociación y pitch", n1:"No explica el valor de su plataforma.", n2:"Explica el valor, pero sin usar MAAN, ZOPA o precio de reserva.", n3:"Defiende su propuesta de valor y aplica MAAN, ZOPA y precio de reserva con números."}
+  ],
+  fases: [
+    {
+      titulo: "Investigar con IA (y no creerle todo)",
+      icono: "🔎",
+      objetivo: "Armar el mapa de trámites que su plataforma va a unir, verificando lo que dice la IA.",
+      explicacion: `<p>La IA es rápida para investigar, pero <strong>puede inventar requisitos, montos o nombres de sistemas</strong>. Por eso su primera tarea es pedirle una tabla y luego <strong>comprobar al menos un dato</strong> en el sitio oficial.</p>
+        <p>Piense en un usuario concreto (por ejemplo: <em>una repostera que trabaja desde su casa y quiere contratar a una ayudante</em>). Los trámites cambian según el tipo de negocio.</p>`,
+      campos: [
+        {id:"usuario", label:"¿Para quién es su plataforma? (usuario concreto)", ph:"Ej.: una repostera de Heredia que quiere formalizarse y contratar a una ayudante"}
+      ],
+      prompt: `Actúa como asesor de emprendimientos en Costa Rica. Necesito investigar los trámites públicos que debe hacer {usuario}.
+Hazme una tabla con estas columnas: Institución | Trámite | Para qué sirve | Requisito principal | ¿Depende de otro trámite? | Sitio oficial donde verificarlo.
+Incluye: Registro Nacional, Ministerio de Hacienda (TRIBU-CR y factura electrónica), CCSS, INS (Riesgos del Trabajo), Ministerio de Salud, Municipalidad, MEIC (condición PYME) y SICOP.
+Al final, señala qué datos de tu tabla podrían estar desactualizados y debo verificar.`,
+      checklist: ["Copié el prompt en mi IA y obtuve la tabla.", "Abrí el sitio oficial de al menos una institución.", "Corregí o confirmé un dato de la tabla."],
+      pensar: [
+        {q:"¿Qué dato de la IA verificó en un sitio oficial? ¿Coincidía o tuvo que corregirlo?", min:15},
+        {q:"¿Qué trámite cree que le cuesta más tiempo a su usuario y por qué?", min:12}
+      ],
+      entrega: {label:"Pegue su tabla final de trámites (ya verificada)", tipo:"texto"}
+    },
+    {
+      titulo: "Diseñar antes de programar",
+      icono: "✏️",
+      objetivo: "Decidir el orden de los trámites, qué datos se piden una sola vez y qué pantallas tendrá la plataforma.",
+      explicacion: `<p>Las buenas plataformas nacen del <strong>design thinking</strong>: empatizar, definir, idear, prototipar y evaluar. Antes de pedir código, usted decide la <strong>ruta</strong>: algunos trámites necesitan el resultado de otros (por ejemplo, para facturar primero hay que estar inscrito en Hacienda).</p>
+        <p>También decide qué datos se escriben <strong>una sola vez</strong> y se reutilizan en todas las instituciones. Ese es el corazón del gobierno digital: la <strong>interoperabilidad</strong>.</p>`,
+      campos: [
+        {id:"nombre", label:"Nombre de su plataforma", ph:"Ej.: CR Conecta PYME"},
+        {id:"usuario", label:"Usuario (puede repetir el de la fase 1)", ph:"Ej.: una repostera que quiere formalizarse"},
+        {id:"orden", label:"Orden de los trámites que USTED propone", ph:"Ej.: Hacienda → Municipalidad → Salud → CCSS → INS → MEIC → SICOP"},
+        {id:"datos", label:"Datos que se piden UNA sola vez", ph:"Ej.: nombre, cédula, dirección, actividad económica, teléfono"}
+      ],
+      prompt: `Actúa como diseñador de experiencia de usuario (UX). Voy a crear una plataforma web llamada "{nombre}" que une en un solo lugar los trámites públicos de Costa Rica para {usuario}.
+Mi propuesta de orden de trámites es: {orden}.
+Los datos que el usuario escribirá una sola vez son: {datos}.
+1) Revisa mi orden: ¿hay algún trámite que dependa de otro y esté mal ubicado? Explícame por qué, pero NO lo cambies tú: dame tu argumento.
+2) Propón un mapa de pantallas (máximo 6) con lo que tendría cada una.
+3) Dime qué dato de mi lista NO debería compartirse con todas las instituciones y por qué.`,
+      checklist: ["Obtuve el mapa de pantallas.", "Revisé la crítica de la IA a mi orden de trámites.", "Decidí mi orden final."],
+      pensar: [
+        {q:"La IA opinó sobre su orden de trámites. ¿Lo mantuvo o lo cambió? Justifique su decisión.", min:15},
+        {q:"¿Qué dato no debería compartirse con todas las instituciones y por qué?", min:12}
+      ],
+      entrega: {label:"Escriba su orden final de trámites y su mapa de pantallas", tipo:"texto"}
+    },
+    {
+      titulo: "Construir la primera versión con IA",
+      icono: "🛠️",
+      objetivo: "Usar un prompt maestro para que la IA programe la plataforma en un solo archivo.",
+      explicacion: `<p>Ahora la IA escribe el código. Pídale todo en <strong>un solo archivo HTML</strong>: así lo puede abrir en el navegador o ver en la vista previa de la IA (Canvas en ChatGPT o Gemini, Artifacts en Claude).</p>
+        <p>Si la IA le da el código y no una vista previa, cópielo en un archivo llamado <code>index.html</code> y ábralo en el navegador. Revise que se vea bien en el <strong>celular</strong>.</p>`,
+      campos: [
+        {id:"nombre", label:"Nombre de su plataforma", ph:"Ej.: CR Conecta PYME"},
+        {id:"usuario", label:"Usuario", ph:"Ej.: una repostera que quiere formalizarse"},
+        {id:"orden", label:"Orden final de trámites", ph:"Ej.: Hacienda → Municipalidad → Salud → CCSS → INS → MEIC → SICOP"},
+        {id:"colores", label:"Colores y estilo", ph:"Ej.: azul oscuro y dorado, moderno y sencillo"}
+      ],
+      prompt: `Actúa como desarrollador web experto. Crea una plataforma web en UN SOLO archivo HTML (HTML, CSS y JavaScript juntos, sin servidores ni librerías externas) llamada "{nombre}".
+Es un PROTOTIPO EDUCATIVO que une en un solo lugar los trámites públicos de Costa Rica para {usuario}.
+Debe tener:
+1. Pantalla de inicio con una ruta de trámites en este orden: {orden}. Cada paso muestra la institución, el trámite, sus requisitos y un estado (Pendiente / En proceso / Listo) que el usuario puede cambiar.
+2. Una barra de progreso que muestre cuántos trámites van listos.
+3. Diseño adaptable a celular, estilo {colores}.
+4. Usa solo datos ficticios. No uses logos oficiales.
+5. En el pie de página: "Prototipo educativo — no es un sitio oficial del Gobierno de Costa Rica".
+Entrégame el archivo completo.`,
+      checklist: ["La plataforma abre y se ve la ruta de trámites.", "Probé cambiar el estado de un trámite.", "La revisé en vista de celular.", "Aparece el aviso de prototipo educativo."],
+      pensar: [
+        {q:"¿Qué salió diferente a lo que usted esperaba en esta primera versión? ¿Qué le pediría cambiar a la IA?", min:15}
+      ],
+      entrega: {label:"Pegue el enlace para compartir de su conversación o de su plataforma publicada", tipo:"link"}
+    },
+    {
+      titulo: "Conectar las instituciones",
+      icono: "🔗",
+      objetivo: "Agregar el perfil único (los datos se escriben una vez) y el consentimiento de datos.",
+      explicacion: `<p>Aquí está la idea central del gobierno digital: <strong>el ciudadano no debería entregar lo mismo varias veces</strong> (Ley 8220). Su plataforma va a simular esa interoperabilidad: el usuario llena su perfil una vez y, con un botón, “envía” los datos a cada institución.</p>
+        <p>Pero compartir datos exige <strong>consentimiento informado</strong> (Ley 8968): el usuario debe saber qué datos se envían, a quién y para qué, y poder aceptar o rechazar.</p>`,
+      campos: [
+        {id:"datos", label:"Datos del perfil único", ph:"Ej.: nombre, cédula, dirección, actividad económica, teléfono"}
+      ],
+      prompt: `Sobre la plataforma que ya creamos, agrega estas funciones sin borrar lo que ya existe:
+1. Una sección "Mi perfil único" donde el usuario escribe una sola vez: {datos}.
+2. En cada trámite, un botón "Usar mis datos" que llene automáticamente el formulario de esa institución con el perfil (simulado, sin enviar nada a internet).
+3. Antes de usar los datos por primera vez, una ventana de consentimiento que diga qué datos se compartirán, con cuál institución y para qué, con botones "Acepto" y "No acepto".
+4. Un historial visible que muestre a qué instituciones se "enviaron" los datos y cuándo.
+Entrégame el archivo completo actualizado.`,
+      checklist: ["Llené el perfil una vez y se reutilizó en un trámite.", "Apareció la ventana de consentimiento.", "Probé el botón No acepto y la plataforma lo respetó.", "El historial muestra los envíos."],
+      pensar: [
+        {q:"Explique con sus palabras qué es la interoperabilidad y cómo la simula su plataforma.", min:15},
+        {q:"Si usted fuera el usuario, ¿qué le haría desconfiar de una plataforma que pide sus datos?", min:12}
+      ],
+      entrega: {label:"Pegue el enlace actualizado de su plataforma o conversación", tipo:"link"}
+    },
+    {
+      titulo: "Módulo de Negociación PYME",
+      icono: "🤝",
+      objetivo: "Agregar un simulador para preparar ofertas en SICOP usando precio de reserva, MAAN y ZOPA.",
+      explicacion: `<p>Cuando la PYME quiere venderle al Estado por <strong>SICOP</strong>, las reglas del concurso ya están dadas: su negociación está en preparar la <strong>mejor oferta posible</strong>. Para eso necesita:</p>
+        <ul><li><strong>Precio de reserva:</strong> lo mínimo que acepta (no puede estar por debajo de su costo).</li>
+        <li><strong>MAAN:</strong> lo que hará si no gana (otros clientes, otra licitación).</li>
+        <li><strong>ZOPA:</strong> el rango entre su precio de reserva y lo máximo que el comprador puede pagar. Si no se traslapan, no hay acuerdo posible.</li>
+        <li><strong>Concesiones inteligentes:</strong> ceder en lo que le cuesta poco y al otro le vale mucho (plazo, empaque, garantía).</li></ul>`,
+      campos: [
+        {id:"producto", label:"Producto o servicio que vendería al Estado", ph:"Ej.: meriendas para escuelas"},
+        {id:"costo", label:"Costo por unidad (₡)", ph:"Ej.: 400"},
+        {id:"presupuesto", label:"Lo máximo que paga el comprador (₡)", ph:"Ej.: 500"}
+      ],
+      prompt: `Sobre la plataforma que ya creamos, agrega una sección "Negociación PYME" sin borrar lo que ya existe. Es un simulador para preparar una oferta en SICOP para vender {producto}.
+1. Campos: costo por unidad, margen de ganancia deseado (%), precio máximo del comprador y cantidad de unidades.
+2. Que calcule el precio de reserva (nunca menor al costo), el precio sugerido de oferta y el total de la oferta.
+3. Que muestre gráficamente si existe ZOPA (zona de posible acuerdo) entre el precio de reserva y el precio máximo del comprador, y un mensaje claro si no existe.
+4. Un campo para escribir la MAAN (qué hará la PYME si no gana).
+5. Una lista de concesiones que la PYME puede ofrecer sin bajar el precio (plazo de entrega, empaque, garantía).
+Ejemplo para probar: costo ₡{costo}, precio máximo del comprador ₡{presupuesto}.
+Entrégame el archivo completo actualizado.`,
+      checklist: ["El simulador calcula el precio de reserva.", "Muestra si hay ZOPA con mi ejemplo.", "Probé un caso SIN ZOPA y el mensaje fue claro.", "Revisé a mano que los cálculos de la IA son correctos."],
+      pensar: [
+        {q:"Con sus números: ¿existe ZOPA? ¿Entre qué montos? ¿Qué precio ofertaría y por qué?", min:15},
+        {q:"¿Qué concesión ofrecería al comprador en lugar de bajar el precio? Justifique.", min:12}
+      ],
+      entrega: {label:"Pegue el enlace actualizado de su plataforma o conversación", tipo:"link"}
+    },
+    {
+      titulo: "Probar y corregir",
+      icono: "🧪",
+      objetivo: "Que un compañero use su plataforma, encontrar errores y corregirlos con IA entendiendo la causa.",
+      explicacion: `<p>Ninguna plataforma sale perfecta. Pídale a un compañero que la use <strong>sin ayuda</strong> como si fuera el usuario, y anote dónde se confunde o qué falla.</p>
+        <p>Al corregir con IA, no pida solo “arréglalo”: pida que le <strong>explique la causa</strong>. Así aprende y puede defender su trabajo.</p>`,
+      campos: [
+        {id:"problema", label:"Problema que encontró su compañero", ph:"Ej.: al recargar la página se borran los estados de los trámites"}
+      ],
+      prompt: `Mi plataforma tiene este problema: {problema}.
+Te voy a pegar el código completo debajo. Primero explícame en palabras sencillas cuál es la causa del problema. Después dame el archivo completo corregido, sin quitar ninguna función que ya exista.
+[PEGUE AQUÍ SU CÓDIGO]`,
+      checklist: ["Un compañero probó mi plataforma sin mi ayuda.", "Anoté al menos un error o confusión.", "La IA me explicó la causa.", "Comprobé que el error quedó corregido."],
+      pensar: [
+        {q:"¿Cuál era la causa del error, explicada con sus palabras?", min:15},
+        {q:"¿Qué aprendió de ver a otra persona usar su plataforma?", min:12}
+      ],
+      entrega: {label:"Nombre del compañero que la probó y lo que se corrigió", tipo:"texto"}
+    },
+    {
+      titulo: "Publicar y defender (pitch)",
+      icono: "🎤",
+      objetivo: "Entregar la versión final y preparar un pitch de 60 segundos para convencer a una institución de adoptarla.",
+      explicacion: `<p>Su plataforma ya existe. Ahora hay que <strong>negociarla</strong>: convencer a una institución o a un grupo de PYMES de adoptarla. Un buen pitch dice qué problema resuelve, para quién, por qué es mejor que la forma actual (<strong>propuesta de valor</strong>) y qué pide usted.</p>
+        <p>Escriba su pitch <strong>usted mismo</strong>. La IA solo le da retroalimentación: no se lo reescribe.</p>`,
+      campos: [
+        {id:"nombre", label:"Nombre de su plataforma", ph:"Ej.: CR Conecta PYME"},
+        {id:"pitch", label:"Su pitch (escrito por usted)", ph:"Escriba aquí su pitch de 60 segundos", area:true}
+      ],
+      prompt: `Actúa como jurado de una feria de emprendimiento del sector público. Este es mi pitch de 60 segundos para la plataforma "{nombre}":
+"{pitch}"
+NO lo reescribas. Dame: 1) dos fortalezas, 2) dos debilidades, 3) las tres preguntas difíciles que me haría un jurado, 4) una sugerencia para que mi propuesta de valor sea más clara.`,
+      checklist: ["Mi plataforma final abre desde el enlace.", "Recibí retroalimentación de la IA sin que reescribiera mi pitch.", "Preparé respuestas para las preguntas difíciles."],
+      pensar: [
+        {q:"¿Cuál es la propuesta de valor de su plataforma en una sola oración?", min:10},
+        {q:"De las preguntas difíciles del jurado, ¿cuál le preocupa más y cómo la respondería?", min:15}
+      ],
+      entrega: {label:"Enlace de su plataforma final", tipo:"link"}
+    }
+  ]
+};
+</script>
+<script>
+(function(){
+'use strict';
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN = "9986";
+const MID = TALLER.moduleId;
+const FASES = TALLER.fases;
+let studentName = "", equipo = "";
+let done = {};          // idx -> {texto, ts}
+let campos = {};        // valores de campos compartidos entre fases
+let estadoFase = {};    // idx -> {checks:Set, promptListo:bool}
+
+/* ---------- Google Sheets (mismo contrato JSON de la plataforma) ---------- */
+function jsonpRequest(url){
+  return new Promise((resolve,reject)=>{
+    const cb = 'cb_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+    const s = document.createElement('script');
+    window[cb] = d=>{ resolve(d); delete window[cb]; s.remove(); };
+    s.onerror = ()=>{ reject(new Error('jsonp')); delete window[cb]; s.remove(); };
+    s.src = url + (url.indexOf('?')>-1?'&':'?') + 'callback=' + cb;
+    document.body.appendChild(s);
+    setTimeout(()=>{ if(window[cb]){ resolve({rows:[]}); delete window[cb]; s.remove(); } }, 8000);
+  });
+}
+function sheetGet(sheet){ return jsonpRequest(SHEET_API_URL+'?sheet='+encodeURIComponent(sheet)).then(d=> (d&&d.rows)?d.rows:[]); }
+function sheetPost(sheet, row){
+  const payload = { sheet, row: Object.keys(row).map(k=>row[k]) };
+  return fetch(SHEET_API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload), keepalive:true }).catch(()=>{});
+}
+
+/* ---------- utilidades ---------- */
+const $ = id=>document.getElementById(id);
+const esc = s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const palabras = t=>String(t||'').trim().split(/\s+/).filter(Boolean).length;
+const norm = s=>String(s||'').trim().toLowerCase();
+function guardarLocal(){ try{ localStorage.setItem(MID+'_campos_'+norm(studentName), JSON.stringify(campos)); }catch(e){} }
+function cargarLocal(){ try{ campos = JSON.parse(localStorage.getItem(MID+'_campos_'+norm(studentName))||'{}')||{}; }catch(e){ campos = {}; } }
+function aviso(msg, ok){
+  let b = $('avisoBox');
+  if(!b){ b = document.createElement('div'); b.id='avisoBox'; document.body.appendChild(b); }
+  b.className = 'aviso-flot ' + (ok?'ok':'');
+  b.textContent = msg; b.style.opacity = '1';
+  clearTimeout(b.__t); b.__t = setTimeout(()=>{ b.style.opacity='0'; }, 2600);
+}
+function nombreDesdePortal(){ try{ const n=(new URLSearchParams(location.search).get('nombre')||'').trim(); return n||null; }catch(e){ return null; } }
+function totalDone(){ return Object.keys(done).length; }
+function desbloqueada(i){ return i===0 || !!done[i-1]; }
+
+/* filas válidas: posteriores al último reinicio hecho por el docente */
+function ultimoReset(progRows, nombre){
+  let t = '';
+  progRows.forEach(r=>{ if(norm(r.Estudiante)===norm(nombre) && String(r.Modulo).trim()===MID+'_reset' && String(r.Timestamp)>t) t = String(r.Timestamp); });
+  return t;
+}
+
+/* ---------- portada ---------- */
+function init(){
+  const np = nombreDesdePortal();
+  $('app').innerHTML = `
+  <div class="hero">
+    <div class="hero-tag">TALLER-PROYECTO CON IA</div>
+    <h1>${TALLER.titulo}</h1>
+    <p class="hero-sub">${TALLER.subtitulo}</p>
+  </div>
+  <div class="card">
+    <p class="reto">${TALLER.reto}</p>
+    <h3>Reglas del taller</h3>
+    <ul class="reglas">${TALLER.reglas.map(r=>`<li>${r}</li>`).join('')}</ul>
+    <label>Nombre completo</label>
+    <input id="inpNombre" type="text" autocomplete="off" placeholder="Nombre y apellidos" ${np?'readonly':''} value="${np?esc(np):''}">
+    <label>Nombre de su equipo o startup (opcional)</label>
+    <input id="inpEquipo" type="text" autocomplete="off" placeholder="Ej.: Startup Mercedes Digital">
+    <button id="btnEntrar" class="btn">Entrar al taller</button>
+    <p class="nota">Puede salir y volver otro día: su avance se recupera al entrar con el mismo nombre.</p>
+  </div>
+  <div class="card">
+    <h3>Cómo se evalúa</h3>
+    ${tablaRubrica()}
+  </div>
+  <button id="btnDocente" class="btn-link">Panel docente</button>`;
+  $('btnEntrar').onclick = entrar;
+  $('btnDocente').onclick = panelDocente;
+}
+function tablaRubrica(){
+  return `<div class="tabla-wrap"><table class="rub"><tr><th>Criterio</th><th>1 · No logrado</th><th>2 · En proceso</th><th>3 · Logrado</th></tr>
+  ${TALLER.rubrica.map(r=>`<tr><td><strong>${r.criterio}</strong></td><td>${r.n1}</td><td>${r.n2}</td><td>${r.n3}</td></tr>`).join('')}</table></div>`;
+}
+async function entrar(){
+  const n = $('inpNombre').value.trim();
+  if(!n){ alert('Escriba su nombre completo.'); return; }
+  studentName = n; equipo = $('inpEquipo').value.trim();
+  const btn = $('btnEntrar'); btn.disabled = true; btn.textContent = 'Recuperando su avance...';
+  cargarLocal();
+  if(equipo){ campos.__equipo = equipo; guardarLocal(); } else { equipo = campos.__equipo || ''; }
+  try{
+    const [prog, casos] = await Promise.all([sheetGet('Progreso'), sheetGet('Casos')]);
+    const tReset = ultimoReset(prog, n);
+    FASES.forEach((f,i)=>{
+      const okProg = prog.some(r=> norm(r.Estudiante)===norm(n) && String(r.Modulo).trim()===MID+'_fase'+(i+1)+'_paso' && String(r.Timestamp)>tReset);
+      if(okProg){
+        const c = casos.filter(r=> norm(r.Nombre)===norm(n) && String(r.CasoId).trim()===MID+'_fase'+(i+1) && String(r.Timestamp)>tReset).pop();
+        done[i] = { texto: c ? c.Texto : '(entregado)', ts: c ? c.Timestamp : '' };
+        if(!equipo && c){ const m = String(c.Texto).match(/Equipo: ([^\n]+)/); if(m) equipo = m[1].trim(); }
+      }
+    });
+  }catch(e){}
+  monitorSalida();
+  mapa();
+}
+
+/* ---------- mapa de fases ---------- */
+function barra(){
+  const pct = Math.round(totalDone()/FASES.length*100);
+  return `<div class="barra"><div class="barra-fill" style="width:${pct}%"></div></div>
+    <p class="barra-txt">${esc(studentName)}${equipo?' · '+esc(equipo):''} — ${totalDone()}/${FASES.length} fases entregadas</p>`;
+}
+function mapa(){
+  const todo = totalDone()===FASES.length;
+  $('app').innerHTML = `${barra()}
+  <h2 class="titulo-sec">Ruta del proyecto</h2>
+  <p class="nota">Cada fase se desbloquea al entregar la anterior.</p>
+  <div class="fases">${FASES.map((f,i)=>{
+    const st = done[i] ? 'hecha' : (desbloqueada(i) ? 'abierta' : 'cerrada');
+    const etiqueta = st==='hecha' ? '✓ Entregada' : st==='abierta' ? 'Disponible' : '🔒 Bloqueada';
+    return `<button class="fase ${st}" data-i="${i}" ${st==='cerrada'?'disabled':''}>
+      <span class="fase-ico">${f.icono}</span>
+      <span class="fase-body"><span class="fase-num">Fase ${i+1}</span><span class="fase-tit">${f.titulo}</span><span class="fase-est">${etiqueta}</span></span>
+    </button>`; }).join('')}</div>
+  ${todo ? `<button id="btnFinal" class="btn">🎓 Ver cierre del proyecto</button>` : ''}`;
+  document.querySelectorAll('.fase').forEach(b=> b.onclick = ()=> verFase(+b.dataset.i));
+  if(todo) $('btnFinal').onclick = cierre;
+  window.scrollTo(0,0);
+}
+
+/* ---------- fase ---------- */
+function armarPrompt(f){
+  return f.prompt.replace(/\{(\w+)\}/g, (m,id)=> (campos[id]||'').trim() || '['+id.toUpperCase()+']');
+}
+function verFase(i){
+  const f = FASES[i];
+  const head = `${barra()}
+    <button class="btn-sec" id="btnVolver">← Ruta del proyecto</button>
+    <div class="fase-head"><span class="fase-ico grande">${f.icono}</span><div><div class="fase-num">Fase ${i+1} de ${FASES.length}</div><h2>${f.titulo}</h2></div></div>
+    <div class="card objetivo"><strong>🎯 Objetivo:</strong> ${f.objetivo}</div>
+    <div class="card texto">${f.explicacion}</div>`;
+  if(done[i]){
+    $('app').innerHTML = head + `<div class="card bloqueada"><p><strong>✓ Fase entregada.</strong> Ya no se puede modificar; si necesita repetirla, pídale a su docente que reinicie su intento.</p>
+      <details><summary>Ver lo que entregué</summary><pre class="entregado">${esc(done[i].texto)}</pre></details></div>`;
+    $('btnVolver').onclick = mapa; window.scrollTo(0,0); return;
+  }
+  const est = estadoFase[i] = estadoFase[i] || {checks:new Set(), promptListo:false};
+  $('app').innerHTML = head + `
+    <div class="card">
+      <h3>Paso 1 · Arme su prompt</h3>
+      <p class="nota">Complete con <strong>sus</strong> decisiones. El prompt se arma solo con lo que escriba.</p>
+      ${f.campos.map(c=>`<label>${c.label}</label>${c.area?`<textarea class="campo" data-id="${c.id}" rows="5" placeholder="${esc(c.ph)}">${esc(campos[c.id]||'')}</textarea>`:`<input class="campo" data-id="${c.id}" type="text" placeholder="${esc(c.ph)}" value="${esc(campos[c.id]||'')}">`}`).join('')}
+      <button id="btnArmar" class="btn">Generar mi prompt</button>
+      <div id="promptBox" style="display:none">
+        <pre id="promptTxt" class="prompt"></pre>
+        <button id="btnCopiar" class="btn-sec">📋 Copiar prompt</button>
+        <p class="nota">Péguelo en su IA (ChatGPT, Gemini, Claude o Copilot). Si el resultado no le convence, pídale cambios con sus palabras.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Paso 2 · Compruebe</h3>
+      ${f.checklist.map((c,k)=>`<label class="check"><input type="checkbox" class="chk" data-k="${k}" ${est.checks.has(k)?'checked':''}> ${c}</label>`).join('')}
+    </div>
+    <div class="card">
+      <h3>Paso 3 · Piense y responda</h3>
+      <p class="nota">Con sus palabras. Se evalúa su razonamiento.</p>
+      ${f.pensar.map((p,k)=>`<label>${p.q}</label><textarea class="pensar" data-k="${k}" rows="3" placeholder="Mínimo ${p.min} palabras">${esc(campos['__p'+i+'_'+k]||'')}</textarea><p class="cont" id="cont${k}"></p>`).join('')}
+    </div>
+    <div class="card">
+      <h3>Paso 4 · Entregue</h3>
+      <label>${f.entrega.label}</label>
+      ${f.entrega.tipo==='link' ? `<input id="entrega" type="url" placeholder="https://..." value="${esc(campos['__e'+i]||'')}">` : `<textarea id="entrega" rows="5">${esc(campos['__e'+i]||'')}</textarea>`}
+      <button id="btnEntregar" class="btn">Entregar fase ${i+1}</button>
+      <p id="msgEntrega" class="msg"></p>
+    </div>`;
+  $('btnVolver').onclick = mapa;
+  document.querySelectorAll('.campo').forEach(el=> el.oninput = ()=>{ campos[el.dataset.id]=el.value; guardarLocal(); if(est.promptListo) $('promptTxt').textContent = armarPrompt(f); });
+  $('btnArmar').onclick = ()=>{
+    const falta = f.campos.filter(c=> !(campos[c.id]||'').trim());
+    if(falta.length){ aviso('Complete: '+falta.map(c=>c.label).join(' · ')); return; }
+    est.promptListo = true;
+    $('promptTxt').textContent = armarPrompt(f);
+    $('promptBox').style.display = 'block';
+  };
+  $('btnCopiar').onclick = ()=>{
+    const t = $('promptTxt').textContent;
+    const ok = ()=>aviso('Prompt copiado ✓', true);
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok, ()=>copiarRespaldo(t, ok)); }
+    else copiarRespaldo(t, ok);
+  };
+  document.querySelectorAll('.chk').forEach(el=> el.onchange = ()=>{ el.checked ? est.checks.add(+el.dataset.k) : est.checks.delete(+el.dataset.k); });
+  const contar = el=>{ const k=+el.dataset.k, n=palabras(el.value), min=f.pensar[k].min; $('cont'+k).textContent = n+' / '+min+' palabras'; $('cont'+k).className = 'cont '+(n>=min?'ok':''); };
+  document.querySelectorAll('.pensar').forEach(el=>{ contar(el); el.oninput = ()=>{ campos['__p'+i+'_'+el.dataset.k]=el.value; guardarLocal(); contar(el); }; });
+  $('entrega').oninput = ()=>{ campos['__e'+i] = $('entrega').value; guardarLocal(); };
+  $('btnEntregar').onclick = ()=> entregar(i);
+  if(est.promptListo){ $('promptTxt').textContent = armarPrompt(f); $('promptBox').style.display='block'; }
+  window.scrollTo(0,0);
+}
+function copiarRespaldo(t, ok){
+  const ta = document.createElement('textarea'); ta.value = t; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){ aviso('Seleccione el texto y cópielo manualmente.'); } ta.remove();
+}
+function entregar(i){
+  const f = FASES[i], est = estadoFase[i];
+  const msg = t=>{ $('msgEntrega').textContent = t; };
+  if(!est.promptListo) return msg('Primero genere y use su prompt (Paso 1).');
+  if(est.checks.size < f.checklist.length) return msg('Marque todas las comprobaciones del Paso 2 (solo si realmente las hizo).');
+  const resp = [...document.querySelectorAll('.pensar')].map(el=>el.value.trim());
+  for(let k=0;k<f.pensar.length;k++){ if(palabras(resp[k]) < f.pensar[k].min) return msg('La respuesta '+(k+1)+' del Paso 3 necesita al menos '+f.pensar[k].min+' palabras.'); }
+  const ent = $('entrega').value.trim();
+  if(!ent) return msg('Complete la entrega del Paso 4.');
+  if(f.entrega.tipo==='link' && !/^https?:\/\/\S+\.\S+/.test(ent)) return msg('Pegue un enlace válido que empiece con https://');
+  if(!confirm('¿Entregar la fase '+(i+1)+'? Después no podrá modificarla.')) return;
+  const texto = [
+    'FASE '+(i+1)+': '+f.titulo + (equipo?'  |  Equipo: '+equipo:''),
+    'ENTREGA: '+ent,
+    ...f.pensar.map((p,k)=>'PENSAR '+(k+1)+' — '+p.q+'\n'+resp[k]),
+    'PROMPT USADO:\n'+armarPrompt(f)
+  ].join('\n\n');
+  const ts = new Date().toISOString();
+  sheetPost('Casos', { Timestamp: ts, CasoId: MID+'_fase'+(i+1), Nombre: studentName, Texto: texto });
+  sheetPost('Progreso', { Timestamp: ts, Estudiante: studentName, Modulo: MID+'_fase'+(i+1)+'_paso', Score:'1', Total:'1' });
+  done[i] = { texto, ts };
+  if(totalDone()===FASES.length){
+    sheetPost('Progreso', { Timestamp: new Date().toISOString(), Estudiante: studentName, Modulo: MID, Score: FASES.length+'/completo', Total: String(FASES.length) });
+  }
+  aviso('Fase '+(i+1)+' entregada ✓', true);
+  mapa();
+}
+
+/* ---------- cierre ---------- */
+function cierre(){
+  const linkFinal = (done[FASES.length-1] && (String(done[FASES.length-1].texto).match(/ENTREGA: (\S+)/)||[])[1]) || '';
+  $('app').innerHTML = `${barra()}
+    <div class="card cert" id="cert">
+      <div class="cert-tag">CTP Mercedes Norte · Especialidad de Contabilidad</div>
+      <h2>Constancia de proyecto</h2>
+      <p>Se hace constar que</p>
+      <p class="cert-nombre">${esc(studentName)}</p>
+      ${equipo?`<p>del equipo <strong>${esc(equipo)}</strong></p>`:''}
+      <p>completó las ${FASES.length} fases del taller</p>
+      <p class="cert-curso">${TALLER.titulo}</p>
+      ${linkFinal?`<p class="nota">Plataforma: ${esc(linkFinal)}</p>`:''}
+      <p class="nota">${new Date().toLocaleDateString('es-CR',{year:'numeric',month:'long',day:'numeric'})} · Prof. Gerardo González González</p>
+    </div>
+    <div class="card"><h3>Rúbrica que aplicará su docente</h3><p class="nota">La calificación final la asigna el docente al revisar su plataforma, sus respuestas y su pitch.</p>${tablaRubrica()}</div>
+    <button class="btn" id="btnImprimir">Imprimir constancia</button>
+    <button class="btn-sec" id="btnVolver">← Ruta del proyecto</button>`;
+  $('btnVolver').onclick = mapa;
+  $('btnImprimir').onclick = ()=>{ document.body.classList.add('imprimiendo'); setTimeout(()=>{ window.print(); document.body.classList.remove('imprimiendo'); }, 150); };
+  window.scrollTo(0,0);
+}
+
+/* ---------- monitoreo de salida de pantalla ---------- */
+function monitorSalida(){
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden && studentName){
+      sheetPost('Progreso', { Timestamp:new Date().toISOString(), Estudiante:studentName, Modulo:'incidente_salida_pantalla_'+MID, Score:'salida', Total:'1' });
+    }
+  });
+}
+
+/* ---------- panel docente ---------- */
+function panelDocente(){
+  const pin = prompt('PIN del panel docente:');
+  if(pin!==TEACHER_PIN){ if(pin!==null) alert('PIN incorrecto.'); return; }
+  cargarPanel();
+}
+function cargarPanel(){
+  $('app').innerHTML = `<h2 class="titulo-sec">Panel docente</h2><p class="nota">${TALLER.titulo}</p>
+    <button class="btn-sec" id="btnVolverP">← Volver</button><div id="panelBox">Cargando...</div>`;
+  $('btnVolverP').onclick = init;
+  Promise.all([sheetGet('Progreso'), sheetGet('Casos')]).then(([prog, casos])=>{
+    const nombres = {};
+    prog.forEach(r=>{ const m=String(r.Modulo||'').trim(); if(r.Estudiante && (m.startsWith(MID) || m==='incidente_salida_pantalla_'+MID)) nombres[norm(r.Estudiante)] = r.Estudiante; });
+    const lista = Object.values(nombres).sort((a,b)=>a.localeCompare(b));
+    if(!lista.length){ $('panelBox').innerHTML = '<p>Aún no hay estudiantes con avance.</p>'; return; }
+    let html = `<div class="tabla-wrap"><table class="rub panel"><tr><th>Estudiante</th>${FASES.map((f,i)=>`<th title="${esc(f.titulo)}">F${i+1}</th>`).join('')}<th>Salidas</th><th>Plataforma</th><th></th></tr>`;
+    const detalles = {};
+    lista.forEach((n,idx)=>{
+      const tR = ultimoReset(prog, n);
+      const vig = r=> String(r.Timestamp)>tR;
+      const salidas = prog.filter(r=> norm(r.Estudiante)===norm(n) && String(r.Modulo).trim()==='incidente_salida_pantalla_'+MID && vig(r)).length;
+      const ent = FASES.map((f,i)=> casos.filter(r=> norm(r.Nombre)===norm(n) && String(r.CasoId).trim()===MID+'_fase'+(i+1) && vig(r)).pop());
+      const hechas = FASES.map((f,i)=> prog.some(r=> norm(r.Estudiante)===norm(n) && String(r.Modulo).trim()===MID+'_fase'+(i+1)+'_paso' && vig(r)));
+      let link = '';
+      for(let i=FASES.length-1;i>=0 && !link;i--){ const m = ent[i] && String(ent[i].Texto).match(/ENTREGA: (https?:\/\/\S+)/); if(m) link = m[1]; }
+      detalles[idx] = ent.map((e,i)=> e ? `<h4>Fase ${i+1}</h4><pre class="entregado">${esc(e.Texto)}</pre>` : '').join('') || '<p>Sin entregas.</p>';
+      html += `<tr><td>${esc(n)}</td>${hechas.map(h=>`<td class="c">${h?'<span class="ok">✓</span>':'—'}</td>`).join('')}
+        <td class="c">${salidas}</td>
+        <td class="c">${link?`<a href="${esc(link)}" target="_blank" rel="noopener">Abrir</a>`:'—'}</td>
+        <td class="c"><button class="btn-mini ver" data-i="${idx}">Ver</button> <button class="btn-mini rep" data-n="${esc(n)}">🔄</button></td></tr>
+        <tr id="det${idx}" style="display:none"><td colspan="${FASES.length+4}"><div class="detalle">${detalles[idx]}</div></td></tr>`;
+    });
+    html += '</table></div><p class="nota">Salidas de pantalla: en este taller son esperables, porque el estudiante usa la IA en otra pestaña. Úselas solo como referencia. 🔄 reinicia el intento del estudiante (sus filas anteriores se conservan en la hoja, pero dejan de contar).</p>';
+    $('panelBox').innerHTML = html;
+    document.querySelectorAll('.ver').forEach(b=> b.onclick = ()=>{ const r=$('det'+b.dataset.i); r.style.display = r.style.display==='none'?'table-row':'none'; });
+    document.querySelectorAll('.rep').forEach(b=> b.onclick = ()=>{
+      if(!confirm('¿Reiniciar el intento de '+b.dataset.n+'? Podrá volver a hacer todas las fases.')) return;
+      sheetPost('Progreso', { Timestamp:new Date().toISOString(), Estudiante:b.dataset.n, Modulo:MID+'_reset', Score:'reset', Total:'0' })
+        .then(()=>{ alert('Intento reiniciado.'); setTimeout(cargarPanel, 300); });
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+window.__taller = { getDone: ()=>done, getCampos: ()=>campos };
+})();
+</script>
+</body>
+</html>
