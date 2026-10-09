@@ -4,99 +4,275 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal Contable · CTP Mercedes Norte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#000000; --bg-panel:#141414; --bg-card:#1b1b1b;
-  --gold:#B8863C; --gold-light:#F4DD7A;
+  --bg:#050506; --bg-panel:rgba(18,18,20,.78); --bg-card:rgba(24,24,27,.82);
+  --gold:#C9973F; --gold-light:#F4DD7A;
   --teal:#2FC2AD; --coral:#EF6A5B;
-  --ink:#EDEDED; --muted:#9AA0A6; --line:#2E2E2E;
-  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --ink:#EDEDED; --muted:#9AA0A6; --line:rgba(255,255,255,.09);
+  --sans:'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono:'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
 }
 *{box-sizing:border-box;}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;}
-.topbar{background:var(--bg-panel);border-bottom:1px solid var(--line);color:#fff;padding:18px 16px;display:flex;align-items:center;gap:14px;justify-content:center;}
-.topbar img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:10px;padding:4px;flex-shrink:0;}
-.topbar-text{text-align:left;}
-.topbar h1{margin:0 0 4px;font-size:16px;}
-.topbar p{margin:0;font-size:10.5px;color:var(--muted);font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
 
-.wrap{max-width:520px;margin:0 auto;padding:24px 16px 60px;}
+/* ---------- fondo animado (libro contable) ---------- */
+#bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 40%, rgba(201,151,63,.10), transparent 55%),
+             radial-gradient(ellipse at 85% 80%, rgba(47,194,173,.08), transparent 50%),
+             radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.75) 100%);}
+#app{position:relative;z-index:2;}
 
-/* login */
-.login-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:28px 22px;text-align:center;margin-top:20px;}
-.login-card h2{font-size:15px;margin:0 0 6px;color:#fff;}
-.login-card p{font-size:12.5px;color:var(--muted);margin:0 0 18px;}
-.login-card input{width:100%;padding:12px 14px;background:#0d0d0d;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;font-size:16px;font-family:var(--mono);letter-spacing:1px;text-align:center;margin-bottom:12px;}
-.login-card input:focus{outline:none;border-color:var(--gold);}
-.btn{display:inline-block;padding:11px 24px;background:var(--gold);color:#0a0a0a;border:none;border-radius:22px;font-size:13.5px;font-weight:700;cursor:pointer;width:100%;}
-.btn:hover{background:var(--gold-light);}
-.btn:disabled{opacity:.5;cursor:default;}
-.btn-outline{background:transparent;border:1px solid var(--line);color:var(--ink);}
-.btn-outline:hover{border-color:var(--gold);background:transparent;}
-.error-msg{color:var(--coral);font-size:12px;margin-top:10px;display:none;}
+/* ============ PANTALLA DE INGRESO ============ */
+.login-screen{min-height:100vh;display:grid;grid-template-columns:1.25fr 1fr;align-items:stretch;}
+.hero{display:flex;flex-direction:column;justify-content:space-between;padding:48px 6vw 40px;}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand img{width:58px;height:58px;object-fit:contain;background:#fff;border-radius:12px;padding:4px;box-shadow:0 0 0 1px rgba(201,151,63,.5),0 8px 30px rgba(0,0,0,.6);}
+.brand .b1{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--gold-light);text-transform:uppercase;}
+.brand .b2{font-size:15px;font-weight:600;color:#fff;margin-top:2px;}
+.hero-main h1{font-size:clamp(40px,5.6vw,84px);line-height:.98;margin:0;font-weight:700;letter-spacing:-1.5px;color:#fff;}
+.hero-main h1 .g{background:linear-gradient(90deg,var(--gold-light),var(--gold) 60%,#a5762a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-main .lead{font-size:clamp(14px,1.25vw,18px);color:#c7c9cc;max-width:560px;margin:18px 0 0;line-height:1.5;}
+.equation{display:inline-flex;gap:10px;align-items:center;margin-top:22px;font-family:var(--mono);font-size:clamp(12px,1vw,14px);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:8px 16px;background:rgba(0,0,0,.35);}
+.equation b{color:var(--gold-light);font-weight:600;}
+.equation .eq{color:var(--teal);}
+
+/* asiento en vivo */
+.ledger{margin-top:30px;max-width:620px;border:1px solid rgba(201,151,63,.35);border-radius:14px;background:rgba(8,8,10,.72);backdrop-filter:blur(6px);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55);}
+.ledger-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-light);}
+.ledger-head .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);margin-right:8px;box-shadow:0 0 10px var(--teal);animation:pulse 1.6s infinite;}
+@keyframes pulse{50%{opacity:.25}}
+.ledger table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:clamp(11px,.95vw,13.5px);}
+.ledger th{text-align:left;color:var(--muted);font-weight:500;padding:8px 16px;border-bottom:1px dashed var(--line);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;}
+.ledger th.n,.ledger td.n{text-align:right;}
+.ledger td{padding:7px 16px;color:#e8e8e8;white-space:nowrap;}
+.ledger td.ind{padding-left:40px;color:#cfd2d6;}
+.ledger td.glosa{color:var(--muted);font-style:italic;white-space:normal;}
+.ledger tr.tot td{border-top:1px solid rgba(201,151,63,.45);color:var(--gold-light);font-weight:600;}
+.ledger tr.row{animation:rowIn .45s ease both;}
+@keyframes rowIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ok-badge{color:var(--teal);font-weight:600;}
+.hero-foot{display:flex;gap:26px;flex-wrap:wrap;margin-top:28px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.5px;}
+.hero-foot span b{color:#fff;font-size:20px;font-family:var(--sans);display:block;letter-spacing:0;}
+
+.login-side{display:flex;align-items:center;justify-content:center;padding:40px 5vw;background:linear-gradient(90deg,transparent,rgba(0,0,0,.55) 30%);}
+.login-card{width:100%;max-width:440px;background:var(--bg-panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;padding:38px 34px;box-shadow:0 30px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.05);position:relative;overflow:hidden;}
+.login-card:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal),var(--gold));background-size:200% 100%;animation:slide 6s linear infinite;}
+@keyframes slide{to{background-position:200% 0}}
+.login-card .kicker{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);}
+.login-card h2{font-size:28px;margin:8px 0 6px;color:#fff;font-weight:700;}
+.login-card p{font-size:14px;color:var(--muted);margin:0 0 26px;line-height:1.5;}
+.field{position:relative;margin-bottom:16px;}
+.field label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.field .ico{position:absolute;left:14px;bottom:14px;color:var(--gold);font-family:var(--mono);font-size:15px;}
+.login-card input{width:100%;padding:15px 16px 15px 42px;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:12px;font-size:18px;font-family:var(--mono);letter-spacing:3px;transition:border-color .2s, box-shadow .2s;}
+.login-card input::placeholder{letter-spacing:1px;color:#5f6368;font-size:15px;}
+.login-card input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,151,63,.18);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 24px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#0a0a0a;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:var(--sans);letter-spacing:.3px;transition:transform .15s, box-shadow .2s;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(201,151,63,.35);}
+.btn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none;}
+.btn .arrow{transition:transform .2s;}
+.btn:hover .arrow{transform:translateX(4px);}
+.login-note{display:flex;gap:10px;align-items:flex-start;margin-top:22px;padding-top:18px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted);line-height:1.5;}
+.login-note .lk{color:var(--teal);font-family:var(--mono);}
+.error-msg{color:var(--coral);font-size:13px;margin-top:12px;display:none;}
 .error-msg.show{display:block;}
-.loading-msg{color:var(--muted);font-size:12px;margin-top:10px;display:none;font-family:var(--mono);}
+.loading-msg{color:var(--gold-light);font-size:12px;margin-top:12px;display:none;font-family:var(--mono);}
 .loading-msg.show{display:block;}
 
-/* portal */
-.welcome-card{background:var(--bg-card);border:1px solid var(--gold);color:#fff;border-radius:12px;padding:18px 20px;margin-top:8px;}
-.welcome-card .role-tag{font-family:var(--mono);font-size:10px;color:var(--gold-light);text-transform:uppercase;letter-spacing:1px;}
-.welcome-card h2{margin:6px 0 2px;font-size:17px;}
-.welcome-card p{margin:0;font-size:12px;color:var(--muted);}
-.welcome-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.welcome-actions button{font-size:11px;padding:6px 12px;border-radius:14px;cursor:pointer;}
-.logout-btn{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff;}
-.admin-btn{background:rgba(184,134,60,.15);border:1px solid var(--gold);color:var(--gold-light);}
+/* ============ PORTAL (pantalla completa) ============ */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:14px 4vw;background:rgba(5,5,6,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+.topbar img{width:44px;height:44px;object-fit:contain;background:#fff;border-radius:10px;padding:3px;}
+.topbar .t1{font-size:16px;font-weight:700;color:#fff;}
+.topbar .t2{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.topbar .user{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.chip-user{font-family:var(--mono);font-size:11px;color:var(--gold-light);border:1px solid rgba(201,151,63,.45);border-radius:999px;padding:6px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw;}
 
-.section-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:22px 0 8px;}
-.level-heading{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;margin:28px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--gold);}
-.subarea-heading{font-size:12.5px;font-weight:700;color:var(--gold-light);margin:14px 0 6px;padding-left:8px;border-left:3px solid var(--gold);}
-.course-card{display:block;background:var(--bg-card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:10px;text-decoration:none;color:var(--ink);}
-.course-card:hover{border-left-color:var(--teal);}
-.course-card .ctag{font-family:var(--mono);font-size:9.5px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;}
-.course-card .ctitle{font-size:14px;font-weight:600;margin:4px 0 0;color:#fff;}
-.course-card .cpending{font-size:11px;color:var(--coral);margin-top:4px;}
-.empty-msg{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 20px;background:var(--bg-card);border:1px dashed var(--line);border-radius:8px;}
+.portal{padding:28px 4vw 70px;}
+.welcome-card{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;background:linear-gradient(120deg,rgba(201,151,63,.16),rgba(24,24,27,.85) 45%,rgba(47,194,173,.10));border:1px solid rgba(201,151,63,.45);border-radius:18px;padding:26px 30px;backdrop-filter:blur(8px);}
+.welcome-card .role-tag{font-family:var(--mono);font-size:11px;color:var(--gold-light);text-transform:uppercase;letter-spacing:2px;}
+.welcome-card h2{margin:6px 0 4px;font-size:clamp(22px,2.4vw,34px);color:#fff;}
+.welcome-card p{margin:0;font-size:14px;color:#c4c6c9;}
+.welcome-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+.welcome-actions button{font-size:12.5px;padding:10px 16px;border-radius:10px;cursor:pointer;font-family:var(--sans);font-weight:600;}
+.logout-btn{background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;}
+.logout-btn:hover{border-color:var(--coral);color:#ffb3a8;}
+.admin-btn{background:rgba(201,151,63,.14);border:1px solid var(--gold);color:var(--gold-light);}
+.admin-btn:hover{background:rgba(201,151,63,.25);}
 
-.sat-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1c1c1c 0%,#0a0a0a 100%);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-top:10px;text-decoration:none;color:#fff;}
-.sat-card .sat-icon{font-size:26px;flex-shrink:0;}
-.sat-card .sat-title{font-size:13.5px;font-weight:700;margin:0 0 2px;}
-.sat-card .sat-sub{font-size:10.5px;color:var(--muted);margin:0;}
-.sat-card .sat-arrow{margin-left:auto;color:var(--gold-light);font-size:16px;}
+.sat-card{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(47,194,173,.14),rgba(10,10,12,.9) 60%);border:1px solid rgba(47,194,173,.45);border-radius:16px;padding:18px 22px;margin-top:16px;text-decoration:none;color:#fff;transition:transform .15s, box-shadow .2s;}
+.sat-card:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(47,194,173,.18);}
+.sat-card .sat-icon{font-size:30px;flex-shrink:0;}
+.sat-card .sat-title{font-size:16px;font-weight:700;margin:0 0 2px;}
+.sat-card .sat-sub{font-size:12.5px;color:var(--muted);margin:0;}
+.sat-card .sat-arrow{margin-left:auto;color:var(--teal);font-size:20px;}
 
-.catalogo-error{background:#2a1512;border:1px solid var(--coral);color:#ffb3a8;font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;}
+.section-title{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--gold-light);margin:38px 0 14px;}
+.section-title:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(201,151,63,.5),transparent);}
+.level-heading{font-size:clamp(20px,2vw,28px);font-weight:700;color:#fff;margin:44px 0 0;padding-bottom:10px;border-bottom:2px solid var(--gold);display:flex;align-items:baseline;gap:12px;}
+.level-heading:before{content:"NIVEL";font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--gold);}
+.subarea-heading{grid-column:1/-1;font-size:14px;font-weight:600;color:#fff;margin:24px 0 12px;padding-left:12px;border-left:3px solid var(--teal);}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.course-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:104px;background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;text-decoration:none;color:var(--ink);overflow:hidden;transition:transform .15s, border-color .2s, box-shadow .2s;backdrop-filter:blur(6px);}
+.course-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gold);transition:background .2s;}
+.course-card:after{content:"→";position:absolute;right:16px;bottom:12px;font-family:var(--mono);color:var(--gold);opacity:.0;transform:translateX(-6px);transition:all .2s;}
+.course-card:hover{transform:translateY(-3px);border-color:rgba(201,151,63,.5);box-shadow:0 14px 34px rgba(0,0,0,.5);}
+.course-card:hover:before{background:var(--teal);}
+.course-card:hover:after{opacity:1;transform:none;}
+.course-card .ctag{font-family:var(--mono);font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;}
+.course-card .ctitle{font-size:15px;font-weight:600;margin:6px 0 0;color:#fff;line-height:1.35;padding-right:18px;}
+.course-card .cpending{font-size:11.5px;color:var(--coral);margin-top:6px;}
+.empty-msg{text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;background:var(--bg-card);border:1px dashed var(--line);border-radius:14px;margin-top:20px;}
+.catalogo-error{background:#2a1512;border:1px solid var(--coral);color:#ffb3a8;font-size:13px;padding:12px 16px;border-radius:10px;margin-top:16px;}
 
 /* panel docente (overlay) */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;overflow-y:auto;z-index:50;}
-.overlay-box{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;max-width:600px;width:100%;padding:22px;}
-.overlay-box h2{margin:0 0 4px;font-size:16px;color:#fff;}
-.overlay-box .sub{font-size:11.5px;color:var(--muted);margin:0 0 18px;}
-.overlay-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:8px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;overflow-y:auto;z-index:50;backdrop-filter:blur(4px);}
+.overlay-box{background:#121214;border:1px solid var(--line);border-radius:16px;max-width:760px;width:100%;padding:26px;}
+.overlay-box h2{margin:0 0 4px;font-size:20px;color:#fff;}
+.overlay-box .sub{font-size:13px;color:var(--muted);margin:0 0 18px;}
+.overlay-close{float:right;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;line-height:1;}
+.overlay-box .level-heading{font-size:18px;margin:22px 0 10px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1a1a1d;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px;}
 .toggle-row .trow-info{min-width:0;}
-.toggle-row .trow-title{font-size:13px;color:#fff;font-weight:600;}
-.toggle-row .trow-sub{font-size:10.5px;color:var(--muted);font-family:var(--mono);}
+.toggle-row .trow-title{font-size:13.5px;color:#fff;font-weight:600;}
+.toggle-row .trow-sub{font-size:11px;color:var(--muted);font-family:var(--mono);}
 .switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
 .switch input{opacity:0;width:0;height:0;}
 .switch-track{position:absolute;cursor:pointer;inset:0;background:#3a3a3a;border-radius:24px;transition:.2s;}
 .switch-track:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
 .switch input:checked + .switch-track{background:var(--teal);}
 .switch input:checked + .switch-track:before{transform:translateX(20px);}
+
+/* ---------- adaptable ---------- */
+@media (max-width:980px){
+  .login-screen{grid-template-columns:1fr;}
+  .hero{padding:28px 20px 10px;}
+  .hero-foot{display:none;}
+  .login-side{padding:10px 16px 40px;background:none;}
+  .welcome-card{grid-template-columns:1fr;}
+  .welcome-actions{justify-content:flex-start;}
+}
+@media (max-width:600px){
+  .ledger{display:none;}
+  .hero-main h1{font-size:40px;}
+  .login-card{padding:28px 22px;}
+  .topbar .t2{display:none;}
+  .chip-user{max-width:46vw;}
+  .portal{padding:20px 16px 60px;}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div id="app"></div>
 
-<div class="topbar">
-  <img src="logo_ctp_mercedes_norte.jpg" alt="Escudo CTP Mercedes Norte">
-  <div class="topbar-text">
-    <h1>🏫 Portal Contable</h1>
-    <p>CTP Mercedes Norte · Especialidad de Contabilidad</p>
-  </div>
-</div>
+<script>
+/* ============================================================
+   FONDO ANIMADO — "libro contable" en movimiento
+   Hoja rayada que avanza, cifras que suben y una curva de
+   resultados que se dibuja. Liviano (canvas) y se pausa si la
+   pestaña no está visible o si el equipo pide menos movimiento.
+   ============================================================ */
+(function(){
+  const cv = document.getElementById('bg'); if(!cv) return;
+  const ctx = cv.getContext('2d');
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W=0,H=0,DPR=1, t=0, items=[], chart=[], chartX=0;
+  const MONO = "'IBM Plex Mono', Menlo, Consolas, monospace";
+  const WORDS = ['DEBE','HABER','ACTIVO','PASIVO','PATRIMONIO','IVA 13 %','Σ','=','BALANCE','DIARIO','MAYOR','CAJA','BANCOS','UTILIDAD','RENTA','D-104','TRIBU-CR','VAN','TIR','ASIENTO'];
+  function money(){
+    const n = Math.round(Math.random()*9800000+20000);
+    return '₡ ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ') + ',' + String(Math.floor(Math.random()*100)).padStart(2,'0');
+  }
+  function newItem(y){
+    const isWord = Math.random()<.28;
+    const r = Math.random();
+    return { x: Math.random()*W, y: y!==undefined? y : H + 20 + Math.random()*H*0.3,
+      txt: isWord ? WORDS[Math.floor(Math.random()*WORDS.length)] : money(),
+      size: (isWord? 11 : 12) + Math.random()*(W>900? 9 : 4),
+      sp: .15 + Math.random()*.45,
+      col: r<.55 ? '201,151,63' : (r<.8 ? '47,194,173' : '230,230,230'),
+      a: .05 + Math.random()*.16 };
+  }
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio||1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    const n = Math.round(Math.min(70, Math.max(24, W*H/26000)));
+    items = Array.from({length:n}, ()=>newItem(Math.random()*H));
+    resetChart();
+  }
+  function resetChart(){
+    chart=[]; chartX=0; let v=.5;
+    const pts = Math.max(30, Math.round(W/28));
+    for(let i=0;i<=pts;i++){ v += (Math.random()-.42)*.09; v=Math.max(.15,Math.min(.9,v)); chart.push(v); }
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // 1) hoja rayada de libro contable
+    const gap = 34, off = (t*0.25) % gap;
+    ctx.lineWidth = 1;
+    for(let y=-gap+ (gap-off); y<H; y+=gap){
+      ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+      ctx.beginPath(); ctx.moveTo(0,y+.5); ctx.lineTo(W,y+.5); ctx.stroke();
+    }
+    // columnas tipo Debe / Haber (doble línea)
+    const cols = W>900 ? [0.08,0.62,0.78,0.92] : [0.12,0.88];
+    cols.forEach((c,i)=>{
+      const x = Math.round(W*c)+.5;
+      ctx.strokeStyle = i===0 ? 'rgba(239,106,91,0.10)' : 'rgba(201,151,63,0.07)';
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x+4,0); ctx.lineTo(x+4,H); ctx.stroke();
+    });
+    // 2) cifras que suben
+    items.forEach(it=>{
+      it.y -= it.sp; 
+      if(it.y < -30) Object.assign(it, newItem());
+      const fade = Math.min(1, (H - it.y)/(H*0.25)) * Math.min(1, it.y/(H*0.25));
+      ctx.font = it.size + 'px ' + MONO;
+      ctx.fillStyle = 'rgba(' + it.col + ',' + (it.a*Math.max(0,fade)).toFixed(3) + ')';
+      ctx.fillText(it.txt, it.x, it.y);
+    });
+    // 3) curva de resultados que se dibuja (parte baja)
+    const base = H*0.86, amp = H*0.22, step = W/(chart.length-1);
+    chartX = Math.min(chart.length-1, chartX + 0.06);
+    const last = Math.floor(chartX);
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(201,151,63,0.30)';
+    ctx.beginPath();
+    for(let i=0;i<=last;i++){ const x=i*step, y=base - chart[i]*amp; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    const fr = chartX-last, nx = Math.min(last+1, chart.length-1);
+    const hx = (last+fr)*step, hy = base - (chart[last] + (chart[nx]-chart[last])*fr)*amp;
+    ctx.lineTo(hx,hy); ctx.stroke();
+    // relleno suave bajo la curva
+    ctx.lineTo(hx, H); ctx.lineTo(0, H); ctx.closePath();
+    const g = ctx.createLinearGradient(0, base-amp, 0, H);
+    g.addColorStop(0,'rgba(201,151,63,0.07)'); g.addColorStop(1,'rgba(201,151,63,0)');
+    ctx.fillStyle = g; ctx.fill();
+    // punto brillante
+    ctx.beginPath(); ctx.arc(hx,hy,3.2,0,Math.PI*2); ctx.fillStyle='rgba(244,221,122,0.9)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(hx,hy,10,0,Math.PI*2); ctx.fillStyle='rgba(244,221,122,0.12)'; ctx.fill();
+    if(chartX >= chart.length-1){ t += 0; if(Math.random()<0.01) resetChart(); }
+  }
+  let raf=null;
+  function loop(){ t++; draw(); raf = requestAnimationFrame(loop); }
+  resize(); window.addEventListener('resize', resize);
+  if(reduce){ chartX = chart.length-1; draw(); return; }
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden){ cancelAnimationFrame(raf); raf=null; } else if(!raf){ loop(); }
+  });
+  loop();
+})();
 
-<div class="wrap" id="app"></div>
-
+</script>
 <script>
 /* ============================================================
    CONFIGURACIÓN
@@ -131,10 +307,9 @@ function sheetGet(sheetName){
   return jsonpRequest(SHEET_API_URL + '?sheet=' + encodeURIComponent(sheetName)).then(d=> (d && d.rows) ? d.rows : []);
 }
 function sheetPost(sheetName, row){
-  const body = new URLSearchParams();
-  body.set('sheet', sheetName);
-  Object.keys(row).forEach(k=>body.set(k, row[k]));
-  return fetch(SHEET_API_URL, { method:'POST', mode:'no-cors', body });
+  // Contrato JSON del doPost {sheet, row:[...]} con Content-Type text/plain (igual que engine.js)
+  return fetch(SHEET_API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({ sheet: sheetName, row: Object.keys(row).map(k=>row[k]) }), keepalive:true });
 }
 
 async function loadCatalogo(){
@@ -173,19 +348,86 @@ try{
 }catch(e){}
 
 function renderLogin(errorMsg){
+  stopLedger();
   appEl.innerHTML = `
-    <div class="login-card">
-      <h2>Ingreso al portal</h2>
-      <p>Escriba su número de cédula (sin espacios ni guiones) para continuar.</p>
-      <input type="text" id="cedulaInput" inputmode="numeric" placeholder="Número de cédula" maxlength="15" autocomplete="off">
-      <button class="btn" id="loginBtn">Ingresar</button>
-      <div class="loading-msg" id="loadingMsg">Verificando...</div>
-      <div class="error-msg ${errorMsg?'show':''}" id="errorMsg">${errorMsg||''}</div>
-    </div>
+  <div class="login-screen">
+    <section class="hero">
+      <div class="brand">
+        <img src="logo_ctp_mercedes_norte.jpg" alt="Escudo CTP Mercedes Norte">
+        <div><div class="b1">CTP Mercedes Norte</div><div class="b2">Especialidad de Contabilidad</div></div>
+      </div>
+      <div class="hero-main">
+        <h1>Portal<br><span class="g">Contable</span></h1>
+        <p class="lead">Cursos, antologías, simuladores y evaluaciones de 10°, 11° y 12° año en un solo lugar. Cada cifra cuenta; cada asiento cuadra.</p>
+        <div class="equation"><b>Activo</b><span class="eq">=</span>Pasivo<span class="eq">+</span>Patrimonio</div>
+        <div class="ledger" aria-hidden="true">
+          <div class="ledger-head"><span><span class="dot"></span>Libro diario · en vivo</span><span id="lgFolio">Folio 001</span></div>
+          <table>
+            <thead><tr><th>Fecha</th><th>Cuenta</th><th class="n">Debe</th><th class="n">Haber</th></tr></thead>
+            <tbody id="lgBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="hero-foot">
+        <span><b>3</b>niveles</span>
+        <span><b>Debe = Haber</b>partida doble</span>
+        <span><b>MEP · DETCE</b>programa oficial</span>
+      </div>
+    </section>
+    <section class="login-side">
+      <div class="login-card">
+        <div class="kicker">Acceso seguro</div>
+        <h2>Ingreso al portal</h2>
+        <p>Escriba su número de cédula, sin espacios ni guiones, para abrir su libro de trabajo.</p>
+        <div class="field">
+          <label for="cedulaInput">Número de cédula</label>
+          <span class="ico">#</span>
+          <input type="text" id="cedulaInput" inputmode="numeric" placeholder="Ej. 101230456" maxlength="15" autocomplete="off">
+        </div>
+        <button class="btn" id="loginBtn">Ingresar <span class="arrow">→</span></button>
+        <div class="loading-msg" id="loadingMsg">Verificando cédula…</div>
+        <div class="error-msg ${errorMsg?'show':''}" id="errorMsg">${errorMsg||''}</div>
+        <div class="login-note"><span class="lk">ⓘ</span><span>¿No puede ingresar? Consulte con su profesor para que revise su cédula en la lista de su sección.</span></div>
+      </div>
+    </section>
+  </div>
   `;
   document.getElementById('loginBtn').addEventListener('click', doLogin);
   document.getElementById('cedulaInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
   document.getElementById('cedulaInput').focus();
+  startLedger();
+}
+
+/* Asientos de ejemplo que se "escriben" en el libro diario de la portada */
+const LEDGER_ENTRIES = [
+  { f:'01-mar', l:[['Bancos','2 500 000',''],['Capital social','','2 500 000']], g:'Aporte inicial de los socios' },
+  { f:'05-mar', l:[['Inventario de mercadería','800 000',''],['IVA crédito fiscal','104 000',''],['Proveedores','','904 000']], g:'Compra a crédito + IVA 13 %' },
+  { f:'12-mar', l:[['Cuentas por cobrar','452 000',''],['Ventas','','400 000'],['IVA por pagar','','52 000']], g:'Venta a crédito, factura electrónica 4.4' },
+  { f:'31-mar', l:[['Gasto por depreciación','125 000',''],['Depreciación acumulada','','125 000']], g:'Depreciación mensual, línea recta' },
+  { f:'31-mar', l:[['Gasto por salarios','900 000',''],['Retenciones por pagar CCSS','','97 470'],['Salarios por pagar','','802 530']], g:'Planilla de marzo (10,83 % obrero)' }
+];
+let ledgerTimer = null, ledgerIdx = 0;
+function stopLedger(){ if(ledgerTimer){ clearTimeout(ledgerTimer); ledgerTimer = null; } }
+function startLedger(){
+  stopLedger();
+  const body = document.getElementById('lgBody'); if(!body) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const toNum = s => Number(String(s).replace(/\s/g,'')) || 0;
+  const fmt = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  function show(){
+    const e = LEDGER_ENTRIES[ledgerIdx % LEDGER_ENTRIES.length];
+    const folio = document.getElementById('lgFolio'); if(folio) folio.textContent = 'Folio ' + String(ledgerIdx % LEDGER_ENTRIES.length + 1).padStart(3,'0');
+    body.innerHTML = '';
+    const rows = e.l.map((x,i)=>`<tr class="row" style="animation-delay:${reduce?0:i*0.55}s"><td>${i?'':e.f}</td><td class="${x[2]&&!x[1]?'ind':''}">${x[0]}</td><td class="n">${x[1]}</td><td class="n">${x[2]}</td></tr>`).join('');
+    const d = e.l.reduce((s,x)=>s+toNum(x[1]),0), h = e.l.reduce((s,x)=>s+toNum(x[2]),0);
+    const k = e.l.length;
+    body.innerHTML = rows +
+      `<tr class="row" style="animation-delay:${reduce?0:k*0.55}s"><td></td><td class="glosa" colspan="3">${e.g}</td></tr>` +
+      `<tr class="row tot" style="animation-delay:${reduce?0:(k+1)*0.55}s"><td></td><td>Sumas iguales <span class="ok-badge">${d===h?'✓ cuadra':''}</span></td><td class="n">${fmt(d)}</td><td class="n">${fmt(h)}</td></tr>`;
+    ledgerIdx++;
+    if(!reduce) ledgerTimer = setTimeout(show, 5200);
+  }
+  show();
 }
 
 async function doLogin(){
@@ -221,11 +463,20 @@ function logout(){
 async function renderPortal(){
   const isDocente = session.rol === 'Docente';
   const nombreParam = encodeURIComponent(session.nombre);
+  stopLedger();
   appEl.innerHTML = `
+    <header class="topbar">
+      <img src="logo_ctp_mercedes_norte.jpg" alt="Escudo CTP Mercedes Norte">
+      <div><div class="t1">Portal Contable</div><div class="t2">CTP Mercedes Norte · Especialidad de Contabilidad</div></div>
+      <div class="user"><span class="chip-user">${escapeHtml(session.nombre)}</span></div>
+    </header>
+    <main class="portal">
     <div class="welcome-card">
+      <div>
       <div class="role-tag">${isDocente ? 'Docente' : 'Estudiante · ' + escapeHtml(session.seccion||'')}</div>
       <h2>${escapeHtml(session.nombre)}</h2>
       <p>${isDocente ? 'Acceso a todos los niveles y paneles docentes.' : 'Nivel ' + escapeHtml(session.nivel||'') + '° — este es el programa de tu especialidad.'}</p>
+      </div>
       <div class="welcome-actions">
         ${isDocente ? '<button class="admin-btn" id="adminBtn">⚙ Panel docente — habilitar temas</button>' : ''}
         <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
@@ -240,6 +491,7 @@ async function renderPortal(){
       <div class="sat-arrow">→</div>
     </a>
     <div id="courseList"><div class="empty-msg">Cargando catálogo...</div></div>
+    </main>
   `;
   document.getElementById('logoutBtn').addEventListener('click', logout);
   if(isDocente) document.getElementById('adminBtn').addEventListener('click', openAdminPanel);
@@ -262,7 +514,7 @@ async function renderPortal(){
     let html = '';
     levels.forEach(lvl=>{
       const levelRows = rows.filter(r=>String(r.Nivel)===lvl);
-      if(isDocente) html += `<div class="level-heading">Nivel ${escapeHtml(lvl)}°</div>`;
+      if(isDocente) html += `<div class="level-heading">${escapeHtml(lvl)}° año</div>`;
 
       const antologia = levelRows.filter(r=>r.Categoria==='Antologia' || r.Categoria==='Antología');
       const trabajos = levelRows.filter(r=>r.Categoria==='Trabajo en clase');
@@ -280,16 +532,16 @@ async function renderPortal(){
         });
         Object.keys(byAntSubarea).forEach(sub=>{
           html += `<div class="subarea-heading">${escapeHtml(sub)}</div>`;
-          html += byAntSubarea[sub].map(r=>renderCard(r)).join('');
+          html += '<div class="cards">' + byAntSubarea[sub].map(r=>renderCard(r)).join('') + '</div>';
         });
       }
       if(trabajos.length){
         html += `<div class="section-title">📝 Trabajos en clase</div>`;
-        html += trabajos.map(r=>renderCard(r)).join('');
+        html += '<div class="cards">' + trabajos.map(r=>renderCard(r)).join('') + '</div>';
       }
       if(examenes.length){
         html += `<div class="section-title">🎯 Exámenes y tareas</div>`;
-        html += examenes.map(r=>renderCard(r)).join('');
+        html += '<div class="cards">' + examenes.map(r=>renderCard(r)).join('') + '</div>';
       }
       if(temas.length){
         html += `<div class="section-title">📖 Temas del programa</div>`;
@@ -302,7 +554,7 @@ async function renderPortal(){
         });
         Object.keys(bySubarea).forEach(sub=>{
           html += `<div class="subarea-heading">${escapeHtml(sub)}</div>`;
-          html += bySubarea[sub].map(r=>renderCard(r)).join('');
+          html += '<div class="cards">' + bySubarea[sub].map(r=>renderCard(r)).join('') + '</div>';
         });
       }
     });
