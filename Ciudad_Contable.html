@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Ciudad Contable en línea</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050506;--card:#111114;--card2:#17171b;--line:rgba(255,255,255,.1);--gold:#C9973F;--gold2:#F4DD7A;--teal:#2FC2AD;--coral:#EF6A5B;--blue:#7DA7FF;--vio:#C38BFF;--ink:#ECEAE4;--mut:#9b9aa4;
+--sans:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer;touch-action:manipulation}
+.k{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold2)}
+h1{margin:6px 0 6px;font-size:28px} h2{margin:0;font-size:20px} h3{margin:18px 0 8px;font-size:15px;color:var(--gold2)}
+p{color:var(--mut);font-size:14px;line-height:1.5;margin:0 0 12px}
+label.l{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin:12px 0 6px}
+input[type=text],input[type=number],input[type=password],select,textarea{width:100%;padding:11px 12px;background:#000;border:1px solid rgba(255,255,255,.16);border-radius:10px;color:#fff;font-size:16px}
+select{appearance:auto}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+.bg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:10;overflow:auto;
+  background:radial-gradient(ellipse at 30% 30%,rgba(201,151,63,.14),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(47,194,173,.1),transparent 55%),var(--bg)}
+.box{width:100%;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 26px;box-shadow:0 30px 80px rgba(0,0,0,.6);margin:auto}
+.box.wide{max-width:760px}
+.colors{display:flex;gap:10px;flex-wrap:wrap}
+.colors button{width:38px;height:38px;border-radius:50%;border:3px solid transparent}
+.colors button.on{border-color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:700;font-size:14px}
+.btn.full{width:100%;margin-top:18px;padding:14px;font-size:15px}
+.btn.sec{background:#1d1d22;color:var(--ink);border:1px solid var(--line)}
+.btn.teal{background:var(--teal);color:#062}
+.btn.coral{background:var(--coral);color:#200}
+.btn.sm{padding:7px 11px;font-size:12.5px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{background:none;border:none;color:var(--mut);font-size:12px;text-decoration:underline;margin-top:14px;padding:4px}
+.note{margin-top:14px;font-size:12px;color:var(--mut);font-family:var(--mono);line-height:1.5}
+.note b{color:var(--teal)}
+.err{color:var(--coral);font-size:13px;margin-top:8px;min-height:1em}
+#game{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.glass{background:rgba(10,10,12,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px}
+.hud{position:fixed;left:12px;top:12px;padding:12px 14px;font-size:13px;width:270px;z-index:5}
+.hud .row{display:flex;justify-content:space-between;gap:10px;margin:4px 0;align-items:center}
+.hud .row span:first-child{color:var(--mut)}
+.hud .emp{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.logo{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#111;font-size:18px;flex:none}
+.logo.big{width:64px;height:64px;font-size:30px;border-radius:16px}
+.hud .nav{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.hud .nav button{flex:1;min-width:52px;padding:7px 4px;border-radius:9px;border:1px solid var(--line);background:#16161a;color:#fff;font-size:11.5px}
+.hud .nav button:hover{border-color:var(--gold)}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11.5px;font-family:var(--mono);background:#222;color:var(--ink);border:none}
+button.pill{cursor:pointer}
+.pill.w{background:rgba(239,106,91,.18);color:#ff9b8f}
+.pill.g{background:rgba(47,194,173,.18);color:#6ee8d6}
+.pill.y{background:rgba(244,221,122,.15);color:var(--gold2)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.list{position:fixed;right:12px;top:12px;padding:12px 14px;font-size:13px;max-height:52vh;overflow:auto;width:240px;z-index:5}
+.list h4{margin:0 0 6px;font-size:11px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--gold2)}
+.list .p{padding:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .p small{color:var(--mut)}
+.chatlog{margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:12px}
+.chatlog div{margin:3px 0;line-height:1.35}
+.chatlog b{color:var(--gold2);font-weight:600}
+.bar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:7px;z-index:5;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100vw - 80px)}
+.bar button{padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(15,15,18,.92);color:#fff;font-size:14px}
+.bar button:hover{border-color:var(--gold)}
+#frases{position:fixed;left:50%;transform:translateX(-50%);bottom:70px;z-index:15;padding:10px;width:min(420px,calc(100vw - 24px));display:grid;gap:6px}
+#frases button{text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#16161a;color:#fff;font-size:14px}
+#btnDoc{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:6;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(15,15,18,.6);color:var(--mut);font-size:14px;opacity:.55}
+#toasts{position:fixed;right:12px;bottom:72px;z-index:40;display:flex;flex-direction:column;gap:8px;width:min(420px,calc(100vw - 24px));pointer-events:none}
+.toast{pointer-events:none;padding:11px 14px;border-radius:12px;background:#1a1a1f;border:1px solid var(--line);border-left:4px solid var(--teal);font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:tin .25s ease-out}
+.toast.w{border-left-color:var(--coral)} .toast.y{border-left-color:var(--gold2)}
+@keyframes tin{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}
+#evento{position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.6)}
+#evento .ev{max-width:760px;text-align:center;padding:34px 30px;border-radius:22px;background:linear-gradient(135deg,#1b160a,#0c0c0f);border:2px solid var(--gold);box-shadow:0 0 80px rgba(201,151,63,.35)}
+#evento .ev .t{font-size:clamp(22px,4vw,40px);font-weight:700;color:var(--gold2);line-height:1.25;margin:10px 0 18px}
+#banda{position:fixed;left:50%;transform:translateX(-50%);top:12px;z-index:4;padding:8px 14px;font-size:13px;color:var(--gold2);max-width:min(520px,calc(100vw - 600px));text-align:center}
+#aviso{position:fixed;left:0;right:0;bottom:64px;margin:auto;width:min(520px,calc(100vw - 24px));z-index:8;padding:12px 16px;text-align:center;font-weight:600;border-color:var(--coral);color:#ffb3aa}
+/* paneles */
+.modal{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px}
+.sheet{width:100%;max-width:1000px;height:min(820px,calc(100% - 0px));background:var(--card);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.7)}
+.sh-head{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);flex:none}
+.sh-head .ic{font-size:24px}
+.sh-head .x{margin-left:auto;background:#1d1d22;border:1px solid var(--line);color:#fff;border-radius:10px;width:40px;height:40px;font-size:18px;flex:none}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 14px;border-bottom:1px solid var(--line);flex:none;-webkit-overflow-scrolling:touch}
+.tabs button{white-space:nowrap;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#16161a;color:var(--ink);font-size:13px}
+.tabs button.on{background:var(--gold);color:#111;border-color:var(--gold);font-weight:700}
+.sh-body{overflow:auto;padding:16px 18px 30px;-webkit-overflow-scrolling:touch;flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi .v{font-family:var(--mono);font-size:20px;font-weight:600;margin-top:4px}
+.kpi .t{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono)}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);font-weight:600}
+.tbl tfoot td{font-weight:700;border-top:2px solid var(--gold);border-bottom:none}
+.num{text-align:right!important;font-family:var(--mono);white-space:nowrap}
+.mut{color:var(--mut)} .ok{color:var(--teal)} .bad{color:var(--coral)} .gold{color:var(--gold2)}
+.empty{padding:22px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:12px;font-size:14px}
+.pend{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card2)}
+.pend .d{font-size:13.5px;line-height:1.45}
+.pend .d b{color:var(--gold2)}
+.ed-row{display:grid;grid-template-columns:1fr 130px 130px 40px;gap:8px;margin-bottom:8px}
+.ed-row input{font-family:var(--mono);text-align:right}
+.ed-row .del{background:#1d1d22;border:1px solid var(--line);border-radius:10px;color:var(--coral);font-size:16px}
+.ed-head{display:grid;grid-template-columns:1fr 130px 130px 40px;gap:8px;font-family:var(--mono);font-size:10.5px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.fb{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:14px;line-height:1.5}
+.fb.ok{background:rgba(47,194,173,.12);border:1px solid rgba(47,194,173,.4);color:#bff5ec}
+.fb.bad{background:rgba(239,106,91,.12);border:1px solid rgba(239,106,91,.4);color:#ffd0ca}
+.fb ul{margin:6px 0 0;padding-left:18px}
+.prod{display:grid;grid-template-columns:1.6fr .9fr .9fr .8fr .7fr 36px;gap:8px;margin-bottom:8px;align-items:center}
+.prodh{font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:1px;text-transform:uppercase}
+.radios{display:flex;gap:8px;flex-wrap:wrap}
+.radios label{display:flex;gap:8px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px;background:#0b0b0d}
+.radios label.on{border-color:var(--gold);background:rgba(201,151,63,.12)}
+.mk{border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.mk-h{display:flex;gap:10px;align-items:center;padding:10px 12px;background:var(--card2);border-bottom:1px solid var(--line)}
+.mk-p{display:grid;grid-template-columns:1.4fr 1fr 80px 1fr 1.2fr auto;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13.5px}
+.mk-p:last-child{border-bottom:none}
+.mk-p select,.mk-p input{padding:8px 9px;font-size:14px}
+.factura{background:#fbfaf6;color:#151515;border-radius:12px;padding:18px;font-size:13px;max-width:720px}
+.factura .fh{display:flex;justify-content:space-between;gap:12px;border-bottom:2px solid #C9973F;padding-bottom:10px;margin-bottom:10px;flex-wrap:wrap}
+.factura table{width:100%;border-collapse:collapse;margin:10px 0}
+.factura th,.factura td{border-bottom:1px solid #ddd;padding:5px;text-align:left}
+.factura .cl{font-family:var(--mono);font-size:10.5px;word-break:break-all;color:#555}
+.factura .num{color:#151515}
+.rank{display:grid;gap:10px}
+.rank .r{display:grid;grid-template-columns:56px minmax(0,1fr) 70px repeat(2,minmax(150px,auto)) repeat(2,90px);gap:18px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--card2);border:1px solid var(--line);font-size:15px}
+.rank .r .pos{font-size:28px;font-weight:700;color:var(--gold2);text-align:center}
+.rank .r .m{text-align:right;font-family:var(--mono)} .rank .r .m small{display:block;color:var(--mut);font-size:10px;font-family:var(--mono)}
+.rank.proj .r{font-size:22px;padding:18px 22px}
+#docente.proj{padding:0} #docente.proj .sheet{max-width:none!important;height:100%;border-radius:0}
+.switch{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.help p{color:var(--ink)} .help li{margin:4px 0;line-height:1.5;font-size:14px}
+.pinbox{max-width:340px}
+.soon{padding:40px 20px;text-align:center}
+.soon .ic{font-size:54px}
+@media (max-width:900px){ .rank .r{grid-template-columns:44px minmax(0,1fr) repeat(2,auto);gap:10px} .rank .r .m.hx{display:none} #banda{display:none} }
+@media (max-width:700px){
+  .modal{padding:0} .sheet{height:100%;max-height:100%;border-radius:0;border:none}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .hud{width:auto;max-width:calc(100vw - 16px);left:8px;top:8px;right:8px;padding:9px 11px;font-size:12px}
+  .hud .row.hm{display:none}
+  .list{top:auto;bottom:calc(64px + env(safe-area-inset-bottom));right:8px;max-height:20vh;width:160px;padding:8px 10px;font-size:12px}
+  #toasts{left:12px;right:12px;width:auto;bottom:calc(118px + env(safe-area-inset-bottom))}
+  .list .chatlog{display:none}
+  .ed-row,.ed-head{grid-template-columns:1fr 92px 92px 34px;gap:5px}
+  .ed-row input,.ed-row select{padding:9px 6px;font-size:14px}
+  .prod{grid-template-columns:1fr 1fr 1fr;}
+  .prod .pn{grid-column:1/-1}
+  .prodh{display:none}
+  .mk-p{grid-template-columns:1fr 1fr}
+  .mk-p .pn{grid-column:1/-1}
+  .bar{max-width:calc(100vw - 50px);bottom:calc(8px + env(safe-area-inset-bottom))}
+  .bar button{padding:8px 9px;font-size:13px}
+  .bar .tx{display:none}
+  .box{padding:22px 18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ======== INGRESO ======== -->
+<div id="login" class="bg">
+  <div class="box">
+    <div class="k">Ciudad Contable · Etapa 2</div>
+    <h1>Ciudad Contable en línea</h1>
+    <p>Mundo multijugador de Contabilidad del CTP Mercedes Norte. Cree su empresa, compre y venda a sus compañeros, emita facturas electrónicas y registre cada operación en su libro diario.</p>
+    <label class="l" for="nom">Su nombre completo</label>
+    <input type="text" id="nom" maxlength="40" placeholder="Nombre y apellidos" autocomplete="off">
+    <label class="l">Color de su personaje</label>
+    <div class="colors" id="colors"></div>
+    <button class="btn full" id="go">Entrar al mundo →</button>
+    <div class="err" id="loginErr"></div>
+    <div class="note" id="modeNote"></div>
+    <button class="link" id="linkDoc">Acceso docente</button>
+  </div>
+</div>
+
+<!-- ======== CREAR EMPRESA ======== -->
+<div id="crear" class="bg" hidden>
+  <div class="box wide" id="crearBox"></div>
+</div>
+
+<!-- ======== JUEGO ======== -->
+<div id="game" hidden>
+  <canvas id="cv"></canvas>
+  <div class="hud glass" id="hud"></div>
+  <div class="list glass" id="lista"><h4>En el mundo · <span id="cnt">0</span></h4><div id="who"></div><div class="chatlog" id="chatlog"></div></div>
+  <div class="glass" id="banda" hidden></div>
+  <div class="bar" id="bar">
+    <button data-emo="👋">👋<span class="tx"> Saludar</span></button>
+    <button data-emo="✅">✅<span class="tx"> Listo</span></button>
+    <button data-emo="❓">❓<span class="tx"> Duda</span></button>
+    <button data-emo="💰">💰<span class="tx"> Vendo</span></button>
+    <button data-act="frases">💬<span class="tx"> Frases</span></button>
+    <button data-act="ayuda">📘<span class="tx"> Ayuda</span></button>
+  </div>
+  <div id="frases" class="glass" hidden></div>
+  <div id="aviso" class="glass" hidden></div>
+  <button id="btnDoc" title="Docente" aria-label="Panel docente">⚙</button>
+</div>
+
+<div id="panel" class="modal" hidden><div class="sheet"><div class="sh-head" id="phead"></div><div class="tabs" id="ptabs"></div><div class="sh-body" id="pbody"></div></div></div>
+<div id="docente" class="modal" hidden><div class="sheet" style="max-width:1280px"><div class="sh-head" id="dhead"></div><div class="tabs" id="dtabs"></div><div class="sh-body" id="dbody"></div></div></div>
+<div id="pin" class="modal" hidden><div class="box pinbox"><div class="k">Panel docente</div><h2 style="margin:8px 0 12px">Digite el PIN</h2>
+  <input type="password" id="pinIn" inputmode="numeric" maxlength="8" autocomplete="off"><div class="err" id="pinErr"></div>
+  <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sec" data-act="pinNo">Cancelar</button><button class="btn" data-act="pinOk" style="flex:1">Entrar</button></div></div></div>
+<div id="evento" hidden><div class="ev"><div class="k">Aviso del docente</div><div class="t" id="evTxt"></div><button class="btn" data-act="evCerrar">Entendido</button></div></div>
+<div id="toasts"></div>
+
+<script>
+/* ============================================================
+   SIMULADOR LOCAL DE FIREBASE REALTIME DATABASE (modo demostración)
+   Implementa el subconjunto de la API compat que usa la app:
+   ref / child / parent / key / on / off / once / set / update (multi-ruta
+   atómico) / push / remove / transaction / onDisconnect / limitToLast /
+   ServerValue.TIMESTAMP / ServerValue.increment / .info/connected.
+   Estado compartido entre pestañas del MISMO navegador:
+   IndexedDB (persistencia) + Web Locks (exclusión mutua) +
+   BroadcastChannel (difusión de cambios).
+   ============================================================ */
+function SimDB(){
+  var IDBN='ciudad_contable_sim', LOCK='ccsim_lock';
+  var TAB='t'+Math.random().toString(36).slice(2,10);
+  var tree={}, ver=0, online=true, onlineWaiters=[];
+  var listeners=[];
+  var ch=('BroadcastChannel' in window)?new BroadcastChannel('ccsim_chan'):null;
+  var seen={}; var t0=Date.now();
+  var log=[], paused=false; // paused: solo para pruebas (simula caché desactualizada) // bitácora de escrituras (para verificar reglas en pruebas)
+
+  /* ---------- IndexedDB ---------- */
+  var dbp=new Promise(function(res){
+    try{
+      var rq=indexedDB.open(IDBN,1);
+      rq.onupgradeneeded=function(){ rq.result.createObjectStore('kv'); };
+      rq.onsuccess=function(){ res(rq.result); };
+      rq.onerror=function(){ res(null); };
+    }catch(e){ res(null); }
+  });
+  var memState={tree:{},ver:0}; // respaldo si no hay IndexedDB
+  function idbGet(){ return dbp.then(function(db){ if(!db) return memState; return new Promise(function(res){
+    var tx=db.transaction('kv','readonly'); var r=tx.objectStore('kv').get('state');
+    r.onsuccess=function(){ res(r.result||{tree:{},ver:0}); }; r.onerror=function(){ res({tree:{},ver:0}); }; }); }); }
+  function idbPut(st){ return dbp.then(function(db){ if(!db){ memState=st; return; } return new Promise(function(res,rej){
+    var tx=db.transaction('kv','readwrite'); tx.objectStore('kv').put(st,'state'); tx.oncomplete=function(){ res(); }; tx.onerror=function(){ rej(tx.error); }; }); }); }
+  function withLock(fn){ if(navigator.locks&&navigator.locks.request) return navigator.locks.request(LOCK,fn); return fn(); }
+  var ready=idbGet().then(function(st){ if(st.ver>ver){ tree=st.tree; ver=st.ver; } fire(); });
+
+  /* ---------- utilidades de árbol ---------- */
+  function segs(p){ return String(p||'').split('/').filter(function(s){ return s!==''; }); }
+  function clone(v){ return v===undefined?undefined:JSON.parse(JSON.stringify(v)); }
+  function getAt(t,p){ var s=segs(p), n=t; for(var i=0;i<s.length;i++){ if(n===null||typeof n!=='object') return undefined; n=n[s[i]]; if(n===undefined) return undefined; } return n; }
+  // forma de almacenamiento: sin null, sin objetos vacíos, arreglos → objetos con índice
+  function normalize(v){
+    if(v===null||v===undefined) return undefined;
+    if(Array.isArray(v)){ var o={}; v.forEach(function(x,i){ var nx=normalize(x); if(nx!==undefined) o[String(i)]=nx; }); return Object.keys(o).length?o:undefined; }
+    if(typeof v==='object'){ var r={}, any=false; Object.keys(v).forEach(function(k){ if(k==='.priority') return; var nx=normalize(v[k]); if(nx!==undefined){ r[k]=nx; any=true; } }); return any?r:undefined; }
+    if(typeof v==='number'&&!isFinite(v)) throw new Error('Valor numérico no válido');
+    if(typeof v==='function') throw new Error('No se pueden guardar funciones');
+    return v;
+  }
+  function isSV(v){ return v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===1&&v['.sv']!==undefined; }
+  function resolveSV(v,cur){
+    if(isSV(v)){ var sv=v['.sv']; if(sv==='timestamp') return Date.now();
+      if(sv&&typeof sv==='object'&&typeof sv.increment==='number'){ return (typeof cur==='number'?cur:0)+sv.increment; } throw new Error('ServerValue desconocido'); }
+    if(v&&typeof v==='object'){ var o=Array.isArray(v)?[]:{}; Object.keys(v).forEach(function(k){ o[k]=resolveSV(v[k],cur&&typeof cur==='object'?cur[k]:undefined); }); return o; }
+    return v;
+  }
+  function setAt(t,p,v){ // v ya normalizado (o undefined para borrar); devuelve árbol raíz
+    var s=segs(p); if(!s.length) return v===undefined?{}:v;
+    var stack=[t], n=t;
+    for(var i=0;i<s.length-1;i++){ if(n[s[i]]===undefined||n[s[i]]===null||typeof n[s[i]]!=='object') n[s[i]]={}; n=n[s[i]]; stack.push(n); }
+    if(v===undefined) delete n[s[s.length-1]]; else n[s[s.length-1]]=v;
+    for(var j=stack.length-1;j>0;j--){ if(Object.keys(stack[j]).length===0) delete stack[j-1][s[j-1]]; else break; }
+    return t;
+  }
+  // val() de RTDB: objetos con claves enteras densas → arreglos
+  function exportVal(v){
+    if(v===undefined||v===null) return null;
+    if(typeof v!=='object') return v;
+    var ks=Object.keys(v), allInt=ks.length>0, max=0, o={};
+    ks.forEach(function(k){ o[k]=exportVal(v[k]); if(/^(0|[1-9]\d*)$/.test(k)&&k.length<10){ max=Math.max(max,+k); } else allInt=false; });
+    if(allInt&&max<2*ks.length){ var a=[]; for(var i=0;i<=max;i++) a.push(o[i]===undefined?null:o[i]); return a; }
+    return o;
+  }
+  function keyCmp(a,b){ var ia=/^-?(0|[1-9]\d*)$/.test(a)&&Math.abs(+a)<2147483648, ib=/^-?(0|[1-9]\d*)$/.test(b)&&Math.abs(+b)<2147483648;
+    if(ia&&ib) return (+a)-(+b); if(ia) return -1; if(ib) return 1; return a<b?-1:a>b?1:0; }
+  function sortedKeys(v){ return (v&&typeof v==='object')?Object.keys(v).sort(keyCmp):[]; }
+  function applyQuery(v,q){ if(!q||!q.last||!v||typeof v!=='object') return v; var ks=sortedKeys(v).slice(-q.last), o={}; ks.forEach(function(k){ o[k]=v[k]; }); return ks.length?o:undefined; }
+
+  /* ---------- push ids (algoritmo de Firebase) ---------- */
+  var PC='-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz', lastT=0, lastR=[];
+  function pushId(){ var now=Date.now(), dup=now===lastT; lastT=now; var tc=new Array(8);
+    for(var i=7;i>=0;i--){ tc[i]=PC.charAt(now%64); now=Math.floor(now/64); }
+    var id=tc.join('');
+    if(!dup){ for(i=0;i<12;i++) lastR[i]=Math.floor(Math.random()*64); }
+    else { for(i=11;i>=0&&lastR[i]===63;i--) lastR[i]=0; lastR[i]++; }
+    for(i=0;i<12;i++) id+=PC.charAt(lastR[i]); return id; }
+
+  /* ---------- confirmación (commit) bajo candado ---------- */
+  function waitOnline(){ return online?Promise.resolve():new Promise(function(r){ onlineWaiters.push(r); }); }
+  function commit(mut){
+    return ready.then(waitOnline).then(function(){ return withLock(function(){
+      return idbGet().then(function(st){
+        st=st||{tree:{},ver:0}; if(!st.tree||typeof st.tree!=='object') st.tree={};
+        var res=mut(st);
+        if(res&&res.abort){ adopt(st); return res; }
+        st.ver++;
+        return idbPut(st).then(function(){ adopt(st); if(ch) ch.postMessage({ver:st.ver,tree:st.tree}); return res; });
+      });
+    }); });
+  }
+  function adopt(st){ if(st.ver>=ver){ tree=st.tree; ver=st.ver; fire(); } }
+
+  /* ---------- eventos ---------- */
+  function Snap(key,raw,path){ this.key=key; this._raw=raw; this._path=path; this.ref=raw===null?null:new Ref(path); }
+  Snap.prototype.val=function(){ return exportVal(clone(this._raw)); };
+  Snap.prototype.exportVal=Snap.prototype.val;
+  Snap.prototype.exists=function(){ return this._raw!==undefined&&this._raw!==null; };
+  Snap.prototype.child=function(p){ var s=segs(p); return new Snap(s[s.length-1]||null,getAt(this._raw||{},p),join(this._path,p)); };
+  Snap.prototype.hasChild=function(p){ return getAt(this._raw||{},p)!==undefined; };
+  Snap.prototype.hasChildren=function(){ return !!(this._raw&&typeof this._raw==='object'&&Object.keys(this._raw).length); };
+  Snap.prototype.numChildren=function(){ return (this._raw&&typeof this._raw==='object')?Object.keys(this._raw).length:0; };
+  Snap.prototype.forEach=function(cb){ var self=this; var ks=sortedKeys(this._raw); for(var i=0;i<ks.length;i++){ if(cb(self.child(ks[i]))===true) return true; } return false; };
+  Snap.prototype.toJSON=function(){ return this.val(); };
+
+  function info(path){ if(path==='.info/connected') return online; if(path==='.info/serverTimeOffset') return 0; return undefined; }
+  function valueFor(l){ var v=l.path.indexOf('.info')===0?info(l.path):applyQuery(getAt(tree,l.path),l.q); return v; }
+  function fireOne(l){
+    var v=valueFor(l), s=JSON.stringify(v===undefined?null:v), key=segs(l.path).pop()||null;
+    if(l.ev==='value'){ if(s!==l.prev){ l.prev=s; try{ l.cb(new Snap(key,clone(v),l.path)); }catch(e){ setTimeout(function(){ throw e; }); } } return; }
+    var prevO=l.prevO||{}, cur=(v&&typeof v==='object')?v:{};
+    if(l.ev==='child_added'){ sortedKeys(cur).forEach(function(k){ if(!(k in prevO)) try{ l.cb(new Snap(k,clone(cur[k]),join(l.path,k))); }catch(e){ setTimeout(function(){ throw e; }); } }); }
+    if(l.ev==='child_changed'){ sortedKeys(cur).forEach(function(k){ if((k in prevO)&&JSON.stringify(prevO[k])!==JSON.stringify(cur[k])) l.cb(new Snap(k,clone(cur[k]),join(l.path,k))); }); }
+    if(l.ev==='child_removed'){ Object.keys(prevO).forEach(function(k){ if(!(k in cur)) l.cb(new Snap(k,clone(prevO[k]),join(l.path,k))); }); }
+    l.prevO=clone(cur);
+  }
+  function fire(){ listeners.slice().forEach(function(l){ if(l.ready) fireOne(l); }); }
+  function join(a,b){ return segs(a).concat(segs(b)).join('/'); }
+
+  /* ---------- Reference ---------- */
+  function Ref(path,q){ this._p=segs(path).join('/'); this._q=q||null; var s=segs(path); this.key=s.length?s[s.length-1]:null; }
+  Ref.prototype.child=function(p){ return new Ref(join(this._p,p)); };
+  Object.defineProperty(Ref.prototype,'parent',{get:function(){ var s=segs(this._p); if(!s.length) return null; s.pop(); return new Ref(s.join('/')); }});
+  Object.defineProperty(Ref.prototype,'root',{get:function(){ return new Ref(''); }});
+  Ref.prototype.toString=function(){ return 'sim://'+this._p; };
+  Ref.prototype.orderByKey=function(){ return new Ref(this._p,this._q); };
+  Ref.prototype.limitToLast=function(n){ return new Ref(this._p,{last:n}); };
+  Ref.prototype.on=function(ev,cb){ var l={path:this._p,q:this._q,ev:ev,cb:cb,ready:false,prev:undefined,prevO:{}}; listeners.push(l);
+    ready.then(function(){ l.ready=true; if(listeners.indexOf(l)>=0) fireOne(l); }); return cb; };
+  Ref.prototype.off=function(ev,cb){ var p=this._p; listeners=listeners.filter(function(l){ return !(l.path===p&&(!ev||l.ev===ev)&&(!cb||l.cb===cb)); }); };
+  Ref.prototype.once=function(ev){ var self=this; return ready.then(function(){ var v=self._p.indexOf('.info')===0?info(self._p):applyQuery(getAt(tree,self._p),self._q); return new Snap(self.key,clone(v),self._p); }); };
+  Ref.prototype.set=function(v){ var p=this._p; if(v===undefined) return Promise.reject(new Error('set: valor undefined'));
+    return commit(function(st){ var nv=normalize(resolveSV(clone(v),getAt(st.tree,p))); st.tree=setAt(st.tree,p,nv); log.push({op:'set',path:p,v:clone(nv),ver:st.ver+1}); return {}; }).then(function(){}); };
+  Ref.prototype.remove=function(){ return this.set(null); };
+  Ref.prototype.update=function(obj){ var p=this._p;
+    if(!obj||typeof obj!=='object'||Array.isArray(obj)) return Promise.reject(new Error('update: se esperaba un objeto'));
+    var ks=Object.keys(obj).map(function(k){ return segs(k).join('/'); });
+    var sorted=ks.slice().sort();
+    for(var i=0;i<sorted.length-1;i++){ if(sorted[i+1]===sorted[i]||sorted[i+1].indexOf(sorted[i]+'/')===0) throw new Error('Reference.update failed: First argument contains a path /'+sorted[i]+' that is ancestor of another path /'+sorted[i+1]); }
+    Object.keys(obj).forEach(function(k){ if(obj[k]===undefined) throw new Error('Reference.update failed: First argument contains undefined in property \''+k+'\''); });
+    return commit(function(st){ var paths=[]; Object.keys(obj).forEach(function(k){ var full=join(p,k); var nv=normalize(resolveSV(clone(obj[k]),getAt(st.tree,full))); st.tree=setAt(st.tree,full,nv); paths.push({path:full,v:clone(nv)}); });
+      log.push({op:'update',path:p,paths:paths,ver:st.ver+1}); return {}; }).then(function(){}); };
+  Ref.prototype.push=function(v){ var r=new Ref(join(this._p,pushId())); var pr=v===undefined?Promise.resolve():r.set(v);
+    var plain=new Ref(r._p); r.then=function(a,b){ return pr.then(function(){ return plain; }).then(a,b); }; r.catch=function(b){ return pr.catch(b); }; return r; };
+  Ref.prototype.transaction=function(fn,onComplete){ var p=this._p, committed=false, final=null, aborted=false;
+    // 1) primera llamada con el valor en caché local (como RTDB); si aborta, no consulta al servidor
+    var cached=exportVal(clone(getAt(tree,p)));
+    var first=fn(cached===undefined?null:cached), cachedJSON=JSON.stringify(normalize(cached)===undefined?null:normalize(cached));
+    if(first===undefined){ var sn=new Snap(this.key,clone(getAt(tree,p)),p); if(onComplete) onComplete(null,false,sn); return Promise.resolve({committed:false,snapshot:sn}); }
+    var self=this;
+    return commit(function(st){
+      var srv=getAt(st.tree,p), srvJSON=JSON.stringify(srv===undefined?null:srv), res=first;
+      if(srvJSON!==cachedJSON){ // la caché estaba desactualizada: se vuelve a ejecutar con el valor real
+        var real=exportVal(clone(srv)); res=fn(real===undefined?null:real);
+        if(res===undefined){ aborted=true; return {abort:true}; }
+      }
+      var nv=normalize(resolveSV(clone(res),srv)); st.tree=setAt(st.tree,p,nv); committed=true; log.push({op:'transaction',path:p,v:clone(nv),ver:st.ver+1}); return {};
+    }).then(function(){ var sn=new Snap(self.key,clone(getAt(tree,p)),p); if(onComplete) onComplete(null,committed,sn); return {committed:committed,snapshot:sn}; },
+      function(err){ if(onComplete) onComplete(err,false,null); throw err; });
+  };
+  Ref.prototype.onDisconnect=function(){ var p=this._p;
+    function reg(op,v){ return commit(function(st){ var k=pushId(); st.tree=setAt(st.tree,'__od/'+TAB+'/'+k,normalize({op:op,path:p,v:v===undefined?null:v,ts:Date.now()})); return {}; }).then(function(){}); }
+    return { remove:function(){ return reg('remove'); }, set:function(v){ return reg('set',v); }, update:function(v){ return reg('update',v); },
+      cancel:function(){ return commit(function(st){ var o=getAt(st.tree,'__od/'+TAB)||{}; Object.keys(o).forEach(function(k){ if(o[k].path===p||o[k].path.indexOf(p+'/')===0) st.tree=setAt(st.tree,'__od/'+TAB+'/'+k,undefined); }); return {}; }).then(function(){}); } };
+  };
+  function runDisconnect(tab){ return commit(function(st){ var ops=getAt(st.tree,'__od/'+tab); if(!ops) return {abort:true};
+    sortedKeys(ops).forEach(function(k){ var o=ops[k];
+      if(o.op==='remove') st.tree=setAt(st.tree,o.path,undefined);
+      else if(o.op==='set') st.tree=setAt(st.tree,o.path,normalize(resolveSV(clone(o.v),getAt(st.tree,o.path))));
+      else if(o.op==='update'&&o.v) Object.keys(o.v).forEach(function(kk){ var full=join(o.path,kk); st.tree=setAt(st.tree,full,normalize(resolveSV(clone(o.v[kk]),getAt(st.tree,full)))); }); });
+    st.tree=setAt(st.tree,'__od/'+tab,undefined); return {}; }); }
+  if(ch){
+    ch.onmessage=function(e){ var m=e.data||{};
+      if(m.tree&&m.ver>ver&&!paused){ tree=m.tree; ver=m.ver; fire(); }
+      else if(m.alive){ seen[m.alive]=Date.now(); }
+      else if(m.bye){ delete seen[m.bye]; runDisconnect(m.bye); } };
+    setInterval(function(){ ch.postMessage({alive:TAB}); },2000);
+    setInterval(function(){ if(Date.now()-t0<7000) return; var od=getAt(tree,'__od')||{}; Object.keys(od).forEach(function(tab){ if(tab!==TAB&&(!seen[tab]||Date.now()-seen[tab]>7000)) runDisconnect(tab); }); },3000);
+    window.addEventListener('pagehide',function(){ ch.postMessage({bye:TAB}); });
+  }
+  var api={
+    ref:function(p){ return new Ref(p||''); },
+    goOffline:function(){ online=false; fire(); },
+    goOnline:function(){ online=true; var w=onlineWaiters; onlineWaiters=[]; w.forEach(function(f){ f(); }); fire(); },
+    _log:log, _tab:TAB, _ready:ready, _raw:function(){ return clone(tree); }, _pause:function(v){ paused=!!v; },
+    _flush:function(){ return commit(function(){ return {abort:true}; }); }
+  };
+  api.ServerValue={TIMESTAMP:{'.sv':'timestamp'},increment:function(n){ return {'.sv':{increment:n}}; }};
+  return api;
+}
+/* ============================================================
+   CIUDAD CONTABLE EN LÍNEA · ETAPA 2
+   CTP Mercedes Norte · Especialidad de Contabilidad
+   Prof. Gerardo González González
+   ============================================================ */
+'use strict';
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBS6ea8vhmDffugHc-3la99xPGq97kpf_I",
+  authDomain: "ciudad-contable.firebaseapp.com",
+  databaseURL: "https://ciudad-contable-default-rtdb.firebaseio.com",
+  projectId: "ciudad-contable",
+  storageBucket: "ciudad-contable.firebasestorage.app",
+  messagingSenderId: "331358015454",
+  appId: "1:331358015454:web:98e2d3dbf9b27ee6a4d74f"
+};
+const PIN_DOCENTE='9986';
+const APORTE=5000000;                     // aporte de capital en colones
+const PROV={u:'PROV',e:'PROV',n:'Proveedor Mayorista del Valle S.A.',ced:'3-101-000999'};
+
+/* ===================== utilidades ===================== */
+const $=id=>document.getElementById(id);
+const qs=new URLSearchParams(location.search);
+const SALA=(qs.get('sala')||'prueba').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,30)||'prueba';
+const configOK=!!(FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.databaseURL);
+const DEMO=qs.get('demo')==='1'||!configOK;
+const COLORS=['#F4DD7A','#2FC2AD','#EF6A5B','#7DA7FF','#C38BFF','#7EE07A','#FF9F43','#F58FD0'];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const r2=x=>Math.round((Number(x)||0)*100+ (x>=0?1e-9:-1e-9))/100;
+const toC=x=>Math.round((Number(x)||0)*100);           // colones → céntimos (enteros)
+const fromC=c=>(Number(c)||0)/100;
+const fmtN=x=>(Number(x)||0).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fm=x=>(Number(x)<0?'−₡':'₡')+fmtN(Math.abs(Number(x)||0));
+const pad=(n,l)=>String(n).padStart(l,'0');
+const iniciales=n=>String(n||'').trim().split(/\s+/).slice(0,2).map(p=>p[0]||'').join('').toUpperCase();
+function slug(n){ return String(n||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40); }
+function pn(s){ // número digitado por el estudiante (acepta 1 234,56 · 1.234,56 · 1234.56)
+  s=String(s==null?'':s).replace(/[\s  ₡]/g,''); if(!s) return 0;
+  const lc=s.lastIndexOf(','), ld=s.lastIndexOf('.');
+  if(lc>=0&&ld>=0){ if(lc>ld) s=s.replace(/\./g,'').replace(',','.'); else s=s.replace(/,/g,''); }
+  else if(lc>=0){ const parts=s.split(','); s=(parts.length===2&&parts[1].length!==3)?s.replace(',','.'):s.replace(/,/g,''); }
+  else if(ld>=0){ if(s.split('.').length>2) s=s.replace(/\./g,''); }
+  const v=parseFloat(s); return isFinite(v)?v:NaN; }
+const fNum=n=>'FE-'+pad(n,4);
+function fecha(ts){ if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-CR',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'}); }
+
+/* ===================== catálogo de cuentas =====================
+   Adaptado de CATALOGOS_POR_SECTOR (SAT Profe Gerardo): sector Comercial
+   + cuenta de ingresos del sector Servicios, para empresas de giro libre. */
+const CAT=[
+ {g:'Activo',c:[['1101','Efectivo'],['1102','Bancos'],['1103','Cuentas por Cobrar'],['1105','Inventario de Mercancías'],['1106','IVA Acreditable'],['1107','Suministros'],['1204','Mobiliario y Equipo'],['1206','Equipo de Cómputo']]},
+ {g:'Pasivo',c:[['2101','Cuentas por Pagar'],['2102','Documentos por Pagar'],['2103','IVA por Pagar'],['2201','Préstamos Bancarios a Largo Plazo']]},
+ {g:'Patrimonio',c:[['3101','Capital Social'],['3102','Utilidades Retenidas']]},
+ {g:'Ingreso',c:[['4101','Ventas'],['4102','Ingresos por Servicios'],['4103','Devoluciones sobre Ventas']]},
+ {g:'Costo',c:[['5101','Costo de Ventas'],['5102','Compras']]},
+ {g:'Gasto',c:[['6103','Gastos de Alquiler'],['6106','Gastos de Publicidad'],['6108','Gastos de Papelería y Útiles'],['6109','Gastos Diversos']]}
+];
+const CTA={}; CAT.forEach(g=>g.c.forEach(c=>{ CTA[c[0]]={n:c[1],g:g.g,nat:(g.g==='Activo'||g.g==='Costo'||g.g==='Gasto'||c[0]==='4103')?'D':'A'}; }));
+const cn=c=>CTA[c]?c+' '+CTA[c].n:c;
+const EXPL={
+ '1102':'Bancos es un activo: aumenta al Debe cuando entra dinero a la cuenta y disminuye al Haber cuando sale.',
+ '1103':'Cuentas por Cobrar es un activo: aumenta al Debe cuando usted vende a crédito y disminuye al Haber cuando el cliente le paga.',
+ '1105':'Inventario de Mercancías (método perpetuo) es un activo: aumenta al Debe al comprar mercadería y disminuye al Haber por el costo de lo vendido.',
+ '1106':'IVA Acreditable (crédito fiscal) es un activo: es el IVA que usted paga en sus compras y luego descuenta en la declaración. Se registra al Debe; se cancela al Haber al liquidar el IVA.',
+ '1204':'Mobiliario y Equipo es un activo no corriente: lo que se compra para usar en la empresa (no para revender) se registra al Debe.',
+ '1206':'Equipo de Cómputo es un activo no corriente: la compra se registra al Debe.',
+ '2101':'Cuentas por Pagar es un pasivo: aumenta al Haber cuando compra a crédito y disminuye al Debe cuando paga.',
+ '2103':'IVA por Pagar (débito fiscal) es un pasivo con Hacienda: el IVA que usted cobra en sus ventas va al Haber; se cancela al Debe al liquidar la declaración.',
+ '3101':'Capital Social es patrimonio: los aportes de los socios se registran al Haber.',
+ '4101':'Ventas es una cuenta de ingreso (naturaleza acreedora): se registra al Haber por el precio SIN IVA.',
+ '4102':'Ingresos por Servicios es una cuenta de ingreso (acreedora): se registra al Haber por el precio SIN IVA.',
+ '5101':'Costo de Ventas (naturaleza deudora): con inventario perpetuo, al vender se carga el costo de la mercadería al Debe.',
+ '6106':'Gastos de Publicidad (deudora): el gasto se registra al Debe por el monto sin IVA.',
+ '6108':'Gastos de Papelería y Útiles (deudora): el gasto se registra al Debe por el monto sin IVA.',
+ '6109':'Gastos Diversos (deudora): el gasto de operación se registra al Debe por el monto sin IVA.'
+};
+const USOS=[['6109','Consumo de operación del negocio (gasto)'],['6106','Publicidad y promoción (gasto)'],['6108','Papelería y útiles de oficina (gasto)'],['1204','Mobiliario y equipo para la empresa (activo)'],['1206','Equipo de cómputo para la empresa (activo)']];
+const usoTxt=k=>{ const u=USOS.find(x=>x[0]===k); return u?u[1]:k; };
+const TARIFAS=[[0.13,'13 % (general)'],[0.01,'1 % (canasta básica)'],[0,'Exento (0 %)']];
+const FRASES=['¡Hola a todos! 👋','Reviso el Mercado, ¿quién vende?','Le envié una orden de compra 🛒','Ya acepté su orden, revise su factura 🧾','Ya le pagué por SINPE 💸','¿Me puede pagar la factura pendiente?','¡Gracias por su compra!','Ya registré mis asientos ✅','Profe, necesito ayuda 🙋','¡Listo con la declaración de IVA! 🏛'];
+
+/* ===================== estado ===================== */
+const S={uid:'',nombre:'',color:COLORS[Math.floor(Math.random()*COLORS.length)],ses:'',docente:false,listo:false,
+  cfg:{},jug:{},emp:{},nuc:{},ord:{},fac:{},chat:{},pend:{},asi:{},mov:{},decl:{},stats:{},
+  all:{pend:{},asi:{},decl:{},stats:{}},off:0,conectado:false};
+const myE=()=>S.emp[S.uid]||null;
+const myEid=()=>{ const e=myE(); return e?e.eid:'-'; };
+const now=()=>Date.now()+(S.off||0);
+let DB=null, SV=null, base=null, MODE='', fbErr='';
+
+/* ===================== red ===================== */
+const fbCarga=DEMO?Promise.reject(new Error('demo')):new Promise((res,rej)=>{
+  const add=(src,ok)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>rej(new Error('la red bloqueó Firebase')); document.head.appendChild(s); };
+  add('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',()=>add('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js',res));
+  setTimeout(()=>rej(new Error('Firebase no respondió')),15000);
+});
+fbCarga.catch(()=>{});
+let redLista=null;
+function iniciarRed(){
+  if(redLista) return redLista;
+  redLista=(DEMO?Promise.reject(new Error('demo')):fbCarga).then(()=>{
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    DB=firebase.database(); SV=firebase.database.ServerValue; MODE='firebase';
+  }).catch(e=>{ if(!DEMO) fbErr=e.message; DB=SimDB(); SV=DB.ServerValue; MODE='demo'; }).then(()=>{
+    base=DB.ref('mundo/'+SALA);
+    DB.ref('.info/serverTimeOffset').on('value',s=>{ S.off=s.val()||0; });
+    DB.ref('.info/connected').on('value',s=>{ S.conectado=!!s.val(); presencia(); hud(); });
+  });
+  return redLista;
+}
+const key=()=>base.push().key;
+function upd(o){ return base.update(o); }
+// transacción atómica sobre el núcleo (saldos, inventarios, consecutivos y estados)
+async function txN(logic){
+  for(let intento=0;intento<3;intento++){
+    let out='?';
+    const r=await base.child('nucleo').transaction(n=>{
+      if(n===null||typeof n!=='object') n={};
+      ['saldo','stock','consec','ord','fac','ext','dc'].forEach(k=>{ if(!n[k]||typeof n[k]!=='object') n[k]={}; });
+      out=logic(n);
+      if(out!=='ok') return; // aborta
+      return n;
+    });
+    if(r.committed) return {out:'ok',snap:r.snapshot};
+    if(out!=='ok'&&intento>0) return {out:out};
+    await base.child('nucleo').once('value'); await new Promise(z=>setTimeout(z,150+Math.random()*250));
+  }
+  return {out:'reintento'};
+}
+
+/* ===================== ingreso ===================== */
+$('colors').innerHTML=COLORS.map(c=>`<button style="background:${c}" data-c="${c}" class="${c===S.color?'on':''}" aria-label="color ${c}"></button>`).join('');
+$('colors').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; S.color=b.dataset.c; document.querySelectorAll('#colors button').forEach(x=>x.classList.toggle('on',x===b)); };
+const np=(qs.get('nombre')||'').trim(); if(np) $('nom').value=np.slice(0,40);
+$('modeNote').innerHTML=(DEMO?'Modo demostración (simulador local): solo comparten el mundo las pestañas de este navegador.':'Conexión: <b>Firebase en tiempo real</b>')+' · sala «'+esc(SALA)+'»';
+$('go').onclick=entrar; $('nom').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+$('linkDoc').onclick=()=>pedirPin();
+iniciarRed();
+
+async function entrar(){
+  const n=$('nom').value.trim().replace(/\s+/g,' ');
+  const u=slug(n);
+  if(n.length<3||u.length<3){ $('nom').focus(); $('nom').style.borderColor='var(--coral)'; $('loginErr').textContent='Escriba su nombre completo (mínimo 3 letras).'; return; }
+  $('go').disabled=true; $('go').textContent='Conectando…';
+  await iniciarRed();
+  S.nombre=n.slice(0,40); S.uid=u; S.ses=u+'_'+Math.random().toString(36).slice(2,7);
+  try{ localStorage.setItem('cc_color',S.color); }catch(e){}
+  suscribir();
+  $('login').hidden=true; $('game').hidden=false;
+  me={x:700+Math.random()*200,y:470+Math.random()*60};
+  resize(); requestAnimationFrame(loop);
+  presencia();
+  if(fbErr) toast('No se pudo conectar con Firebase ('+fbErr+'). Se usa el modo demostración.','w');
+}
+let presOK=false;
+function presencia(){
+  if(!S.ses||!base) return;
+  const r=base.child('jugadores/'+S.ses);
+  r.onDisconnect().remove();
+  const e=myE();
+  r.set({u:S.uid,n:S.nombre,c:S.color,x:Math.round(me.x),y:Math.round(me.y),emp:e?String(e.nom).slice(0,60):'',e:'',et:0,t:SV.TIMESTAMP}).catch(err=>toast('Error de presencia: '+err.message,'w'));
+  presOK=true;
+}
+let pendSeen=null, notifT0=0;
+function suscribir(){
+  const L=(p,f)=>base.child(p).on('value',s=>{ f(s.val()); programar(); },err=>toast('Sin permiso para leer '+p+': '+err.code,'w'));
+  L('config',v=>{ S.cfg=v||{}; onCfg(); });
+  L('jugadores',v=>{ S.jug=v||{}; lista(); });
+  L('empresas',v=>{ S.emp=v||{}; S.listo=true; });
+  L('nucleo',v=>{ S.nuc=v||{}; });
+  L('ordenes',v=>{ S.ord=v||{}; });
+  L('facturas',v=>{ S.fac=v||{}; });
+  if(S.uid){
+    L('pendientes/'+S.uid,v=>{ S.pend=v||{}; });
+    L('asientos/'+S.uid,v=>{ S.asi=v||{}; });
+    L('movimientos/'+S.uid,v=>{ S.mov=v||{}; });
+    L('declaraciones/'+S.uid,v=>{ S.decl=v||{}; });
+    L('stats/'+S.uid,v=>{ S.stats=v||{}; });
+    notifT0=now()-3000;
+    base.child('notif/'+S.uid).limitToLast(25).on('child_added',s=>{ const v=s.val(); if(v&&v.ts&&v.ts>notifT0&&!vistos[s.key]){ vistos[s.key]=1; toast(v.txt,v.k||''); } });
+  }
+  base.child('chat').limitToLast(14).on('value',s=>{ S.chat=s.val()||{}; chatlog(); });
+}
+const vistos={};
+let prog=false;
+function programar(){ if(prog) return; prog=true; requestAnimationFrame(()=>{ prog=false; renderTodo(); }); }
+function renderTodo(){
+  if(S.uid&&S.listo&&!S.docenteSolo){
+    const e=myE();
+    if(!e){ if($('crear').hidden){ abrirCrear(); } }
+    else { if(!$('crear').hidden){ $('crear').hidden=true; toast('¡Su empresa '+e.nom+' está lista! Vaya a «Su Empresa» para registrar el asiento de apertura.','y'); }
+      const jp=S.jug[S.ses]; if(presOK&&jp&&jp.emp!==String(e.nom).slice(0,60)) base.child('jugadores/'+S.ses+'/emp').set(String(e.nom).slice(0,60)).catch(()=>{}); }
+  }
+  hud(); renderPanel(); if(!$('docente').hidden) renderDoc();
+}
+function onCfg(){
+  const c=S.cfg; const ev=c.evento;
+  if(ev&&ev.ts&&ev.txt&&ev.ts!==S.evVisto){ const nuevo=S.evVisto!==undefined||now()-ev.ts<90000; S.evVisto=ev.ts; if(nuevo&&now()-ev.ts<10*60000&&!S.docenteSolo){ $('evTxt').textContent=ev.txt; $('evento').hidden=false; clearTimeout(S.evT); S.evT=setTimeout(()=>{ $('evento').hidden=true; },15000); } }
+  if(S.evVisto===undefined) S.evVisto=0;
+  const b=$('banda'); if(ev&&ev.txt){ b.hidden=false; b.textContent='📣 '+ev.txt; } else b.hidden=true;
+  const a=$('aviso');
+  if(c.abierta===false){ a.hidden=false; a.textContent='🔒 La sala está cerrada por el docente. Puede ver su información, pero no realizar operaciones.'; }
+  else if(c.congelada){ a.hidden=false; a.textContent='❄️ El mundo está congelado. Espere las indicaciones del docente.'; }
+  else a.hidden=true;
+}
+function puede(){ if(S.cfg.abierta===false){ toast('La sala está cerrada por el docente.','w'); return false; } if(S.cfg.congelada){ toast('El mundo está congelado por el docente.','w'); return false; } if(!myE()){ toast('Primero cree su empresa.','w'); return false; } return true; }
+function periodo(){ return S.cfg.periodo||'Período 1'; }
+
+/* ===================== toasts ===================== */
+function toast(t,k){ const d=document.createElement('div'); d.className='toast '+(k||''); d.textContent=t; $('toasts').appendChild(d); setTimeout(()=>{ d.style.opacity='0'; d.style.transition='opacity .4s'; setTimeout(()=>d.remove(),450); },5200); while($('toasts').children.length>4) $('toasts').firstChild.remove(); }
+function notificar(uid,txt,k){ const o={}; o['notif/'+uid+'/'+key()]={txt:String(txt).slice(0,200),k:k||'',ts:SV.TIMESTAMP}; return o; }
+
+/* ===================== crear empresa ===================== */
+let CF=null;
+function nuevaCed(){ let c; const usadas={}; Object.values(S.emp).forEach(e=>{ usadas[e.ced]=1; }); do{ c='3-101-'+pad(Math.floor(100000+Math.random()*899999),6); }while(usadas[c]); return c; }
+function abrirCrear(){
+  if(!CF) CF={nom:'',giro:'',act:'bienes',ced:nuevaCed(),color:S.color,prods:[{n:'',costo:'',precio:'',tar:0.13,cant:''},{n:'',costo:'',precio:'',tar:0.13,cant:''}],err:''};
+  $('crear').hidden=false; renderCrear();
+}
+function renderCrear(){
+  const b=CF.act==='bienes';
+  const tot=totCompraInicial();
+  $('crearBox').innerHTML=`<div class="k">Paso 1 · Sala ${esc(SALA)} · ${esc(S.nombre)}</div><h1>Cree su empresa</h1>
+  <p>Invente su propio negocio (giro libre). Los socios aportan <b class="gold">${fm(APORTE)}</b> que se depositan en Bancos: ese será su <b>asiento de apertura</b>.</p>
+  <div class="grid2"><div><label class="l" for="cfNom">Nombre comercial</label><input type="text" id="cfNom" maxlength="50" value="${esc(CF.nom)}" placeholder="Ej.: Panadería La Espiga"></div>
+  <div><label class="l" for="cfGiro">Giro del negocio (¿a qué se dedica?)</label><input type="text" id="cfGiro" maxlength="80" value="${esc(CF.giro)}" placeholder="Ej.: venta de pan artesanal"></div></div>
+  <label class="l">Actividad</label><div class="radios" id="cfAct">
+   <label class="${b?'on':''}"><input type="radio" name="cfAct" value="bienes" ${b?'checked':''}> Venta de bienes (con inventario)</label>
+   <label class="${!b?'on':''}"><input type="radio" name="cfAct" value="servicios" ${!b?'checked':''}> Prestación de servicios</label></div>
+  <div class="grid2"><div><label class="l">Cédula jurídica (ficticia)</label><div style="display:flex;gap:8px"><input type="text" id="cfCed" value="${esc(CF.ced)}" readonly><button class="btn sec sm" data-act="cfCed" type="button">↻</button></div></div>
+  <div><label class="l">Régimen tributario</label><input type="text" value="Régimen General (IVA)" readonly></div></div>
+  <label class="l">Logo (inicial y color)</label><div style="display:flex;gap:12px;align-items:center"><div class="logo big" id="cfLogo" style="background:${CF.color}">${esc((CF.nom.trim()[0]||'?').toUpperCase())}</div><div class="colors" id="cfColors">${COLORS.map(c=>`<button type="button" style="background:${c}" data-cfc="${c}" class="${c===CF.color?'on':''}"></button>`).join('')}</div></div>
+  <h3>${b?'Productos que vende (2 a 5)':'Servicios que presta (2 a 5)'}</h3>
+  <p style="font-size:12.5px">Precio de venta <b>sin IVA</b>. ${b?'El inventario inicial se compra de contado al <b>Proveedor Mayorista del Valle</b> al costo unitario, con IVA 13 % (se paga desde Bancos).':'El costo unitario es informativo (no se lleva inventario en servicios).'}</p>
+  <div class="prod prodh"><span>Nombre</span><span>Costo unit. ₡</span><span>Precio venta ₡</span><span>IVA</span><span>${b?'Cant. inicial':''}</span><span></span></div>
+  <div id="cfProds">${CF.prods.map((p,i)=>`<div class="prod" data-i="${i}">
+     <input class="pn pr-n" type="text" maxlength="40" placeholder="${b?'Producto':'Servicio'} ${i+1}" value="${esc(p.n)}">
+     <input class="pr-c" type="text" inputmode="decimal" placeholder="Costo" value="${esc(p.costo)}">
+     <input class="pr-p" type="text" inputmode="decimal" placeholder="Precio" value="${esc(p.precio)}">
+     <select class="pr-t">${TARIFAS.map(t=>`<option value="${t[0]}" ${+p.tar===t[0]?'selected':''}>${t[0]*100} %</option>`).join('')}</select>
+     ${b?`<input class="pr-q" type="number" min="1" step="1" placeholder="Cant." value="${esc(p.cant)}">`:'<span></span>'}
+     <button type="button" class="btn sec sm" data-act="cfDel" data-i="${i}" ${CF.prods.length<=2?'disabled':''} aria-label="Quitar">✕</button></div>`).join('')}</div>
+  <button type="button" class="btn sec sm" id="cfAdd" data-act="cfAdd" ${CF.prods.length>=5?'disabled':''}>+ Agregar</button>
+  ${b?`<div class="card" style="margin-top:12px;font-size:13.5px" id="cfTot">Compra inicial al proveedor: subtotal <b>${fm(tot.sub)}</b> + IVA 13 % <b>${fm(tot.iva)}</b> = <b class="gold">${fm(tot.tot)}</b> · Quedará en Bancos: <b>${fm(APORTE-tot.tot)}</b></div>`:''}
+  <div class="err" id="cfErr">${esc(CF.err)}</div>
+  <button class="btn full" id="cfCrear" data-act="cfCrear">Crear mi empresa</button>`;
+}
+function leerCF(){
+  if(!CF||$('crear').hidden) return; const nom=$('cfNom'); if(!nom) return;
+  CF.nom=nom.value; CF.giro=$('cfGiro').value;
+  document.querySelectorAll('#cfProds .prod').forEach((r,i)=>{ const p=CF.prods[i]; if(!p) return; p.n=r.querySelector('.pr-n').value; p.costo=r.querySelector('.pr-c').value; p.precio=r.querySelector('.pr-p').value; p.tar=+r.querySelector('.pr-t').value; const q=r.querySelector('.pr-q'); if(q) p.cant=q.value; });
+}
+function totCompraInicial(){ let sub=0,iva=0; if(CF.act!=='bienes') return {sub:0,iva:0,tot:0};
+  CF.prods.forEach(p=>{ const c=pn(p.costo), q=parseInt(p.cant,10); if(c>0&&q>0){ const s=r2(c*q); sub=r2(sub+s); iva=r2(iva+r2(s*0.13)); } }); return {sub,iva,tot:r2(sub+iva)}; }
+$('crear').addEventListener('input',e=>{ leerCF(); if(e.target.id==='cfNom') $('cfLogo').textContent=(CF.nom.trim()[0]||'?').toUpperCase();
+  if(CF.act==='bienes'&&$('cfTot')){ const t=totCompraInicial(); $('cfTot').innerHTML=`Compra inicial al proveedor: subtotal <b>${fm(t.sub)}</b> + IVA 13 % <b>${fm(t.iva)}</b> = <b class="gold">${fm(t.tot)}</b> · Quedará en Bancos: <b>${fm(APORTE-t.tot)}</b>`; } });
+$('crear').addEventListener('change',e=>{ if(e.target.name==='cfAct'){ leerCF(); CF.act=e.target.value; renderCrear(); } });
+$('crear').addEventListener('click',e=>{ const b=e.target.closest('[data-cfc]'); if(b){ leerCF(); CF.color=b.dataset.cfc; renderCrear(); } });
+
+async function crearEmpresa(){
+  leerCF(); CF.err='';
+  const bienes=CF.act==='bienes';
+  const nom=CF.nom.trim().replace(/\s+/g,' '), giro=CF.giro.trim().replace(/\s+/g,' ');
+  const fail=m=>{ CF.err=m; $('cfErr').textContent=m; };
+  if(nom.length<3) return fail('Escriba el nombre comercial (mínimo 3 caracteres).');
+  if(giro.length<4) return fail('Describa el giro del negocio.');
+  const prods={}; let i=0; const lin=[];
+  for(const p of CF.prods){
+    i++; const n=p.n.trim(), c=pn(p.costo), pr=pn(p.precio), q=parseInt(p.cant,10);
+    if(!n) return fail('Falta el nombre del '+(bienes?'producto':'servicio')+' '+i+'.');
+    if(!(pr>0)) return fail('El precio de venta de «'+n+'» debe ser mayor que cero.');
+    if(bienes&&!(c>0)) return fail('El costo unitario de «'+n+'» debe ser mayor que cero.');
+    if(!(c>=0)) return fail('Revise el costo de «'+n+'».');
+    if(bienes&&!(q>=1&&q<=10000)) return fail('Indique la cantidad inicial de «'+n+'» (1 a 10 000).');
+    if(bienes&&pr<=c) return fail('El precio de «'+n+'» debe ser mayor que su costo para tener ganancia.');
+    const pid='p'+i; prods[pid]={n:n.slice(0,40),cu:r2(c),pv:r2(pr),tar:+p.tar};
+    if(bienes){ const s=r2(c*q); lin.push({d:n.slice(0,40),cant:q,pu:r2(c),sub:s,tar:0.13,iva:r2(s*0.13),pid}); }
+  }
+  const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0)), tot=r2(sub+iva);
+  if(tot>APORTE*0.9) return fail('La compra inicial ('+fm(tot)+') no puede superar el 90 % del aporte. Reduzca cantidades.');
+  $('cfCrear').disabled=true; $('cfCrear').textContent='Creando…';
+  const eid=S.uid+'~'+Date.now().toString(36), fid=key(); let nprov=0;
+  const r=await txN(n=>{
+    if(n.saldo[S.uid]!=null) return 'existe';
+    n.ext.aportes=(n.ext.aportes||0)+toC(APORTE);
+    n.saldo[S.uid]=toC(APORTE)-toC(tot);
+    if(bienes){ const st={}; lin.forEach(l=>{ st[l.pid]=l.cant; }); n.stock[S.uid]=st;
+      n.consec.PROV=(n.consec.PROV||0)+1; nprov=n.consec.PROV; n.ext.proveedor=(n.ext.proveedor||0)+toC(tot); n.fac[fid]='pagada'; }
+    n.dc[S.uid]=0; return 'ok';
+  });
+  if(r.out!=='ok'){ $('cfCrear').disabled=false; $('cfCrear').textContent='Crear mi empresa';
+    return fail(r.out==='existe'?'Ya existe una empresa a su nombre en esta sala (si quedó a medio crear, pida al docente reiniciarla).':'No se pudo crear la empresa. Intente de nuevo.'); }
+  const emp={nom:nom.slice(0,50),giro:giro.slice(0,80),act:CF.act,ced:CF.ced,reg:'General',color:CF.color,ini:(nom[0]||'?').toUpperCase(),duen:S.nombre,eid,prods,ts:SV.TIMESTAMP};
+  const o={}; o['empresas/'+S.uid]=emp;
+  o['pendientes/'+S.uid+'/'+key()]=pendiente('apertura','Asiento de apertura',
+    `Los socios aportaron ${fm(APORTE)} en efectivo que se depositaron en la cuenta bancaria de ${nom}. Registre el asiento de apertura (aporte de capital).`,
+    [{c:'1102',d:APORTE},{c:'3101',h:APORTE}],'El aporte de los socios aumenta Bancos (activo, al Debe) y crea el Capital Social (patrimonio, al Haber).');
+  o['movimientos/'+S.uid+'/'+key()]={d:'Depósito: aporte de capital de los socios',m:APORTE,ts:SV.TIMESTAMP};
+  if(bienes){
+    const recep={u:S.uid,e:eid,n:nom.slice(0,50),ced:CF.ced};
+    o['facturas/'+fid]=facturaDoc(nprov,PROV,recep,lin,'contado','',{uso:'1105',act:'bienes'});
+    o['pendientes/'+S.uid+'/'+key()]=pendCompraProv(fNum(nprov),sub,iva,tot,fid);
+    o['movimientos/'+S.uid+'/'+key()]={d:'Pago a '+PROV.n+' · '+fNum(nprov),m:-tot,ts:SV.TIMESTAMP,ref:fid};
+  }
+  await upd(o);
+  CF=null;
+}
+function pendCompraProv(num,sub,iva,tot,fid){
+  return pendiente('compra_inv','Compra de mercadería al proveedor',
+    `Compró mercadería de contado al ${PROV.n} (factura ${num}). Subtotal ${fm(sub)} + IVA 13 % ${fm(iva)} = total ${fm(tot)}, pagado por transferencia desde Bancos.`,
+    [{c:'1105',d:sub},{c:'1106',d:iva},{c:'1102',h:tot}],'Con inventario perpetuo la mercadería entra al Inventario (al Debe) por su costo sin IVA; el IVA pagado es crédito fiscal (IVA Acreditable, al Debe) y Bancos disminuye (al Haber) por el total.',{ref:fid});
+}
+function pendiente(tipo,tit,desc,esp,exp,extra){
+  return Object.assign({tipo,tit,desc:String(desc).slice(0,600),exp:String(exp||'').slice(0,600),
+    esp:esp.filter(l=>(l.d||0)>0.004||(l.h||0)>0.004).map(l=>({c:l.c,d:r2(l.d||0),h:r2(l.h||0)})),int:0,ts:SV.TIMESTAMP},extra||{});
+}
+function claveNum(ced,cons){ const d=new Date(now()); const cd=String(ced).replace(/\D/g,'');
+  let s='506'+pad(d.getDate(),2)+pad(d.getMonth()+1,2)+String(d.getFullYear()).slice(-2)+pad(cd,12).slice(-12)+cons+'1';
+  for(let i=0;i<8;i++) s+=Math.floor(Math.random()*10); return s; }
+function facturaDoc(num,em,re,lin,cond,oid,extra){
+  const cons='00100001'+'01'+pad(num,10);
+  const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0));
+  return Object.assign({num,cons,clave:claveNum(em.ced,cons),em:{u:em.u,e:em.e,n:em.n,ced:em.ced},re:{u:re.u,e:re.e,n:re.n,ced:re.ced},
+    lin:lin.map(l=>({d:l.d,cant:l.cant,pu:l.pu,sub:l.sub,tar:l.tar,iva:l.iva,cu:l.cu||0})),sub,iva,tot:r2(sub+iva),
+    cond,plazo:cond==='credito'?30:0,est:cond==='credito'?'pendiente':'pagada',ord:oid||'',per:periodo(),ts:SV.TIMESTAMP},extra||{});
+}
+
+/* ===================== HUD, lista, chat ===================== */
+function cuentaPend(){ return Object.keys(S.pend).length; }
+function ordenesPorAtender(){ const e=myE(); if(!e) return []; return Object.entries(S.ord).filter(([k,o])=>o&&o.ve===S.uid&&o.vee===e.eid&&o.est==='pendiente'); }
+function hud(){
+  if($('game').hidden) return;
+  const e=myE(); const sal=S.nuc.saldo&&S.nuc.saldo[S.uid]; const st=S.stats||{};
+  const est=MODE==='demo'?['#F4DD7A','Demostración']:(S.conectado?['#2FC2AD','Conectado']:['#EF6A5B','Sin conexión · reconectando…']);
+  const np=cuentaPend(), no=ordenesPorAtender().length;
+  $('hud').innerHTML=(e?`<div class="emp"><div class="logo" style="background:${esc(e.color)}">${esc(e.ini)}</div><div style="min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.nom)}</b><small class="mut">${esc(e.ced)} · ${esc(S.nombre)}</small></div></div>`:`<b>${esc(S.nombre)}</b>`)+
+   `<div class="row"><span>Bancos (estado bancario)</span><b class="num" id="hudSaldo">${sal!=null?fm(fromC(sal)):'—'}</b></div>
+    <div class="row"><span>Pendientes por registrar</span><button class="pill ${np?'w':'g'}" data-act="ir" data-b="empresa" data-t="pend" id="hudPend">${np}</button></div>
+    <div class="row"><span>Órdenes por atender</span><button class="pill ${no?'y':''}" data-act="ir" data-b="empresa" data-t="ord" id="hudOrd">${no}</button></div>
+    <div class="row hm"><span>Asientos ✓ / ✗</span><b><span class="ok">${st.ok||0}</span> / <span class="bad">${st.err||0}</span></b></div>
+    <div class="row hm"><span>Estado · Sala ${esc(SALA)}</span><b style="font-size:12px"><span class="dot" style="background:${est[0]}"></span>${est[1]}</b></div>
+    <div class="nav"><button data-act="ir" data-b="empresa">🏢 Empresa</button><button data-act="ir" data-b="mercado">🛒 Mercado</button><button data-act="ir" data-b="banco">🏦 Banco</button><button data-act="ir" data-b="hacienda">🏛 Hacienda</button></div>`;
+}
+function lista(){
+  const arr=Object.entries(S.jug).filter(([k,v])=>v&&v.n);
+  $('cnt').textContent=arr.length;
+  $('who').innerHTML=arr.sort((a,b)=>String(a[1].n).localeCompare(b[1].n)).map(([k,v])=>`<div class="p"><span class="dot" style="background:${esc(v.c||'#fff')}"></span>${esc(v.n)}${k===S.ses?' <small>(usted)</small>':''}${v.emp?`<br><small>· ${esc(v.emp)}</small>`:''}</div>`).join('');
+}
+function chatlog(){ const a=Object.values(S.chat).filter(Boolean).slice(-6);
+  $('chatlog').innerHTML=a.map(m=>`<div><b>${esc(String(m.n).split(' ')[0])}:</b> ${esc(FRASES[m.f]||'')}</div>`).join('')||'<div class="mut">Sin mensajes. Use 💬 Frases.</div>'; }
+function enviarFrase(i){ if(S.cfg.congelada){ toast('El mundo está congelado.','w'); return; }
+  const t=Date.now(); if(S.lastChat&&t-S.lastChat<2500){ toast('Espere un momento antes de enviar otra frase.','w'); return; } S.lastChat=t;
+  base.child('chat/'+key()).set({u:S.uid,n:S.nombre,f:i,ts:SV.TIMESTAMP}).catch(e=>toast('No se pudo enviar: '+e.message,'w')); base.child('jugadores/'+S.ses).update({b:i,bt:SV.TIMESTAMP}).catch(()=>{}); $('frases').hidden=true; }
+$('frases').innerHTML=FRASES.map((f,i)=>`<button data-act="frase" data-i="${i}">${esc(f)}</button>`).join('');
+document.querySelectorAll('[data-emo]').forEach(b=>b.onclick=()=>{ if(!S.ses) return; base.child('jugadores/'+S.ses).update({e:b.dataset.emo,et:SV.TIMESTAMP}).catch(()=>{}); emoLocal={e:b.dataset.emo,t:Date.now()}; });
+let emoLocal=null;
+
+/* ===================== MAPA ===================== */
+const W=1600,H=1000;
+const cv=$('cv'), cx=cv.getContext('2d'); let DPR=1, VW=0, VH=0, cam={x:0,y:0}, target=null; const keys={};
+let me={x:800,y:495};
+const EDIF=[{id:'banco',n:'BANCO',ic:'🏦',x:150,y:120,w:240,h:140,c:'#2FC2AD'},{id:'hacienda',n:'HACIENDA · TRIBU-CR',ic:'🏛',x:620,y:90,w:330,h:150,c:'#C9973F'},{id:'ccss',n:'CCSS',ic:'🩺',x:1200,y:130,w:220,h:130,c:'#7DA7FF'},
+  {id:'mercado',n:'MERCADO',ic:'🛒',x:180,y:720,w:300,h:160,c:'#EF6A5B'},{id:'empresa',n:'SU EMPRESA',ic:'🏢',x:1080,y:720,w:320,h:160,c:'#C38BFF'}];
+function resize(){ DPR=Math.min(window.devicePixelRatio||1,2); VW=window.innerWidth; VH=window.innerHeight; cv.width=VW*DPR; cv.height=VH*DPR; cx.setTransform(DPR,0,0,DPR,0,0); }
+window.addEventListener('resize',resize);
+const enInput=()=>{ const a=document.activeElement; return a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName); };
+window.addEventListener('keydown',e=>{ if(enInput()) return; keys[e.key.toLowerCase()]=true; if(['arrowup','arrowdown','arrowleft','arrowright',' '].indexOf(e.key.toLowerCase())>=0&&!$('game').hidden&&$('panel').hidden) e.preventDefault(); if(e.key==='Escape') cerrarPanel(); });
+window.addEventListener('keyup',e=>{ keys[e.key.toLowerCase()]=false; });
+window.addEventListener('blur',()=>{ Object.keys(keys).forEach(k=>keys[k]=false); });
+cv.addEventListener('pointerdown',e=>{ const wx=e.clientX+cam.x, wy=e.clientY+cam.y;
+  const b=EDIF.find(b=>wx>=b.x&&wx<=b.x+b.w&&wy>=b.y&&wy<=b.y+b.h);
+  if(b){ abrirPanel(b.id); zonaActual=b.id; return; }
+  target={x:wx,y:wy}; });
+let lastSend=0, last=performance.now(), zonaActual=null;
+const disp={};
+function zona(){ return EDIF.find(b=>me.x>=b.x-26&&me.x<=b.x+b.w+26&&me.y>=b.y-26&&me.y<=b.y+b.h+26); }
+function irA(id,tab){ const b=EDIF.find(x=>x.id===id); if(b){ me.x=b.x+b.w/2+(Math.random()*2-1)*(b.w/2-20); me.y=(b.y>500?b.y-34:b.y+b.h+34)+(Math.random()*2-1)*10; target=null; zonaActual=b.id; if(S.ses) base.child('jugadores/'+S.ses).update({x:Math.round(me.x),y:Math.round(me.y),t:SV.TIMESTAMP}).catch(()=>{}); } abrirPanel(id,tab); }
+function loop(t){
+  const dt=Math.min(.05,(t-last)/1000); last=t;
+  const libre=$('panel').hidden&&$('docente').hidden&&$('crear').hidden&&!S.cfg.congelada;
+  if(libre){
+    let vx=(keys['arrowright']||keys['d']?1:0)-(keys['arrowleft']||keys['a']?1:0), vy=(keys['arrowdown']||keys['s']?1:0)-(keys['arrowup']||keys['w']?1:0);
+    if(vx||vy) target=null;
+    if(target){ const dx=target.x-me.x, dy=target.y-me.y, d=Math.hypot(dx,dy); if(d<4) target=null; else { vx=dx/d; vy=dy/d; } }
+    const sp=260, m=Math.hypot(vx,vy)||1; me.x=Math.max(20,Math.min(W-20,me.x+vx/m*sp*dt)); me.y=Math.max(20,Math.min(H-20,me.y+vy/m*sp*dt));
+    if((vx||vy)&&t-lastSend>(MODE==='demo'?160:100)&&S.ses){ lastSend=t; base.child('jugadores/'+S.ses).update({x:Math.round(me.x),y:Math.round(me.y),t:SV.TIMESTAMP}).catch(()=>{}); }
+    const z=zona(); if(z&&z.id!==zonaActual){ zonaActual=z.id; if(vx||vy) abrirPanel(z.id); } else if(!z) zonaActual=null;
+  } else target=null;
+  cam.x=W<=VW?(W-VW)/2:Math.max(0,Math.min(W-VW,me.x-VW/2)); cam.y=H<=VH?(H-VH)/2:Math.max(0,Math.min(H-VH,me.y-VH/2));
+  draw(dt); requestAnimationFrame(loop);
+}
+function draw(dt){
+  cx.fillStyle='#050506'; cx.fillRect(0,0,VW,VH);
+  cx.save(); cx.translate(-cam.x,-cam.y);
+  cx.fillStyle='#0b0b0e'; cx.fillRect(0,0,W,H);
+  cx.strokeStyle='rgba(255,255,255,.045)'; cx.lineWidth=1;
+  for(let y=0;y<=H;y+=40){ cx.beginPath(); cx.moveTo(0,y+.5); cx.lineTo(W,y+.5); cx.stroke(); }
+  for(let x=0;x<=W;x+=200){ cx.strokeStyle='rgba(201,151,63,.07)'; cx.beginPath(); cx.moveTo(x+.5,0); cx.lineTo(x+.5,H); cx.stroke(); }
+  cx.strokeStyle='rgba(201,151,63,.5)'; cx.lineWidth=2; cx.strokeRect(1,1,W-2,H-2);
+  cx.fillStyle='rgba(255,255,255,.03)'; cx.fillRect(0,440,W,110); cx.fillRect(740,0,110,H);
+  const ff=getComputedStyle(document.body).fontFamily, z=zona();
+  EDIF.forEach(b=>{ const on=z&&z.id===b.id; cx.fillStyle=on?'rgba(30,30,36,.98)':'rgba(20,20,24,.95)'; cx.strokeStyle=b.c; cx.lineWidth=on?4:2; rr(b.x,b.y,b.w,b.h,14); cx.fill(); cx.stroke();
+    cx.textAlign='center'; cx.font='30px sans-serif'; cx.fillText(b.ic,b.x+b.w/2,b.y+b.h/2-8);
+    cx.fillStyle=b.c; cx.font='600 15px '+ff; cx.fillText(b.n,b.x+b.w/2,b.y+b.h/2+22);
+    cx.fillStyle='rgba(155,154,164,.8)'; cx.font='11px IBM Plex Mono, monospace'; cx.fillText(b.id==='ccss'?'próximamente':'toque para entrar',b.x+b.w/2,b.y+b.h/2+42); });
+  cx.fillStyle='rgba(155,154,164,.6)'; cx.font='12px IBM Plex Mono, monospace'; cx.textAlign='center';
+  cx.fillText('Sala '+SALA+' · '+periodo()+' · Ciudad Contable · CTP Mercedes Norte',W/2,H-18);
+  const t=now();
+  Object.entries(S.jug).forEach(([k,p])=>{ if(!p||!p.n) return;
+    let x=p.x,y=p.y; if(k===S.ses){ x=me.x; y=me.y; } else { const d=disp[k]||(disp[k]={x:p.x,y:p.y}); d.x+=(p.x-d.x)*Math.min(1,dt*10); d.y+=(p.y-d.y)*Math.min(1,dt*10); x=d.x; y=d.y; }
+    cx.beginPath(); cx.arc(x,y+16,14,0,Math.PI*2); cx.fillStyle='rgba(0,0,0,.35)'; cx.fill();
+    cx.beginPath(); cx.arc(x,y,18,0,Math.PI*2); cx.fillStyle=p.c||'#fff'; cx.fill();
+    if(k===S.ses){ cx.lineWidth=3; cx.strokeStyle='#fff'; cx.stroke(); }
+    cx.fillStyle='#111'; cx.font='700 13px sans-serif'; cx.textAlign='center'; cx.fillText(iniciales(p.n),x,y+5);
+    cx.fillStyle='#fff'; cx.font='600 12px sans-serif'; cx.fillText(p.n,x,y-26);
+    if(p.emp){ cx.fillStyle='rgba(244,221,122,.85)'; cx.font='11px sans-serif'; cx.fillText(p.emp,x,y+44); }
+    let emo=p.e, et=p.et||0; if(k===S.ses&&emoLocal&&Date.now()-emoLocal.t<3000){ emo=emoLocal.e; et=t; }
+    if(emo&&t-et<3500){ cx.font='22px sans-serif'; cx.fillText(emo,x,y-44); }
+    if(p.b!=null&&p.bt&&t-p.bt<5000&&FRASES[p.b]){ const tx=FRASES[p.b]; cx.font='12px sans-serif'; const w=cx.measureText(tx).width+16; cx.fillStyle='rgba(255,255,255,.95)'; rr(x-w/2,y-80,w,24,10); cx.fill(); cx.fillStyle='#111'; cx.fillText(tx,x,y-63); }
+  });
+  if(target){ cx.strokeStyle='rgba(244,221,122,.6)'; cx.lineWidth=2; cx.beginPath(); cx.arc(target.x,target.y,10,0,Math.PI*2); cx.stroke(); }
+  cx.restore();
+}
+function rr(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); }
+
+/* ===================== PANELES ===================== */
+const P={b:null,t:null,fac:null};
+let ED=null, HF={deb:'',cred:'',res:'pagar',monto:'',fb:null,int:0}, MQ={}, RQ={};
+let pendingRender=false;
+const TABS={
+  empresa:[['res','Resumen'],['pend','Pendientes'],['diario','Libro diario'],['bal','Balance de comprobación'],['fac','Facturas'],['ord','Órdenes'],['inv','Inventario'],['ayuda','Ayuda']],
+  mercado:[['cat','Catálogo de la sala'],['mis','Mis órdenes de compra']],
+  banco:[['cta','Cuenta y SINPE'],['mov','Movimientos'],['pre','Préstamos']],
+  hacienda:[['decl','Declaración de IVA'],['hist','Declaraciones presentadas']],
+  ccss:[['soon','Planilla']],
+  ayuda:[['ayuda','Cómo se juega']]
+};
+const TIT={empresa:['🏢','Su Empresa'],mercado:['🛒','Mercado'],banco:['🏦','Banco'],hacienda:['🏛','Hacienda · TRIBU-CR'],ccss:['🩺','CCSS'],ayuda:['📘','Ayuda']};
+function abrirPanel(b,t){ if(S.docenteSolo) return; if(!myE()&&b!=='ayuda'){ return; } P.b=b; P.t=t||TABS[b][0][0]; P.fac=null; if(t!=='pend') ED=null; $('panel').hidden=false; $('frases').hidden=true; renderPanel(true); $('pbody').scrollTop=0; }
+function cerrarPanel(){ if(!$('pin').hidden){ $('pin').hidden=true; return; } $('panel').hidden=true; P.b=null; ED=null; }
+function foco(el){ const a=document.activeElement; return a&&el.contains(a)&&/INPUT|SELECT|TEXTAREA/.test(a.tagName); }
+function renderPanel(force){
+  if($('panel').hidden||!P.b) return;
+  if(!force&&foco($('panel'))){ pendingRender=true; return; }
+  pendingRender=false;
+  const tt=TIT[P.b];
+  $('phead').innerHTML=`<span class="ic">${tt[0]}</span><div><h2>${tt[1]}</h2><div class="mut" style="font-size:12px">${esc(myE()?myE().nom:'')} · ${esc(periodo())}</div></div><button class="x" data-act="cerrar" aria-label="Cerrar">✕</button>`;
+  $('ptabs').innerHTML=TABS[P.b].map(t=>`<button data-act="tab" data-t="${t[0]}" class="${P.t===t[0]?'on':''}">${t[1]}${t[0]==='pend'&&cuentaPend()?' · '+cuentaPend():''}${t[0]==='ord'&&ordenesPorAtender().length?' · '+ordenesPorAtender().length:''}</button>`).join('');
+  const st=$('pbody').scrollTop;
+  let h='';
+  try{ h=P.fac?vistaFactura(P.fac):VIEWS[P.b+'_'+P.t](); }catch(err){ h='<div class="empty">Error al mostrar: '+esc(err.message)+'</div>'; console.warn(err); }
+  $('pbody').innerHTML=h; $('pbody').scrollTop=st;
+  if(ED&&P.b==='empresa'&&P.t==='pend') edTotales();
+}
+document.addEventListener('focusout',()=>{ setTimeout(()=>{ if(pendingRender&&!foco($('panel'))) renderPanel(); if(docPending&&!foco($('docente'))) renderDoc(); },60); });
+
+/* ---------- utilidades de vista ---------- */
+const kpi=(t,v,cls)=>`<div class="card kpi"><div class="t">${t}</div><div class="v ${cls||''}">${v}</div></div>`;
+function misFacturas(){ const eid=myEid(); const em=[],re=[]; Object.entries(S.fac).forEach(([k,f])=>{ if(!f||!f.em) return; if(f.em.e===eid) em.push([k,f]); if(f.re&&f.re.e===eid) re.push([k,f]); }); const o=(a,b)=>(a[1].ts||0)-(b[1].ts||0); return {em:em.sort(o),re:re.sort(o)}; }
+function estFac(fid,f){ const e=(S.nuc.fac&&S.nuc.fac[fid])||f.est; return e; }
+const estPill=e=>e==='pagada'?'<span class="pill g">pagada</span>':e==='pendiente'?'<span class="pill y">pendiente</span>':'<span class="pill w">'+esc(e||'—')+'</span>';
+function saldosLibros(){ const s={}; Object.values(S.asi).forEach(a=>{ (a.lin||[]).forEach(l=>{ if(!l) return; const x=s[l.c]||(s[l.c]={d:0,h:0}); x.d=r2(x.d+(l.d||0)); x.h=r2(x.h+(l.h||0)); }); }); return s; }
+function asientosOrd(){ return Object.entries(S.asi).sort((a,b)=>(a[1].n||0)-(b[1].n||0)||(a[1].ts||0)-(b[1].ts||0)); }
+
+const VIEWS={};
+VIEWS.empresa_res=()=>{
+  const e=myE(), sal=fromC((S.nuc.saldo||{})[S.uid]||0), sl=saldosLibros(), lib=sl['1102']?r2(sl['1102'].d-sl['1102'].h):0, st=S.stats||{};
+  const stock=(S.nuc.stock||{})[S.uid]||{};
+  return `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px"><div class="logo big" style="background:${esc(e.color)}">${esc(e.ini)}</div>
+   <div><h2>${esc(e.nom)}</h2><div class="mut">${esc(e.giro)}</div><div class="mut" style="font-family:var(--mono);font-size:12px;margin-top:4px">Cédula jurídica ${esc(e.ced)} · Régimen ${esc(e.reg)} · ${e.act==='bienes'?'Venta de bienes':'Servicios'} · Representante: ${esc(e.duen)}</div></div></div>
+  <div class="grid3">${kpi('Bancos según el banco',fm(sal))}${kpi('Bancos según sus libros',fm(lib),Math.abs(lib-sal)>0.5?'gold':'ok')}${kpi('Pendientes por registrar',cuentaPend(),cuentaPend()?'bad':'ok')}</div>
+  <div class="grid3" style="margin-top:12px">${kpi('Asientos correctos',st.ok||0,'ok')}${kpi('Intentos con error',st.err||0,'bad')}${kpi('Facturas emitidas',misFacturas().em.length)}</div>
+  ${Math.abs(lib-sal)>0.5?`<p style="margin-top:12px">💡 La diferencia entre el saldo del banco y el de sus libros se debe a operaciones que <b>aún no ha registrado</b>. Registre sus pendientes para conciliar.</p>`:''}
+  <h3>${e.act==='bienes'?'Productos':'Servicios'}</h3><div class="tw"><table class="tbl"><thead><tr><th>Nombre</th><th class="num">Costo unit.</th><th class="num">Precio sin IVA</th><th class="num">IVA</th><th class="num">Precio con IVA</th>${e.act==='bienes'?'<th class="num">Existencia</th>':''}</tr></thead><tbody>
+  ${Object.entries(e.prods||{}).map(([k,p])=>`<tr><td>${esc(p.n)}</td><td class="num">${fm(p.cu)}</td><td class="num">${fm(p.pv)}</td><td class="num">${p.tar*100} %</td><td class="num">${fm(r2(p.pv+r2(p.pv*p.tar)))}</td>${e.act==='bienes'?`<td class="num">${stock[k]||0}</td>`:''}</tr>`).join('')}</tbody></table></div>`;
+};
+VIEWS.empresa_pend=()=>{
+  if(ED&&ED.fbOk) return `<div class="fb ok">${ED.fbOk}</div><div style="margin-top:12px"><button class="btn" data-act="tab" data-t="pend">Continuar con los pendientes${cuentaPend()?' ('+cuentaPend()+')':''}</button></div>`;
+  if(ED&&S.pend[ED.pid]) return vistaEditor();
+  if(ED) ED=null;
+  const a=Object.entries(S.pend).sort((x,y)=>(x[1].ts||0)-(y[1].ts||0));
+  if(!a.length) return '<div class="empty">✅ No tiene pendientes. ¡Sus libros están al día!</div>';
+  return `<p>Cada operación de su empresa genera un pendiente. Registre el asiento en el libro diario eligiendo las cuentas y los montos al Debe y al Haber.</p>`+
+   a.map(([k,p])=>`<div class="pend" data-pend="${k}"><div class="d"><b>${esc(p.tit)}</b><br>${esc(p.desc)}${p.int?`<br><span class="pill w">${p.int} intento(s) con error</span>`:''}</div><button class="btn sm" data-act="edit" data-id="${k}">Registrar asiento</button></div>`).join('');
+};
+function optsCuentas(sel){ return '<option value="">— Elija la cuenta —</option>'+CAT.map(g=>`<optgroup label="${g.g}">${g.c.map(c=>`<option value="${c[0]}" ${sel===c[0]?'selected':''}>${c[0]} ${esc(c[1])}</option>`).join('')}</optgroup>`).join(''); }
+function vistaEditor(){
+  const p=S.pend[ED.pid];
+  const f=p.ref&&S.fac[p.ref];
+  return `<button class="btn sec sm" data-act="edBack">← Volver a pendientes</button>
+  <div class="card" style="margin:12px 0"><b class="gold">${esc(p.tit)}</b><p style="margin:6px 0 0;color:var(--ink)">${esc(p.desc)}</p>${f?`<button class="btn sec sm" style="margin-top:8px" data-act="verFac" data-id="${p.ref}">🧾 Ver factura ${fNum(f.num)}</button>`:''}</div>
+  <div class="ed-head"><span>Cuenta</span><span style="text-align:right">Debe</span><span style="text-align:right">Haber</span><span></span></div>
+  <div id="edRows">${ED.lines.map((l,i)=>`<div class="ed-row" data-i="${i}"><select class="ed-c" aria-label="Cuenta línea ${i+1}">${optsCuentas(l.c)}</select><input class="ed-d" type="text" inputmode="decimal" placeholder="0,00" value="${esc(l.d)}" aria-label="Debe línea ${i+1}"><input class="ed-h" type="text" inputmode="decimal" placeholder="0,00" value="${esc(l.h)}" aria-label="Haber línea ${i+1}"><button class="del" data-act="edDel" data-i="${i}" aria-label="Quitar línea">✕</button></div>`).join('')}</div>
+  <button class="btn sec sm" data-act="edAdd">+ Línea</button>
+  <div class="card" style="margin-top:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-family:var(--mono);font-size:13px" id="edTot"></div>
+  <label class="l" for="edGlosa">Glosa (descripción del asiento)</label><input type="text" id="edGlosa" maxlength="120" value="${esc(ED.glosa)}" placeholder="${esc(p.tit)}">
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn" data-act="edReg" id="edReg">Registrar en el libro diario</button>${(p.int||0)>=2?'<button class="btn sec" data-act="edSol">Ver asiento correcto</button>':''}</div>
+  ${ED.fb?`<div class="fb ${ED.fb.ok?'ok':'bad'}">${ED.fb.html}</div>`:''}
+  ${ED.sol?`<div class="card" style="margin-top:12px"><b>Asiento esperado</b> <span class="mut">(cópielo y regístrelo usted mismo)</span>${tablaLineas(p.esp)}</div>`:''}`;
+}
+function tablaLineas(lin){ let td=0,th=0; return `<div class="tw"><table class="tbl"><thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead><tbody>${(lin||[]).filter(Boolean).map(l=>{ td+=l.d||0; th+=l.h||0; return `<tr><td style="${l.h?'padding-left:28px':''}">${esc(cn(l.c))}</td><td class="num">${l.d?fm(l.d):''}</td><td class="num">${l.h?fm(l.h):''}</td></tr>`; }).join('')}</tbody><tfoot><tr><td>Totales</td><td class="num">${fm(td)}</td><td class="num">${fm(th)}</td></tr></tfoot></table></div>`; }
+function edLeer(){ document.querySelectorAll('#edRows .ed-row').forEach(r=>{ const i=+r.dataset.i, l=ED.lines[i]; if(!l) return; l.c=r.querySelector('.ed-c').value; l.d=r.querySelector('.ed-d').value; l.h=r.querySelector('.ed-h').value; }); const g=$('edGlosa'); if(g) ED.glosa=g.value; }
+function edTotales(){ const el=$('edTot'); if(!el) return; let d=0,h=0; ED.lines.forEach(l=>{ const a=pn(l.d), b=pn(l.h); if(a>0) d+=a; if(b>0) h+=b; }); d=r2(d); h=r2(h); const dif=r2(d-h);
+  el.innerHTML=`<span>Total Debe: <b>${fm(d)}</b></span><span>Total Haber: <b>${fm(h)}</b></span><span class="${Math.abs(dif)<0.005?'ok':'bad'}">${Math.abs(dif)<0.005?(d>0?'✓ Cuadra':'—'):'Diferencia: '+fm(Math.abs(dif))}</span>`; }
+$('pbody').addEventListener('input',e=>{ if(ED&&e.target.closest('#edRows,#edGlosa')){ edLeer(); edTotales(); }
+  const m=e.target.closest('[data-mq]'); if(m){ const k=m.dataset.mq; MQ[k]=MQ[k]||{}; MQ[k][m.dataset.f]=m.value; const out=document.querySelector('[data-mqt="'+k+'"]'); if(out) out.innerHTML=mqTotal(k); }
+  const rq=e.target.closest('[data-rq]'); if(rq){ RQ[rq.dataset.rq]=rq.value; const t=$('rqTot'); if(t) t.innerHTML=rqTotal(); }
+  const hf=e.target.closest('[data-hf]'); if(hf){ HF[hf.dataset.hf]=hf.value; } });
+$('pbody').addEventListener('change',e=>{ if(ED&&e.target.closest('#edRows')){ edLeer(); edTotales(); }
+  const m=e.target.closest('[data-mq]'); if(m){ const k=m.dataset.mq; MQ[k]=MQ[k]||{}; MQ[k][m.dataset.f]=m.value; const out=document.querySelector('[data-mqt="'+k+'"]'); if(out) out.innerHTML=mqTotal(k); }
+  const hf=e.target.closest('[data-hf]'); if(hf){ HF[hf.dataset.hf]=hf.value; } });
+
+/* ---------- validación del asiento (núcleo pedagógico) ---------- */
+function compararAsiento(lin,esp){
+  const net={}, ex={}, msgs=[];
+  lin.forEach(l=>{ net[l.c]=r2((net[l.c]||0)+l.d-l.h); });
+  esp.forEach(l=>{ ex[l.c]=r2((ex[l.c]||0)+(l.d||0)-(l.h||0)); });
+  Object.keys(ex).forEach(c=>{
+    const lado=ex[c]>0?'Debe':'Haber';
+    if(!(c in net)) msgs.push(`Falta la cuenta <b>${esc(cn(c))}</b>, que va al ${lado}. ${EXPL[c]||''}`);
+    else if(Math.sign(net[c])!==Math.sign(ex[c])) msgs.push(`<b>${esc(cn(c))}</b> está del lado equivocado: en esta operación va al <b>${lado}</b>. ${EXPL[c]||''}`);
+    else if(Math.abs(net[c]-ex[c])>1) msgs.push(`El monto de <b>${esc(cn(c))}</b> no es correcto. Revise el cálculo con los datos del documento (subtotal sin IVA, IVA y total).`);
+  });
+  Object.keys(net).forEach(c=>{ if(!(c in ex)) msgs.push(`La cuenta <b>${esc(cn(c))}</b> no participa en esta operación.`); });
+  return msgs;
+}
+async function registrarAsiento(){
+  if(!puede()) return; edLeer();
+  const p=S.pend[ED.pid]; if(!p) return;
+  const lin=[]; let err='';
+  ED.lines.forEach((l,i)=>{ const d=pn(l.d), h=pn(l.h); if(!l.c&&!(d>0)&&!(h>0)) return;
+    if(!l.c) err=err||`Línea ${i+1}: elija la cuenta.`;
+    else if(isNaN(d)||isNaN(h)) err=err||`Línea ${i+1}: el monto no es un número válido.`;
+    else if((d>0)===(h>0)) err=err||`Línea ${i+1}: digite el monto en el Debe o en el Haber (solo en uno).`;
+    else lin.push({c:l.c,d:r2(d>0?d:0),h:r2(h>0?h:0)}); });
+  if(!err&&lin.length<2) err='Un asiento necesita al menos dos líneas (partida doble).';
+  if(err){ ED.fb={ok:false,html:esc(err)}; renderPanel(true); return; }
+  const td=r2(lin.reduce((a,l)=>a+l.d,0)), th=r2(lin.reduce((a,l)=>a+l.h,0));
+  let msgs=[];
+  if(Math.abs(td-th)>0.005) msgs.push(`El asiento no cuadra: Debe ${fm(td)} ≠ Haber ${fm(th)}. En la partida doble la suma del Debe debe ser igual a la del Haber.`);
+  else msgs=compararAsiento(lin,p.esp||[]);
+  const btn=$('edReg'); if(btn) btn.disabled=true;
+  const o={};
+  if(msgs.length){
+    o['stats/'+S.uid+'/err']=SV.increment(1); o['pendientes/'+S.uid+'/'+ED.pid+'/int']=SV.increment(1);
+    await upd(o);
+    ED.fb={ok:false,html:'<b>El asiento no es correcto todavía.</b><ul>'+msgs.map(m=>'<li>'+m+'</li>').join('')+'</ul>'+((p.int||0)+1>=2?'<div style="margin-top:6px">Si lo necesita, puede usar «Ver asiento correcto».</div>':'')};
+    renderPanel(true); return;
+  }
+  const n=Object.keys(S.asi).length+1;
+  o['asientos/'+S.uid+'/'+key()]={n,lin,glosa:String(ED.glosa||p.tit).slice(0,120),tipo:p.tipo,ref:p.ref||'',ts:SV.TIMESTAMP,asist:ED.sol?1:0};
+  o['pendientes/'+S.uid+'/'+ED.pid]=null;
+  o['stats/'+S.uid+'/ok']=SV.increment(1);
+  await upd(o);
+  ED={fbOk:`<b>¡Correcto! Asiento N.° ${n} registrado.</b> ${esc(p.exp||'')}`,pid:ED.pid,lines:[],fb:null};
+  toast('Asiento N.° '+n+' registrado correctamente ✓');
+  renderPanel(true);
+}
+VIEWS.empresa_diario=()=>{
+  const a=asientosOrd(); if(!a.length) return '<div class="empty">Su libro diario está vacío. Registre sus pendientes.</div>';
+  let td=0,th=0;
+  return `<div class="tw"><table class="tbl"><thead><tr><th>N.°</th><th>Fecha</th><th>Cuenta y glosa</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead><tbody>${a.map(([k,s])=>{
+    const ls=(s.lin||[]).filter(Boolean).slice().sort((x,y)=>(y.d>0)-(x.d>0));
+    return ls.map((l,i)=>{ td+=l.d||0; th+=l.h||0; return `<tr>${i===0?`<td rowspan="${ls.length+1}" class="gold">${s.n||''}</td><td rowspan="${ls.length+1}" class="mut" style="font-size:12px">${fecha(s.ts)}</td>`:''}<td style="${l.h?'padding-left:30px':''}">${esc(cn(l.c))}</td><td class="num">${l.d?fm(l.d):''}</td><td class="num">${l.h?fm(l.h):''}</td></tr>`; }).join('')+`<tr><td colspan="3" class="mut" style="font-size:12px;font-style:italic">${esc(s.glosa)}${s.asist?' · (con ayuda)':''}</td></tr>`; }).join('')}</tbody>
+  <tfoot><tr><td colspan="3">Sumas iguales</td><td class="num">${fm(td)}</td><td class="num">${fm(th)}</td></tr></tfoot></table></div>`;
+};
+function balanceHTML(sl){
+  const ks=Object.keys(sl).sort(); if(!ks.length) return '<div class="empty">Aún no hay asientos registrados.</div>';
+  let D=0,Hh=0,SD=0,SA=0;
+  const rows=ks.map(c=>{ const x=sl[c]; D+=x.d; Hh+=x.h; const s=r2(x.d-x.h); if(s>0) SD+=s; else SA+=-s;
+    return `<tr><td>${esc(cn(c))}</td><td class="num">${fm(x.d)}</td><td class="num">${fm(x.h)}</td><td class="num">${s>0?fm(s):''}</td><td class="num">${s<0?fm(-s):''}</td></tr>`; }).join('');
+  D=r2(D); Hh=r2(Hh); SD=r2(SD); SA=r2(SA);
+  return `<div class="tw"><table class="tbl" id="balTbl"><thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th><th class="num">Saldo deudor</th><th class="num">Saldo acreedor</th></tr></thead><tbody>${rows}</tbody>
+  <tfoot><tr><td>Totales</td><td class="num">${fm(D)}</td><td class="num">${fm(Hh)}</td><td class="num">${fm(SD)}</td><td class="num">${fm(SA)}</td></tr></tfoot></table></div>
+  <p style="margin-top:10px" class="${Math.abs(D-Hh)<0.01&&Math.abs(SD-SA)<0.01?'ok':'bad'}" id="balEstado">${Math.abs(D-Hh)<0.01&&Math.abs(SD-SA)<0.01?'✓ El balance cuadra: Debe = Haber y saldos deudores = saldos acreedores.':'✗ El balance no cuadra.'}</p>`;
+}
+VIEWS.empresa_bal=()=>`<p>Balance de comprobación en tiempo real, calculado con los asientos que usted <b>ya registró</b> (${Object.keys(S.asi).length} asiento(s); ${cuentaPend()} pendiente(s) sin registrar).</p>`+balanceHTML(saldosLibros());
+VIEWS.empresa_fac=()=>{
+  const m=misFacturas();
+  const tb=(arr,em)=>arr.length?`<div class="tw"><table class="tbl"><thead><tr><th>Factura</th><th>Fecha</th><th>${em?'Cliente':'Proveedor'}</th><th>Condición</th><th class="num">Subtotal</th><th class="num">IVA</th><th class="num">Total</th><th>Estado</th><th></th></tr></thead><tbody>${arr.map(([k,f])=>`<tr><td class="gold">${fNum(f.num)}</td><td class="mut" style="font-size:12px">${fecha(f.ts)}</td><td>${esc(em?f.re.n:f.em.n)}</td><td>${f.cond==='credito'?'Crédito 30 d':'Contado'}</td><td class="num">${fm(f.sub)}</td><td class="num">${fm(f.iva)}</td><td class="num">${fm(f.tot)}</td><td>${estPill(estFac(k,f))}</td><td><button class="btn sec sm" data-act="verFac" data-id="${k}">Ver</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Sin facturas.</div>';
+  return `<h3 style="margin-top:0">Facturas electrónicas emitidas (ventas)</h3>${tb(m.em,true)}<h3>Facturas electrónicas recibidas (compras)</h3>${tb(m.re,false)}`;
+};
+function vistaFactura(fid){
+  const f=S.fac[fid]; if(!f) return '<div class="empty">Factura no disponible.</div>';
+  const ve=f.cond==='credito'&&f.ts?new Date(f.ts+30*864e5).toLocaleDateString('es-CR'):'';
+  return `<button class="btn sec sm" data-act="facBack">← Volver</button><div style="height:12px"></div>
+  <div class="factura" id="facDoc"><div class="fh"><div><div style="font-size:18px;font-weight:700">${esc(f.em.n)}</div><div>Cédula jurídica ${esc(f.em.ced)}</div><div style="color:#666">Régimen General · Sala ${esc(SALA)}</div></div>
+  <div style="text-align:right"><div style="font-weight:700;color:#8a6420">FACTURA ELECTRÓNICA</div><div style="font-size:20px;font-weight:700">${fNum(f.num)}</div><div>Consecutivo ${esc(f.cons)}</div><div>${fecha(f.ts)}</div></div></div>
+  <div class="cl">Clave numérica: ${esc(f.clave)}</div>
+  <div style="margin-top:8px"><b>Receptor:</b> ${esc(f.re.n)} · Cédula jurídica ${esc(f.re.ced)}</div>
+  <div><b>Condición de venta:</b> ${f.cond==='credito'?'Crédito a 30 días (vence '+ve+')':'Contado'} · <b>Medio de pago:</b> ${f.cond==='credito'?'SINPE (al vencimiento)':'Transferencia SINPE'}</div>
+  <table><thead><tr><th>Cant.</th><th>Detalle</th><th class="num">Precio unit.</th><th class="num">Subtotal</th><th class="num">Tarifa IVA</th><th class="num">IVA</th></tr></thead><tbody>${(f.lin||[]).filter(Boolean).map(l=>`<tr><td>${l.cant}</td><td>${esc(l.d)}</td><td class="num">${fm(l.pu)}</td><td class="num">${fm(l.sub)}</td><td class="num">${(l.tar*100)} %</td><td class="num">${fm(l.iva)}</td></tr>`).join('')}</tbody></table>
+  <div style="text-align:right;line-height:1.7"><div>Subtotal (venta neta): <b class="num">${fm(f.sub)}</b></div><div>Total IVA: <b class="num">${fm(f.iva)}</b></div><div style="font-size:16px">Total del comprobante: <b class="num">${fm(f.tot)}</b></div></div>
+  <div style="margin-top:8px;color:#666;font-size:11.5px">Estado: ${esc(estFac(fid,f))} · Comprobante simulado con fines educativos (Ciudad Contable · CTP Mercedes Norte). ${esc(f.per)}.</div></div>`;
+}
+VIEWS.empresa_ord=()=>{
+  const e=myE(); const rec=Object.entries(S.ord).filter(([k,o])=>o&&o.ve===S.uid&&o.vee===e.eid).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+  const pend=rec.filter(x=>x[1].est==='pendiente'), hist=rec.filter(x=>x[1].est!=='pendiente');
+  const stock=(S.nuc.stock||{})[S.uid]||{};
+  return `<h3 style="margin-top:0">Órdenes de compra recibidas por atender</h3>${pend.length?pend.map(([k,o])=>{ const sub=r2(o.cant*o.pu), iva=r2(sub*o.tar);
+    return `<div class="pend" data-ord="${k}"><div class="d"><b>${esc(o.cn)}</b> quiere comprarle <b>${o.cant} × ${esc(o.pn)}</b> a ${fm(o.pu)} c/u (${o.tar*100} % IVA) · <b>${o.cond==='credito'?'Crédito 30 días':'Contado'}</b><br>Subtotal ${fm(sub)} + IVA ${fm(iva)} = <b>${fm(r2(sub+iva))}</b>${e.act==='bienes'?` · Existencia actual: ${stock[o.pid]||0}`:''}</div>
+     <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="btn teal sm" data-act="aceptar" data-id="${k}">Aceptar y facturar</button><button class="btn coral sm" data-act="rechazar" data-id="${k}">Rechazar</button></div></div>`; }).join(''):'<div class="empty">No hay órdenes por atender.</div>'}
+  <h3>Historial</h3>${hist.length?`<div class="tw"><table class="tbl"><thead><tr><th>Fecha</th><th>Cliente</th><th>Detalle</th><th>Condición</th><th>Estado</th></tr></thead><tbody>${hist.map(([k,o])=>`<tr><td class="mut" style="font-size:12px">${fecha(o.ts)}</td><td>${esc(o.cn)}</td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.cond==='credito'?'Crédito':'Contado'}</td><td>${o.est==='aceptada'?'<span class="pill g">facturada</span>':'<span class="pill w">rechazada</span> <small class="mut">'+esc(o.mot||'')+'</small>'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Sin historial.</div>'}`;
+};
+VIEWS.empresa_inv=()=>{
+  const e=myE(); if(e.act!=='bienes') return '<div class="empty">Su empresa presta servicios: no lleva inventario de mercancías.</div>';
+  const st=(S.nuc.stock||{})[S.uid]||{}; let tv=0;
+  const rows=Object.entries(e.prods).map(([k,p])=>{ const q=st[k]||0, v=r2(q*p.cu); tv+=v; return `<tr><td>${esc(p.n)}</td><td class="num">${q}</td><td class="num">${fm(p.cu)}</td><td class="num">${fm(v)}</td><td><input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0" aria-label="Cantidad a comprar de ${esc(p.n)}"></td></tr>`; }).join('');
+  return `<p>Inventario perpetuo: la existencia se actualiza con cada compra y cada venta. Puede reabastecerse comprando <b>de contado</b> al ${PROV.n} (IVA 13 %).</p>
+  <div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo unit.</th><th class="num">Valor al costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">Valor del inventario (según existencias)</td><td class="num">${fm(r2(tv))}</td><td></td></tr></tfoot></table></div>
+  <div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`;
+};
+function rqTotal(){ const e=myE(); let sub=0,iva=0; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(p&&q>0){ const s=r2(q*p.cu); sub=r2(sub+s); iva=r2(iva+r2(s*0.13)); } }); return `Subtotal ${fm(sub)} + IVA 13 % ${fm(iva)} = <b class="gold">${fm(r2(sub+iva))}</b>`; }
+VIEWS.empresa_ayuda=()=>ayudaHTML();
+VIEWS.ayuda_ayuda=()=>ayudaHTML();
+function ayudaHTML(){ return `<div class="help"><h3 style="margin-top:0">¿Cómo funciona Ciudad Contable?</h3><ol>
+<li><b>Su empresa</b>: cada estudiante tiene una sola empresa (giro libre). Los socios aportan ${fm(APORTE)} en Bancos.</li>
+<li><b>Cada operación genera un pendiente</b> que usted debe registrar en el libro diario (Su Empresa → Pendientes). El sistema revisa que el asiento cuadre y que use las cuentas y montos correctos (tolerancia de ±₡1 por redondeo).</li>
+<li><b>Mercado</b>: compre productos o servicios a sus compañeros. Elija cantidad, condición (contado o crédito 30 días) y para qué lo usará su empresa. El vendedor acepta la orden y emite la <b>factura electrónica</b>.</li>
+<li><b>Banco</b>: pague por SINPE las facturas a crédito. El saldo del banco cambia de inmediato; el de sus libros, cuando usted registra el asiento.</li>
+<li><b>Hacienda · TRIBU-CR</b>: presente la declaración de IVA (D-150 simplificada) con base en sus comprobantes.</li></ol>
+<h3>Método de inventario: perpetuo</h3><p>Se usa <b>inventario perpetuo</b>: las compras de mercadería se registran directamente en <b>Inventario de Mercancías</b> (no en «Compras»), y en cada venta se hacen dos asientos:</p>
+<ul><li><b>Venta</b>: Bancos o Cuentas por Cobrar (Debe, total) · Ventas (Haber, sin IVA) · IVA por Pagar (Haber, el IVA cobrado).</li>
+<li><b>Costo de la venta</b>: Costo de Ventas (Debe) · Inventario de Mercancías (Haber), por cantidad × costo unitario.</li></ul>
+<h3>IVA</h3><ul><li>IVA que usted <b>cobra</b> al vender = <b>débito fiscal</b> → IVA por Pagar (pasivo).</li><li>IVA que usted <b>paga</b> al comprar = <b>crédito fiscal</b> → IVA Acreditable (activo).</li>
+<li>Declaración: débito − crédito (+ saldo a favor anterior) = IVA por pagar (si es positivo) o saldo a favor (si es negativo).</li>
+<li>Liquidación: IVA por Pagar (Debe, el débito) · IVA Acreditable (Haber, el crédito aplicado) · Bancos (Haber, lo pagado). El crédito sobrante queda como saldo a favor.</li>
+<li>Montos de IVA en colones redondeados a 2 decimales, línea por línea.</li></ul>
+<h3>Compras a compañeros</h3><p>Según el uso que indique: gasto (Gastos Diversos, Publicidad, Papelería) o activo (Mobiliario y Equipo, Equipo de Cómputo), por el monto <b>sin IVA</b>; el IVA va a IVA Acreditable. A crédito se usa Cuentas por Pagar.</p></div>`; }
+
+VIEWS.mercado_cat=()=>{
+  const ents=Object.entries(S.emp).filter(([u,e])=>e&&u!==S.uid&&e.prods);
+  if(!ents.length) return '<div class="empty">Aún no hay otras empresas en la sala. Cuando sus compañeros creen las suyas, aparecerán aquí.</div>';
+  const sal=fromC((S.nuc.saldo||{})[S.uid]||0);
+  return `<p>Saldo disponible en Bancos: <b class="gold">${fm(sal)}</b>. El vendedor recibirá su orden en vivo; al aceptarla emitirá la factura electrónica. De contado, el pago por SINPE se debita al aceptar.</p>`+
+  ents.sort((a,b)=>String(a[1].nom).localeCompare(b[1].nom)).map(([u,e])=>{ const st=(S.nuc.stock||{})[u]||{};
+    return `<div class="mk" data-emp="${esc(u)}"><div class="mk-h"><div class="logo" style="background:${esc(e.color)}">${esc(e.ini)}</div><div><b>${esc(e.nom)}</b><div class="mut" style="font-size:12px">${esc(e.giro)} · ${esc(e.ced)} · ${esc(e.duen)}</div></div></div>`+
+    Object.entries(e.prods).map(([pid,p])=>{ const k=u+'|'+pid, q=MQ[k]||{}; const disp=e.act==='bienes'?(st[pid]||0):null;
+      return `<div class="mk-p" data-prod="${esc(k)}"><div class="pn"><b>${esc(p.n)}</b><br><small class="mut">${e.act==='bienes'?'Existencia: '+disp:'Servicio'}</small></div>
+      <div class="num">${fm(p.pv)}<br><small class="mut">+ IVA ${p.tar*100} % = ${fm(r2(p.pv+r2(p.pv*p.tar)))}</small></div>
+      <input type="number" min="1" step="1" placeholder="Cant." data-mq="${esc(k)}" data-f="cant" value="${esc(q.cant||'')}" aria-label="Cantidad">
+      <select data-mq="${esc(k)}" data-f="cond" aria-label="Condición"><option value="contado" ${q.cond!=='credito'?'selected':''}>Contado</option><option value="credito" ${q.cond==='credito'?'selected':''}>Crédito 30 días</option></select>
+      <select data-mq="${esc(k)}" data-f="uso" aria-label="Uso">${USOS.map(x=>`<option value="${x[0]}" ${q.uso===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>
+      <div style="text-align:right"><div data-mqt="${esc(k)}" style="font-size:12px;margin-bottom:4px">${mqTotal(k)}</div><button class="btn sm" data-act="comprar" data-k="${esc(k)}" ${disp===0?'disabled':''}>Enviar orden</button></div></div>`; }).join('')+'</div>'; }).join('');
+};
+function mqTotal(k){ const a=k.split('|'), e=S.emp[a[0]], p=e&&e.prods[a[1]], q=parseInt((MQ[k]||{}).cant,10); if(!p||!(q>0)) return '<span class="mut">—</span>'; const s=r2(q*p.pv); return 'Total <b>'+fm(r2(s+r2(s*p.tar)))+'</b>'; }
+VIEWS.mercado_mis=()=>{
+  const e=myE(); const a=Object.entries(S.ord).filter(([k,o])=>o&&o.co===S.uid&&o.coe===e.eid).sort((x,y)=>(y[1].ts||0)-(x[1].ts||0));
+  if(!a.length) return '<div class="empty">No ha enviado órdenes de compra.</div>';
+  return `<div class="tw"><table class="tbl"><thead><tr><th>Fecha</th><th>Vendedor</th><th>Detalle</th><th>Condición</th><th class="num">Total</th><th>Estado</th></tr></thead><tbody>${a.map(([k,o])=>{ const s=r2(o.cant*o.pu); return `<tr><td class="mut" style="font-size:12px">${fecha(o.ts)}</td><td>${esc(o.vn)}</td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.cond==='credito'?'Crédito':'Contado'}</td><td class="num">${fm(r2(s+r2(s*o.tar)))}</td><td>${o.est==='pendiente'?'<span class="pill y">esperando al vendedor</span>':o.est==='aceptada'?`<span class="pill g">facturada</span> <button class="btn sec sm" data-act="verFac" data-id="${o.fac}">Ver factura</button>`:'<span class="pill w">rechazada</span> <small class="mut">'+esc(o.mot||'')+'</small>'}</td></tr>`; }).join('')}</tbody></table></div>`;
+};
+VIEWS.banco_cta=()=>{
+  const sal=fromC((S.nuc.saldo||{})[S.uid]||0), m=misFacturas();
+  const xp=m.re.filter(([k,f])=>estFac(k,f)==='pendiente'), xc=m.em.filter(([k,f])=>estFac(k,f)==='pendiente');
+  const tP=r2(xp.reduce((a,x)=>a+x[1].tot,0)), tC=r2(xc.reduce((a,x)=>a+x[1].tot,0));
+  return `<div class="grid3">${kpi('Saldo disponible',fm(sal),'gold')}${kpi('Facturas por pagar',fm(tP),tP?'bad':'')}${kpi('Facturas por cobrar',fm(tC),tC?'ok':'')}</div>
+  <h3>Facturas a crédito por pagar (SINPE)</h3>${xp.length?`<div class="tw"><table class="tbl"><thead><tr><th>Factura</th><th>Proveedor</th><th>Vence</th><th class="num">Total</th><th></th></tr></thead><tbody>${xp.map(([k,f])=>`<tr><td class="gold">${fNum(f.num)}</td><td>${esc(f.em.n)}</td><td>${f.ts?new Date(f.ts+30*864e5).toLocaleDateString('es-CR'):''}</td><td class="num">${fm(f.tot)}</td><td><button class="btn teal sm" data-act="pagar" data-id="${k}">Pagar por SINPE</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No tiene facturas a crédito pendientes de pago.</div>'}
+  <h3>Facturas a crédito por cobrar</h3>${xc.length?`<div class="tw"><table class="tbl"><thead><tr><th>Factura</th><th>Cliente</th><th class="num">Total</th></tr></thead><tbody>${xc.map(([k,f])=>`<tr><td class="gold">${fNum(f.num)}</td><td>${esc(f.re.n)}</td><td class="num">${fm(f.tot)}</td></tr>`).join('')}</tbody></table></div><p style="margin-top:8px">Puede recordarle al cliente con 💬 «¿Me puede pagar la factura pendiente?».</p>`:'<div class="empty">No tiene facturas por cobrar.</div>'}`;
+};
+VIEWS.banco_mov=()=>{
+  const a=Object.values(S.mov).filter(Boolean).sort((x,y)=>(x.ts||0)-(y.ts||0)); if(!a.length) return '<div class="empty">Sin movimientos.</div>';
+  let s=0; const rows=a.map(m=>{ s=r2(s+m.m); return `<tr><td class="mut" style="font-size:12px">${fecha(m.ts)}</td><td>${esc(m.d)}</td><td class="num ok">${m.m>0?fm(m.m):''}</td><td class="num bad">${m.m<0?fm(-m.m):''}</td><td class="num">${fm(s)}</td></tr>`; });
+  return `<p>Estado de cuenta bancario (lo que registra el banco). Compárelo con la cuenta Bancos de su libro mayor.</p><div class="tw"><table class="tbl"><thead><tr><th>Fecha</th><th>Detalle</th><th class="num">Crédito (+)</th><th class="num">Débito (−)</th><th class="num">Saldo</th></tr></thead><tbody>${rows.reverse().join('')}</tbody></table></div>`;
+};
+VIEWS.banco_pre=()=>`<div class="soon"><div class="ic">🏗</div><h2>Préstamos · próximamente</h2><p>En una etapa futura podrá solicitar préstamos bancarios y registrar intereses.</p></div>`;
+VIEWS.ccss_soon=()=>`<div class="soon"><div class="ic">🩺</div><h2>CCSS · próximamente</h2><p>En la siguiente etapa su empresa contratará personal, calculará la planilla y las cargas sociales.</p></div>`;
+
+/* ---------- Hacienda ---------- */
+function ivaCalc(){
+  const eid=myEid(), inc={}; const ds=Object.values(S.decl).filter(Boolean).sort((a,b)=>(a.n||0)-(b.n||0));
+  ds.forEach(d=>Object.keys(d.inc||{}).forEach(k=>{ inc[k]=1; }));
+  const em=[],re=[]; Object.entries(S.fac).forEach(([k,f])=>{ if(!f||!f.em||inc[k]) return; if(f.em.e===eid) em.push([k,f]); else if(f.re&&f.re.e===eid) re.push([k,f]); });
+  const deb=r2(em.reduce((a,x)=>a+(x[1].iva||0),0)), cred=r2(re.reduce((a,x)=>a+(x[1].iva||0),0));
+  const ant=ds.length?r2(ds[ds.length-1].favor||0):0, credTot=r2(cred+ant), res=r2(deb-credTot);
+  return {em,re,deb,cred,ant,credTot,res,pagar:res>0?res:0,favor:res<0?-res:0,ds};
+}
+VIEWS.hacienda_decl=()=>{
+  const c=ivaCalc(), per=periodo(), ya=c.ds.find(d=>d.per===per);
+  if(ya) return `<div class="fb ok"><b>Ya presentó la declaración de IVA del período «${esc(per)}».</b><br>Débito ${fm(ya.deb)} · Crédito ${fm(ya.credTot)} · ${ya.pagar>0?'IVA pagado '+fm(ya.pagar):'Saldo a favor '+fm(ya.favor)} · ${ya.ok?'✓ datos correctos':'✗ con diferencias (Hacienda liquidó con base en sus comprobantes)'}.</div><p style="margin-top:12px">Podrá declarar de nuevo cuando el docente inicie el siguiente período. Comprobantes nuevos sin declarar: ${c.em.length+c.re.length}.</p>`;
+  const fila=([k,f],em)=>`<tr><td class="gold">${fNum(f.num)}</td><td>${esc(em?f.re.n:f.em.n)}</td><td class="num">${fm(f.sub)}</td><td class="num">${fm(f.iva)}</td></tr>`;
+  const t=(arr,em)=>arr.length?`<div class="tw"><table class="tbl"><thead><tr><th>Comprobante</th><th>${em?'Cliente':'Proveedor'}</th><th class="num">Base</th><th class="num">IVA</th></tr></thead><tbody>${arr.map(x=>fila(x,em)).join('')}</tbody></table></div>`:'<div class="empty">Ninguno.</div>';
+  return `<p>Declaración del Impuesto al Valor Agregado (formulario D-150 simplificado) · período <b class="gold">${esc(per)}</b>. Use sus comprobantes electrónicos no declarados para calcularla.</p>
+  <div class="grid2"><div><h3 style="margin-top:0">Ventas: facturas emitidas</h3>${t(c.em,true)}</div><div><h3 style="margin-top:0">Compras: facturas recibidas</h3>${t(c.re,false)}</div></div>
+  <div class="card" style="margin-top:14px"><h3 style="margin-top:0">D-150 · Liquidación</h3>
+   <div class="grid2"><div><label class="l" for="hfDeb">Débito fiscal (IVA de las ventas)</label><input type="text" inputmode="decimal" id="hfDeb" data-hf="deb" value="${esc(HF.deb)}" placeholder="0,00"></div>
+   <div><label class="l" for="hfCred">Crédito fiscal (IVA de las compras)</label><input type="text" inputmode="decimal" id="hfCred" data-hf="cred" value="${esc(HF.cred)}" placeholder="0,00"></div>
+   <div><label class="l">Saldo a favor del período anterior</label><input type="text" value="${fmtN(c.ant)}" readonly></div>
+   <div><label class="l" for="hfRes">Resultado</label><div style="display:flex;gap:8px"><select id="hfRes" data-hf="res" style="max-width:170px"><option value="pagar" ${HF.res==='pagar'?'selected':''}>IVA por pagar</option><option value="favor" ${HF.res==='favor'?'selected':''}>Saldo a favor</option></select><input type="text" inputmode="decimal" id="hfMonto" data-hf="monto" value="${esc(HF.monto)}" placeholder="0,00"></div></div></div>
+   <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn sec" data-act="ivaVer">Verificar cálculos</button><button class="btn" data-act="ivaPres" id="ivaPres">Presentar declaración${c.pagar>0?' y pagar por SINPE':''}</button></div>
+   ${HF.fb?`<div class="fb ${HF.fb.ok?'ok':'bad'}">${HF.fb.html}</div>`:''}</div>`;
+};
+VIEWS.hacienda_hist=()=>{ const c=ivaCalc(); if(!c.ds.length) return '<div class="empty">No ha presentado declaraciones.</div>';
+  return `<div class="tw"><table class="tbl"><thead><tr><th>N.°</th><th>Período</th><th>Fecha</th><th class="num">Débito</th><th class="num">Crédito</th><th class="num">Pagado</th><th class="num">Saldo a favor</th><th>Revisión</th></tr></thead><tbody>${c.ds.map(d=>`<tr><td>${d.n}</td><td>${esc(d.per)}</td><td class="mut" style="font-size:12px">${fecha(d.ts)}</td><td class="num">${fm(d.deb)}</td><td class="num">${fm(d.credTot)}</td><td class="num">${fm(d.pagar)}</td><td class="num">${fm(d.favor)}</td><td>${d.ok?'<span class="pill g">correcta</span>':'<span class="pill w">con diferencias</span>'}</td></tr>`).join('')}</tbody></table></div>`; };
+function revisarIVA(c){
+  const d=pn(HF.deb), cr=pn(HF.cred), m=pn(HF.monto), msgs=[];
+  if(isNaN(d)||Math.abs(d-c.deb)>1) msgs.push('El <b>débito fiscal</b> no coincide: sume el IVA de todas sus facturas emitidas no declaradas.');
+  if(isNaN(cr)||Math.abs(cr-c.cred)>1) msgs.push('El <b>crédito fiscal</b> no coincide: sume el IVA de todas sus facturas recibidas (compañeros y proveedor) no declaradas.');
+  const tipo=c.res>0?'pagar':'favor', monto=Math.abs(c.res);
+  if(HF.res!==tipo&&monto>1) msgs.push('El resultado es <b>'+(tipo==='pagar'?'IVA por pagar':'saldo a favor')+'</b>: débito − (crédito + saldo a favor anterior).');
+  else if(isNaN(m)||Math.abs(m-monto)>1) msgs.push('El <b>monto del resultado</b> no es correcto: débito − (crédito + saldo a favor anterior).');
+  return msgs;
+}
+async function presentarIVA(verificarSolo){
+  if(!puede()) return;
+  const c=ivaCalc(), msgs=revisarIVA(c);
+  if(verificarSolo){ HF.int=(HF.int||0)+1; HF.fb=msgs.length?{ok:false,html:'<b>Revise:</b><ul>'+msgs.map(x=>'<li>'+x+'</li>').join('')+'</ul>'}:{ok:true,html:'✓ Sus cálculos coinciden con sus comprobantes electrónicos. Puede presentar la declaración.'}; renderPanel(true); return; }
+  if(c.ds.find(d=>d.per===periodo())) return;
+  if(msgs.length&&!confirm('Su declaración tiene diferencias con sus comprobantes. Si la presenta así, contará como declaración con errores y Hacienda liquidará el IVA con base en sus comprobantes. ¿Presentarla de todos modos?')) return;
+  const pC=toC(c.pagar), n0=c.ds.length;
+  const b=$('ivaPres'); if(b) b.disabled=true;
+  const r=await txN(n=>{ if((n.dc[S.uid]||0)!==n0) return 'dup'; if(pC>0){ if((n.saldo[S.uid]||0)<pC) return 'sinFondos'; n.saldo[S.uid]-=pC; n.ext.hacienda=(n.ext.hacienda||0)+pC; } n.dc[S.uid]=n0+1; return 'ok'; });
+  if(r.out!=='ok'){ toast(r.out==='sinFondos'?'No tiene saldo suficiente en Bancos para pagar el IVA ('+fm(c.pagar)+').':'La declaración ya fue presentada desde otra sesión.','w'); renderPanel(true); return; }
+  const inc={}; c.em.concat(c.re).forEach(x=>{ inc[x[0]]=true; });
+  const o={}, per=periodo();
+  o['declaraciones/'+S.uid+'/'+key()]={n:n0+1,per,deb:c.deb,cred:c.cred,ant:c.ant,credTot:c.credTot,pagar:c.pagar,favor:c.favor,ok:msgs.length===0,int:HF.int||0,
+    dig:{deb:r2(pn(HF.deb)||0),cred:r2(pn(HF.cred)||0),res:HF.res,monto:r2(pn(HF.monto)||0)},inc,ts:SV.TIMESTAMP};
+  if(c.deb>0){ const apl=r2(Math.min(c.credTot,c.deb));
+    o['pendientes/'+S.uid+'/'+key()]=pendiente('iva','Liquidación del IVA ('+per+')',
+      `Presentó la declaración D-150 del período ${per}: débito fiscal ${fm(c.deb)}, crédito fiscal disponible ${fm(c.credTot)}${c.ant?' (incluye saldo a favor anterior '+fm(c.ant)+')':''}. `+(c.pagar>0?`Pagó ${fm(c.pagar)} a Hacienda por SINPE.`:`Le queda un saldo a favor de ${fm(c.favor)}.`)+' Registre la liquidación del IVA.',
+      [{c:'2103',d:c.deb},{c:'1106',h:apl},{c:'1102',h:c.pagar}],'Al liquidar se cancela el débito fiscal (IVA por Pagar al Debe) contra el crédito fiscal (IVA Acreditable al Haber); si el débito es mayor, la diferencia se paga desde Bancos (Haber).');
+  }
+  if(c.pagar>0) o['movimientos/'+S.uid+'/'+key()]={d:'Pago de IVA a Hacienda (D-150 · '+per+')',m:-c.pagar,ts:SV.TIMESTAMP};
+  await upd(o);
+  HF={deb:'',cred:'',res:'pagar',monto:'',fb:null,int:0};
+  toast('Declaración presentada'+(c.pagar>0?' y pagada por SINPE ('+fm(c.pagar)+')':'')+'.'+(c.deb>0?' Registre la liquidación en sus pendientes.':''),msgs.length?'w':'');
+  renderPanel(true);
+}
+
+/* ===================== OPERACIONES ===================== */
+async function comprar(k){
+  if(!puede()) return;
+  const a=k.split('|'), vu=a[0], pid=a[1], v=S.emp[vu], e=myE(), p=v&&v.prods&&v.prods[pid]; if(!p) return;
+  const q=MQ[k]||{}, cant=parseInt(q.cant,10), cond=q.cond==='credito'?'credito':'contado', uso=q.uso||USOS[0][0];
+  if(!(cant>=1&&cant<=10000)) return toast('Indique una cantidad válida (1 o más).','w');
+  if(v.act==='bienes'){ const st=((S.nuc.stock||{})[vu]||{})[pid]||0; if(cant>st) return toast('Solo hay '+st+' unidad(es) disponibles de '+p.n+'.','w'); }
+  const sub=r2(cant*p.pv), tot=r2(sub+r2(sub*p.tar));
+  if(cond==='contado'&&toC(tot)>((S.nuc.saldo||{})[S.uid]||0)) return toast('Su saldo en Bancos no alcanza para pagar de contado '+fm(tot)+'. Pruebe a crédito.','w');
+  const oid=key(), o={};
+  o['ordenes/'+oid]={co:S.uid,coe:e.eid,cn:e.nom,ve:vu,vee:v.eid,vn:v.nom,pid,pn:p.n,cant,pu:p.pv,tar:p.tar,cond,uso,est:'pendiente',ts:SV.TIMESTAMP};
+  Object.assign(o,notificar(vu,`🛒 ${e.nom} le envió una orden: ${cant} × ${p.n} (${cond==='credito'?'crédito 30 días':'contado'}). Atiéndala en Su Empresa → Órdenes.`,'y'));
+  await upd(o); MQ[k]={cond,uso}; toast('Orden enviada a '+v.nom+'. Espere a que la acepte y emita la factura.'); renderPanel(true);
+}
+async function rechazar(oid,motivo){
+  const o=S.ord[oid]; if(!o||o.ve!==S.uid) return;
+  if(!motivo&&!puede()) return;
+  const r=await txN(n=>{ if(n.ord[oid]) return 'procesada'; n.ord[oid]='r'; return 'ok'; });
+  if(r.out!=='ok') return toast('Esa orden ya fue procesada.','w');
+  const u={}; u['ordenes/'+oid+'/est']='rechazada'; u['ordenes/'+oid+'/mot']=String(motivo||'Rechazada por el vendedor').slice(0,120);
+  Object.assign(u,notificar(o.co,`❌ ${o.vn} rechazó su orden de ${o.cant} × ${o.pn}. ${motivo||''}`,'w'));
+  await upd(u); renderPanel(true);
+}
+async function aceptar(oid){
+  if(!puede()) return;
+  const o=S.ord[oid], e=myE(); if(!o||o.ve!==S.uid||o.est!=='pendiente'||o.vee!==e.eid) return;
+  const comp=S.emp[o.co]; if(!comp||comp.eid!==o.coe) return rechazar(oid,'La empresa compradora ya no existe.');
+  const prod=e.prods[o.pid]; if(!prod) return rechazar(oid,'El producto ya no existe.');
+  const bienes=e.act==='bienes', sub=r2(o.cant*o.pu), iva=r2(sub*o.tar), tot=r2(sub+iva), tC=toC(tot), fid=key(); let num=0;
+  const btns=document.querySelectorAll('[data-id="'+oid+'"]'); btns.forEach(b=>b.disabled=true);
+  const r=await txN(n=>{
+    if(n.ord[oid]) return 'procesada';
+    if(n.saldo[S.uid]==null) return 'sinEmpresa';
+    if(bienes&&(((n.stock[S.uid]||{})[o.pid])||0)<o.cant) return 'sinStock';
+    if(o.cond==='contado'){ if(n.saldo[o.co]==null) return 'sinComprador'; if(n.saldo[o.co]<tC) return 'sinFondos'; }
+    if(bienes) n.stock[S.uid][o.pid]-=o.cant;
+    if(o.cond==='contado'){ n.saldo[o.co]-=tC; n.saldo[S.uid]+=tC; n.fac[fid]='pagada'; } else n.fac[fid]='pendiente';
+    n.consec[S.uid]=(n.consec[S.uid]||0)+1; num=n.consec[S.uid]; n.ord[oid]='a'; return 'ok';
+  });
+  if(r.out!=='ok'){
+    const mot={sinStock:'No hay existencias suficientes.',sinFondos:'El comprador no tiene saldo suficiente en Bancos para pagar de contado.',sinComprador:'La empresa compradora ya no existe.'}[r.out];
+    if(mot){ toast('No se pudo facturar: '+mot+' La orden se rechazó automáticamente.','w'); return rechazar(oid,mot); }
+    toast(r.out==='procesada'?'Esa orden ya fue procesada.':'No se pudo completar la operación. Intente de nuevo.','w'); return;
+  }
+  const lin=[{d:prod.n,cant:o.cant,pu:o.pu,sub,tar:o.tar,iva,cu:bienes?prod.cu:0}];
+  const em={u:S.uid,e:e.eid,n:e.nom,ced:e.ced}, re={u:o.co,e:comp.eid,n:comp.nom,ced:comp.ced}, cont=o.cond==='contado', nf=fNum(num);
+  const u={};
+  u['facturas/'+fid]=facturaDoc(num,em,re,lin,o.cond,oid,{uso:o.uso,act:e.act});
+  u['ordenes/'+oid+'/est']='aceptada'; u['ordenes/'+oid+'/fac']=fid;
+  const cuentaIng=bienes?'4101':'4102';
+  u['pendientes/'+S.uid+'/'+key()]=pendiente('venta','Venta '+(cont?'de contado':'a crédito')+' · '+nf,
+    `Vendió a ${comp.nom} según la factura ${nf}: ${o.cant} × ${prod.n} a ${fm(o.pu)}. Subtotal ${fm(sub)} + IVA ${o.tar*100} % ${fm(iva)} = total ${fm(tot)}. `+(cont?'El cliente pagó de contado por SINPE (ingresó a Bancos).':'Condición: crédito a 30 días.'),
+    [{c:cont?'1102':'1103',d:tot},{c:cuentaIng,h:sub},{c:'2103',h:iva}],
+    (cont?'Bancos aumenta (Debe)':'Cuentas por Cobrar aumenta (Debe)')+' por el total; el ingreso ('+CTA[cuentaIng].n+') se reconoce al Haber sin IVA'+(iva>0?' y el IVA cobrado es un pasivo con Hacienda (IVA por Pagar, Haber).':'; esta venta es exenta, no genera débito fiscal.'),{ref:fid});
+  if(bienes){ const costo=r2(o.cant*prod.cu);
+    u['pendientes/'+S.uid+'/'+key()]=pendiente('costo','Costo de la venta · '+nf,`Registre el costo de la mercadería vendida en la factura ${nf} (inventario perpetuo): ${o.cant} × costo unitario ${fm(prod.cu)}.`,
+      [{c:'5101',d:costo},{c:'1105',h:costo}],'Con inventario perpetuo, cada venta rebaja el Inventario (Haber) y reconoce el Costo de Ventas (Debe) por el costo, no por el precio de venta.',{ref:fid}); }
+  u['pendientes/'+o.co+'/'+key()]=pendiente('compra','Compra '+(cont?'de contado':'a crédito')+' · '+nf+' de '+e.nom,
+    `Compró a ${e.nom} según la factura ${nf}: ${o.cant} × ${prod.n}. Uso: ${usoTxt(o.uso).toLowerCase()}. Subtotal ${fm(sub)} + IVA ${o.tar*100} % ${fm(iva)} = total ${fm(tot)}. `+(cont?'Pagó de contado por SINPE (salió de Bancos).':'Condición: crédito a 30 días.'),
+    [{c:o.uso,d:sub},{c:'1106',d:iva},{c:cont?'1102':'2101',h:tot}],
+    'Lo comprado se registra según su uso ('+CTA[o.uso].n+') por el monto sin IVA; '+(iva>0?'el IVA pagado es crédito fiscal (IVA Acreditable, Debe); ':'')+(cont?'Bancos disminuye (Haber).':'la deuda queda en Cuentas por Pagar (Haber).'),{ref:fid});
+  if(cont){ u['movimientos/'+S.uid+'/'+key()]={d:'SINPE recibido de '+comp.nom+' · '+nf,m:tot,ts:SV.TIMESTAMP,ref:fid};
+    u['movimientos/'+o.co+'/'+key()]={d:'SINPE enviado a '+e.nom+' · '+nf,m:-tot,ts:SV.TIMESTAMP,ref:fid}; }
+  Object.assign(u,notificar(o.co,`🧾 ${e.nom} aceptó su orden y emitió la factura ${nf} por ${fm(tot)} (${cont?'pagada de contado por SINPE':'a crédito 30 días'}). Registre la compra.`));
+  await upd(u);
+  toast('Factura '+nf+' emitida a '+comp.nom+'. Registre la venta'+(bienes?' y su costo':'')+' en sus pendientes.');
+  renderPanel(true);
+}
+async function pagar(fid){
+  if(!puede()) return;
+  const f=S.fac[fid], e=myE(); if(!f||f.re.u!==S.uid||f.re.e!==e.eid) return;
+  const v=S.emp[f.em.u]; if(!v||v.eid!==f.em.e) return toast('La empresa vendedora fue reiniciada; esta factura ya no puede pagarse.','w');
+  const tC=toC(f.tot), nf=fNum(f.num);
+  document.querySelectorAll('[data-act="pagar"]').forEach(b=>b.disabled=true);
+  const r=await txN(n=>{ if(n.fac[fid]!=='pendiente') return 'estado'; if((n.saldo[S.uid]||0)<tC) return 'sinFondos'; if(n.saldo[f.em.u]==null) return 'sinVend';
+    n.saldo[S.uid]-=tC; n.saldo[f.em.u]+=tC; n.fac[fid]='pagada'; return 'ok'; });
+  if(r.out!=='ok'){ toast({sinFondos:'Saldo insuficiente en Bancos para pagar '+fm(f.tot)+'.',estado:'Esa factura ya no está pendiente.',sinVend:'La empresa vendedora ya no existe.'}[r.out]||'No se pudo pagar. Intente de nuevo.','w'); renderPanel(true); return; }
+  const u={}; u['facturas/'+fid+'/est']='pagada'; u['facturas/'+fid+'/pag']=SV.TIMESTAMP;
+  u['movimientos/'+S.uid+'/'+key()]={d:'SINPE enviado a '+f.em.n+' · pago '+nf,m:-f.tot,ts:SV.TIMESTAMP,ref:fid};
+  u['movimientos/'+f.em.u+'/'+key()]={d:'SINPE recibido de '+f.re.n+' · cobro '+nf,m:f.tot,ts:SV.TIMESTAMP,ref:fid};
+  u['pendientes/'+S.uid+'/'+key()]=pendiente('pago','Pago por SINPE · '+nf,`Pagó por SINPE la factura a crédito ${nf} de ${f.em.n} por ${fm(f.tot)}.`,[{c:'2101',d:f.tot},{c:'1102',h:f.tot}],'Al pagar, la deuda (Cuentas por Pagar, pasivo) disminuye al Debe y Bancos disminuye al Haber.',{ref:fid});
+  u['pendientes/'+f.em.u+'/'+key()]=pendiente('cobro','Cobro por SINPE · '+nf,`${f.re.n} le pagó por SINPE la factura ${nf} por ${fm(f.tot)}.`,[{c:'1102',d:f.tot},{c:'1103',h:f.tot}],'Al cobrar, Bancos aumenta (Debe) y Cuentas por Cobrar disminuye (Haber). No es un ingreso nuevo: la venta ya se registró.',{ref:fid});
+  Object.assign(u,notificar(f.em.u,`💸 ${f.re.n} le pagó la factura ${nf} por SINPE (${fm(f.tot)}). Registre el cobro.`));
+  await upd(u); toast('Pago por SINPE realizado: '+nf+' · '+fm(f.tot)); renderPanel(true);
+}
+async function reabastecer(){
+  if(!puede()) return; const e=myE(); if(e.act!=='bienes') return;
+  const lin=[]; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(p&&q>0&&q<=10000){ const s=r2(q*p.cu); lin.push({d:p.n,cant:q,pu:p.cu,sub:s,tar:0.13,iva:r2(s*0.13),pid:k}); } });
+  if(!lin.length) return toast('Indique al menos una cantidad a comprar.','w');
+  const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0)), tot=r2(sub+iva), tC=toC(tot), fid=key(); let num=0;
+  const r=await txN(n=>{ if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<tC) return 'sinFondos';
+    n.saldo[S.uid]-=tC; if(!n.stock[S.uid]) n.stock[S.uid]={}; lin.forEach(l=>{ n.stock[S.uid][l.pid]=(n.stock[S.uid][l.pid]||0)+l.cant; });
+    n.consec.PROV=(n.consec.PROV||0)+1; num=n.consec.PROV; n.ext.proveedor=(n.ext.proveedor||0)+tC; n.fac[fid]='pagada'; return 'ok'; });
+  if(r.out!=='ok') return toast(r.out==='sinFondos'?'Saldo insuficiente en Bancos ('+fm(tot)+').':'No se pudo comprar.','w');
+  const u={}; u['facturas/'+fid]=facturaDoc(num,PROV,{u:S.uid,e:e.eid,n:e.nom,ced:e.ced},lin,'contado','',{uso:'1105',act:'bienes'});
+  u['pendientes/'+S.uid+'/'+key()]=pendCompraProv(fNum(num),sub,iva,tot,fid);
+  u['movimientos/'+S.uid+'/'+key()]={d:'Pago a '+PROV.n+' · '+fNum(num),m:-tot,ts:SV.TIMESTAMP,ref:fid};
+  await upd(u); RQ={}; toast('Compra al proveedor realizada ('+fm(tot)+'). Registre el asiento.'); renderPanel(true);
+}
+
+/* ===================== PANEL DOCENTE ===================== */
+const D={t:'ctl',sort:'puntaje',proj:false,subs:false};
+let docPending=false;
+function pedirPin(){ $('pin').hidden=false; $('pinErr').textContent=''; $('pinIn').value=''; setTimeout(()=>$('pinIn').focus(),50); }
+$('pinIn').addEventListener('keydown',e=>{ if(e.key==='Enter') ACT.pinOk(); });
+$('btnDoc').onclick=()=>{ if(S.docente) abrirDoc(); else pedirPin(); };
+async function abrirDoc(){
+  await iniciarRed();
+  if(!S.uid&&!S.docenteSolo){ S.docenteSolo=true; $('login').hidden=true; suscribir(); }
+  if(!D.subs){ D.subs=true;
+    ['pendientes','asientos','declaraciones','stats'].forEach(p=>base.child(p).on('value',s=>{ const k={pendientes:'pend',asientos:'asi',declaraciones:'decl',stats:'stats'}[p]; S.all[k]=s.val()||{}; programar(); })); }
+  $('docente').hidden=false; renderDoc(true);
+}
+function metricas(){
+  const nuc=S.nuc||{}, sal=nuc.saldo||{};
+  const rows=Object.entries(S.emp).filter(([u,e])=>e&&e.eid).map(([u,e])=>{
+    let ventas=0,costo=0,gastos=0,compras=0,nfe=0,nfr=0; const inc={};
+    const decl=Object.values(S.all.decl[u]||{}).filter(Boolean); decl.forEach(d=>Object.keys(d.inc||{}).forEach(k=>{ inc[k]=1; }));
+    let sinDecl=0;
+    Object.entries(S.fac).forEach(([k,f])=>{ if(!f||!f.em) return;
+      if(f.em.e===e.eid){ nfe++; ventas+=f.sub; (f.lin||[]).forEach(l=>{ if(l) costo+=(l.cant||0)*(l.cu||0); }); if(!inc[k]) sinDecl++; }
+      if(f.re&&f.re.e===e.eid){ nfr++; compras+=f.tot; if(String(f.uso||'').charAt(0)==='6') gastos+=f.sub; if(!inc[k]) sinDecl++; } });
+    const st=S.all.stats[u]||{}, ok=st.ok||0, er=st.err||0, pct=ok+er?Math.round(100*ok/(ok+er)):0;
+    const dOk=decl.filter(d=>d.ok).length;
+    const cumpl=decl.length?Math.round(100*dOk/decl.length*(sinDecl?0.5:1)):0;
+    const util=r2(ventas-costo-gastos);
+    return {u,e,saldo:fromC(sal[u]||0),ventas:r2(ventas),costo:r2(costo),gastos:r2(gastos),compras:r2(compras),util,ok,er,pct,pend:Object.keys(S.all.pend[u]||{}).length,
+      nasi:Object.keys(S.all.asi[u]||{}).length,ndecl:decl.length,dOk,sinDecl,cumpl,nfe,nfr};
+  });
+  const nz=(k)=>{ const v=rows.map(r=>r[k]); const mn=Math.min.apply(null,v), mx=Math.max.apply(null,v); rows.forEach(r=>{ r[k+'N']=mx>mn?100*(r[k]-mn)/(mx-mn):(rows.length?100:0); }); };
+  if(rows.length){ nz('saldo'); nz('util'); }
+  rows.forEach(r=>{ r.puntaje=Math.round(0.4*r.pct+0.3*r.cumpl+0.15*r.saldoN+0.15*r.utilN); });
+  return rows;
+}
+function integridad(){ const n=S.nuc||{}, sal=n.saldo||{}, x=n.ext||{}; let s=0; Object.keys(sal).forEach(k=>{ s+=sal[k]||0; });
+  return {bancos:s,prov:x.proveedor||0,hac:x.hacienda||0,aportes:x.aportes||0,ok:s+(x.proveedor||0)+(x.hacienda||0)===(x.aportes||0)}; }
+function renderDoc(force){
+  if($('docente').hidden) return;
+  if(!force&&foco($('docente'))){ docPending=true; return; } docPending=false;
+  const c=S.cfg, ab=c.abierta!==false;
+  $('dhead').innerHTML=`<span class="ic">⚙</span><div><h2>Panel docente</h2><div class="mut" style="font-size:12px">Sala ${esc(SALA)} · ${MODE==='demo'?'modo demostración':'Firebase'} · Prof. Gerardo González González</div></div><button class="x" data-act="dCerrar" aria-label="Cerrar">✕</button>`;
+  $('dtabs').innerHTML=[['ctl','Control de la sala'],['emp','Empresas'],['rank','Ranking en vivo']].map(t=>`<button data-act="dTab" data-t="${t[0]}" class="${D.t===t[0]?'on':''}">${t[1]}</button>`).join('');
+  const st=$('dbody').scrollTop; let h='';
+  if(D.t==='ctl'){ const ig=integridad();
+    h=`<div class="grid3">${kpi('Estado de la sala',ab?'🟢 Abierta':'🔒 Cerrada',ab?'ok':'bad')}${kpi('Mundo',c.congelada?'❄️ Congelado':'▶️ En marcha',c.congelada?'gold':'ok')}${kpi('Conectados',Object.keys(S.jug).length)}</div>
+    <div class="switch" style="margin-top:14px"><button class="btn ${ab?'coral':'teal'}" data-act="dAbrir" id="dAbrir">${ab?'Cerrar la sala':'Abrir la sala'}</button><button class="btn sec" data-act="dCongelar" id="dCongelar">${c.congelada?'Descongelar el mundo':'Congelar el mundo'}</button></div>
+    <h3>Lanzar evento (mensaje global en pantalla)</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" id="dEvTxt" maxlength="200" placeholder="Escriba el mensaje para toda la sala" style="flex:1;min-width:220px"><button class="btn" data-act="dEvento" id="dEvBtn">Lanzar</button>${c.evento?'<button class="btn sec" data-act="dEvQuitar">Quitar aviso</button>':''}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${['Fin de mes: presenten su declaración de IVA','Revisen sus pendientes: registren todos los asientos','¡Mercado abierto! Compren y vendan entre empresas','Día de cobro: paguen por SINPE sus facturas a crédito','Comparen el saldo del banco con su cuenta Bancos (conciliación)'].map(t=>`<button class="pill y" data-act="dEvPre" data-t="${esc(t)}" style="padding:7px 10px">${esc(t)}</button>`).join('')}</div>
+    ${c.evento?`<p style="margin-top:8px">Aviso vigente: <b class="gold">${esc(c.evento.txt)}</b></p>`:''}
+    <h3>Período tributario</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" id="dPer" maxlength="40" value="${esc(periodo())}" style="max-width:260px"><button class="btn sec" data-act="dPer">Guardar período</button></div>
+    <p style="margin-top:6px;font-size:12.5px">Al cambiar el nombre del período (p. ej. «Noviembre 2026») cada empresa puede presentar una nueva declaración de IVA con los comprobantes aún no declarados.</p>
+    <h3>Verificación de integridad (céntimos exactos)</h3><div class="card" id="dInteg" style="font-family:var(--mono);font-size:13px;line-height:1.7">Σ Bancos de las empresas: ${fm(fromC(ig.bancos))}<br>+ Pagado al ${PROV.n}: ${fm(fromC(ig.prov))}<br>+ IVA pagado a Hacienda: ${fm(fromC(ig.hac))}<br>= ${fm(fromC(ig.bancos+ig.prov+ig.hac))} · Aportes de capital: ${fm(fromC(ig.aportes))}<br><b class="${ig.ok?'ok':'bad'}">${ig.ok?'✓ El dinero de la sala cuadra':'✗ Diferencia detectada'}</b></div>`;
+  } else if(D.t==='emp'){ const rs=metricas().sort((a,b)=>String(a.e.duen).localeCompare(b.e.duen));
+    h=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px"><p style="margin:0">${rs.length} empresa(s) en la sala.</p><button class="btn sec sm" data-act="dCSV">⬇ Exportar CSV</button></div>
+    ${rs.length?`<div class="tw"><table class="tbl" id="dTabla"><thead><tr><th>Estudiante</th><th>Empresa</th><th class="num">Bancos</th><th class="num">Ventas</th><th class="num">Compras</th><th class="num">Utilidad</th><th class="num">Asientos ✓/✗</th><th class="num">%</th><th class="num">Pend.</th><th class="num">Declar.</th><th class="num">Cumpl.</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr data-u="${esc(r.u)}"><td>${esc(r.e.duen)}<br><small class="mut">${esc(r.u)}</small></td><td><b>${esc(r.e.nom)}</b><br><small class="mut">${esc(r.e.giro)} · ${r.e.act==='bienes'?'bienes':'servicios'}</small></td><td class="num">${fm(r.saldo)}</td><td class="num">${fm(r.ventas)}</td><td class="num">${fm(r.compras)}</td><td class="num">${fm(r.util)}</td><td class="num"><span class="ok">${r.ok}</span>/<span class="bad">${r.er}</span></td><td class="num">${r.pct}%</td><td class="num ${r.pend?'bad':''}">${r.pend}</td><td class="num">${r.dOk}/${r.ndecl}${r.sinDecl?` <small class="mut">(${r.sinDecl} s/d)</small>`:''}</td><td class="num">${r.cumpl}%</td><td><button class="btn coral sm" data-act="dReset" data-u="${esc(r.u)}">Reiniciar</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Aún no hay empresas.</div>'}`;
+  } else { const rs=metricas(); const k=D.sort; rs.sort((a,b)=>b[k]-a[k]);
+    const lab={puntaje:'Puntaje global',util:'Utilidad',saldo:'Liquidez (Bancos)',pct:'% asientos correctos',cumpl:'Cumplimiento tributario'};
+    h=`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px">${Object.keys(lab).map(x=>`<button class="pill ${D.sort===x?'y':''}" style="padding:7px 10px" data-act="dSort" data-k="${x}">${lab[x]}</button>`).join('')}<button class="btn sec sm" style="margin-left:auto" data-act="dProy">${D.proj?'Vista normal':'⛶ Proyectar'}</button></div>
+    <div class="rank ${D.proj?'proj':''}" id="dRank">${rs.length?rs.map((r,i)=>`<div class="r"><div class="pos">${i+1}</div><div style="display:flex;gap:10px;align-items:center;min-width:0"><div class="logo" style="background:${esc(r.e.color)}">${esc(r.e.ini)}</div><div style="min-width:0"><b>${esc(r.e.nom)}</b><br><small class="mut">${esc(r.e.duen)}</small></div></div>
+      <div class="m"><small>PUNTAJE</small>${r.puntaje}</div><div class="m ${k==='util'?'gold':''}"><small>UTILIDAD</small>${fm(r.util)}</div><div class="m hx ${k==='saldo'?'gold':''}"><small>LIQUIDEZ</small>${fm(r.saldo)}</div><div class="m hx"><small>ASIENTOS</small>${r.pct}%</div><div class="m hx"><small>TRIBUTARIO</small>${r.cumpl}%</div></div>`).join(''):'<div class="empty">Sin empresas todavía.</div>'}</div>
+    <p style="margin-top:12px;font-size:12px">Puntaje global = 40 % asientos correctos + 30 % cumplimiento tributario + 15 % liquidez + 15 % utilidad (estas dos normalizadas entre las empresas de la sala). Utilidad = ventas netas − costo de ventas − gastos comprados. Cumplimiento = declaraciones correctas / presentadas (se reduce a la mitad si hay comprobantes sin declarar).</p>`;
+  }
+  $('dbody').innerHTML=h; $('dbody').scrollTop=st;
+  $('docente').classList.toggle('proj',D.t==='rank'&&D.proj);
+}
+async function resetEmpresa(u){
+  const e=S.emp[u]; if(!e) return;
+  if(!confirm('¿Reiniciar la empresa «'+e.nom+'» de '+e.duen+'? Se borrarán su empresa, asientos, pendientes, movimientos y declaraciones. Las facturas a crédito pendientes con otras empresas quedarán anuladas.')) return;
+  const fids=Object.entries(S.fac).filter(([k,f])=>f&&f.em&&(f.em.e===e.eid||(f.re&&f.re.e===e.eid))&&(S.nuc.fac||{})[k]==='pendiente').map(x=>x[0]);
+  const oids=Object.entries(S.ord).filter(([k,o])=>o&&(o.co===u||o.ve===u)&&o.est==='pendiente').map(x=>x[0]);
+  const r=await txN(n=>{ const s=n.saldo[u]; if(s!=null) n.ext.aportes=(n.ext.aportes||0)-s; delete n.saldo[u]; delete n.stock[u]; delete n.consec[u]; delete n.dc[u];
+    fids.forEach(f=>{ if(n.fac[f]==='pendiente') n.fac[f]='anulada'; }); oids.forEach(o=>{ if(!n.ord[o]) n.ord[o]='r'; }); return 'ok'; });
+  if(r.out!=='ok') return toast('No se pudo reiniciar.','w');
+  const o={}; ['empresas','pendientes','asientos','movimientos','declaraciones','stats'].forEach(c=>{ o[c+'/'+u]=null; });
+  fids.forEach(f=>{ o['facturas/'+f+'/est']='anulada'; }); oids.forEach(x=>{ o['ordenes/'+x+'/est']='rechazada'; o['ordenes/'+x+'/mot']='Empresa reiniciada por el docente'; });
+  Object.assign(o,notificar(u,'El docente reinició su empresa. Puede crear una nueva.','w'));
+  await upd(o); toast('Empresa de '+e.duen+' reiniciada.');
+}
+function exportarCSV(){
+  const rs=metricas(); const cols=['Sala','Identificador','Estudiante','Empresa','Cédula jurídica','Giro','Actividad','Bancos','Ventas netas','Costo de ventas','Gastos','Utilidad','Compras (total)','Facturas emitidas','Facturas recibidas','Asientos correctos','Errores','% correctos','Pendientes','Declaraciones','Declaraciones correctas','Comprobantes sin declarar','Cumplimiento %','Puntaje'];
+  const q=v=>{ const s=String(v==null?'':v); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+  const num=v=>String(r2(v)).replace('.',',');
+  const lines=[cols.join(';')].concat(rs.map(r=>[SALA,r.u,r.e.duen,r.e.nom,r.e.ced,r.e.giro,r.e.act,num(r.saldo),num(r.ventas),num(r.costo),num(r.gastos),num(r.util),num(r.compras),r.nfe,r.nfr,r.ok,r.er,r.pct,r.pend,r.ndecl,r.dOk,r.sinDecl,r.cumpl,r.puntaje].map(q).join(';')));
+  const blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ciudad_contable_sala_'+SALA+'.csv'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+  window.__ultimoCSV=lines.join('\n');
+}
+
+/* ===================== ACCIONES (delegación de clics) ===================== */
+const ACT={
+  ir:b=>irA(b.dataset.b,b.dataset.t),
+  cerrar:()=>cerrarPanel(),
+  tab:b=>{ P.t=b.dataset.t; P.fac=null; ED=null; renderPanel(true); $('pbody').scrollTop=0; },
+  edit:b=>{ ED={pid:b.dataset.id,lines:[{c:'',d:'',h:''},{c:'',d:'',h:''}],glosa:'',fb:null,sol:false}; renderPanel(true); $('pbody').scrollTop=0; },
+  edAdd:()=>{ edLeer(); ED.lines.push({c:'',d:'',h:''}); renderPanel(true); },
+  edDel:b=>{ edLeer(); if(ED.lines.length>2) ED.lines.splice(+b.dataset.i,1); else ED.lines[+b.dataset.i]={c:'',d:'',h:''}; renderPanel(true); },
+  edBack:()=>{ ED=null; renderPanel(true); },
+  edReg:()=>registrarAsiento(),
+  edSol:()=>{ edLeer(); ED.sol=true; renderPanel(true); },
+  verFac:b=>{ P.fac=b.dataset.id; renderPanel(true); $('pbody').scrollTop=0; },
+  facBack:()=>{ P.fac=null; renderPanel(true); },
+  aceptar:b=>aceptar(b.dataset.id),
+  rechazar:b=>rechazar(b.dataset.id),
+  comprar:b=>comprar(b.dataset.k),
+  restock:()=>reabastecer(),
+  pagar:b=>pagar(b.dataset.id),
+  ivaVer:()=>presentarIVA(true),
+  ivaPres:()=>presentarIVA(false),
+  frases:()=>{ $('frases').hidden=!$('frases').hidden; },
+  frase:b=>enviarFrase(+b.dataset.i),
+  ayuda:()=>{ P.b='ayuda'; P.t='ayuda'; P.fac=null; $('panel').hidden=false; renderPanel(true); },
+  cfCed:()=>{ leerCF(); CF.ced=nuevaCed(); renderCrear(); },
+  cfAdd:()=>{ leerCF(); if(CF.prods.length<5) CF.prods.push({n:'',costo:'',precio:'',tar:0.13,cant:''}); renderCrear(); },
+  cfDel:b=>{ leerCF(); if(CF.prods.length>2) CF.prods.splice(+b.dataset.i,1); renderCrear(); },
+  cfCrear:()=>crearEmpresa(),
+  pinOk:()=>{ if($('pinIn').value===PIN_DOCENTE){ $('pin').hidden=true; S.docente=true; abrirDoc(); } else { $('pinErr').textContent='PIN incorrecto.'; $('pinIn').value=''; } },
+  pinNo:()=>{ $('pin').hidden=true; },
+  evCerrar:()=>{ $('evento').hidden=true; },
+  dCerrar:()=>{ $('docente').hidden=true; if(S.docenteSolo){ $('login').hidden=false; S.docenteSolo=false; location.reload(); } },
+  dTab:b=>{ D.t=b.dataset.t; renderDoc(true); },
+  dAbrir:()=>base.child('config/abierta').set(S.cfg.abierta===false),
+  dCongelar:()=>base.child('config/congelada').set(!S.cfg.congelada),
+  dEvento:()=>{ const t=$('dEvTxt').value.trim(); if(!t) return; base.child('config/evento').set({txt:t.slice(0,200),ts:SV.TIMESTAMP}).then(()=>toast('Evento lanzado a la sala.')); },
+  dEvPre:b=>{ base.child('config/evento').set({txt:b.dataset.t,ts:SV.TIMESTAMP}).then(()=>toast('Evento lanzado a la sala.')); },
+  dEvQuitar:()=>base.child('config/evento').remove(),
+  dPer:()=>{ const t=$('dPer').value.trim(); if(t) base.child('config/periodo').set(t.slice(0,40)).then(()=>toast('Período actualizado: '+t)); },
+  dReset:b=>resetEmpresa(b.dataset.u),
+  dCSV:()=>exportarCSV(),
+  dSort:b=>{ D.sort=b.dataset.k; renderDoc(true); },
+  dProy:()=>{ D.proj=!D.proj; const el=document.documentElement; try{ if(D.proj&&el.requestFullscreen) el.requestFullscreen().catch(()=>{}); else if(!D.proj&&document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }catch(e){} renderDoc(true); }
+};
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(!b||b.disabled) return; const f=ACT[b.dataset.act]; if(f){ e.preventDefault(); const r=f(b,e); if(r&&r.catch) r.catch(err=>{ console.warn(err); toast('Error: '+err.message,'w'); }); } });
+document.addEventListener('click',e=>{ if(!$('frases').hidden&&!e.target.closest('#frases')&&!e.target.closest('[data-act="frases"]')) $('frases').hidden=true; });
+setInterval(()=>{ if(!$('game').hidden) hud(); },15000);
+window.CC={S,P,get DB(){ return DB; },get base(){ return base; },integridad,metricas,ivaCalc,saldosLibros,compararAsiento,txN,pn,slug,get MODE(){ return MODE; }};
+</script>
+</body>
+</html>

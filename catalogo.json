@@ -1594,8 +1594,8 @@
     "Nivel": "10",
     "Categoria": "Trabajo en clase",
     "Subarea": "Ciudad Contable",
-    "Titulo": "Ciudad Contable en línea (prueba de conexión)",
-    "URL": "Mundo_Prueba_Conexion.html?sala=10",
+    "Titulo": "Ciudad Contable en línea",
+    "URL": "Ciudad_Contable.html?sala=10",
     "Activo": "SI",
     "Orden": 30
   },
@@ -1604,8 +1604,8 @@
     "Nivel": "11",
     "Categoria": "Trabajo en clase",
     "Subarea": "Ciudad Contable",
-    "Titulo": "Ciudad Contable en línea (prueba de conexión)",
-    "URL": "Mundo_Prueba_Conexion.html?sala=11",
+    "Titulo": "Ciudad Contable en línea",
+    "URL": "Ciudad_Contable.html?sala=11",
     "Activo": "SI",
     "Orden": 30
   },
@@ -1614,8 +1614,8 @@
     "Nivel": "12",
     "Categoria": "Trabajo en clase",
     "Subarea": "Ciudad Contable",
-    "Titulo": "Ciudad Contable en línea (prueba de conexión)",
-    "URL": "Mundo_Prueba_Conexion.html?sala=12",
+    "Titulo": "Ciudad Contable en línea",
+    "URL": "Ciudad_Contable.html?sala=12",
     "Activo": "SI",
     "Orden": 30
   }
