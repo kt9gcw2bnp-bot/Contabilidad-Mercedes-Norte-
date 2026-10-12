@@ -1208,5 +1208,375 @@
     "URL": "Antologia_Proyectos_05_Big_Data_e_Inteligencia_de_Negocios_Undecimo.pdf",
     "Activo": "SI",
     "Orden": 435
+  },
+  {
+    "Id": "antologia_admfin_01_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Administración Financiera",
+    "Titulo": "01. Presentación: Estados financieros y análisis financiero",
+    "URL": "Antologia_AdmFin_01_Estados_Financieros_y_Analisis_Financiero_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 201
+  },
+  {
+    "Id": "antologia_admfin_02_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Administración Financiera",
+    "Titulo": "02. Presentación: Comprobantes comerciales y estados financieros proforma",
+    "URL": "Antologia_AdmFin_02_Comprobantes_Comerciales_y_Estados_Financieros_Proforma_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 202
+  },
+  {
+    "Id": "antologia_admfin_03_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Administración Financiera",
+    "Titulo": "03. Presentación: Contabilidad de agencias, sucursales y casa matriz",
+    "URL": "Antologia_AdmFin_03_Contabilidad_de_Agencias_Sucursales_y_Casa_Matriz_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 203
+  },
+  {
+    "Id": "antologia_admfin_04_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Administración Financiera",
+    "Titulo": "04. Presentación: Economía social solidaria e incidencia política",
+    "URL": "Antologia_AdmFin_04_Economia_Social_Solidaria_e_Incidencia_Politica_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 204
+  },
+  {
+    "Id": "antologia_admfin_05_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Administración Financiera",
+    "Titulo": "05. Presentación: Interculturalidad y desarrollo sostenible",
+    "URL": "Antologia_AdmFin_05_Interculturalidad_y_Desarrollo_Sostenible_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 205
+  },
+  {
+    "Id": "antologia_cooperativas_01_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Cooperativas, Asociaciones Solidaristas y Sindicatos",
+    "Titulo": "01. Presentación: Cooperativas: servicios, crédito y registros contables",
+    "URL": "Antologia_Cooperativas_01_Cooperativas_Servicios_Credito_y_Registros_Contables_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 211
+  },
+  {
+    "Id": "antologia_cooperativas_02_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Cooperativas, Asociaciones Solidaristas y Sindicatos",
+    "Titulo": "02. Presentación: Asociaciones solidaristas: aportes, reservas, distribución y retiro",
+    "URL": "Antologia_Cooperativas_02_Asociaciones_Solidaristas_Aportes_Reservas_Distribucion_y_Retiro_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 212
+  },
+  {
+    "Id": "antologia_cooperativas_03_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Cooperativas, Asociaciones Solidaristas y Sindicatos",
+    "Titulo": "03. Presentación: Sindicalismo e impacto en las decisiones gubernamentales",
+    "URL": "Antologia_Cooperativas_03_Sindicalismo_e_Impacto_en_Decisiones_Gubernamentales_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 213
+  },
+  {
+    "Id": "antologia_cooperativas_04_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Cooperativas, Asociaciones Solidaristas y Sindicatos",
+    "Titulo": "04. Presentación: Economía del trabajo: escenarios y soluciones en Costa Rica",
+    "URL": "Antologia_Cooperativas_04_Economia_del_Trabajo_en_Costa_Rica_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 214
+  },
+  {
+    "Id": "antologia_cooperativas_05_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Cooperativas, Asociaciones Solidaristas y Sindicatos",
+    "Titulo": "05. Presentación: Calentamiento global y estrategias para el desarrollo sostenible",
+    "URL": "Antologia_Cooperativas_05_Calentamiento_Global_y_Desarrollo_Sostenible_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 215
+  },
+  {
+    "Id": "antologia_auditoria_01_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Auditoría",
+    "Titulo": "01. Presentación: Ética profesional y Normas Internacionales de Auditoría",
+    "URL": "Antologia_Auditoria_01_Etica_Profesional_y_Normas_Internacionales_de_Auditoria_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 221
+  },
+  {
+    "Id": "antologia_auditoria_02_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Auditoría",
+    "Titulo": "02. Presentación: Especialidades, tipos de auditoría y conocimiento del negocio",
+    "URL": "Antologia_Auditoria_02_Especialidades_Tipos_de_Auditoria_y_Conocimiento_del_Negocio_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 222
+  },
+  {
+    "Id": "antologia_auditoria_03_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Auditoría",
+    "Titulo": "03. Presentación: Riesgos de auditoría y control interno",
+    "URL": "Antologia_Auditoria_03_Riesgos_de_Auditoria_y_Control_Interno_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 223
+  },
+  {
+    "Id": "antologia_auditoria_04_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Auditoría",
+    "Titulo": "04. Presentación: El auditor valiente, la Contraloría y el perfil del contador",
+    "URL": "Antologia_Auditoria_04_El_Auditor_Valiente_Contraloria_y_Perfil_del_Contador_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 224
+  },
+  {
+    "Id": "antologia_auditoria_05_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Auditoría",
+    "Titulo": "05. Presentación: Salud ocupacional y seguridad empresarial",
+    "URL": "Antologia_Auditoria_05_Salud_Ocupacional_y_Seguridad_Empresarial_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 225
+  },
+  {
+    "Id": "antologia_estadistica_01_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Estadística",
+    "Titulo": "01. Presentación: Distribución de frecuencias y su presentación gráfica",
+    "URL": "Antologia_Estadistica_01_Distribucion_de_Frecuencias_y_Presentacion_Grafica_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 231
+  },
+  {
+    "Id": "antologia_estadistica_02_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Estadística",
+    "Titulo": "02. Presentación: Medidas de tendencia central para datos no agrupados y agrupados",
+    "URL": "Antologia_Estadistica_02_Medidas_de_Tendencia_Central_Datos_Agrupados_y_No_Agrupados_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 232
+  },
+  {
+    "Id": "antologia_estadistica_03_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Estadística",
+    "Titulo": "03. Presentación: Análisis de cuadros y gráficos estadísticos",
+    "URL": "Antologia_Estadistica_03_Analisis_de_Cuadros_y_Graficos_Estadisticos_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 233
+  },
+  {
+    "Id": "antologia_estadistica_04_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Estadística",
+    "Titulo": "04. Presentación: Programa Estado de la Nación y escenarios de la economía del país",
+    "URL": "Antologia_Estadistica_04_Programa_Estado_de_la_Nacion_y_Economia_del_Pais_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 234
+  },
+  {
+    "Id": "antologia_estadistica_05_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Estadística",
+    "Titulo": "05. Presentación: Desarrollo sostenible y derechos humanos de las mujeres",
+    "URL": "Antologia_Estadistica_05_Desarrollo_Sostenible_y_Derechos_Humanos_de_las_Mujeres_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 235
+  },
+  {
+    "Id": "antologia_presupuesto_01_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Presupuesto",
+    "Titulo": "01. Presentación: Proceso y sistema presupuestal",
+    "URL": "Antologia_Presupuesto_01_Proceso_y_Sistema_Presupuestal_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 241
+  },
+  {
+    "Id": "antologia_presupuesto_02_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Presupuesto",
+    "Titulo": "02. Presentación: Plan financiero: presupuesto de capital, de efectivo y balance presupuestado",
+    "URL": "Antologia_Presupuesto_02_Plan_Financiero_Capital_Efectivo_y_Balance_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 242
+  },
+  {
+    "Id": "antologia_presupuesto_03_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Presupuesto",
+    "Titulo": "03. Presentación: Presupuesto de operación",
+    "URL": "Antologia_Presupuesto_03_Presupuesto_de_Operacion_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 243
+  },
+  {
+    "Id": "antologia_presupuesto_04_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Presupuesto",
+    "Titulo": "04. Presentación: Toma de decisiones con información administrativa",
+    "URL": "Antologia_Presupuesto_04_Toma_de_Decisiones_con_Informacion_Administrativa_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 244
+  },
+  {
+    "Id": "antologia_presupuesto_05_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Presupuesto",
+    "Titulo": "05. Presentación: Acciones para el desarrollo sostenible de Costa Rica",
+    "URL": "Antologia_Presupuesto_05_Acciones_para_el_Desarrollo_Sostenible_de_Costa_Rica_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 245
+  },
+  {
+    "Id": "antologia_costosordenes_01_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Órdenes Específicas",
+    "Titulo": "01. Presentación: Elementos y principios contables del costo",
+    "URL": "Antologia_CostosOrdenes_01_Elementos_y_Principios_Contables_del_Costo_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 251
+  },
+  {
+    "Id": "antologia_costosordenes_02_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Órdenes Específicas",
+    "Titulo": "02. Presentación: Ciclo de producción por órdenes específicas",
+    "URL": "Antologia_CostosOrdenes_02_Ciclo_de_Produccion_por_Ordenes_Especificas_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 252
+  },
+  {
+    "Id": "antologia_costosordenes_03_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Órdenes Específicas",
+    "Titulo": "03. Presentación: Variaciones de los tres elementos del costo",
+    "URL": "Antologia_CostosOrdenes_03_Variaciones_de_los_Tres_Elementos_del_Costo_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 253
+  },
+  {
+    "Id": "antologia_costosordenes_04_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Órdenes Específicas",
+    "Titulo": "04. Presentación: El juego de la política pública y la toma de decisiones",
+    "URL": "Antologia_CostosOrdenes_04_Politica_Publica_y_Toma_de_Decisiones_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 254
+  },
+  {
+    "Id": "antologia_costosordenes_05_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Órdenes Específicas",
+    "Titulo": "05. Presentación: La problemática del plástico en el mundo y acciones sostenibles",
+    "URL": "Antologia_CostosOrdenes_05_Problematica_del_Plastico_y_Desarrollo_Sostenible_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 255
+  },
+  {
+    "Id": "antologia_costosprocesos_01_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Proceso Continuo",
+    "Titulo": "01. Presentación: Costo unitario por elemento a partir de la producción equivalente",
+    "URL": "Antologia_CostosProcesos_01_Costo_Unitario_y_Produccion_Equivalente_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 261
+  },
+  {
+    "Id": "antologia_costosprocesos_02_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Proceso Continuo",
+    "Titulo": "02. Presentación: Asientos e informes de costos por proceso",
+    "URL": "Antologia_CostosProcesos_02_Asientos_e_Informes_de_Costos_por_Proceso_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 262
+  },
+  {
+    "Id": "antologia_costosprocesos_03_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Proceso Continuo",
+    "Titulo": "03. Presentación: Productos conjuntos, coproductos y subproductos",
+    "URL": "Antologia_CostosProcesos_03_Productos_Conjuntos_Coproductos_y_Subproductos_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 263
+  },
+  {
+    "Id": "antologia_costosprocesos_04_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Proceso Continuo",
+    "Titulo": "04. Presentación: Principios de contabilidad administrativa para tomar decisiones",
+    "URL": "Antologia_CostosProcesos_04_Principios_de_Contabilidad_Administrativa_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 264
+  },
+  {
+    "Id": "antologia_costosprocesos_05_12",
+    "Nivel": "12",
+    "Categoria": "Antologia",
+    "Subarea": "Costos por Proceso Continuo",
+    "Titulo": "05. Presentación: Desarrollo tecnológico con equidad que favorece el ambiente",
+    "URL": "Antologia_CostosProcesos_05_Desarrollo_Tecnologico_con_Equidad_y_Ambiente_Duodecimo.pdf",
+    "Activo": "SI",
+    "Orden": 265
+  },
+  {
+    "Id": "piso_ventas_10",
+    "Nivel": "10",
+    "Categoria": "Trabajo en clase",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Piso de Ventas: simulador de técnicas de venta",
+    "URL": "Piso_de_Ventas_Decimo.html",
+    "Activo": "SI",
+    "Orden": 20
+  },
+  {
+    "Id": "organizador_eventos_10",
+    "Nivel": "10",
+    "Categoria": "Trabajo en clase",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Organizador de Eventos: protocolo y etiqueta",
+    "URL": "Organizador_de_Eventos_Protocolo_Decimo.html",
+    "Activo": "SI",
+    "Orden": 21
   }
 ]

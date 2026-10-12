@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piso de Ventas · Técnicas modernas de ventas · 10°</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#050506; --card:#0e0f12; --card2:#15161b; --card3:#1c1d24; --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --gold:#C9973F; --gold2:#F4DD7A; --teal:#2FC2AD; --coral:#EF6A5B; --ink:#ECEAE4; --mut:#9b9aa4; --dim:#6d6c76;
+  --sans:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Consolas,monospace; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.5; }
+body{ overflow-x:hidden; }
+button,input,select{ font-family:inherit; font-size:14px; color:inherit; }
+a{ color:var(--gold2); }
+.top{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:12px; padding:10px 18px; background:rgba(5,5,6,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); flex-wrap:wrap; }
+.logo{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:grid; place-items:center; color:#1a1406; font-weight:700; font-family:var(--mono); font-size:13px; }
+.top h1{ margin:0; font-size:16px; font-weight:600; letter-spacing:.2px; }
+.top .sub{ font-size:12px; color:var(--mut); }
+.top .who{ margin-left:auto; text-align:right; font-size:12.5px; color:var(--mut); }
+.top .who b{ color:var(--ink); }
+.wrap{ width:100%; max-width:1680px; margin:0 auto; padding:16px 16px 70px; }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; margin-bottom:14px; }
+.card.soft{ background:var(--card2); }
+h2{ margin:0 0 8px; font-size:21px; font-weight:600; } h3{ margin:14px 0 8px; font-size:16px; font-weight:600; }
+.mut{ color:var(--mut); font-size:13px; } .mono{ font-family:var(--mono); }
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px; font-size:12px; border:1px solid var(--line2); color:var(--ink); background:var(--card2); }
+.pill.gold{ border-color:rgba(201,151,63,.5); color:var(--gold2); } .pill.teal{ border-color:rgba(47,194,173,.5); color:var(--teal); } .pill.coral{ border-color:rgba(239,106,91,.5); color:var(--coral); }
+.row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.grid2>*,.side2>*,.stage>*,.kpis>*{ min-width:0; }
+label{ display:block; font-size:12.5px; color:var(--mut); margin-bottom:4px; }
+input[type=text],select{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line2); background:#0a0a0d; outline:none; }
+input[type=text]:focus,select:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,151,63,.18); }
+input[readonly]{ color:var(--mut); }
+.btn{ border:1px solid transparent; border-radius:11px; padding:10px 16px; font-weight:600; cursor:pointer; background:var(--card3); color:var(--ink); transition:transform .12s, background .2s, border-color .2s; min-height:42px; }
+.btn:hover{ transform:translateY(-1px); border-color:var(--line2); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+.btn.gold{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a1406; }
+.btn.teal{ background:var(--teal); color:#03201b; }
+.btn.ghost{ background:transparent; border-color:var(--line2); }
+.btn.sm{ padding:6px 11px; min-height:34px; font-size:13px; }
+.btn.coral{ background:rgba(239,106,91,.15); border-color:rgba(239,106,91,.5); color:var(--coral); }
+.err{ color:var(--coral); } .ok{ color:var(--teal); }
+.note{ border-radius:12px; padding:12px 14px; font-size:14px; margin-top:10px; border:1px solid var(--line); background:var(--card2); }
+.note.good{ border-color:rgba(47,194,173,.45); background:rgba(47,194,173,.07); }
+.note.mid{ border-color:rgba(201,151,63,.45); background:rgba(201,151,63,.07); }
+.note.bad{ border-color:rgba(239,106,91,.5); background:rgba(239,106,91,.07); }
+.note .tag{ font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.6px; display:block; margin-bottom:4px; }
+#banner{ display:none; position:fixed; left:0; right:0; bottom:0; z-index:60; background:#b3271b; color:#fff; padding:10px 16px; font-weight:600; text-align:center; box-shadow:0 -4px 18px rgba(0,0,0,.5); }
+#toast{ display:none; position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:70; background:var(--card3); border:1px solid var(--gold); color:var(--ink); padding:10px 16px; border-radius:12px; }
+footer{ text-align:center; color:var(--dim); font-size:12px; padding:20px 10px 60px; }
+footer a{ color:var(--dim); }
+/* Mapa de clientes */
+.map{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.mc{ flex:1 1 180px; min-width:150px; display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:14px; background:var(--card); border:1px solid var(--line); cursor:pointer; transition:border-color .2s, transform .15s; text-align:left; }
+.mc:hover{ transform:translateY(-1px); }
+.mc .n{ width:30px; height:30px; flex:none; border-radius:50%; display:grid; place-items:center; font-family:var(--mono); font-weight:600; background:var(--card3); font-size:13px; }
+.mc .t{ font-size:13px; line-height:1.25; } .mc .t small{ display:block; color:var(--mut); font-size:11.5px; }
+.mc.cur{ border-color:var(--gold); } .mc.done .n{ background:var(--teal); color:#03201b; } .mc.lock{ opacity:.45; cursor:not-allowed; }
+.mc.fin .n{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a1406; }
+/* Ciclo */
+.ciclo{ display:flex; gap:0; align-items:stretch; margin:0 0 14px; overflow-x:auto; padding-bottom:2px; }
+.ciclo .st{ flex:1 1 0; min-width:96px; padding:8px 10px; font-size:11.5px; text-align:center; background:var(--card); border:1px solid var(--line); color:var(--dim); position:relative; }
+.ciclo .st:first-child{ border-radius:12px 0 0 12px; } .ciclo .st:last-child{ border-radius:0 12px 12px 0; }
+.ciclo .st.on{ color:var(--ink); background:rgba(201,151,63,.12); border-color:rgba(201,151,63,.45); }
+.ciclo .st.now{ color:#1a1406; background:var(--gold2); border-color:var(--gold2); font-weight:600; }
+.ciclo .st.no{ text-decoration:line-through; opacity:.5; }
+.ciclo .st b{ display:block; font-family:var(--mono); font-size:10px; opacity:.75; font-weight:500; }
+/* Escenario */
+.stage{ display:grid; grid-template-columns:minmax(260px,330px) 1fr; gap:14px; align-items:start; }
+.side{ position:sticky; top:72px; }
+.avwrap{ display:flex; flex-direction:column; align-items:center; text-align:center; }
+.avatar{ width:150px; height:150px; }
+.avatar .mouth,.avatar .brow{ transition:d .5s; }
+.gauge{ width:220px; max-width:100%; margin-top:6px; position:relative; }
+.gauge svg{ width:100%; height:auto; display:block; }
+.gauge .arc{ transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1), stroke .6s; }
+.gauge .val{ position:absolute; left:0; right:0; top:42%; text-align:center; font-family:var(--mono); font-size:30px; font-weight:600; }
+.gauge .lab{ text-align:center; font-size:11.5px; color:var(--mut); margin-top:2px; }
+.delta{ position:absolute; right:6px; top:6px; font-family:var(--mono); font-weight:600; font-size:15px; padding:2px 8px; border-radius:8px; animation:floatUp 2.2s ease forwards; }
+.delta.up{ color:var(--teal); background:rgba(47,194,173,.12); } .delta.down{ color:var(--coral); background:rgba(239,106,91,.12); }
+@keyframes floatUp{ 0%{ opacity:0; transform:translateY(10px); } 15%{ opacity:1; transform:translateY(0); } 75%{ opacity:1; } 100%{ opacity:0; transform:translateY(-14px); } }
+.ficha{ text-align:left; font-size:13px; margin-top:12px; }
+.ficha .k{ color:var(--mut); font-size:11.5px; text-transform:uppercase; letter-spacing:.6px; font-family:var(--mono); }
+.tecnica{ margin-top:12px; text-align:left; border-left:3px solid var(--gold); padding:8px 10px; background:var(--card2); border-radius:0 10px 10px 0; font-size:13px; }
+/* Chat */
+.chat{ display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow-y:auto; padding:6px 4px 6px 0; scroll-behavior:smooth; }
+.bub{ max-width:82%; padding:10px 13px; border-radius:16px; font-size:14.5px; animation:pop .35s ease both; }
+.bub.cli{ align-self:flex-start; background:var(--card3); border:1px solid var(--line); border-bottom-left-radius:4px; }
+.bub.ven{ align-self:flex-end; background:rgba(201,151,63,.16); border:1px solid rgba(201,151,63,.4); border-bottom-right-radius:4px; }
+.bub.ven.eth{ background:rgba(239,106,91,.12); border-color:rgba(239,106,91,.45); }
+.bub small{ display:block; font-size:11px; color:var(--mut); margin-bottom:2px; font-family:var(--mono); }
+.bub.new{ animation-delay:.05s; } .bub.later{ animation-delay:.75s; }
+.coach{ align-self:center; max-width:92%; font-size:12.5px; color:var(--mut); border:1px dashed var(--line2); border-radius:10px; padding:5px 10px; animation:pop .35s ease both; }
+.coach b{ color:var(--teal); font-weight:500; } .coach.e b{ color:var(--coral); }
+@keyframes pop{ from{ opacity:0; transform:translateY(8px) scale(.98); } to{ opacity:1; transform:none; } }
+.typing{ align-self:flex-start; display:flex; overflow:hidden; gap:4px; padding:10px 13px; background:var(--card3); border-radius:16px; animation:hideT .01s .7s forwards; }
+.typing i{ width:6px; height:6px; border-radius:50%; background:var(--mut); animation:blink 1s infinite; } .typing i:nth-child(2){ animation-delay:.15s; } .typing i:nth-child(3){ animation-delay:.3s; }
+@keyframes blink{ 0%,100%{ opacity:.3; } 50%{ opacity:1; } } @keyframes hideT{ to{ height:0; padding:0; margin:0; opacity:0; overflow:hidden; } }
+/* Opciones */
+.opts{ display:grid; gap:8px; margin-top:10px; }
+.opt{ text-align:left; display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:13px; background:var(--card2); border:1px solid var(--line); cursor:pointer; transition:border-color .2s, background .2s, transform .12s; font-size:14.5px; width:100%; }
+.opt:hover{ border-color:var(--gold); background:rgba(201,151,63,.07); }
+.opt .k{ flex:none; width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:var(--card3); font-family:var(--mono); font-size:12px; }
+.opt .tt{ display:block; font-weight:600; font-size:13px; color:var(--gold2); margin-bottom:2px; }
+.act{ margin-top:12px; }
+.qhead{ font-size:13px; color:var(--mut); margin-top:12px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.5px; }
+/* Margen */
+.dchips{ display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+.dchip{ padding:10px 16px; border-radius:11px; border:1px solid var(--line2); background:var(--card2); cursor:pointer; font-family:var(--mono); font-weight:600; min-width:64px; }
+.dchip.on{ background:var(--gold2); color:#1a1406; border-color:var(--gold2); }
+.dchip:disabled{ opacity:.35; cursor:not-allowed; }
+.mtab{ width:100%; border-collapse:collapse; font-size:14px; margin-top:6px; }
+.mtab th,.mtab td{ padding:7px 8px; border-bottom:1px solid var(--line); text-align:right; }
+.mtab th:first-child,.mtab td:first-child{ text-align:left; }
+.mtab td{ font-family:var(--mono); } .mtab td:first-child{ font-family:var(--sans); }
+.mbars{ margin-top:12px; position:relative; }
+.mbar{ display:flex; align-items:center; gap:8px; margin:6px 0; font-size:12.5px; }
+.mbar .lb{ width:70px; color:var(--mut); }
+.mbar .tr{ flex:1; height:16px; background:var(--card3); border-radius:8px; position:relative; overflow:visible; }
+.mbar .fl{ height:100%; border-radius:8px; transition:width .7s cubic-bezier(.2,.8,.2,1), background .4s; }
+.mbar .pol{ position:absolute; top:-5px; bottom:-5px; width:2px; background:var(--coral); }
+.mbar .v{ width:70px; text-align:right; font-family:var(--mono); }
+/* Factura / asiento */
+.doc{ background:#0b0b0e; border:1px solid var(--line2); border-radius:14px; padding:14px; }
+.doc .hd{ display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; border-bottom:1px dashed var(--line2); padding-bottom:10px; margin-bottom:10px; font-size:13px; }
+.doc .hd b{ font-size:15px; }
+.ftab{ width:100%; border-collapse:collapse; font-size:13.5px; }
+.ftab th{ text-align:left; font-weight:500; color:var(--mut); font-size:12px; padding:6px; border-bottom:1px solid var(--line); }
+.ftab td{ padding:5px 6px; border-bottom:1px solid var(--line); vertical-align:middle; }
+.ftab input,.ftab select{ padding:7px 8px; font-family:var(--mono); font-size:13.5px; min-width:70px; }
+.ftab .tot td{ border-bottom:none; }
+.fld-ok{ border-color:var(--teal)!important; box-shadow:0 0 0 2px rgba(47,194,173,.18); }
+.fld-bad{ border-color:var(--coral)!important; box-shadow:0 0 0 2px rgba(239,106,91,.2); }
+.scroll{ overflow-x:auto; }
+.side2{ display:grid; grid-template-columns:1.4fr 1fr; gap:12px; align-items:start; }
+.kv{ width:100%; border-collapse:collapse; font-size:13px; }
+.kv td{ padding:5px 6px; border-bottom:1px solid var(--line); } .kv td:last-child{ text-align:right; font-family:var(--mono); }
+.fbl{ margin:6px 0 0; padding-left:20px; } .fbl li{ margin:3px 0; }
+/* Tablero */
+.kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+.kpi{ background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:12px 14px; }
+.kpi .l{ font-size:11.5px; color:var(--mut); text-transform:uppercase; letter-spacing:.5px; font-family:var(--mono); }
+.kpi .v{ font-size:24px; font-weight:600; margin-top:2px; font-family:var(--mono); }
+.kpi .s{ font-size:12px; color:var(--mut); }
+.tb{ width:100%; border-collapse:collapse; font-size:13.5px; }
+.tb th{ text-align:left; color:var(--mut); font-weight:500; font-size:12px; padding:8px; border-bottom:1px solid var(--line2); }
+.tb td{ padding:8px; border-bottom:1px solid var(--line); vertical-align:top; }
+.tb td.n{ font-family:var(--mono); text-align:right; white-space:nowrap; }
+.tb tr.me td{ background:rgba(201,151,63,.1); }
+.lvl{ display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600; }
+.lvl.l3{ background:rgba(47,194,173,.16); color:var(--teal); } .lvl.l2{ background:rgba(201,151,63,.18); color:var(--gold2); } .lvl.l1{ background:rgba(239,106,91,.16); color:var(--coral); }
+.meter{ margin:10px 0; } .meter .lbl{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; gap:8px; }
+.meter .tr{ height:12px; border-radius:6px; background:var(--card3); overflow:hidden; } .meter .fl{ height:100%; border-radius:6px; transition:width 1s; }
+.big{ font-size:44px; font-weight:700; font-family:var(--mono); background:linear-gradient(135deg,var(--gold),var(--gold2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.result{ text-align:center; padding:26px 14px; }
+.result .ic{ width:64px; height:64px; margin:0 auto 10px; border-radius:50%; display:grid; place-items:center; font-size:30px; font-weight:700; }
+.result.win .ic{ background:rgba(47,194,173,.18); color:var(--teal); } .result.lose .ic{ background:rgba(239,106,91,.15); color:var(--coral); }
+/* Modal */
+#modal{ display:none; position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.75); overflow-y:auto; padding:20px 12px; }
+#modal.on{ display:block; } #modalIn{ max-width:1500px; margin:0 auto; }
+.cert{ display:none; }
+@media (max-width:1100px){ .kpis{ grid-template-columns:repeat(3,1fr); } .side2{ grid-template-columns:1fr; } }
+@media (max-width:860px){ .stage{ grid-template-columns:1fr; } .side{ position:static; } .avwrap{ flex-direction:row; flex-wrap:wrap; justify-content:center; gap:10px; } .avatar{ width:110px; height:110px; } .gauge{ width:190px; } .chat{ max-height:none; } }
+@media (max-width:600px){ .grid2{ grid-template-columns:1fr; } .kpis{ grid-template-columns:repeat(2,1fr); } .wrap{ padding:12px 10px 70px; } .card{ padding:14px; } .bub{ max-width:92%; } .top h1{ font-size:14px; } .mc{ flex:1 1 140px; } .ftab input{ min-width:58px; } h2{ font-size:19px; } .kpi .v{ font-size:20px; } }
+@media print{
+  body{ background:#fff; color:#111; }
+  .top,.map,.ciclo,footer,#banner,#toast,.noprint,#app>*:not(.printzone){ display:none!important; }
+  .printzone{ display:block!important; }
+  .cert{ display:block!important; color:#111; font-family:var(--sans); padding:10px; }
+  .cert h1{ font-size:24px; margin:0 0 4px; } .cert table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:12.5px; }
+  .cert td,.cert th{ border:1px solid #999; padding:6px; text-align:left; } .cert .sc{ font-size:30px; font-weight:700; }
+  .printzone > :not(.cert){ display:none!important; }
+}
+</style>
+</head>
+<body>
+<div class="top noprint">
+  <div class="logo">PV</div>
+  <div><h1>Piso de Ventas · SoftConta CR</h1><div class="sub">Gestión Comercial y de Ventas · 10° · RA 2 Técnicas modernas de ventas efectivas</div></div>
+  <div class="who" id="who"></div>
+</div>
+<div class="wrap"><div id="app"></div></div>
+<div id="banner" role="alert"></div>
+<div id="toast"></div>
+<div id="modal"><div id="modalIn"></div></div>
+<footer class="noprint">Piso de Ventas · Especialidad de Contabilidad · CTP Mercedes Norte · Prof. Gerardo González González · <a href="#" id="lnkDocente">Panel docente</a></footer>
+<script>
+(function(){
+'use strict';
+/* =================== CONFIGURACIÓN =================== */
+const SHEET_API_URL="https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN="9986", MODULE_ID="pisoventas10", SH_DATA="Casos", SH_PROG="Progreso";
+const SECCIONES=["10-1","10-2","10-3","10-4","Docente"];
+const UMBRAL=60;          // confianza mínima para cerrar la venta
+const POLITICA=35;        // margen mínimo autorizado por SoftConta (%)
+const IVA=0.13;           // Ley 9635: tarifa general del IVA
+const PTS={dlg:8,cie:4,mar:3,fac:3,com:2,asi:3,eti:2}; // 25 por cliente
+const IND=[
+ {id:'ind1',ra:'RA2-I1',nombre:'Relaciona el concepto de ventas con el ciclo contable',total:32,
+  n3:'Confecciona factura o cotización (subtotal, IVA 13 %, total), calcula la comisión y registra los asientos de venta y comisión sin errores, ubicando cada documento en el ciclo contable.',
+  n2:'Confecciona los documentos y registra los asientos con algunos errores de cálculo o de cuentas; relaciona parcialmente la venta con su registro contable.',
+  n1:'Presenta errores frecuentes en factura, IVA, comisión o asientos; no relaciona la venta con su registro en el ciclo contable.'},
+ {id:'ind2',ra:'RA2-I2',nombre:'Utiliza técnicas modernas de ventas efectivas',total:68,
+  n3:'Aplica SPIN, SNAP, vendedor retador, Sandler y venta consultiva según el cliente, elige el cierre adecuado, protege el margen y actúa con ética.',
+  n2:'Aplica las técnicas con algunas decisiones inadecuadas de orden, de cierre o de descuento.',
+  n1:'Elige con frecuencia respuestas que no corresponden a la técnica, cierres inadecuados, descuentos fuera de política o conductas no éticas.'}
+];
+
+/* =================== UTILIDADES =================== */
+const $=id=>document.getElementById(id);
+const num=v=>{ if(v===null||v===undefined) return NaN; const s=String(v).trim().replace(/\s/g,'').replace(/₡/g,'').replace(/ /g,''); if(s==='') return NaN; if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) return +s.replace(/\./g,''); const t=(s.indexOf(',')>-1&&s.indexOf('.')>-1)?s.replace(/\./g,'').replace(',','.'):s.replace(',','.'); return +t; };
+const fm=x=>isFinite(x)?'₡'+Math.round(x).toLocaleString('es-CR'):'—';
+const fp=x=>isFinite(x)?Number(x).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' %':'—';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const now=()=>new Date().toISOString();
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const near=(a,b)=>isFinite(a)&&Math.abs(a-b)<=0.5;
+function toast(t){ const e=$('toast'); e.textContent=t; e.style.display='block'; clearTimeout(e._t); e._t=setTimeout(()=>e.style.display='none',2600); }
+function seedRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return function(){ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); return ((h^=h>>>16)>>>0)/4294967296; }; }
+function orden(key,n){ const r=seedRand(norm(user?user.name:'')+'|'+key); const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const nivelDe=pct=>pct>=80?3:(pct>=60?2:1);
+const NIVEL_TXT={3:'Logrado',2:'En proceso',1:'No logrado'};
+
+/* =================== PUENTE SHEETS =================== */
+function jsonp(url){ return new Promise(res=>{ const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5); const s=document.createElement('script');
+  window[cb]=d=>{ res(d); delete window[cb]; s.remove(); }; s.onerror=()=>{ res({rows:[]}); delete window[cb]; s.remove(); };
+  s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb; document.body.appendChild(s); setTimeout(()=>{ if(window[cb]){ res({rows:[]}); delete window[cb]; s.remove(); } },12000); }); }
+function sheetGet(n){ return jsonp(SHEET_API_URL+'?sheet='+encodeURIComponent(n)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(n,row){ // contrato JSON del doPost {sheet,row:[...]} con Content-Type text/plain. NO cambiar.
+  return fetch(SHEET_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:n,row:Object.keys(row).map(k=>row[k])}),keepalive:true}).catch(()=>{}); }
+function postProg(nombre,modulo,score,total){ const r={Timestamp:now(),Estudiante:nombre,Modulo:modulo,Score:String(score),Total:String(total)}; PROG.push(r); return sheetPost(SH_PROG,r); }
+function postCaso(nombre,obj){ const r={Timestamp:now(),CasoId:MODULE_ID+'_detalle',Nombre:nombre,Texto:JSON.stringify(obj)}; CASOS.push(r); return sheetPost(SH_DATA,r); }
+function nombrePortal(){ try{ return (new URLSearchParams(location.search).get('nombre')||'').trim()||null; }catch(e){ return null; } }
+
+/* =================== CATÁLOGO (precios sin IVA) =================== */
+const CAT={
+ BAS:{n:'Licencia SoftConta Básica · anual · 1 usuario',p:400000,c:240000},
+ PYME:{n:'Licencia SoftConta Pyme · anual · 3 usuarios',p:650000,c:390000},
+ PRO:{n:'Licencia SoftConta Pro · anual · 5 usuarios + inventario por bodega',p:980000,c:588000},
+ CAP:{n:'Capacitación (8 horas)',p:120000,c:72000},
+ IMP:{n:'Implementación y migración de datos',p:180000,c:108000},
+ SOP:{n:'Soporte premium · anual',p:150000,c:90000}
+};
+const CUENTAS={BAN:'Bancos',CXC:'Cuentas por cobrar',ING:'Ingresos por ventas',IVAP:'IVA por pagar',IVAS:'IVA soportado (crédito fiscal)',GCOM:'Gasto por comisiones de ventas',CPC:'Comisiones por pagar',INV:'Inventario de mercadería',CXP:'Cuentas por pagar',CAJA:'Caja chica'};
+const CIERRES={
+ pue:{n:'Puercoespín',d:'Responder la pregunta del cliente con otra que lo comprometa.'},
+ pre:{n:'Cambio de precio',d:'Ofrecer una condición especial por decidir ya.'},
+ alt:{n:'Alternativa',d:'Dar dos opciones, ambas de compra.'},
+ reb:{n:'Rebote',d:'Convertir la objeción en la razón de compra.'},
+ nec:{n:'Descripción de necesidades',d:'Resumir lo que el cliente dijo necesitar y mostrar que la solución lo cubre.'},
+ pres:{n:'Presionar con urgencia',d:'Asegurar que la oferta “vence ya”.'}
+};
+const CIERRE_ORD=['pue','pre','alt','reb','nec','pres'];
+
+/* =================== LOS 4 CLIENTES =================== */
+const O=(t,d,p,tag,r,fb,x)=>Object.assign({t:t,d:d,p:p,tag:tag,r:r,fb:fb},x||{});
+const CLIENTES=[
+{key:'cliente1',num:1,tecnica:'Método SPIN',empresa:'Ferretería El Clavo',lugar:'Mercedes Norte, Heredia',persona:'Don Rodrigo Mora',rol:'Dueño',
+ perfil:'Negocio familiar con 6 empleados. La contabilidad se lleva en cuadernos.',
+ guia:'Pregunte en orden: <b>S</b>ituación → <b>P</b>roblema → <b>I</b>mplicación → <b>N</b>ecesidad-beneficio. Hable menos, pregunte más.',
+ av:{skin:'#C68B59',hair:'#c9c9c9',style:'short',shirt:'#3b6ea5',apron:'#8a5a2b',mustache:true,bg:'#2b2216'},
+ conf0:30,com:5,pago:'credito',descJust:0,
+ pedido:st=>[['PYME',1],['CAP',1]],
+ turns:[
+  {cli:'Buenas, joven. Mi hija me dijo que usted vende un programa para la contabilidad. Yo de computadoras sé poquito, eh.',o:[
+   O('Con mucho gusto, don Rodrigo. Antes de hablarle del programa: ¿cómo llevan hoy la contabilidad de la ferretería y quién se encarga?',15,2,'S · Situación','Todo a mano, en cuadernos. El contador viene una vez al mes a pasarlo a su computadora.','Pregunta de Situación: conocer el contexto es el primer paso de SPIN. Usted escucha antes de hablar del producto.'),
+   O('¿Qué le ahorraría tener todos los reportes listos en un clic?',-5,0,'N · Necesidad (a destiempo)','¿Reportes? Diay, no sé… con mis cuadernos me ha ido bien.','Es de Necesidad-beneficio, pero todavía no conoce ningún problema: hecha tan pronto suena a guion y el cliente no ve la necesidad.'),
+   O('Le cuento: SoftConta tiene 48 funciones, facturación electrónica, inventarios, planillas, reportes en la nube y aplicación para celular.',-10,0,'Recitar características','Uy, muchas cosas… ¿y todo eso para qué me sirve a mí?','Recitar características antes de preguntar es el error clásico. Rackham demostró que los mejores vendedores preguntan más y hablan menos.'),
+   O('¿Sabe cuánto le pueden cobrar de multa por llevar mal la contabilidad?',0,1,'I · Implicación (a destiempo)','¿Multa? Nunca nos han multado… ¿me está asustando?','Es de Implicación, pero sin conocer su situación suena a amenaza. En SPIN primero va la Situación.')]},
+  {cli:'(Señala una pila de cuadernos detrás del mostrador.) Ahí está todo: ventas, compras, el fiado… Mi hija Karla se encarga en las tardes.',o:[
+   O('¿Cuánto tiempo le toma a Karla cerrar el mes? ¿Han tenido diferencias o errores con el IVA?',15,2,'P · Problema','Uff, como cuatro días para cuadrar. Y el mes pasado el contador encontró unas facturas de compra que se nos olvidaron.','Pregunta de Problema: descubre dificultades concretas (tiempo y errores) sin que usted las invente.'),
+   O('¿Cuántos años tiene la ferretería y cuántos empleados trabajan aquí?',5,1,'S · Situación (de más)','Veintidós años, y somos seis. ¿Por qué?','Es de Situación y es válida, pero ya tenía el contexto principal. Demasiadas preguntas de situación cansan; tocaba descubrir problemas.'),
+   O('Perfecto. ¿Le hago de una vez la factura de la licencia?',-10,0,'Cierre prematuro','Despacio, joven, todavía no sé ni para qué lo necesito.','Cerrar sin haber descubierto ningún problema: el cliente todavía no tiene razones para comprar.')]},
+  {cli:'Y como Karla también atiende el mostrador, esos días de cierre anda a mil.',o:[
+   O('Y esas facturas de compra olvidadas, ¿qué pasó con el IVA que ustedes pagaron? Y los días que Karla no atiende el mostrador, ¿cuántas ventas se pierden?',15,2,'I · Implicación','Pues… ese IVA no lo pudimos rebajar, se perdió. Y sí, a fin de mes es cuando más gente viene.','Pregunta de Implicación: amplía las consecuencias (IVA perdido, ventas perdidas). Convierte un problema “pequeño” en una necesidad urgente.'),
+   O('Le aviso: si no compra hoy, Hacienda le puede cerrar el negocio la otra semana; ya les pasó a otras ferreterías.',12,0,'No ético · amenaza falsa','¿Diay, en serio? Me dejó asustado…','Inventar una amenaza para presionar es engañar al consumidor (Ley 7472, Promoción de la Competencia y Defensa Efectiva del Consumidor). Sube la urgencia, pero destruye la confianza y la reputación de la empresa.',{eth:true}),
+   O('¿Y qué otros problemas tienen con los cuadernos?',5,1,'P · Problema (repetida)','Bueno, a veces no se entiende la letra…','Válida, pero ya encontró el problema clave; tocaba mostrar sus consecuencias con una pregunta de Implicación.'),
+   O('Con nuestro sistema eso nunca pasa: es el mejor del mercado.',-5,0,'Afirmación sin evidencia','Eso dicen todos los vendedores…','Una afirmación sin pruebas no ayuda al cliente a dimensionar su problema.')]},
+  {cli:'Diay, visto así… sí se nos está yendo plata.',o:[
+   O('Si Karla cerrara el mes en una tarde y no se perdiera más IVA por facturas olvidadas, ¿qué significaría para la ferretería?',15,2,'N · Necesidad-beneficio','Que Karla vuelve al mostrador y que no botamos más plata. Eso sí me serviría.','Pregunta de Necesidad-beneficio: el propio cliente expresa el valor de la solución. Quien se convence con sus palabras compra con más seguridad.'),
+   O('¿Qué computadora tienen en la oficina?',0,1,'S · Situación (tardía)','Una que usa Karla, ya algo vieja.','Dato útil para la instalación, pero no es el momento: después de la Implicación, SPIN cierra con Necesidad-beneficio.'),
+   O('Entonces, ¿verdad que necesita el sistema? Dígame que sí.',-10,0,'Presión','Mmm… no me gusta que me apuren.','Pregunta cerrada y presionante: no deja que el cliente exprese el beneficio.')]}
+ ],
+ preCierre:'Bueno, joven… ¿y entonces qué me recomienda?',
+ cierres:{
+  nec:[4,10,'Don Rodrigo, usted me dijo que quiere que Karla cierre el mes en una tarde y no perder más IVA por facturas olvidadas: la licencia Pyme con 8 horas de capacitación para Karla resuelve exactamente eso.','Descripción de necesidades: resume lo que el cliente dijo necesitar y muestra que la solución lo cubre. Es el cierre natural después de SPIN.'],
+  alt:[2,3,'¿Prefiere que la instalación y la capacitación de Karla sean el lunes o el miércoles?','Alternativa: funciona, pero desaprovecha todo lo que el cliente le contó; el cierre por descripción de necesidades conecta mejor con SPIN.'],
+  pue:[1,-2,'¿Que qué le recomiendo? ¿Si le recomiendo algo, lo compra hoy?','Puercoespín: se usa cuando el cliente hace una pregunta concreta sobre el producto (“¿incluye…?”). Aquí suena evasivo.'],
+  pre:[1,0,'Si firma esta semana, le hago un 5 % de descuento.','Cambio de precio: el cliente no ha objetado el precio; ofrecer descuento sin necesidad regala margen.'],
+  reb:[0,-5,'Usted dirá que es caro, pero precisamente por eso…','Cierre rebote: convierte una objeción en razón de compra. Aquí el cliente no ha puesto ninguna objeción.'],
+  pres:[0,5,'Esta oferta es solo por hoy: mañana el precio sube al doble.','Falso y abusivo: inventar urgencia (“solo hoy”, “mañana sube”) es una práctica engañosa contraria a la Ley 7472.']},
+ pideDesc:'Una última cosa: ¿no hay un descuentito para la ferretería del barrio?'},
+
+{key:'cliente2',num:2,tecnica:'Método SNAP',empresa:'Distribuidora La Central',lugar:'San Joaquín de Flores, Heredia',persona:'Lic. Marcela Quesada',rol:'Gerente general',
+ perfil:'Distribuye abarrotes a 120 pulperías y abrirá una segunda bodega en Alajuela. Tiene la agenda llena.',
+ guia:'SNAP (Jill Konrath): mensaje <b>S</b>imple, i<b>N</b>valuable (que aporte valor), <b>A</b>lineado con sus metas y que atienda su <b>P</b>rioridad. Las respuestas largas bajan la confianza.',
+ av:{skin:'#E0AC85',hair:'#2a1a12',style:'bun',shirt:'#2a2d3a',glasses:true,bg:'#141a26'},
+ conf0:35,com:4,pago:'contado',descJust:5,
+ pedido:st=>[['PRO',1],['IMP',1]],
+ turns:[
+  {cli:'Tengo tres minutos antes de otra reunión. Estamos abriendo una segunda bodega y la facturación electrónica nos tiene atrasados. ¿Qué me ofrece?',o:[
+   O('En una frase: SoftConta Pro une la facturación electrónica y el inventario de sus dos bodegas en un solo sistema.',15,2,'S · Simple','Ok. Eso se entiende.','Simple: una idea clara que el cliente ocupado entiende en segundos.'),
+   O('Mire, SoftConta CR nació hace más de quince años como un pequeño proyecto de dos contadores que querían ayudar a las pymes; con el tiempo crecimos y hoy tenemos módulos de contabilidad, bancos, planillas, activos fijos, inventarios, facturación, cuentas por cobrar y por pagar, presupuestos, reportes gerenciales, una aplicación móvil y además…',-10,0,'Mensaje largo','(Mira el reloj.) Perdón, ¿y en resumen?','Mensaje largo y centrado en la empresa vendedora: la gerente saturada se desconecta. SNAP exige simplicidad.'),
+   O('¿Me regala dos horas la otra semana para presentarle todo el sistema?',-5,0,'Pide demasiado tiempo','¿Dos horas? Imposible.','A un cliente saturado no se le pide más tiempo: se le facilita la decisión.'),
+   O('¿Cuántos empleados tienen, qué sistema usan, quién es su contador, cuántas facturas emiten y desde cuándo operan?',0,1,'Interrogatorio','Son muchas preguntas… mándeme un correo.','Preguntar está bien, pero cinco preguntas seguidas a alguien con tres minutos es demasiado: una pregunta precisa vale más.')]},
+  {cli:'¿Y por qué debería importarme? Ya tenemos un sistema de facturación.',o:[
+   O('Porque hoy cada factura se digita dos veces, una en bodega y otra en oficina. Con un solo sistema se digita una vez: ahí está el atraso.',15,2,'N · Valioso (iNvaluable)','Es cierto, digitamos doble.','iNvaluable: aporta una idea útil que el cliente no había conectado. No vende funciones; muestra dónde pierde tiempo.'),
+   O('Porque somos líderes del mercado y tenemos los mejores precios.',-5,0,'Frase vacía','Eso lo dicen todos.','Las frases genéricas no aportan valor y el cliente ocupado las descarta.'),
+   O('Le puedo enviar un video de dos minutos donde se ve cómo se emite una factura.',5,1,'Breve, pero genérico','Mándelo, si tengo tiempo lo veo.','Es breve (bien para SNAP), pero todavía no muestra el valor para SU problema.'),
+   O('Le garantizo que el sistema hace solo todas las declaraciones de impuestos: ya no va a necesitar contador.',12,0,'No ético · promesa falsa','¿En serio? Eso me ahorraría mucho…','Promesa que no se puede cumplir: el sistema facilita los reportes, pero las declaraciones requieren revisión profesional. Ofrecer lo que no se puede cumplir es publicidad engañosa (Ley 7472).',{eth:true})]},
+  {cli:'Mi meta este trimestre es abrir la bodega de Alajuela sin contratar más personal administrativo.',o:[
+   O('Justo para eso: con inventario por bodega y facturación integrada, el mismo equipo administra las dos bodegas sin contratar a nadie más.',15,2,'A · Alineado','Eso es exactamente lo que necesito.','Alineado: conecta la solución con la meta del cliente (crecer sin contratar).'),
+   O('También tenemos un módulo de activos fijos y planillas buenísimo.',-5,0,'No alineado','Eso no es lo que le pregunté.','Ofrece algo que no se relaciona con su objetivo; la gerente siente que no la escuchó.'),
+   O('Entiendo, el sistema le puede ayudar en eso y en muchas otras cosas.',5,1,'Genérico','¿En qué, exactamente?','Va en la dirección correcta, pero es vago: SNAP pide conectar con la meta concreta.'),
+   O('¿Y por qué no contrata a alguien más? Sería más fácil.',-10,0,'Contradice su meta','Porque no está en el presupuesto.','Contradice la meta del cliente: pierde credibilidad de inmediato.')]},
+  {cli:'Bien. Pero tengo mil cosas pendientes; no puedo cambiar todo de una vez.',o:[
+   O('Empecemos por lo urgente: la facturación de la bodega nueva queda funcionando en una semana con la implementación incluida; lo demás se activa después.',15,2,'P · Prioridad','Una semana. Eso sí lo puedo manejar.','Prioridad: resolver primero lo urgente para el cliente, con un paso pequeño y concreto.'),
+   O('Le propongo implementar todos los módulos al mismo tiempo durante tres meses.',-5,0,'Ignora la prioridad','Tres meses… no.','Abruma a un cliente saturado; SNAP recomienda empezar por la prioridad.'),
+   O('Le dejo el folleto con todas las opciones para que lo revise cuando pueda.',0,1,'Pasivo','Déjelo ahí.','Correcto en tono, pero deja la decisión en el aire; un cliente ocupado posterga lo que no es urgente.'),
+   O('No hay prisa, piénselo y me llama cuando tenga tiempo.',-5,0,'Sin siguiente paso','Está bien…','Sin un siguiente paso concreto la venta se enfría: el cliente ocupado no volverá a llamar.')]}
+ ],
+ preCierre:'Me queda un minuto. ¿Qué me propone?',
+ cierres:{
+  pre:[4,10,'Si confirma hoy con pago de contado por transferencia, le aplico un 5 % de descuento y la implementación inicia el lunes.','Cambio de precio: una condición especial por decidir ya. Aquí tiene sentido: el pago de contado mejora el flujo de caja de SoftConta y la gerente necesita una razón concreta para priorizar.'],
+  alt:[3,6,'¿Prefiere que la implementación inicie el lunes o el jueves?','Alternativa: muy buena para SNAP porque simplifica la decisión; el cambio de precio por pago de contado era aún más efectivo con esta gerente.'],
+  nec:[2,3,'Usted necesita facturar las dos bodegas sin contratar más personal; el plan Pro con implementación lo resuelve.','Descripción de necesidades: correcta, pero a una gerente con un minuto le sirve más una decisión simple y concreta.'],
+  pue:[1,-2,'¿Qué le propongo? ¿Si le propongo algo bueno, lo firma ya?','Puercoespín: devolver una pregunta abierta con otra suena evasivo; se usa ante preguntas concretas sobre el producto.'],
+  reb:[0,-5,'Si le parece caro, precisamente por eso…','No hay objeción que rebotar: la gerente no ha dicho que sea caro.'],
+  pres:[0,5,'Si no firma ahora, mañana le subo el precio un 30 %.','Amenaza falsa para presionar: práctica abusiva contraria a la Ley 7472.']},
+ pideDesc:'¿Hay alguna condición si pago de contado?'},
+
+{key:'cliente3',num:3,tecnica:'Vendedor retador + Sandler',empresa:'Comercial Los Almendros',lugar:'Santo Domingo, Heredia',persona:'Don Esteban Vargas',rol:'Socio propietario',
+ perfil:'Abarrotes con dos sucursales. Ya tiene un proveedor de facturación electrónica y dice que SoftConta “está muy caro”.',
+ guia:'<b>Retador</b>: enseñe algo nuevo sobre su negocio y tome el control con respeto. <b>Sandler</b>: acuerde las reglas, califique dolor, presupuesto y quién decide. Maneje la objeción con ética.',
+ av:{skin:'#A9744F',hair:'#151010',style:'short',shirt:'#6b4f2a',beard:true,bg:'#221a12'},
+ conf0:25,com:6,pago:'credito',descJust:0,
+ pedido:st=>[['BAS',2],['SOP',1]],
+ turns:[
+  {cli:'Mire, ya tenemos un proveedor de facturación y lo de ustedes está muy caro. Le doy cinco minutos, por educación.',o:[
+   O('Gracias por los cinco minutos. Le propongo algo: le hago unas preguntas y, si al final vemos que no le sirve, me lo dice con toda confianza y quedamos como amigos. ¿Le parece?',15,2,'Sandler · acuerdo inicial','Bueno… así sí. Dele.','Sistema Sandler: el acuerdo inicial (objetivo, tiempo y permiso para decir “no”) baja la tensión y pone a ambos al mismo nivel.'),
+   O('¡No es caro! Es el mejor precio del mercado, se lo aseguro.',-10,0,'Contradecir','Ve, ya empezamos mal.','Contradecir de entrada pone al cliente a la defensiva.'),
+   O('Entonces le hago un 20 % de descuento ya mismo.',-5,0,'Ceder precio','Ah, ¿entonces sí estaba inflado el precio?','Rebajar antes de entender la necesidad destruye margen y confirma que “era caro”. Además supera la política de descuentos.'),
+   O('Bueno, no le quito tiempo. Le dejo mi tarjeta.',-5,0,'Rendirse','Bueno, gracias.','Retirarse sin indagar no es Sandler: Sandler se retira con honestidad solo después de calificar y comprobar que no hay ajuste.')]},
+  {cli:'A ver, pregunte.',o:[
+   O('Le comparto algo que vemos seguido: los comercios con dos sucursales que facturan en un sistema y llevan el inventario en Excel encuentran diferencias de inventario que nadie sabe explicar. ¿Cada cuánto concilian ustedes el inventario de las dos sucursales?',15,2,'Retador · enseñar','Diay… cada tres meses, y siempre hay diferencias. El proveedor actual solo hace facturas; el inventario va en Excel.','Vendedor retador: enseña una perspectiva nueva sobre el negocio del cliente y la conecta con una pregunta. No compite en precio, compite en ideas.'),
+   O('Su proveedor actual va a quebrar; me contaron que tiene varias demandas.',12,0,'No ético · desprestigiar','¿Ah sí? No sabía…','Desprestigiar a la competencia con rumores o datos falsos es engañoso y una práctica de competencia desleal (Ley 7472). Puede asustar al cliente, pero si lo descubre se pierden la venta y la reputación.',{eth:true}),
+   O('Nuestro software tiene más funciones que el de su proveedor.',0,1,'Comparar funciones','Puede ser, pero el mío funciona.','Comparar funciones no enseña nada nuevo sobre su negocio: el retador aporta una perspectiva que el cliente no tenía.'),
+   O('¿Le gusta su proveedor actual?',5,1,'Pregunta abierta','Pues… funciona.','Es una pregunta válida, pero no aporta perspectiva; el retador enseña algo y luego pregunta.')]},
+  {cli:'Ajá… lo del inventario sí es un dolor de cabeza.',o:[
+   O('Para no hacerle perder tiempo: ¿quién más participa en la decisión y qué presupuesto tienen previsto para resolver esto este año?',15,2,'Sandler · calificar','Decido con mi socia, doña Lucía. Ella está de acuerdo si no pasamos del millón de colones antes de impuestos.','Sandler califica al prospecto: dolor (inventario), presupuesto (₡1 000 000) y quién decide (los dos socios). Así la propuesta se ajusta a lo que el cliente sí puede comprar.'),
+   O('¿Cuándo me firma el contrato?',-10,0,'Cierre prematuro','Todavía no he dicho que sí.','Pedir la firma sin calificar presupuesto ni decisor genera rechazo.'),
+   O('No se preocupe por el presupuesto, eso lo vemos al final.',-5,0,'No califica','Es que el presupuesto es lo que me preocupa.','Evitar el presupuesto es lo contrario de Sandler: puede terminar proponiendo algo que el cliente no puede pagar.'),
+   O('¿Cuántas cajas registradoras tienen en cada sucursal?',5,1,'Situación','Una en cada una.','Dato de situación útil, pero no califica presupuesto ni quién decide.')]},
+  {cli:'Igual me parece caro: el proveedor actual me cobra menos.',o:[
+   O('Tiene razón: el precio es mayor. Pero su proveedor solo factura; aquí van la facturación, el inventario de las dos sucursales y el soporte premium. Una sola diferencia de inventario sin explicar puede costar más que esa diferencia de precio.',15,2,'Objeción · valor','Mm… eso tiene lógica.','Maneja la objeción con honestidad: reconoce el precio y lo compara con el valor y con el costo del problema.'),
+   O('Si firma hoy, se lo dejo a mitad de precio.',-5,0,'Rebaja imposible','¿A mitad? Algo raro hay.','Un 50 % viola la política de margen de la empresa; además el cliente desconfía de rebajas exageradas.'),
+   O('Si no le alcanza, mejor ni lo compre.',-10,0,'Falta de respeto','Bueno, ahí está la puerta.','Falta de respeto: la objeción de precio es normal y se responde con argumentos.'),
+   O('Comprendo. ¿Qué tendría que pasar para que el precio le pareciera justo?',5,1,'Pregunta Sandler','Que me resuelva lo del inventario.','Buena pregunta al estilo Sandler, pero antes conviene responder la objeción mostrando el valor.')]}
+ ],
+ preCierre:'Mmm… sigue pareciéndome caro, pero lo del inventario me interesa.',
+ cierres:{
+  reb:[4,10,'Usted dice que es caro: precisamente por eso incluye el inventario de las dos sucursales y soporte premium, para que dejen de perder plata en diferencias. Y queda en ₡950 000, dentro del millón que acordó con doña Lucía. ¿Iniciamos?','Cierre rebote: convierte la objeción (“es caro”) en la razón de compra y respeta el presupuesto calificado con Sandler.'],
+  nec:[3,6,'Ustedes necesitan conciliar el inventario de las dos sucursales sin pasarse del millón: dos licencias Básicas con soporte premium cumplen eso.','Descripción de necesidades: buena, pero la objeción de precio seguía viva; el rebote la responde de frente.'],
+  alt:[2,3,'¿Prefiere empezar por la sucursal central o por la de Santo Domingo?','Alternativa: válida, pero ignora que el cliente sigue diciendo que es caro.'],
+  pue:[1,-2,'¿Le parece caro? ¿Y si le pareciera barato, firma hoy?','Puercoespín mal aplicado: suena a juego de palabras y el cliente se siente manipulado.'],
+  pre:[1,0,'Para cerrar hoy, le hago un descuento especial.','Cambio de precio ante “es caro” confirma que el precio estaba inflado y regala margen; el retador defiende el valor.'],
+  pres:[0,5,'Solo me quedan dos licencias a este precio; si no firma ya, se las vendo a otro.','Escasez inventada: es engañar al consumidor (Ley 7472).']},
+ pideDesc:'Bueno, pero ¿cuánto me rebaja?'},
+
+{key:'cliente4',num:4,tecnica:'Venta consultiva',empresa:'Clínica Dental Sonrisas',lugar:'San Pablo, Heredia',persona:'Dra. Andrea Solís',rol:'Directora',
+ perfil:'Tres personas en recepción y administración; unos 400 pacientes al mes. Busca una solución integral.',
+ guia:'Venta consultiva o de soluciones: <b>diagnosticar</b>, <b>proponer a la medida</b> (aunque sea menos), <b>demostrar el valor con cifras</b> y <b>acompañar</b> después de la venta.',
+ av:{skin:'#F1C9A5',hair:'#5a3a22',style:'long',shirt:'#e8eef2',coat:true,bg:'#10211f'},
+ conf0:35,com:5,pago:'contado',descJust:0,
+ pedido:st=>{ const k=st.pkg||'rec'; return k==='pro'?[['PRO',1],['IMP',1],['CAP',1],['SOP',1]]:(k==='bas'?[['BAS',1],['CAP',1]]:[['PYME',1],['IMP',1],['CAP',1]]); },
+ turns:[
+  {cli:'Vi en su página el plan Pro. ¿Ese es el mejor? Quiero lo mejor para la clínica.',o:[
+   O('Antes de recomendarle un plan, quisiera entender la clínica: ¿cuántas personas facturan, cuántos pacientes atienden al mes y qué tarea les quita más tiempo hoy?',15,2,'Consultiva · diagnóstico','Somos tres en recepción y administración, unos 400 pacientes al mes. Lo que más tiempo quita es facturar a mano y pasar todo al Excel del contador: mi secretaria dedica unas 40 horas al mes a eso.','El consultor diagnostica antes de recetar: sin conocer la situación no se puede proponer una solución a la medida.'),
+   O('¡Claro! El Pro es el más completo; se lo preparo de una vez.',-5,0,'Sin diagnóstico','Bueno… ¿y eso qué incluye exactamente?','Vender sin diagnosticar: quizás le está vendiendo algo que no necesita.'),
+   O('¿Cuánto presupuesto tiene disponible?',5,1,'Presupuesto primero','Depende de lo que necesite…','Calificar el presupuesto es útil (Sandler), pero en la venta consultiva primero se entiende la situación.'),
+   O('Todos nuestros planes son buenos, depende.',-5,0,'Respuesta vaga','¿Depende de qué?','Respuesta vaga: el asesor guía al cliente con preguntas concretas.')]},
+  {cli:'Le cuento: el inventario de materiales lo maneja nuestro proveedor dental. Lo que necesitamos es facturación electrónica para tres personas y reportes para el contador.',o:[
+   O('Por lo que me cuenta, el Pro sería más de lo que necesita. Le recomiendo el plan Pyme (3 usuarios, facturación electrónica y reportes), con implementación y capacitación para su equipo.',15,2,'Consultiva · a la medida','Me sorprende que me recomiende el más barato… eso me da confianza.','Venta consultiva: proponer lo que el cliente necesita, aunque sea menor, construye confianza y clientes a largo plazo.',{pkg:'rec'}),
+   O('Llévese el Pro con todo: implementación, capacitación y soporte premium; así no le falta nada.',-5,0,'Sobredimensionar','Mmm, ¿y el inventario y la capacidad para cinco usuarios para qué, si no los uso?','Sobredimensiona: la clínica pagaría capacidades (inventario por bodega, cinco usuarios) que no usará. Si lo descubre después, se pierde la confianza.',{pkg:'pro'}),
+   O('Para clínicas el Pro es obligatorio por ley si facturan electrónicamente.',12,0,'No ético · información falsa','Ah, si es obligatorio, ni modo…','Falso: ninguna ley obliga a comprar un plan específico. Dar información falsa para vender más es publicidad engañosa (Ley 7472). La venta es más grande, pero no es ética.',{pkg:'pro',eth:true}),
+   O('Le recomiendo la Básica, que es la más barata.',-5,0,'No cubre la necesidad','¿La Básica sirve para tres personas?','La Básica es de un usuario: no cubre a las tres personas. Lo más barato no siempre es la solución.',{pkg:'bas'})]},
+  {cli:'¿Y cómo sé que vale la pena la inversión?',o:[
+   O('Hagamos números: hoy son 40 horas al mes × ₡3 500 la hora = ₡140 000. Con el sistema serían unas 12 horas = ₡42 000. Ahorro: ₡98 000 al mes, ₡1 176 000 al año.',15,2,'Valor con cifras','Con esos números ya puedo compararlo contra el precio.','Demostrar el valor con cifras verificables del propio cliente convence más que cualquier frase.'),
+   O('Se ahorra las 40 horas completas: ₡140 000 al mes, ₡1 680 000 al año.',-5,0,'Cifra inflada','¿Las 40 horas? Alguien tendrá que usar el sistema…','Cifras infladas: el sistema no elimina todo el trabajo. Cuando el cliente las verifica, usted pierde credibilidad.'),
+   O('Créame, le va a ahorrar muchísimo.',-5,0,'Sin evidencia','Eso no me dice nada.','Sin cifras no hay demostración de valor.'),
+   O('Le puedo dar el contacto de otras clínicas que lo usan.',5,1,'Testimonio','Puede ser útil.','Los testimonios ayudan, pero la venta consultiva demuestra el valor con los números del propio cliente.')]},
+  {cli:'Me preocupa que después de la venta nadie nos ayude.',o:[
+   O('Le propongo un plan: implementación la primera semana, 8 horas de capacitación y una visita de seguimiento al mes para revisar los reportes con usted.',15,2,'Acompañamiento','Eso es lo que buscaba.','Acompañar después de la venta es parte de la solución integral: el cliente compra tranquilidad.'),
+   O('Para eso está el manual en PDF.',-5,0,'Deja solo al cliente','Mmm…','La venta consultiva continúa después de la factura.'),
+   O('Si tiene algún problema, llame al número general.',0,1,'Soporte pasivo','Ok…','Hay soporte, pero el consultor propone un acompañamiento activo.'),
+   O('Le aseguro que nunca va a tener ningún problema.',-5,0,'Promesa absoluta','Nadie puede asegurar eso.','Promesa absoluta poco creíble; mejor explicar cómo se resolverán los problemas.')]}
+ ],
+ preCierre:'Una pregunta: ¿la capacitación incluye a las tres personas?',
+ cierres:{
+  pue:[4,10,'¿Si la incluimos para las tres, empezamos la implementación el lunes?','Puercoespín: responde la pregunta del cliente con otra que lo compromete. Funciona porque la pregunta era concreta y la respuesta es sí.'],
+  nec:[3,6,'Usted necesita facturar con tres usuarios, darle reportes al contador y que su secretaria recupere horas: la propuesta cubre todo eso.','Descripción de necesidades: excelente resumen; sin embargo, la doctora hizo una pregunta concreta que se aprovechaba mejor con el puercoespín.'],
+  alt:[2,3,'¿Prefiere la capacitación en la mañana o en la tarde?','Alternativa: válida, pero no responde la pregunta de la doctora.'],
+  reb:[1,-2,'Si le parece caro, precisamente por eso…','Rebote sin objeción: la doctora no dijo que fuera caro.'],
+  pre:[1,0,'Y si firma hoy, le hago un descuento.','Cambio de precio innecesario: el valor ya estaba demostrado con cifras.'],
+  pres:[0,5,'Si no firma hoy, pierde el cupo de capacitación hasta el próximo año.','Urgencia falsa: práctica engañosa (Ley 7472).']},
+ pideDesc:'¿Tienen algún descuento?'}
+];
+const PAGO_TXT={credito:'Crédito a 30 días',contado:'Contado · transferencia bancaria'};
+
+/* =================== CÁLCULOS =================== */
+function lineas(c,st){ return c.pedido(st).map(([k,q])=>({k:k,n:CAT[k].n,q:q,p:CAT[k].p,c:CAT[k].c,m:q*CAT[k].p})); }
+function calc(c,st,dOverride){
+  const L=lineas(c,st), d=dOverride!=null?dOverride:(st.des||0);
+  const bruto=L.reduce((s,l)=>s+l.m,0), costo=L.reduce((s,l)=>s+l.q*l.c,0);
+  const desc=Math.round(bruto*d)/100, sub=bruto-desc, iva=Math.round(sub*IVA*100)/100, tot=sub+iva;
+  const com=Math.round(sub*c.com)/100, mg=sub-costo, mgp=sub?mg/sub*100:0;
+  return {L:L,d:d,bruto:bruto,costo:costo,desc:desc,sub:sub,iva:iva,tot:tot,com:com,mg:mg,mgp:mgp};
+}
+function confSerie(c,st){ // confianza tras cada decisión
+  let v=c.conf0; const s=[v];
+  st.picks.forEach((p,t)=>{ v=clamp(v+c.turns[t].o[p].d,0,100); s.push(v); });
+  if(st.cie){ v=clamp(v+c.cierres[st.cie][1],0,100); s.push(v); }
+  if(st.des!=null){ v=clamp(v+st.des/5*4,0,100); s.push(v); }
+  return s;
+}
+const confNow=(c,st)=>{ const s=confSerie(c,st); return s[s.length-1]; };
+function margenPts(c,st){ const d=st.des||0; return d<=c.descJust?3:(d===5?2:0); }
+function antiEtica(c,st){ return st.picks.some((p,t)=>c.turns[t].o[p].eth)||st.cie==='pres'; }
+function puntos(c,st){
+  const dlg=st.picks.reduce((s,p,t)=>s+c.turns[t].o[p].p,0);
+  const cie=st.cie?c.cierres[st.cie][0]:0, mar=st.des!=null?margenPts(c,st):0, eti=antiEtica(c,st)?0:2;
+  const fac=st.fac&&st.fac.score!=null?st.fac.score:0, com=st.com&&st.com.score!=null?st.com.score:0, asi=st.asi&&st.asi.score!=null?st.asi.score:0;
+  const ind2=dlg+cie+mar+eti, ind1=fac+com+asi;
+  return {dlg:dlg,cie:cie,mar:mar,eti:eti,fac:fac,com:com,asi:asi,ind1:ind1,ind2:ind2,total:ind1+ind2};
+}
+
+/* =================== ESTADO =================== */
+let user=null, PROG=[], CASOS=[], DONE={}, ST=null, CUR=0, VIEW='cli', attempt=false, salidas=0, finalSent=false, lastConf=null, FINAL=null;
+const LSK=()=>MODULE_ID+'_'+norm(user.name);
+function nuevoST(i){ return {i:i,picks:[],ack:0,cie:null,cieAck:false,des:null,desAck:false,pkg:null,resAck:false,fac:{att:0,score:null,vals:{},res:null},com:{att:0,score:null,vals:{},res:null},asi:{att:0,score:null,vals:{},res:null},posted:false,stage:'dlg'}; }
+function saveLocal(){ if(!user) return; try{ localStorage.setItem(LSK(),JSON.stringify({ts:now(),sec:user.sec,done:DONE,st:ST,cur:CUR,salidas:salidas,finalSent:finalSent})); }catch(e){} }
+function loadLocal(){ try{ return JSON.parse(localStorage.getItem(LSK())||'null'); }catch(e){ return null; } }
+function clearLocal(){ try{ localStorage.removeItem(LSK()); }catch(e){} }
+function resetCut(name){ let t=''; PROG.forEach(r=>{ if(String(r.Modulo)===MODULE_ID+'_reset'&&norm(r.Estudiante)===norm(name)&&String(r.Timestamp)>t) t=String(r.Timestamp); }); return t; }
+function detalles(name){ const cut=resetCut(name); return CASOS.filter(r=>String(r.CasoId)===MODULE_ID+'_detalle'&&norm(r.Nombre)===norm(name)&&String(r.Timestamp)>cut).map(r=>{ let o={}; try{ o=JSON.parse(r.Texto); }catch(e){} o.__ts=String(r.Timestamp); return o; }); }
+function progDe(name){ const cut=resetCut(name); return PROG.filter(r=>norm(r.Estudiante)===norm(name)&&String(r.Timestamp)>cut&&String(r.Modulo).indexOf(MODULE_ID+'_')===0); }
+function salidasDe(name){ const cut=resetCut(name); let n=0; PROG.forEach(r=>{ if(String(r.Modulo)==='incidente_salida_pantalla_'+MODULE_ID&&norm(r.Estudiante)===norm(name)&&String(r.Timestamp)>cut) n=Math.max(n,+r.Score||0); }); return n; }
+
+/* =================== MONITOREO DE SALIDA =================== */
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden||!attempt||!user) return;
+  salidas++; saveLocal(); mostrarBanner();
+  postProg(user.name,'incidente_salida_pantalla_'+MODULE_ID,salidas,salidas);
+});
+function mostrarBanner(){ const b=$('banner'); if(salidas>0&&attempt){ b.textContent='Salió de la pantalla de la actividad ('+salidas+(salidas===1?' vez':' veces')+'). Su docente recibe este registro.'; b.style.display='block'; } else b.style.display='none'; }
+
+/* =================== AVATAR SVG =================== */
+function avatarSVG(a,conf){
+  const m=clamp((conf-50)/50,-1,1), my=74+m*7, by=m<-0.2?2.5:(m>0.3?-1.5:0);
+  const hairBack=a.style==='long'?`<path d="M30 56 Q28 18 60 17 Q92 18 90 56 L93 98 Q60 108 27 98Z" fill="${a.hair}"/>`:'';
+  const hairTop=a.style==='short'?`<path d="M35 52 Q34 21 60 20 Q86 21 85 52 Q82 34 60 32 Q38 34 35 52Z" fill="${a.hair}"/>`
+    :a.style==='bun'?`<circle cx="60" cy="16" r="10" fill="${a.hair}"/><path d="M35 54 Q33 21 60 21 Q87 21 85 54 Q80 33 60 31 Q40 33 35 54Z" fill="${a.hair}"/>`
+    :`<path d="M35 52 Q36 22 60 21 Q84 22 85 52 Q76 30 58 34 Q44 37 35 52Z" fill="${a.hair}"/>`;
+  const body=a.coat?`<path d="M14 124 Q16 92 60 88 Q104 92 106 124Z" fill="#f2f5f7"/><path d="M48 90 L60 112 L72 90 Q66 96 60 96 Q54 96 48 90Z" fill="#2FC2AD"/><path d="M48 90 L56 124 M72 90 L64 124" stroke="#c7d0d6" stroke-width="2"/>`
+    :`<path d="M14 124 Q16 92 60 88 Q104 92 106 124Z" fill="${a.shirt}"/>${a.apron?`<path d="M38 100 L82 100 L84 124 L36 124Z" fill="${a.apron}"/><path d="M42 100 L48 90 M78 100 L72 90" stroke="${a.apron}" stroke-width="3"/>`:''}<path d="M50 89 L60 100 L70 89" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>`;
+  const mus=a.mustache?`<path d="M48 69 Q54 64 60 68 Q66 64 72 69 Q66 71 60 70 Q54 71 48 69Z" fill="${a.hair}"/>`:'';
+  const beard=a.beard?`<path d="M38 60 Q40 88 60 90 Q80 88 82 60 Q78 80 60 82 Q42 80 38 60Z" fill="${a.hair}" opacity=".55"/>`:'';
+  const gl=a.glasses?`<g fill="none" stroke="#C9973F" stroke-width="1.6"><rect x="42" y="51" width="14" height="10" rx="4"/><rect x="64" y="51" width="14" height="10" rx="4"/><path d="M56 55 L64 55"/></g>`:'';
+  return `<svg class="avatar" viewBox="0 0 120 124" role="img" aria-label="Ilustración del cliente"><circle cx="60" cy="62" r="58" fill="${a.bg}"/><clipPath id="avc"><circle cx="60" cy="62" r="58"/></clipPath><g clip-path="url(#avc)">${hairBack}${body}<rect x="52" y="74" width="16" height="18" rx="6" fill="${a.skin}"/><ellipse cx="35" cy="57" rx="4" ry="6" fill="${a.skin}"/><ellipse cx="85" cy="57" rx="4" ry="6" fill="${a.skin}"/><ellipse cx="60" cy="54" rx="25" ry="28" fill="${a.skin}"/>${beard}${hairTop}
+   <path class="brow" d="M44 ${46+by} Q49 ${43-by} 54 ${45}" stroke="#2a1d14" stroke-width="2.2" fill="none" stroke-linecap="round"/><path class="brow" d="M66 45 Q71 ${43-by} 76 ${46+by}" stroke="#2a1d14" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+   <circle cx="49" cy="56" r="2.8" fill="#1d1410"/><circle cx="71" cy="56" r="2.8" fill="#1d1410"/>${gl}
+   <path d="M60 58 Q58 64 61 65" stroke="rgba(0,0,0,.25)" stroke-width="1.6" fill="none"/>${mus}
+   <path class="mouth" d="M51 74 Q60 ${my} 69 74" stroke="#7a2e22" stroke-width="2.6" fill="none" stroke-linecap="round"/></g></svg>`;
+}
+function gaugeHTML(){ return `<div class="gauge" id="gauge"><svg viewBox="0 0 200 120"><path d="M20 105 A80 80 0 0 1 180 105" stroke="#1c1d24" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <path class="arc" id="garc" d="M20 105 A80 80 0 0 1 180 105" stroke="#C9973F" stroke-width="16" fill="none" stroke-linecap="round" stroke-dasharray="251.33" stroke-dashoffset="251.33"/>
+  <line x1="${100+80*Math.cos(Math.PI*(1-UMBRAL/100))-0}" y1="${105-80*Math.sin(Math.PI*(1-UMBRAL/100))}" x2="${100+96*Math.cos(Math.PI*(1-UMBRAL/100))}" y2="${105-96*Math.sin(Math.PI*(1-UMBRAL/100))}" stroke="#2FC2AD" stroke-width="3"/>
+  <text x="${100+104*Math.cos(Math.PI*(1-UMBRAL/100))}" y="${105-104*Math.sin(Math.PI*(1-UMBRAL/100))}" fill="#2FC2AD" font-size="10" font-family="IBM Plex Mono,monospace">${UMBRAL}</text></svg>
+  <div class="val" id="gval">0</div><div class="lab">Confianza del cliente · cierre desde ${UMBRAL}</div></div>`; }
+function animarGauge(to){
+  const from=lastConf==null?to:lastConf; const arc=$('garc'), val=$('gval'); if(!arc) return;
+  const L=251.33, col=v=>v>=UMBRAL?'#2FC2AD':(v>=40?'#C9973F':'#EF6A5B');
+  arc.style.transition='none'; arc.style.strokeDashoffset=L*(1-from/100); arc.style.stroke=col(from); arc.getBoundingClientRect();
+  arc.style.transition=''; requestAnimationFrame(()=>{ arc.style.strokeDashoffset=L*(1-to/100); arc.style.stroke=col(to); });
+  const t0=performance.now(); (function step(t){ const k=Math.min(1,(t-t0)/900); val.textContent=Math.round(from+(to-from)*k); if(k<1) requestAnimationFrame(step); })(t0);
+  if(from!==to){ const d=document.createElement('span'); d.className='delta '+(to>from?'up':'down'); d.textContent=(to>from?'+':'')+(to-from); $('gauge').appendChild(d); }
+  lastConf=to;
+}
+
+/* =================== PORTADA =================== */
+function portada(){
+  const np=nombrePortal(); $('who').innerHTML=''; attempt=false; mostrarBanner();
+  $('app').innerHTML=`<div class="card" style="max-width:980px;margin:16px auto">
+   <span class="pill gold">Simulador · RA 2 · ~60 minutos · 4 clientes</span>
+   <h2 style="margin-top:12px;font-size:28px">Hoy usted es vendedor/a de <span style="color:var(--gold2)">SoftConta CR</span></h2>
+   <p>SoftConta CR vende software contable y servicios a pymes de Heredia. Usted atenderá a <b>cuatro clientes</b>, cada uno pensado para una técnica moderna de ventas: <b>SPIN</b>, <b>SNAP</b>, <b>vendedor retador + Sandler</b> y <b>venta consultiva</b>. Cada respuesta mueve el <b>medidor de confianza</b> del cliente; al final elige la técnica de <b>cierre</b>, decide si da descuento (y ve el efecto en el <b>margen</b>), confecciona la <b>factura electrónica</b>, calcula su <b>comisión</b> y registra el <b>asiento</b>.</p>
+   <div class="grid2" style="margin-top:6px">
+    <div class="note"><span class="tag" style="color:var(--gold2)">Puntaje · 100 pts</span>Por cliente 25: técnica en el diálogo 8 · cierre 4 · margen 3 · factura 3 · comisión 2 · asiento 3 · ética 2.</div>
+    <div class="note"><span class="tag" style="color:var(--teal)">Reglas</span>Cada decisión se toma <b>una sola vez</b>. La actividad se completa una vez; solo su docente puede habilitar un nuevo intento. Salir de la pantalla queda registrado.</div>
+   </div>
+   <div class="grid2" style="margin-top:14px"><div><label for="inNom">Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}" placeholder="Nombre y apellidos" autocomplete="name"></div>
+   <div><label for="inSec">Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+   <div class="row" style="margin-top:14px"><button class="btn gold" id="bIn">Entrar al piso de ventas</button><span id="mIn" class="mut"></span></div></div>
+   <div class="card" style="max-width:980px;margin:0 auto 14px"><h3 style="margin-top:0">Rúbrica (RA 2)</h3>${rubricaTabla()}</div>`;
+  $('bIn').onclick=entrar;
+}
+function rubricaTabla(){ return `<div class="scroll"><table class="tb"><tr><th>Indicador</th><th>Logrado (3) · ≥ 80 %</th><th>En proceso (2) · 60–79 %</th><th>No logrado (1) · &lt; 60 %</th></tr>${IND.map(d=>`<tr><td><b>${d.nombre}</b><div class="mut">${d.ra} · ${d.total} pts</div></td><td>${d.n3}</td><td>${d.n2}</td><td>${d.n1}</td></tr>`).join('')}</table></div>`; }
+
+function entrar(){
+  const n=$('inNom').value.trim(), s=$('inSec').value;
+  if(n.split(/\s+/).length<2){ $('mIn').innerHTML='<span class="err">Escriba nombre y al menos un apellido.</span>'; return; }
+  if(!s){ $('mIn').innerHTML='<span class="err">Seleccione la sección.</span>'; return; }
+  user={name:n,sec:s}; $('mIn').textContent='Cargando…'; $('bIn').disabled=true;
+  Promise.all([sheetGet(SH_PROG),sheetGet(SH_DATA)]).then(([p,c])=>{ PROG=p; CASOS=c; arrancar(); });
+}
+function arrancar(){
+  $('who').innerHTML=`<b>${esc(user.name)}</b><br>${esc(user.sec)}`;
+  const cut=resetCut(user.name), mine=progDe(user.name), dets=detalles(user.name);
+  const fin=mine.find(r=>String(r.Modulo)===MODULE_ID+'_final');
+  const loc=loadLocal();
+  if(loc&&cut&&loc.ts<cut){ clearLocal(); }
+  const L=(loc&&!(cut&&loc.ts<cut))?loc:null;
+  if(fin){ // candado: actividad ya completada
+    const fd=dets.filter(d=>d.fase==='final').pop();
+    FINAL=fd||resumenDesdeProg(mine); attempt=false; mostrarBanner(); renderBloqueado(fin); return; }
+  DONE={};
+  dets.filter(d=>/^cliente\d$/.test(d.fase)).forEach(d=>{ if(!DONE[d.fase]) DONE[d.fase]=d; });
+  mine.forEach(r=>{ const m=String(r.Modulo).match(/^pisoventas10_(cliente\d)_paso$/); if(m&&!DONE[m[1]]) DONE[m[1]]={fase:m[1],soloPuntaje:true,pts:{total:+r.Score}}; });
+  if(L&&L.done) Object.keys(L.done).forEach(k=>{ if(!DONE[k]) DONE[k]=L.done[k]; });
+  salidas=Math.max(L?L.salidas||0:0,salidasDe(user.name)); finalSent=!!(L&&L.finalSent);
+  const firstOpen=CLIENTES.findIndex(c=>!DONE[c.key]);
+  attempt=true; mostrarBanner();
+  if(firstOpen<0){ finalizar(); return; }
+  CUR=firstOpen;
+  ST=(L&&L.st&&L.st.i===firstOpen&&!DONE[CLIENTES[firstOpen].key])?L.st:nuevoST(firstOpen);
+  lastConf=null; VIEW='cli'; saveLocal(); render();
+}
+function resumenDesdeProg(mine){ const g=k=>{ const r=mine.filter(x=>String(x.Modulo)===k).pop(); return r?+r.Score:0; };
+  return {fase:'final',total:g(MODULE_ID+'_final'),ind1:{s:g(MODULE_ID+'_ind1_ra_RA2-I1_paso'),t:32},ind2:{s:g(MODULE_ID+'_ind2_ra_RA2-I2_paso'),t:68},porCliente:CLIENTES.map(c=>({key:c.key,empresa:c.empresa,tecnica:c.tecnica,total:g(MODULE_ID+'_'+c.key+'_paso')})),sinDetalle:true}; }
+
+/* =================== NAVEGACIÓN =================== */
+function mapaHTML(){
+  const allDone=CLIENTES.every(c=>DONE[c.key]);
+  return `<div class="map noprint">${CLIENTES.map((c,i)=>{ const d=DONE[c.key], cur=VIEW==='cli'&&CUR===i, open=d||i===CLIENTES.findIndex(x=>!DONE[x.key]);
+    return `<button class="mc ${d?'done':''} ${cur?'cur':''} ${open?'':'lock'}" data-c="${i}" ${open?'':'aria-disabled="true"'}><span class="n">${d?'✓':c.num}</span><span class="t">${esc(c.empresa)}<small>${esc(c.tecnica)}${d&&d.pts?' · '+d.pts.total+'/25':''}</small></span></button>`; }).join('')}
+    <button class="mc fin ${VIEW==='fin'?'cur':''} ${allDone?'':'lock'}" data-c="fin"><span class="n">★</span><span class="t">Tablero<small>Resultados y ranking</small></span></button></div>`;
+}
+function bindMapa(){ document.querySelectorAll('.mc').forEach(b=>b.onclick=()=>{ if(b.classList.contains('lock')) return; const k=b.dataset.c;
+  if(k==='fin'){ VIEW='fin'; render(); return; } const i=+k; VIEW='cli'; CUR=i; lastConf=null; render(); }); }
+function render(){
+  if(VIEW==='fin'){ $('app').innerHTML=mapaHTML()+'<div id="main" class="printzone"></div>'; bindMapa(); renderTablero($('main'),resumenFinal(),false); window.scrollTo(0,0); return; }
+  const c=CLIENTES[CUR], d=DONE[c.key];
+  const st=d?(d.st||null):ST;
+  $('app').innerHTML=mapaHTML()+cicloHTML(c,st,!!d)+`<div class="stage"><div class="side card">${ladoHTML(c,st)}</div><div class="card" id="mainc"><div class="row" style="justify-content:space-between"><div><span class="pill gold">Cliente ${c.num} de 4</span> <span class="pill teal">${esc(c.tecnica)}</span></div>${d?'<span class="pill">Fase calificada · solo lectura</span>':''}</div>
+    <h2 style="margin-top:8px">${esc(c.empresa)}</h2><div class="chat" id="chat">${st?chatHTML(c,st,!!d):''}</div><div class="act" id="act"></div></div></div>`;
+  bindMapa();
+  if(st) animarGauge(confNow(c,st)); else { lastConf=null; }
+  if(d) renderRevision(c,d); else renderAccion(c,ST);
+  const ch=$('chat'); if(ch) ch.scrollTop=ch.scrollHeight;
+}
+function cicloHTML(c,st,done){
+  const etapas=['Prospección','Cotización','Pedido','Factura electrónica',c.pago==='credito'?'Cuenta por cobrar':'Cobro (Bancos)','Comisión'];
+  const stg=st?st.stage:'dlg', closed=st&&st.cerrada;
+  const idx={dlg:0,cie:1,des:1,res:2,fac:3,com:5,asi:4,fin:6}[stg]; const noVenta=st&&st.cerrada===false;
+  return `<div class="ciclo noprint" aria-label="La venta dentro del ciclo contable">${etapas.map((e,i)=>{ let cl=''; if(noVenta&&i>=2) cl='no'; else if(done||i<idx) cl='on'; else if(i===idx) cl='now'; return `<div class="st ${cl}"><b>${i+1}</b>${e}</div>`; }).join('')}</div>`;
+}
+function ladoHTML(c,st){
+  const conf=st?confNow(c,st):c.conf0;
+  return `<div class="avwrap">${avatarSVG(c.av,conf)}${gaugeHTML()}</div>
+   <div class="ficha"><div class="k">Cliente</div><b>${esc(c.persona)}</b> · ${esc(c.rol)}<br>${esc(c.empresa)} · ${esc(c.lugar)}<div class="mut" style="margin-top:4px">${esc(c.perfil)}</div></div>
+   <div class="tecnica"><div class="k mono" style="font-size:11px;color:var(--gold2);text-transform:uppercase;letter-spacing:.5px">Técnica objetivo · ${esc(c.tecnica)}</div>${c.guia}</div>
+   <div class="ficha"><div class="k">Condiciones</div>Pago: ${PAGO_TXT[c.pago]} · Comisión del vendedor: <b>${c.com} %</b> sobre la venta sin IVA · Margen mínimo de la empresa: <b>${POLITICA} %</b></div>`;
+}
+function chatHTML(c,st,done){
+  const out=[]; const nT=st.picks.length; const lastIdx={v:-1};
+  const B=(cls,who,txt,extra)=>out.push(`<div class="bub ${cls} ${extra||''}"><small>${who}</small>${esc(txt)}</div>`);
+  const coach=(o,e)=>out.push(`<div class="coach ${e?'e':''}"><b>${esc(o)}</b></div>`);
+  for(let t=0;t<c.turns.length;t++){
+    if(t>nT) break; const T=c.turns[t];
+    const isNew=!done&&t===nT&&st.ack===nT&&t>0;
+    B('cli',c.persona,T.cli,isNew?'later':'');
+    if(t<nT){ const o=T.o[st.picks[t]]; const fresh=!done&&t===nT-1&&st.ack<nT;
+      B('ven'+(o.eth?' eth':''),'Usted',o.t,fresh?'new':''); if(fresh) out.push('<div class="typing"><i></i><i></i><i></i></div>');
+      B('cli',c.persona,o.r,fresh?'later':''); coach(o.tag+' · '+(o.d>0?'+':'')+o.d,o.eth||o.d<0); }
+  }
+  if(nT===c.turns.length&&st.ack===nT){
+    B('cli',c.persona,c.preCierre,(!done&&!st.cie)?'later':'');
+    if(st.cie){ const cc=c.cierres[st.cie]; const fresh=!done&&!st.cieAck; B('ven'+(st.cie==='pres'?' eth':''),'Usted · '+CIERRES[st.cie].n,cc[2],fresh?'new':'');
+      B('cli',c.persona,cc[0]>=4?'Me convenció. Sigamos.':cc[0]>=2?'Bueno… puede ser.':st.cie==='pres'?'Bueno… si es así…':'Mmm… no sé.',fresh?'later':''); coach('Cierre: '+CIERRES[st.cie].n+' · '+(cc[1]>0?'+':'')+cc[1],st.cie==='pres'||cc[1]<0); }
+    if(st.cie&&st.cieAck){ B('cli',c.persona,st.cie==='pre'?'Entonces, ¿cuánto sería con esa condición?':c.pideDesc,(!done&&st.des==null)?'later':'');
+      if(st.des!=null){ B('ven','Usted',st.des===0?'El precio ya incluye todo lo que conversamos; prefiero darle valor y no rebajar el precio.':'Le puedo ofrecer un '+st.des+' % de descuento sobre el precio de lista.'); }
+    }
+    if(st.desAck){ B('cli',c.persona,st.cerrada?'Trato hecho. Envíeme la factura electrónica.':'Mejor envíeme una cotización por escrito y lo pienso con calma.',!done&&!st.resAck?'later':''); }
+  }
+  return out.join('');
+}
+
+/* =================== ACCIONES POR ETAPA =================== */
+function guardarYRender(){ saveLocal(); render(); }
+function renderAccion(c,st){
+  const A=$('act');
+  if(st.stage==='dlg'){
+    const nT=st.picks.length;
+    if(nT>st.ack){ const o=c.turns[nT-1].o[st.picks[nT-1]]; A.innerHTML=fbHTML(o.eth?'bad':(o.p>=2?'good':(o.p===1?'mid':'bad')),o.tag+' · '+(o.p)+' / 2 pts',o.fb+(o.eth?' <b>Ética: este punto se pierde.</b>':''))+`<div class="row" style="margin-top:12px"><button class="btn gold" id="bSig">Continuar →</button></div>`;
+      $('bSig').onclick=()=>{ st.ack=nT; if(st.ack===c.turns.length) st.stage='cie'; guardarYRender(); }; return; }
+    const T=c.turns[nT], ord=orden(c.key+'|t'+nT,T.o.length);
+    A.innerHTML=`<div class="qhead">Turno ${nT+1} de ${c.turns.length} · ¿Qué le dice?</div><div class="opts">${ord.map((oi,pos)=>`<button class="opt" data-i="${oi}"><span class="k">${'ABCD'[pos]}</span><span>${esc(T.o[oi].t)}</span></button>`).join('')}</div>`;
+    A.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ if(st.picks.length!==nT) return; const oi=+b.dataset.i; st.picks.push(oi); if(T.o[oi].pkg) st.pkg=T.o[oi].pkg; guardarYRender(); });
+    return;
+  }
+  if(st.stage==='cie'){
+    if(st.cie&&!st.cieAck){ const cc=c.cierres[st.cie]; A.innerHTML=fbHTML(st.cie==='pres'?'bad':(cc[0]>=4?'good':(cc[0]>=2?'mid':'bad')),'Cierre: '+CIERRES[st.cie].n+' · '+cc[0]+' / 4 pts',cc[3]+(st.cie==='pres'?' <b>Ética: este punto se pierde.</b>':''))+`<div class="row" style="margin-top:12px"><button class="btn gold" id="bSig">Continuar →</button></div>`;
+      $('bSig').onclick=()=>{ st.cieAck=true; st.stage='des'; guardarYRender(); }; return; }
+    const ord=orden(c.key+'|cie',CIERRE_ORD.length).map(i=>CIERRE_ORD[i]);
+    A.innerHTML=`<div class="qhead">Momento del cierre · elija la técnica que mejor se ajusta a este cliente</div><div class="opts">${ord.map((id,pos)=>`<button class="opt cie" data-id="${id}"><span class="k">${'ABCDEF'[pos]}</span><span><span class="tt">${CIERRES[id].n}</span>“${esc(c.cierres[id][2])}”</span></button>`).join('')}</div>`;
+    A.querySelectorAll('.cie').forEach(b=>b.onclick=()=>{ if(st.cie) return; st.cie=b.dataset.id; guardarYRender(); });
+    return;
+  }
+  if(st.stage==='des'){
+    if(st.des!=null&&!st.desAck){ const k=calc(c,st), mp=margenPts(c,st);
+      const msg=st.des===0?'No dio descuento: el margen se mantiene en '+fp(k.mgp)+'. Defendió el valor en lugar del precio.'
+        :(st.des<=c.descJust?'Descuento del '+st.des+' % justificado por el pago de contado: el margen queda en '+fp(k.mgp)+', dentro de la política mínima de '+POLITICA+' %.'
+        :(st.des===5?'Dio 5 %: el margen queda en '+fp(k.mgp)+' (dentro de política), pero regaló '+fm(k.desc)+' que no eran necesarios con este cliente.'
+        :'Con '+st.des+' % el margen baja a '+fp(k.mgp)+', por debajo de la política mínima de '+POLITICA+' %. Un descuento reduce el margen mucho más que el precio: el precio bajó '+st.des+' % y el margen en colones cayó '+fp((1-k.mg/(k.bruto-k.costo))*100)+'.'));
+      A.innerHTML=fbHTML(mp===3?'good':(mp===2?'mid':'bad'),'Margen · '+mp+' / 3 pts',msg)+`<div class="row" style="margin-top:12px"><button class="btn gold" id="bSig">Ver la respuesta del cliente →</button></div>`;
+      $('bSig').onclick=()=>{ st.desAck=true; st.cerrada=confNow(c,st)>=UMBRAL; st.stage='res'; guardarYRender(); }; return; }
+    let sel=st.cie==='pre'?5:0;
+    A.innerHTML=`<div class="qhead">¿Qué condición de precio ofrece?</div>
+      <div class="mut">Cada 5 % de descuento sube la confianza +4, pero reduce su margen. Política de SoftConta: margen mínimo ${POLITICA} %.${st.cie==='pre'?' Usted ofreció una condición especial: debe cumplirla (mínimo 5 %).':''}</div>
+      <div class="dchips">${[0,5,10,15].map(d=>`<button class="dchip" data-d="${d}" ${st.cie==='pre'&&d===0?'disabled':''}>${d} %</button>`).join('')}</div>
+      <div id="mview"></div><div class="row" style="margin-top:12px"><button class="btn gold" id="bDes">Ofrecer estas condiciones</button></div>`;
+    const pinta=()=>{ A.querySelectorAll('.dchip').forEach(b=>b.classList.toggle('on',+b.dataset.d===sel)); $('mview').innerHTML=margenHTML(c,st,sel); };
+    A.querySelectorAll('.dchip').forEach(b=>b.onclick=()=>{ if(b.disabled) return; sel=+b.dataset.d; pinta(); }); pinta();
+    $('bDes').onclick=()=>{ if(st.des!=null) return; st.des=sel; guardarYRender(); };
+    return;
+  }
+  if(st.stage==='res'){
+    const conf=confNow(c,st), k=calc(c,st);
+    A.innerHTML=`<div class="result ${st.cerrada?'win':'lose'}"><div class="ic">${st.cerrada?'✓':'×'}</div><h2>${st.cerrada?'¡Venta cerrada!':'El cliente no compró hoy'}</h2>
+      <p class="mut">Confianza final: <b class="mono">${conf}</b> (se cierra desde ${UMBRAL}). ${st.cerrada?'Ahora la venta entra al ciclo contable: <b>pedido → factura electrónica → '+(c.pago==='credito'?'cuenta por cobrar':'cobro en Bancos')+' → comisión</b>.':'El cliente pide una <b>cotización</b>. Una cotización es una oferta: todavía no hay venta, ni ingreso, ni comisión.'}</p>
+      <div class="row" style="justify-content:center"><span class="pill">${st.cerrada?'Pedido':'Cotización'}: ${fm(k.sub)} + IVA</span><span class="pill">Margen ${fp(k.mgp)}</span></div></div>
+      <div class="row" style="justify-content:center"><button class="btn gold" id="bSig">${st.cerrada?'Confeccionar la factura electrónica →':'Confeccionar la cotización →'}</button></div>`;
+    $('bSig').onclick=()=>{ st.resAck=true; st.stage='fac'; guardarYRender(); }; return;
+  }
+  if(st.stage==='fac') return renderFactura(c,st,A);
+  if(st.stage==='com') return renderComision(c,st,A);
+  if(st.stage==='asi') return st.cerrada?renderAsiento(c,st,A):renderAsientoNo(c,st,A);
+}
+function fbHTML(tone,tag,txt){ return `<div class="note ${tone}"><span class="tag">${tag}</span>${txt}</div>`; }
+function margenHTML(c,st,d){
+  const a=calc(c,st,0), b=calc(c,st,d), pol=POLITICA, sc=x=>clamp(x/50*100,0,100);
+  const col=x=>x>=38?'var(--teal)':(x>=pol?'var(--gold)':'var(--coral)');
+  return `<div class="scroll"><table class="mtab"><tr><th></th><th>Precio de lista</th><th>Con ${d} %</th></tr>
+   <tr><td>Venta (sin IVA)</td><td>${fm(a.bruto)}</td><td>${fm(b.bruto)}</td></tr>
+   <tr><td>Descuento</td><td>${fm(0)}</td><td>${b.desc?'− '+fm(b.desc):fm(0)}</td></tr>
+   <tr><td>Precio neto</td><td>${fm(a.sub)}</td><td>${fm(b.sub)}</td></tr>
+   <tr><td>Costo</td><td>${fm(a.costo)}</td><td>${fm(b.costo)}</td></tr>
+   <tr><td><b>Margen ₡</b></td><td>${fm(a.mg)}</td><td>${fm(b.mg)}</td></tr>
+   <tr><td><b>Margen %</b></td><td>${fp(a.mgp)}</td><td style="color:${col(b.mgp)}">${fp(b.mgp)}</td></tr>
+   <tr><td>Caída del margen en colones</td><td>—</td><td>${d?fp((1-b.mg/a.mg)*100):'0,00 %'}</td></tr></table></div>
+   <div class="mbars"><div class="mbar"><span class="lb">Antes</span><div class="tr"><div class="fl" style="width:${sc(a.mgp)}%;background:${col(a.mgp)}"></div><div class="pol" style="left:${sc(pol)}%"></div></div><span class="v">${fp(a.mgp)}</span></div>
+   <div class="mbar"><span class="lb">Después</span><div class="tr"><div class="fl" style="width:${sc(b.mgp)}%;background:${col(b.mgp)}"></div><div class="pol" style="left:${sc(pol)}%"></div></div><span class="v">${fp(b.mgp)}</span></div>
+   <div class="mut" style="font-size:12px"><span style="color:var(--coral)">|</span> Línea roja: política mínima ${pol} %. Confianza con este descuento: +${d/5*4}.</div></div>`;
+}
+
+/* ---------- Factura / cotización ---------- */
+function renderFactura(c,st,A){
+  const k=calc(c,st), F=st.fac, done=F.score!=null, v=F.vals||{}, res=F.res||{};
+  const tipo=st.cerrada?'Factura electrónica':'Cotización';
+  const inp=(id,ph)=>`<input type="text" inputmode="decimal" id="f_${id}" value="${esc(v[id]!=null?v[id]:'')}" placeholder="${ph||''}" ${done?'readonly':''} class="${res[id]===true?'fld-ok':(res[id]===false?'fld-bad':'')}">`;
+  A.innerHTML=`<div class="qhead">${tipo} · complete los campos (precios sin IVA; IVA 13 %)</div>
+   <div class="side2" style="margin-top:8px"><div class="doc"><div class="hd"><div><b>SoftConta CR S.A.</b><br><span class="mut">Emisor · documento de práctica, no válido como comprobante</span></div><div style="text-align:right"><b>${tipo}</b><br><span class="mut">Receptor: ${esc(c.empresa)}</span></div></div>
+    <div class="row" style="margin-bottom:8px"><label style="margin:0">Condición de venta</label><select id="f_cond" style="width:auto" ${done?'disabled':''} class="${res.cond===true?'fld-ok':(res.cond===false?'fld-bad':'')}"><option value="">Seleccione…</option><option value="contado" ${v.cond==='contado'?'selected':''}>Contado</option><option value="credito" ${v.cond==='credito'?'selected':''}>Crédito</option></select></div>
+    <div class="scroll"><table class="ftab"><tr><th>Detalle</th><th>Cant.</th><th>Precio unitario</th><th>Monto</th></tr>
+    ${k.L.map((l,i)=>`<tr><td style="min-width:150px">${esc(l.n)}</td><td>${inp('q'+i)}</td><td>${inp('p'+i)}</td><td>${inp('m'+i)}</td></tr>`).join('')}
+    <tr class="tot"><td colspan="3" style="text-align:right">Descuento (${k.d} %)</td><td>${inp('desc')}</td></tr>
+    <tr class="tot"><td colspan="3" style="text-align:right">Subtotal (venta neta)</td><td>${inp('sub')}</td></tr>
+    <tr class="tot"><td colspan="3" style="text-align:right">IVA 13 %</td><td>${inp('iva')}</td></tr>
+    <tr class="tot"><td colspan="3" style="text-align:right"><b>Total</b></td><td>${inp('tot')}</td></tr></table></div></div>
+    <div><div class="card soft" style="margin:0 0 10px"><h3 style="margin-top:0">${st.cerrada?'Pedido confirmado':'Lo que solicita el cliente'}</h3><table class="kv">${k.L.map(l=>`<tr><td>${esc(l.n)}</td><td>${l.q} ${l.q===1?'unidad':'unidades'}</td></tr>`).join('')}<tr><td>Descuento acordado</td><td>${k.d} %</td></tr><tr><td>Condición de pago</td><td>${PAGO_TXT[c.pago]}</td></tr></table></div>
+     <div class="card soft" style="margin:0"><h3 style="margin-top:0">Catálogo SoftConta (sin IVA)</h3><table class="kv">${Object.keys(CAT).map(x=>`<tr><td>${esc(CAT[x].n)}</td><td>${fm(CAT[x].p)}</td></tr>`).join('')}</table></div></div></div>
+   <div id="ffb"></div><div class="row" style="margin-top:12px" id="fact"></div>`;
+  if(done){ $('ffb').innerHTML=F.fbHTML||''; $('fact').innerHTML=`<button class="btn gold" id="bSig">Calcular mi comisión →</button>`; $('bSig').onclick=()=>{ st.stage='com'; guardarYRender(); }; return; }
+  if(F.att===1&&F.fbHTML) $('ffb').innerHTML=F.fbHTML;
+  $('fact').innerHTML=`<button class="btn teal" id="bChk">${F.att===0?'Revisar documento':'Revisar de nuevo (último intento)'}</button><span class="mut">Intento ${F.att+1} de 2</span>`;
+  $('bChk').onclick=()=>{
+    const vals={cond:$('f_cond').value}; k.L.forEach((l,i)=>{ ['q','p','m'].forEach(x=>vals[x+i]=$('f_'+x+i).value.trim()); }); ['desc','sub','iva','tot'].forEach(x=>vals[x]=$('f_'+x).value.trim());
+    const faltan=Object.keys(vals).filter(x=>vals[x]===''); if(faltan.length){ $('ffb').innerHTML=fbHTML('mid','Faltan datos','Complete todos los campos antes de revisar (use solo números, por ejemplo 650000).'); faltan.forEach(x=>$('f_'+x).classList.add('fld-bad')); return; }
+    const bad=Object.keys(vals).filter(x=>x!=='cond'&&!isFinite(num(vals[x]))); if(bad.length){ $('ffb').innerHTML=fbHTML('mid','Formato','Hay campos que no son números válidos. Escriba montos como 650000 o 650 000.'); bad.forEach(x=>$('f_'+x).classList.add('fld-bad')); return; }
+    F.att++; F.vals=vals; const r={}, msgs=[];
+    r.cond=vals.cond===c.pago; if(!r.cond) msgs.push('<b>Condición de venta:</b> revise lo pactado en el pedido: '+(c.pago==='credito'?'el cliente paga a 30 días (crédito).':'el cliente paga de contado por transferencia.'));
+    let linOK=true; k.L.forEach((l,i)=>{ r['q'+i]=near(num(vals['q'+i]),l.q); r['p'+i]=near(num(vals['p'+i]),l.p); r['m'+i]=near(num(vals['m'+i]),l.m); if(!(r['q'+i]&&r['p'+i]&&r['m'+i])) linOK=false; });
+    if(!linOK) msgs.push('<b>Líneas:</b> la cantidad sale del pedido, el precio unitario del catálogo (sin IVA) y el <b>monto = cantidad × precio unitario</b>.');
+    r.desc=near(num(vals.desc),k.desc); if(!r.desc) msgs.push('<b>Descuento:</b> suma de los montos × '+k.d+' % acordado.');
+    r.sub=near(num(vals.sub),k.sub); if(!r.sub) msgs.push('<b>Subtotal:</b> suma de los montos − descuento. Es la venta neta, sin IVA.');
+    r.iva=near(num(vals.iva),k.iva); if(!r.iva) msgs.push('<b>IVA:</b> subtotal × 13 % (Ley 9635). Se calcula sobre el precio ya descontado.');
+    r.tot=near(num(vals.tot),k.tot); if(!r.tot) msgs.push('<b>Total:</b> subtotal + IVA.');
+    F.res=r; const grupos=[r.cond,linOK,r.desc,r.sub,r.iva,r.tot], malos=grupos.filter(x=>!x).length;
+    if(malos===0){ F.score=F.att===1?3:2; F.fbHTML=fbHTML('good','Documento correcto · '+F.score+' / 3 pts',(st.cerrada?'La factura electrónica genera el <b>ingreso</b>, el <b>IVA por pagar</b> y '+(c.pago==='credito'?'la <b>cuenta por cobrar</b>.':'el <b>cobro en Bancos</b>.'):'La cotización está bien hecha; servirá si el cliente decide comprar.')); }
+    else if(F.att===1){ F.fbHTML=fbHTML('bad','Revise · '+malos+' '+(malos===1?'grupo con error':'grupos con errores'),'<ul class="fbl">'+msgs.map(m=>'<li>'+m+'</li>').join('')+'</ul>'); }
+    else { F.score=malos<=1?1:0; F.fbHTML=fbHTML('bad','Documento con errores · '+F.score+' / 3 pts','<ul class="fbl">'+msgs.map(m=>'<li>'+m+'</li>').join('')+'</ul><div style="margin-top:8px"><b>Valores correctos:</b> '+k.L.map(l=>l.q+' × '+fm(l.p)+' = '+fm(l.m)).join(' · ')+' · descuento '+fm(k.desc)+' · subtotal '+fm(k.sub)+' · IVA '+fm(k.iva)+' · total '+fm(k.tot)+' · condición '+PAGO_TXT[c.pago]+'.</div>'); }
+    guardarYRender();
+  };
+}
+/* ---------- Comisión ---------- */
+function renderComision(c,st,A){
+  const k=calc(c,st), C=st.com, done=C.score!=null, esp=st.cerrada?k.com:0;
+  A.innerHTML=`<div class="qhead">Comisión del vendedor</div>
+   <div class="note"><b>${c.com} %</b> de comisión sobre la venta <b>sin IVA</b>, que se gana cuando la venta se factura. ${st.cerrada?'Subtotal facturado: <span class="mono">'+fm(k.sub)+'</span>.':'En este caso usted emitió una <b>cotización</b> por <span class="mono">'+fm(k.sub)+'</span> + IVA.'}</div>
+   <div class="row" style="margin-top:12px"><label style="margin:0" for="c_val">Comisión ganada con este cliente (₡)</label><input type="text" inputmode="decimal" id="c_val" style="max-width:220px" value="${esc(C.vals.v||'')}" ${done?'readonly':''} class="${C.res===true?'fld-ok':(C.res===false?'fld-bad':'')}"></div>
+   <div id="cfb">${C.fbHTML||''}</div><div class="row" style="margin-top:12px" id="cact"></div>`;
+  if(done){ $('cact').innerHTML=`<button class="btn gold" id="bSig">${st.cerrada?'Registrar el asiento →':'¿Qué se registra en contabilidad? →'}</button>`; $('bSig').onclick=()=>{ st.stage='asi'; guardarYRender(); }; return; }
+  $('cact').innerHTML=`<button class="btn teal" id="bChk">${C.att===0?'Revisar comisión':'Revisar de nuevo (último intento)'}</button><span class="mut">Intento ${C.att+1} de 2</span>`;
+  $('bChk').onclick=()=>{ const raw=$('c_val').value.trim(), v=num(raw); if(raw===''||!isFinite(v)){ $('cfb').innerHTML=fbHTML('mid','Formato','Escriba un monto en colones (solo números).'); return; }
+    C.att++; C.vals={v:raw}; C.res=near(v,esp);
+    if(C.res){ C.score=C.att===1?2:1; C.fbHTML=fbHTML('good','Comisión correcta · '+C.score+' / 2 pts',st.cerrada?fm(k.sub)+' × '+c.com+' % = <b>'+fm(esp)+'</b>. Es un <b>gasto de ventas</b> para SoftConta y una deuda con usted hasta que se la paguen.':'Correcto: <b>₡0</b>. Sin factura no hay venta y sin venta no hay comisión.'); }
+    else { let why=st.cerrada?'La comisión = subtotal sin IVA × '+c.com+' %.':'Una cotización no es una venta: todavía no se gana comisión.';
+      if(st.cerrada&&near(v,Math.round(k.tot*c.com)/100)) why='Usó el total con IVA. El IVA no es ingreso de la empresa (se le debe a Hacienda): la comisión se calcula sobre el subtotal.';
+      if(st.cerrada&&near(v,Math.round(k.bruto*c.com)/100)&&k.desc>0) why='Usó el precio antes del descuento: la comisión se calcula sobre la venta neta (subtotal).';
+      if(C.att===1){ C.fbHTML=fbHTML('bad','Revise',why); }
+      else { C.score=0; C.fbHTML=fbHTML('bad','Comisión incorrecta · 0 / 2 pts',why+' Valor correcto: <b>'+fm(esp)+'</b>.'); } }
+    guardarYRender(); };
+}
+/* ---------- Asiento ---------- */
+function esperadoAsiento(c,st){ const k=calc(c,st); return {v:[{a:c.pago==='credito'?'CXC':'BAN',s:'d',m:k.tot},{a:'ING',s:'h',m:k.sub},{a:'IVAP',s:'h',m:k.iva}],c:[{a:'GCOM',s:'d',m:k.com},{a:'CPC',s:'h',m:k.com}],k:k}; }
+function evalAsiento(rows,exp){ const R=rows.filter(r=>r.a||r.d!==''||r.h!==''); if(R.length!==exp.length) return false;
+  const used=R.map(()=>false); return exp.every(e=>{ const i=R.findIndex((r,j)=>!used[j]&&r.a===e.a&&(e.s==='d'?(near(num(r.d),e.m)&&(r.h===''||num(r.h)===0)):(near(num(r.h),e.m)&&(r.d===''||num(r.d)===0)))); if(i<0) return false; used[i]=true; return true; }); }
+function pistasAsiento(c,st,rv,rc,E){ const m=[]; const has=(R,a)=>R.find(r=>r.a===a);
+  const debA=c.pago==='credito'?'CXC':'BAN', otra=c.pago==='credito'?'BAN':'CXC';
+  if(has(rv,otra)) m.push(c.pago==='credito'?'La venta fue a <b>crédito</b>: el cliente queda debiendo → <b>Cuentas por cobrar</b> (débito), no Bancos.':'La venta fue de <b>contado por transferencia</b>: el dinero entra a <b>Bancos</b> (débito), no a Cuentas por cobrar.');
+  if(!has(rv,debA)&&!has(rv,otra)) m.push('Falta el débito por el total de la factura ('+(c.pago==='credito'?'Cuentas por cobrar':'Bancos')+').');
+  const ing=has(rv,'ING'); if(!ing) m.push('Falta acreditar <b>Ingresos por ventas</b>.'); else if(near(num(ing.h),E.k.tot)) m.push('El ingreso se registra <b>sin IVA</b> (subtotal); el IVA no es de la empresa.'); else if(num(ing.d)>0) m.push('Los ingresos aumentan por el <b>Haber</b>.');
+  if(has(rv,'IVAS')) m.push('El IVA que usted cobra al cliente es <b>IVA por pagar</b> (pasivo con Hacienda); el IVA soportado es el que la empresa paga en sus compras.');
+  const iv=has(rv,'IVAP'); if(!iv&&!has(rv,'IVAS')) m.push('Falta el <b>IVA por pagar</b> al Haber (subtotal × 13 %).'); else if(iv&&num(iv.d)>0) m.push('IVA por pagar es un pasivo: aumenta por el <b>Haber</b>.');
+  const sd=rv.reduce((s,r)=>s+(num(r.d)||0),0), sh=rv.reduce((s,r)=>s+(num(r.h)||0),0); if(!near(sd,sh)) m.push('El asiento de venta no cuadra: Debe '+fm(sd)+' ≠ Haber '+fm(sh)+'.');
+  const g=has(rc,'GCOM'), p=has(rc,'CPC');
+  if(!g||!p) m.push('Comisión: débito a <b>Gasto por comisiones de ventas</b> y crédito a <b>Comisiones por pagar</b> (aún no se le ha pagado al vendedor).');
+  else if(!(near(num(g.d),E.k.com)&&near(num(p.h),E.k.com))) m.push('Comisión: el monto es '+c.com+' % del subtotal; el gasto va al Debe y la deuda al Haber.');
+  return m.length?m:['Revise cuentas, lados (Debe/Haber) y montos.']; }
+function renderAsiento(c,st,A){
+  const E=esperadoAsiento(c,st), S=st.asi, done=S.score!=null, v=S.vals||{};
+  const opts=sel=>`<option value="">Cuenta…</option>`+Object.keys(CUENTAS).map(x=>`<option value="${x}" ${sel===x?'selected':''}>${CUENTAS[x]}</option>`).join('');
+  const fila=(p,i)=>{ const r=(v[p]||[])[i]||{a:'',d:'',h:''}; return `<tr><td><select id="a_${p}${i}_a" ${done?'disabled':''}>${opts(r.a)}</select></td><td><input type="text" inputmode="decimal" id="a_${p}${i}_d" value="${esc(r.d)}" ${done?'readonly':''}></td><td><input type="text" inputmode="decimal" id="a_${p}${i}_h" value="${esc(r.h)}" ${done?'readonly':''}></td></tr>`; };
+  A.innerHTML=`<div class="qhead">Libro diario · registre la venta y la comisión</div>
+   <div class="note">Factura: subtotal <span class="mono">${fm(E.k.sub)}</span> · IVA <span class="mono">${fm(E.k.iva)}</span> · total <span class="mono">${fm(E.k.tot)}</span> · ${PAGO_TXT[c.pago]} · comisión ${c.com} % = <span class="mono">${fm(E.k.com)}</span></div>
+   <div class="grid2" style="margin-top:10px"><div class="doc"><b>Asiento 1 · Venta</b><div class="scroll"><table class="ftab"><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>${[0,1,2].map(i=>fila('v',i)).join('')}</table></div><div class="mut">// Venta de licencias y servicios según factura electrónica</div></div>
+   <div class="doc"><b>Asiento 2 · Comisión del vendedor</b><div class="scroll"><table class="ftab"><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>${[0,1].map(i=>fila('c',i)).join('')}</table></div><div class="mut">// Comisión de ${c.com} % sobre la venta sin IVA</div></div></div>
+   <div id="afb">${S.fbHTML||''}</div><div class="row" style="margin-top:12px" id="aact"></div>`;
+  if(done){ $('aact').innerHTML=`<button class="btn gold" id="bSig">Ver resultado del cliente →</button>`; $('bSig').onclick=()=>cerrarCliente(c,st); return; }
+  $('aact').innerHTML=`<button class="btn teal" id="bChk">${S.att===0?'Revisar asientos':'Revisar de nuevo (último intento)'}</button><span class="mut">Intento ${S.att+1} de 2</span>`;
+  $('bChk').onclick=()=>{ const leer=(p,n)=>[...Array(n).keys()].map(i=>({a:$('a_'+p+i+'_a').value,d:$('a_'+p+i+'_d').value.trim(),h:$('a_'+p+i+'_h').value.trim()}));
+    const rv=leer('v',3), rc=leer('c',2);
+    if([...rv,...rc].some(r=>(r.d!==''&&!isFinite(num(r.d)))||(r.h!==''&&!isFinite(num(r.h))))){ $('afb').innerHTML=fbHTML('mid','Formato','Los montos deben ser números (por ejemplo 870100).'); return; }
+    if([...rv,...rc].every(r=>!r.a)){ $('afb').innerHTML=fbHTML('mid','Faltan datos','Elija las cuentas y escriba los montos.'); return; }
+    S.att++; S.vals={v:rv,c:rc}; const vOK=evalAsiento(rv,E.v), cOK=evalAsiento(rc,E.c);
+    const sol='<div style="margin-top:8px"><b>Solución:</b> '+CUENTAS[E.v[0].a]+' D '+fm(E.k.tot)+' · Ingresos por ventas H '+fm(E.k.sub)+' · IVA por pagar H '+fm(E.k.iva)+' | Gasto por comisiones de ventas D '+fm(E.k.com)+' · Comisiones por pagar H '+fm(E.k.com)+'.</div>';
+    if(vOK&&cOK){ S.score=S.att===1?3:2; S.fbHTML=fbHTML('good','Asientos correctos · '+S.score+' / 3 pts','La venta quedó registrada: '+(c.pago==='credito'?'<b>Cuentas por cobrar</b> hasta que el cliente pague (luego: Bancos a Cuentas por cobrar).':'el dinero ya está en <b>Bancos</b>.')+' El IVA es un pasivo con Hacienda y la comisión, un gasto de ventas.'); }
+    else if(S.att===1){ S.fbHTML=fbHTML('bad','Revise · '+(vOK?'venta correcta, comisión con error':(cOK?'comisión correcta, venta con error':'ambos asientos con errores')),'<ul class="fbl">'+pistasAsiento(c,st,rv,rc,E).map(x=>'<li>'+x+'</li>').join('')+'</ul>'); }
+    else { S.score=Math.max(0,(vOK?2:0)+(cOK?1:0)-1); S.fbHTML=fbHTML('bad','Asientos con errores · '+S.score+' / 3 pts','<ul class="fbl">'+pistasAsiento(c,st,rv,rc,E).map(x=>'<li>'+x+'</li>').join('')+'</ul>'+sol); }
+    guardarYRender(); };
+}
+const NOASI=[
+ ['No se registra asiento: la cotización solo es una oferta. El registro nace cuando se emite la factura (ingreso, IVA por pagar y cuenta por cobrar o Bancos).',true],
+ ['Cuentas por cobrar al Debe e Ingresos por ventas al Haber, por el total cotizado.',false],
+ ['Gasto por comisiones al Debe y Comisiones por pagar al Haber, porque el vendedor ya trabajó.',false],
+ ['Bancos al Debe e Ingresos por ventas al Haber, para no olvidar la venta.',false]];
+function renderAsientoNo(c,st,A){
+  const S=st.asi, done=S.score!=null, ord=orden(c.key+'|noasi',NOASI.length);
+  A.innerHTML=`<div class="qhead">La venta no se cerró · ¿qué registra contabilidad por la cotización?</div><div class="opts">${ord.map((i,pos)=>`<button class="opt nas" data-i="${i}" ${done?'disabled':''} style="${done&&NOASI[i][1]?'border-color:var(--teal)':(done&&S.vals.i===i?'border-color:var(--coral)':'')}"><span class="k">${'ABCD'[pos]}</span><span>${esc(NOASI[i][0])}</span></button>`).join('')}</div><div id="afb">${S.fbHTML||''}</div><div class="row" style="margin-top:12px" id="aact"></div>`;
+  if(done){ $('aact').innerHTML=`<button class="btn gold" id="bSig">Ver resultado del cliente →</button>`; $('bSig').onclick=()=>cerrarCliente(c,st); return; }
+  A.querySelectorAll('.nas').forEach(b=>b.onclick=()=>{ if(S.score!=null) return; const i=+b.dataset.i; S.att=1; S.vals={i:i}; const ok=NOASI[i][1]; S.score=ok?3:0;
+    S.fbHTML=fbHTML(ok?'good':'bad',(ok?'Correcto':'Incorrecto')+' · '+S.score+' / 3 pts','En el ciclo contable solo se registran <b>transacciones</b>. La cotización y el pedido son documentos comerciales previos; la <b>factura electrónica</b> es la que origina el asiento de venta y la comisión.'); guardarYRender(); });
+}
+
+/* ---------- Cierre de la fase ---------- */
+function cerrarCliente(c,st){
+  if(DONE[c.key]) return;
+  const p=puntos(c,st), k=calc(c,st), conf=confNow(c,st);
+  const det={fase:c.key,sec:user.sec,cliente:c.empresa,tecnica:c.tecnica,
+    decisiones:st.picks.map((oi,t)=>({turno:t+1,opcion:oi,etiqueta:c.turns[t].o[oi].tag,pts:c.turns[t].o[oi].p,noEtica:!!c.turns[t].o[oi].eth})),
+    cierre:{tecnica:st.cie,nombre:CIERRES[st.cie].n,pts:p.cie},descuento:st.des,margenPct:Math.round(k.mgp*100)/100,confianza:conf,cerrada:!!st.cerrada,
+    venta:st.cerrada?{subtotal:k.sub,iva:k.iva,total:k.tot,comision:k.com,costo:k.costo}:{subtotal:0,iva:0,total:0,comision:0,costo:0,cotizacion:k.sub},
+    factura:{intentos:st.fac.att,pts:p.fac},comision:{intentos:st.com.att,pts:p.com},asiento:{intentos:st.asi.att,pts:p.asi},etica:p.eti===2,
+    pts:p,ind1:{s:p.ind1,t:8},ind2:{s:p.ind2,t:17}};
+  st.stage='fin'; det.st=JSON.parse(JSON.stringify(st));
+  DONE[c.key]=det;
+  postProg(user.name,MODULE_ID+'_'+c.key+'_paso',p.total,25);
+  const det2=Object.assign({},det); delete det2.st; postCaso(user.name,det2);
+  const nxt=CLIENTES.findIndex(x=>!DONE[x.key]);
+  if(nxt>=0){ ST=nuevoST(nxt); } else ST=null;
+  saveLocal(); lastConf=null;
+  if(nxt<0) finalizar(true); else render();
+}
+function renderRevision(c,d){
+  const A=$('act'); if(d.soloPuntaje){ A.innerHTML=fbHTML('mid','Fase calificada',`Puntaje guardado: <b>${d.pts.total} / 25</b>.`); return; }
+  const p=d.pts, nxt=CLIENTES.findIndex(x=>!DONE[x.key]);
+  const fila=(n,s,t)=>`<tr><td>${n}</td><td class="n">${s} / ${t}</td></tr>`;
+  A.innerHTML=`<div class="note ${p.total>=20?'good':(p.total>=15?'mid':'bad')}"><span class="tag">Resultado · ${esc(c.empresa)}</span><div class="row" style="align-items:flex-end;gap:16px"><span class="big">${p.total}</span><span class="mut" style="margin-bottom:8px">de 25 puntos · ${d.cerrada?'venta cerrada por '+fm(d.venta.subtotal)+' + IVA':'no cerró (cotización)'} · margen ${fp(d.margenPct)}</span></div></div>
+   <div class="grid2" style="margin-top:10px"><table class="tb"><tr><th colspan="2">Técnicas de venta (ind. 2)</th></tr>${fila('Diálogo · '+esc(c.tecnica),p.dlg,8)}${fila('Cierre · '+esc(d.cierre.nombre),p.cie,4)}${fila('Margen protegido · descuento '+d.descuento+' %',p.mar,3)}${fila('Ética',p.eti,2)}</table>
+   <table class="tb"><tr><th colspan="2">Venta y ciclo contable (ind. 1)</th></tr>${fila(d.cerrada?'Factura electrónica':'Cotización',p.fac,3)}${fila('Comisión',p.com,2)}${fila(d.cerrada?'Asientos de venta y comisión':'Registro contable de la cotización',p.asi,3)}</table></div>
+   ${d.etica?'':'<div class="note bad"><span class="tag">Ética comercial</span>Usó al menos una práctica engañosa o de presión abusiva. Aunque “ayude” a vender, la Ley 7472 protege al consumidor de la información falsa y de las prácticas abusivas: perdió los 2 puntos de ética.</div>'}
+   <div class="row" style="margin-top:12px">${nxt>=0?`<button class="btn gold" id="bNext">Atender al cliente ${nxt+1} →</button>`:`<button class="btn gold" id="bNext">Ver el tablero final →</button>`}</div>`;
+  $('bNext').onclick=()=>{ if(nxt>=0){ CUR=nxt; VIEW='cli'; } else VIEW='fin'; lastConf=null; render(); };
+}
+
+/* =================== FINAL =================== */
+function resumenFinal(){
+  const pc=CLIENTES.map(c=>{ const d=DONE[c.key]||{}; const p=d.pts||{total:0,ind1:0,ind2:0};
+    return {key:c.key,empresa:c.empresa,tecnica:c.tecnica,total:p.total||0,ind1:p.ind1||0,ind2:p.ind2||0,cerrada:!!d.cerrada,cierre:d.cierre?d.cierre.nombre:'—',descuento:d.descuento,margenPct:d.margenPct,confianza:d.confianza,subtotal:d.venta?d.venta.subtotal:0,iva:d.venta?d.venta.iva:0,comision:d.venta?d.venta.comision:0,etica:d.etica}; });
+  const cer=pc.filter(x=>x.cerrada), s1=pc.reduce((s,x)=>s+x.ind1,0), s2=pc.reduce((s,x)=>s+x.ind2,0);
+  return {fase:'final',sec:user.sec,total:s1+s2,ind1:{s:s1,t:32},ind2:{s:s2,t:68},ventas:cer.length,ingresos:cer.reduce((s,x)=>s+x.subtotal,0),ivaFacturado:cer.reduce((s,x)=>s+x.iva,0),comisiones:cer.reduce((s,x)=>s+x.comision,0),
+    margenProm:cer.length?Math.round(cer.reduce((s,x)=>s+x.margenPct,0)/cer.length*100)/100:0,salidas:salidas,porCliente:pc,fecha:now()};
+}
+function finalizar(stay){
+  const R=resumenFinal();
+  if(!finalSent&&!progDe(user.name).some(r=>String(r.Modulo)===MODULE_ID+'_final')){
+    finalSent=true;
+    postProg(user.name,MODULE_ID+'_ind1_ra_RA2-I1_paso',R.ind1.s,R.ind1.t);
+    postProg(user.name,MODULE_ID+'_ind2_ra_RA2-I2_paso',R.ind2.s,R.ind2.t);
+    postProg(user.name,MODULE_ID+'_final',R.total,100);
+    postCaso(user.name,R);
+  }
+  FINAL=R; ST=null; saveLocal(); attempt=false; mostrarBanner(); if(!stay) VIEW='fin'; render();
+}
+function renderBloqueado(fin){
+  $('app').innerHTML=`<div class="note mid noprint" style="margin-bottom:14px"><span class="tag">Actividad ya completada</span>Usted ya completó el Piso de Ventas (${new Date(String(fin.Timestamp)).toLocaleString('es-CR')}). Puede revisar su resultado e imprimirlo, pero no rehacer la actividad. Solo su docente puede habilitar un nuevo intento.</div><div id="main" class="printzone"></div>`;
+  renderTablero($('main'),FINAL,true);
+}
+function renderTablero(el,R,bloq){
+  const pct=x=>x.t?Math.round(x.s/x.t*100):0, n1=nivelDe(pct(R.ind1)), n2=nivelDe(pct(R.ind2));
+  const pc=R.porCliente||[];
+  el.innerHTML=`<div class="card noprint"><div class="row" style="justify-content:space-between"><div><span class="pill gold">Tablero del vendedor</span><h2 style="margin-top:8px">${esc(user.name)} · ${esc(R.sec||user.sec)}</h2></div><div style="text-align:right"><div class="big">${R.total}<span style="font-size:20px"> / 100</span></div><div class="mut">Puntaje final</div></div></div>
+    ${R.sinDetalle?'<div class="mut">Resumen recuperado de la hoja de progreso.</div>':`<div class="kpis" style="margin-top:12px">
+     <div class="kpi"><div class="l">Ventas cerradas</div><div class="v">${R.ventas} / 4</div><div class="s">clientes que compraron</div></div>
+     <div class="kpi"><div class="l">Ingresos</div><div class="v">${fm(R.ingresos)}</div><div class="s">ventas sin IVA</div></div>
+     <div class="kpi"><div class="l">IVA facturado</div><div class="v">${fm(R.ivaFacturado)}</div><div class="s">pasivo con Hacienda</div></div>
+     <div class="kpi"><div class="l">Comisiones</div><div class="v">${fm(R.comisiones)}</div><div class="s">ganadas por usted</div></div>
+     <div class="kpi"><div class="l">Margen promedio</div><div class="v">${fp(R.margenProm)}</div><div class="s">política mínima ${POLITICA} %</div></div>
+     <div class="kpi"><div class="l">Salidas de pantalla</div><div class="v">${R.salidas||0}</div><div class="s">registradas</div></div></div>`}</div>
+   <div class="grid2 noprint"><div class="card"><h3 style="margin-top:0">Rúbrica · RA 2</h3>${[[IND[0],R.ind1,n1],[IND[1],R.ind2,n2]].map(([d,x,n])=>`<div class="meter"><div class="lbl"><span>${d.nombre}</span><span class="mono">${x.s} / ${x.t} · ${pct(x)} %</span></div><div class="tr"><div class="fl" style="width:${pct(x)}%;background:${n===3?'var(--teal)':(n===2?'var(--gold)':'var(--coral)')}"></div></div><div style="margin-top:6px"><span class="lvl l${n}">${n} · ${NIVEL_TXT[n]}</span> <span class="mut">${d['n'+n]}</span></div></div>`).join('')}</div>
+    <div class="card"><h3 style="margin-top:0">Por cliente</h3><div class="scroll"><table class="tb"><tr><th>Cliente</th><th>Cierre</th><th>Desc.</th><th>Venta</th><th>Pts</th></tr>${pc.map(x=>`<tr><td><b>${esc(x.empresa)}</b><div class="mut">${esc(x.tecnica)}${x.etica===false?' · <span class="err">falta ética</span>':''}</div></td><td>${esc(x.cierre||'—')}</td><td class="n">${x.descuento!=null?x.descuento+' %':'—'}</td><td class="n">${x.cerrada?fm(x.subtotal):(x.cierre?'<span class="err">no cerró</span>':'—')}</td><td class="n">${x.total} / 25</td></tr>`).join('')}</table></div></div></div>
+   <div class="card noprint"><div class="row"><button class="btn gold" id="bPrint">Imprimir certificado</button><button class="btn ghost" id="bRank">Ver ranking del grupo</button></div><div id="rank"></div></div>
+   <div class="card noprint"><h3 style="margin-top:0">Ideas clave</h3><div class="mut" style="font-size:14px">Vender es <b>resolver un problema</b> del cliente. SPIN descubre la necesidad con preguntas; SNAP simplifica para clientes saturados; el retador enseña y Sandler califica; la venta consultiva asesora con cifras. Cada cierre afecta el <b>margen</b> y la confianza, y cada venta deja huella en el <b>ciclo contable</b>: cotización → pedido → factura electrónica → cuenta por cobrar o Bancos → cobro → comisión.</div></div>
+   ${certHTML(R,n1,n2,pct)}`;
+  $('bPrint').onclick=()=>window.print();
+  $('bRank').onclick=()=>verRanking(R);
+}
+function certHTML(R,n1,n2,pct){ return `<div class="cert"><div style="border:3px double #C9973F;padding:18px"><div style="font-size:12px;color:#555">CTP Mercedes Norte · Especialidad de Contabilidad · Gestión Comercial y de Ventas · 10°</div>
+  <h1>Certificado de resultado · Piso de Ventas</h1><div>RA 2: Demostrar el uso de técnicas modernas de ventas efectivas, aplicables a todo el comercio.</div>
+  <p style="margin-top:12px">Estudiante: <b>${esc(user.name)}</b> · Sección: <b>${esc(R.sec||user.sec)}</b> · Fecha: <b>${new Date(R.fecha||Date.now()).toLocaleDateString('es-CR')}</b></p>
+  <div class="sc">${R.total} / 100</div>
+  <table><tr><th>Indicador</th><th>Puntos</th><th>Nivel</th><th>Descriptor</th></tr><tr><td>${IND[0].nombre}</td><td>${R.ind1.s} / ${R.ind1.t} (${pct(R.ind1)} %)</td><td>${n1} · ${NIVEL_TXT[n1]}</td><td>${IND[0]['n'+n1]}</td></tr><tr><td>${IND[1].nombre}</td><td>${R.ind2.s} / ${R.ind2.t} (${pct(R.ind2)} %)</td><td>${n2} · ${NIVEL_TXT[n2]}</td><td>${IND[1]['n'+n2]}</td></tr></table>
+  ${R.sinDetalle?'':`<table><tr><th>Cliente</th><th>Técnica</th><th>Cierre</th><th>Venta sin IVA</th><th>Puntos</th></tr>${(R.porCliente||[]).map(x=>`<tr><td>${esc(x.empresa)}</td><td>${esc(x.tecnica)}</td><td>${esc(x.cierre)}</td><td>${x.cerrada?fm(x.subtotal):'No cerró'}</td><td>${x.total} / 25</td></tr>`).join('')}</table>
+  <p>Ventas cerradas: ${R.ventas} · Ingresos: ${fm(R.ingresos)} · Comisiones: ${fm(R.comisiones)} · Margen promedio: ${fp(R.margenProm)}</p>`}
+  <p style="margin-top:30px">_____________________________<br>Prof. Gerardo González González</p></div></div>`; }
+function verRanking(R){
+  $('rank').innerHTML='<p class="mut">Cargando ranking…</p>';
+  Promise.all([sheetGet(SH_PROG),sheetGet(SH_DATA)]).then(([p,c])=>{ PROG=p; CASOS=c;
+    const sec=R.sec||user.sec, by={};
+    PROG.filter(r=>String(r.Modulo)===MODULE_ID+'_final').forEach(r=>{ const n=norm(r.Estudiante); if(String(r.Timestamp)<=resetCut(r.Estudiante)) return; by[n]={nombre:String(r.Estudiante).trim(),score:+r.Score||0,ts:String(r.Timestamp)}; });
+    Object.values(by).forEach(x=>{ const d=detalles(x.nombre).filter(o=>o.fase==='final').pop(); x.sec=d?d.sec:null; x.ingresos=d?d.ingresos:0; x.ventas=d?d.ventas:null; });
+    const L=Object.values(by).filter(x=>x.sec===sec).sort((a,b)=>b.score-a.score||b.ingresos-a.ingresos);
+    const corto=n=>{ const w=n.split(/\s+/); return w[0]+(w[1]?' '+w[1][0]+'.':''); };
+    $('rank').innerHTML=L.length?`<h3>Ranking · sección ${esc(sec)}</h3><div class="scroll"><table class="tb"><tr><th>#</th><th>Vendedor/a</th><th>Ventas</th><th>Ingresos</th><th>Puntaje</th></tr>${L.map((x,i)=>`<tr class="${norm(x.nombre)===norm(user.name)?'me':''}"><td class="n">${i+1}</td><td>${esc(corto(x.nombre))}</td><td class="n">${x.ventas!=null?x.ventas+' / 4':'—'}</td><td class="n">${fm(x.ingresos)}</td><td class="n">${x.score}</td></tr>`).join('')}</table></div><div class="mut">Ordenado por puntaje y luego por ingresos. Solo intentos finalizados.</div>`:'<p class="mut">Todavía no hay resultados finales en su sección.</p>'; });
+}
+
+/* =================== PANEL DOCENTE =================== */
+function panel(){ const pin=prompt('PIN del panel docente:'); if(pin===null) return; if(pin!==TEACHER_PIN){ toast('PIN incorrecto.'); return; }
+  attempt=false; mostrarBanner(); $('modal').classList.add('on'); $('modalIn').innerHTML='<div class="card">Cargando datos…</div>';
+  Promise.all([sheetGet(SH_PROG),sheetGet(SH_DATA)]).then(([p,c])=>{ PROG=p; CASOS=c; panelRender(SECCIONES[0]); }); }
+function datosEst(nombre){
+  const mine=progDe(nombre), dets=detalles(nombre), g=k=>{ const r=mine.filter(x=>String(x.Modulo)===k).pop(); return r?+r.Score:null; };
+  const fases=CLIENTES.map(c=>g(MODULE_ID+'_'+c.key+'_paso')); const fin=g(MODULE_ID+'_final');
+  let i1=g(MODULE_ID+'_ind1_ra_RA2-I1_paso'), i2=g(MODULE_ID+'_ind2_ra_RA2-I2_paso'), t1=32, t2=68, parcial=false;
+  if(i1==null||i2==null){ const ph=dets.filter(d=>/^cliente\d$/.test(d.fase)); const seen={}; let a=0,b=0,n=0; ph.forEach(d=>{ if(seen[d.fase]) return; seen[d.fase]=1; n++; a+=d.ind1?d.ind1.s:0; b+=d.ind2?d.ind2.s:0; }); i1=a; i2=b; t1=8*n; t2=17*n; parcial=true; }
+  const fd=dets.filter(d=>d.fase==='final').pop();
+  return {fases:fases,fin:fin,i1:i1,i2:i2,t1:t1,t2:t2,parcial:parcial,salidas:salidasDe(nombre),fd:fd,dets:dets};
+}
+function panelRender(sec){
+  const est={}; CASOS.forEach(r=>{ if(String(r.CasoId)!==MODULE_ID+'_detalle') return; let o={}; try{ o=JSON.parse(r.Texto); }catch(e){} if(o.sec===sec) est[norm(r.Nombre)]=String(r.Nombre).trim(); });
+  const nombres=Object.values(est).sort((a,b)=>a.localeCompare(b,'es'));
+  const lv=(s,t,ix)=>{ if(!t) return '<span class="mut">—</span>'; const p=Math.round(s/t*100), n=nivelDe(p); return `<span class="lvl l${n}" title="${esc(IND[ix]['n'+n])}">${n} · ${NIVEL_TXT[n]}</span><div class="mut">${s}/${t} · ${p} %</div>`; };
+  const filas=nombres.map(n=>({n:n,D:datosEst(n)}));
+  $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Piso de Ventas</h2><button class="btn ghost sm" style="margin-left:auto" id="pClose">Cerrar</button></div>
+   <div class="row" style="margin:12px 0">${SECCIONES.map(s=>`<button class="btn sm ${s===sec?'gold':'ghost'}" data-sec="${s}">${s}</button>`).join('')}<button class="btn teal sm" id="pCsv" style="margin-left:auto">Exportar CSV</button></div>
+   <div class="scroll"><table class="tb"><tr><th>Estudiante</th>${CLIENTES.map(c=>`<th>C${c.num}<div style="font-weight:400;font-size:11px">${esc(c.tecnica)}</div></th>`).join('')}<th>Total</th><th>Ind. 1 · ciclo contable</th><th>Ind. 2 · técnicas</th><th>Salidas</th><th>Estado</th><th></th></tr>
+   ${filas.map(({n,D})=>`<tr><td><b>${esc(n)}</b></td>${D.fases.map(x=>`<td class="n">${x==null?'—':x+'/25'}</td>`).join('')}<td class="n"><b>${D.fin!=null?D.fin+'/100':'—'}</b></td><td>${lv(D.i1,D.t1,0)}</td><td>${lv(D.i2,D.t2,1)}</td><td class="n">${D.salidas}</td><td>${D.fin!=null?'<span class="pill teal">Finalizado</span>':(D.fases.some(x=>x!=null)?'<span class="pill gold">En curso'+(D.parcial?' · parcial':'')+'</span>':'<span class="pill">Sin datos</span>')}</td><td><button class="btn coral sm" data-reset="${esc(n)}">Repetir</button></td></tr>`).join('')||`<tr><td colspan="${CLIENTES.length+7}" class="mut">Sin datos en esta sección.</td></tr>`}</table></div>
+   <div class="mut" style="margin-top:8px">Niveles: Logrado ≥ 80 % · En proceso 60–79 % · No logrado &lt; 60 %. “Repetir” registra un reinicio: el estudiante podrá hacer la actividad de nuevo (sus resultados anteriores quedan en el historial).</div></div>
+   <div class="card"><h3 style="margin-top:0">Rúbrica por indicador</h3>${rubricaTabla()}</div>`;
+  $('pClose').onclick=()=>{ $('modal').classList.remove('on'); if(user&&ST) { attempt=true; mostrarBanner(); } };
+  $('modalIn').querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>panelRender(b.dataset.sec));
+  $('modalIn').querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{ const n=b.dataset.reset;
+    if(!b.dataset.conf){ b.dataset.conf='1'; b.textContent='¿Confirmar reinicio?'; setTimeout(()=>{ if(b.isConnected){ b.dataset.conf=''; b.textContent='Repetir'; } },5000); return; }
+    postProg(n,MODULE_ID+'_reset',0,0); toast('Reinicio registrado para '+n+'.'); panelRender(sec); });
+  $('pCsv').onclick=()=>{ const rows=[['Estudiante','Sección'].concat(CLIENTES.map(c=>'Cliente '+c.num+' ('+c.tecnica+') /25'),['Total /100','Ind1 puntos','Ind1 %','Ind1 nivel','Ind2 puntos','Ind2 %','Ind2 nivel','Ventas cerradas','Ingresos','Comisiones','Margen promedio %','Salidas de pantalla','Estado'])];
+    filas.forEach(({n,D})=>{ const p1=D.t1?Math.round(D.i1/D.t1*100):0, p2=D.t2?Math.round(D.i2/D.t2*100):0;
+      rows.push([n,sec].concat(D.fases.map(x=>x==null?'':x),[D.fin==null?'':D.fin,D.i1+'/'+D.t1,p1,D.t1?nivelDe(p1)+' '+NIVEL_TXT[nivelDe(p1)]:'',D.i2+'/'+D.t2,p2,D.t2?nivelDe(p2)+' '+NIVEL_TXT[nivelDe(p2)]:'',D.fd?D.fd.ventas:'',D.fd?D.fd.ingresos:'',D.fd?D.fd.comisiones:'',D.fd?D.fd.margenProm:'',D.salidas,D.fin!=null?'Finalizado':'En curso'])); });
+    const csv='﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='PisoDeVentas_'+sec+'.csv'; document.body.appendChild(a); a.click(); a.remove(); };
+}
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+
+window.__pv={CLIENTES:CLIENTES,CAT:CAT,calc:calc,puntos:puntos,confNow:confNow,getST:()=>ST,getDONE:()=>DONE,UMBRAL:UMBRAL};
+portada();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organizador de Eventos · Décimo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#050506; --card:#0e0e11; --card2:#15151a; --card3:#1c1c22; --line:#2a2a31; --line2:#3a3a44; --tx:#ECE9E1; --mut:#9b978d; --gold:#C9973F; --gold2:#F4DD7A; --teal:#2FC2AD; --coral:#EF6A5B; --blue:#5B8DEF;
+  --ff:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace; }
+*{ box-sizing:border-box; }
+html{ scroll-padding-top:72px; }
+html,body{ margin:0; background:var(--bg); color:var(--tx); font-family:var(--ff); font-size:15px; line-height:1.5; }
+body{ overflow-x:hidden; }
+button,input,select{ font-family:inherit; font-size:14px; }
+a{ color:var(--gold2); }
+.top{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:12px; padding:10px 18px; background:rgba(5,5,6,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+.logo{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:grid; place-items:center; color:#1a1206; font-weight:700; font-size:13px; flex:0 0 auto; }
+.top h1{ font-size:16px; margin:0; font-weight:600; letter-spacing:.2px; }
+.top .sub{ font-size:12px; color:var(--mut); }
+.top .who{ margin-left:auto; text-align:right; font-size:12.5px; color:var(--mut); }
+.top .who b{ color:var(--tx); font-weight:600; }
+.wrap{ width:100%; max-width:1600px; margin:0 auto; padding:18px 22px 70px; }
+@media(max-width:600px){ .wrap{ padding:12px 12px 60px; } .top{ padding:8px 12px; } .top .sub{ display:none; } }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px; }
+@media(max-width:600px){ .card{ padding:14px; border-radius:14px; } }
+.card.soft{ background:var(--card2); }
+h2{ margin:0 0 6px; font-size:22px; font-weight:600; }
+h3{ margin:14px 0 8px; font-size:16px; font-weight:600; color:var(--gold2); }
+.mut{ color:var(--mut); font-size:13px; }
+.mono{ font-family:var(--mono); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid{ display:grid; gap:16px; }
+.g2{ grid-template-columns:repeat(2,minmax(0,1fr)); } .g3{ grid-template-columns:repeat(3,minmax(0,1fr)); } .g4{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+.gx{ grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); }
+@media(max-width:1100px){ .g4{ grid-template-columns:repeat(2,minmax(0,1fr)); } .gx{ grid-template-columns:minmax(0,1fr); } }
+@media(max-width:760px){ .g2,.g3,.g4{ grid-template-columns:minmax(0,1fr); } }
+.btn{ border:1px solid transparent; border-radius:11px; padding:10px 16px; font-weight:600; cursor:pointer; background:var(--card3); color:var(--tx); transition:transform .12s, background .2s, opacity .2s; }
+.btn:hover{ transform:translateY(-1px); }
+.btn.gold{ background:linear-gradient(135deg,var(--gold),#e0b357); color:#1a1206; }
+.btn.teal{ background:var(--teal); color:#03201b; }
+.btn.ghost{ background:transparent; border-color:var(--line2); }
+.btn.coral{ background:var(--coral); color:#260704; }
+.btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+.btn.sm{ padding:6px 11px; font-size:12.5px; border-radius:9px; }
+input[type=text],select{ width:100%; background:var(--card2); color:var(--tx); border:1px solid var(--line2); border-radius:10px; padding:10px 12px; }
+input:focus,select:focus{ outline:none; border-color:var(--gold); }
+input[readonly]{ opacity:.85; }
+label.lb{ display:block; font-size:13px; font-weight:600; margin:10px 0 4px; color:var(--mut); }
+.pill{ display:inline-block; padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:var(--card3); border:1px solid var(--line2); color:var(--tx); }
+.pill.gold{ background:rgba(201,151,63,.15); border-color:rgba(201,151,63,.45); color:var(--gold2); }
+.pill.teal{ background:rgba(47,194,173,.12); border-color:rgba(47,194,173,.45); color:var(--teal); }
+.pill.coral{ background:rgba(239,106,91,.12); border-color:rgba(239,106,91,.45); color:var(--coral); }
+.note{ border-radius:12px; padding:11px 14px; font-size:13.5px; margin:10px 0; border:1px solid var(--line2); background:var(--card2); }
+.note.ok{ border-color:rgba(47,194,173,.5); background:rgba(47,194,173,.08); }
+.note.bad{ border-color:rgba(239,106,91,.55); background:rgba(239,106,91,.08); }
+.note.gold{ border-color:rgba(201,151,63,.5); background:rgba(201,151,63,.08); }
+.ok-t{ color:var(--teal); font-weight:600; } .bad-t{ color:var(--coral); font-weight:600; }
+.hidden{ display:none !important; }
+/* stepper */
+.steps{ display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:14px; scrollbar-width:thin; }
+.st{ flex:1 0 132px; min-width:132px; border:1px solid var(--line); background:var(--card); border-radius:12px; padding:9px 12px; cursor:pointer; text-align:left; color:var(--tx); transition:border-color .2s, background .2s; }
+.st .n{ font-family:var(--mono); font-size:11px; color:var(--mut); }
+.st .t{ font-size:13px; font-weight:600; display:block; }
+.st .s{ font-size:11.5px; color:var(--mut); }
+.st.cur{ border-color:var(--gold); background:rgba(201,151,63,.08); }
+.st.done .s{ color:var(--teal); }
+.st.lock{ opacity:.4; cursor:not-allowed; }
+/* meter */
+.meter{ margin:8px 0; }
+.meter .lbl{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; gap:8px; }
+.meter .tr{ height:10px; background:var(--card3); border-radius:6px; overflow:hidden; }
+.meter .fl{ height:100%; width:0; border-radius:6px; transition:width 1s cubic-bezier(.2,.8,.2,1); background:linear-gradient(90deg,var(--gold),var(--gold2)); }
+/* tokens */
+.tray{ display:flex; flex-wrap:wrap; gap:8px; min-height:56px; padding:10px; border:1px dashed var(--line2); border-radius:12px; background:var(--card2); }
+.tray.empty::after{ content:'(todo ubicado — toque una ficha ubicada y luego esta bandeja para devolverla)'; color:var(--mut); font-size:12px; }
+.tok{ display:inline-flex; align-items:center; gap:8px; padding:8px 11px; border-radius:11px; background:var(--card3); border:1px solid var(--line2); color:var(--tx); cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; text-align:left; font-size:13px; line-height:1.3; transition:border-color .15s, box-shadow .15s, transform .15s; }
+.tok small{ display:block; color:var(--mut); font-size:11px; }
+.tok:hover{ border-color:var(--gold); }
+.tok.sel{ border-color:var(--gold2); box-shadow:0 0 0 3px rgba(244,221,122,.25); transform:translateY(-1px); }
+.tok.ok{ border-color:var(--teal); } .tok.bad{ border-color:var(--coral); }
+.tok .ic{ width:26px; height:26px; flex:0 0 auto; }
+.dragghost{ position:fixed; z-index:200; pointer-events:none; padding:8px 12px; border-radius:11px; background:var(--gold); color:#1a1206; font-weight:600; font-size:13px; box-shadow:0 10px 30px rgba(0,0,0,.5); transform:translate(-50%,-120%); max-width:260px; }
+.armed [data-slot]{ cursor:copy; }
+.armed .bin, .armed .sl-rect{ animation:pulse 1.4s ease-in-out infinite; }
+@keyframes pulse{ 50%{ stroke:var(--gold2); border-color:var(--gold2); } }
+.hint{ font-size:12.5px; color:var(--mut); }
+/* bins */
+.bins{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+@media(max-width:600px){ .bins{ grid-template-columns:1fr; } }
+.bin{ border:1.5px dashed var(--line2); border-radius:14px; padding:12px; min-height:150px; background:var(--card2); transition:border-color .2s; }
+.bin h4{ margin:0 0 4px; font-size:15px; }
+.bin .d{ font-size:12px; color:var(--mut); margin-bottom:8px; }
+.bin .lst{ display:flex; flex-direction:column; gap:6px; }
+.bin.P h4{ color:var(--gold2); } .bin.E h4{ color:var(--teal); }
+/* option cards */
+.opts{ display:flex; flex-direction:column; gap:7px; }
+.opt{ text-align:left; background:var(--card2); border:1px solid var(--line2); border-radius:11px; padding:9px 12px; color:var(--tx); cursor:pointer; font-size:13.5px; line-height:1.4; transition:border-color .15s, background .15s; }
+.opt:hover{ border-color:var(--gold); }
+.opt.sel{ border-color:var(--gold2); background:rgba(201,151,63,.12); }
+.opt.ok{ border-color:var(--teal); background:rgba(47,194,173,.1); }
+.opt.bad{ border-color:var(--coral); background:rgba(239,106,91,.1); }
+.opt:disabled{ cursor:default; }
+.cat{ background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:12px; }
+.cat .h{ font-weight:600; font-size:14px; margin-bottom:8px; color:var(--gold2); display:flex; gap:8px; align-items:center; }
+.cat .h .num{ font-family:var(--mono); font-size:11px; color:var(--mut); }
+/* program list */
+.prog{ display:flex; flex-direction:column; gap:8px; }
+.blk{ display:grid; grid-template-columns:64px 1fr auto; align-items:center; gap:10px; background:var(--card2); border:1px solid var(--line2); border-radius:12px; padding:8px 10px; touch-action:none; user-select:none; -webkit-user-select:none; cursor:grab; transition:border-color .15s, transform .2s, background .2s; }
+.blk .h{ font-family:var(--mono); color:var(--gold2); font-size:13px; }
+.blk .t{ font-size:14px; }
+.blk .ud{ display:flex; gap:4px; }
+.blk .ud button{ width:34px; height:34px; border-radius:9px; border:1px solid var(--line2); background:var(--card3); color:var(--tx); cursor:pointer; font-size:14px; }
+.blk.sel{ border-color:var(--gold2); box-shadow:0 0 0 3px rgba(244,221,122,.2); }
+.blk.ok{ border-color:var(--teal); } .blk.bad{ border-color:var(--coral); }
+.blk.drop{ background:rgba(201,151,63,.12); }
+/* svg plans */
+.plan{ width:100%; overflow-x:auto; border-radius:14px; border:1px solid var(--line); background:#0a0a0d; }
+.plan svg{ display:block; width:100%; height:auto; min-width:600px; max-height:74vh; }
+.plan.small svg{ min-width:520px; }
+[data-slot]{ cursor:pointer; }
+svg [data-slot]:focus{ outline:none; }
+svg [data-slot]:focus .sl-rect{ stroke:var(--gold2); }
+[data-occ]{ touch-action:none; }
+.legend{ display:flex; flex-wrap:wrap; gap:10px; font-size:12px; color:var(--mut); margin-top:8px; }
+/* checklist */
+.chk{ display:flex; gap:10px; align-items:flex-start; padding:9px 11px; border:1px solid var(--line2); border-radius:11px; background:var(--card2); margin:6px 0; cursor:pointer; font-size:13.5px; }
+.chk input{ margin-top:3px; width:18px; height:18px; accent-color:var(--gold); flex:0 0 auto; }
+.chk.ok{ border-color:var(--teal); } .chk.bad{ border-color:var(--coral); }
+/* items feedback */
+.fb{ list-style:none; padding:0; margin:8px 0 0; }
+.fb li{ padding:8px 10px 8px 34px; border-radius:10px; margin:5px 0; position:relative; font-size:13.5px; background:var(--card2); border:1px solid var(--line); }
+.fb li::before{ position:absolute; left:10px; top:8px; font-weight:700; font-family:var(--mono); }
+.fb li.ok::before{ content:'✓'; color:var(--teal); } .fb li.bad::before{ content:'✗'; color:var(--coral); }
+.fb li.bad{ border-color:rgba(239,106,91,.45); }
+.fb li .why{ display:block; color:var(--mut); font-size:12.5px; margin-top:2px; }
+.fb li.bad .why{ color:#f2b3aa; }
+/* impr cards */
+.imp{ border:1px solid var(--line2); border-radius:16px; padding:18px; background:linear-gradient(160deg,var(--card2),var(--card)); animation:rise .35s ease; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+.imp .clock{ font-family:var(--mono); color:var(--gold2); font-size:12px; }
+.dots{ display:flex; gap:6px; margin:8px 0 12px; }
+.dots i{ width:28px; height:6px; border-radius:4px; background:var(--card3); display:block; }
+.dots i.d3{ background:var(--teal); } .dots i.d1{ background:var(--gold); } .dots i.d0{ background:var(--coral); } .dots i.cur{ outline:1px solid var(--gold2); }
+/* gauge */
+.gauge{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+.gauge svg{ width:130px; height:130px; flex:0 0 auto; }
+.gauge circle.v{ transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1); }
+/* tables */
+.tb{ width:100%; border-collapse:collapse; font-size:13px; }
+.tb th,.tb td{ border-bottom:1px solid var(--line); padding:7px 8px; text-align:left; vertical-align:top; }
+.tb th{ color:var(--mut); font-weight:600; font-size:12px; }
+.tb td.c,.tb th.c{ text-align:center; }
+.lvl{ display:inline-block; padding:2px 8px; border-radius:8px; font-size:11.5px; font-weight:600; }
+.lvl.l3{ background:rgba(47,194,173,.15); color:var(--teal); } .lvl.l2{ background:rgba(201,151,63,.15); color:var(--gold2); } .lvl.l1{ background:rgba(239,106,91,.15); color:var(--coral); }
+.rub td.on{ outline:2px solid var(--gold); outline-offset:-2px; background:rgba(201,151,63,.07); }
+.scroll{ overflow-x:auto; }
+/* banner + toast + modal */
+#banner{ position:fixed; left:0; right:0; bottom:0; z-index:90; background:var(--coral); color:#1f0503; font-weight:700; text-align:center; padding:9px 12px; font-size:14px; display:none; }
+#toast{ position:fixed; left:50%; bottom:56px; transform:translateX(-50%); background:var(--card3); border:1px solid var(--gold); color:var(--tx); padding:10px 16px; border-radius:12px; font-size:13.5px; z-index:120; display:none; max-width:92vw; }
+#modal{ position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.82); display:none; overflow:auto; padding:20px 12px; }
+#modal.on{ display:block; }
+#modalIn{ max-width:1500px; margin:0 auto; }
+footer{ text-align:center; color:var(--mut); font-size:12px; padding:20px 12px 40px; }
+footer a{ color:var(--mut); }
+.case{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:8px; }
+.guest{ background:var(--card2); border:1px solid var(--line); border-radius:12px; padding:9px 11px; font-size:13px; }
+.guest b{ display:block; font-size:13.5px; }
+.guest .r{ font-family:var(--mono); font-size:11px; color:var(--gold2); }
+.print-only{ display:none; }
+@media print{
+  @page{ margin:14mm; }
+  html,body{ background:#fff !important; color:#111 !important; }
+  .top,.steps,footer,.noprint,#banner,#toast{ display:none !important; }
+  .wrap{ padding:0; max-width:none; }
+  .card{ background:#fff !important; border:1px solid #bbb; color:#111; break-inside:avoid; }
+  .card.soft{ background:#fff !important; }
+  h2,h3{ color:#111 !important; } .mut{ color:#444 !important; }
+  .tb th,.tb td{ border-color:#ccc; color:#111; }
+  .lvl{ border:1px solid #888; color:#111 !important; background:#fff !important; }
+  .plan{ border-color:#bbb; background:#fff; } .plan svg{ min-width:0 !important; }
+  .print-only{ display:block; }
+  .meter .tr{ background:#eee; border:1px solid #ccc; } .meter .fl{ background:#888 !important; }
+  .note{ background:#fff !important; color:#111; border-color:#bbb; }
+  .fb li{ background:#fff; color:#111; } .fb li .why{ color:#333 !important; }
+}
+</style>
+</head>
+<body>
+<div class="top"><div class="logo">RA3</div><div><h1>Organizador de Eventos</h1><div class="sub">Protocolo y etiqueta · Gestión Comercial y de Ventas · 10° · CTP Mercedes Norte</div></div><div class="who" id="who"></div></div>
+<div class="wrap" id="app"></div>
+<footer class="noprint">Organizador de Eventos · Especialidad de Contabilidad · CTP Mercedes Norte · <a href="#" id="lnkDocente">Panel docente</a></footer>
+<div id="banner" role="alert"></div>
+<div id="toast" role="status"></div>
+<div id="modal"><div id="modalIn"></div></div>
+<script>
+(function(){
+'use strict';
+/* =================== CONFIGURACIÓN =================== */
+const SHEET_API_URL="https://script.google.com/macros/s/AKfycbzMGf_Gpf6UWswFPSqEBMdq-93GxGkrURsT4jtO9Jaz8yT5gyMMtp1btlcDZjRCeuAb/exec";
+const TEACHER_PIN="9986", MODULE_ID="orgeventos10", SH_PROG="Progreso", SH_DATA="Casos";
+const SECCIONES=["10-1","10-2","10-3","10-4","Docente"];
+
+/* =================== UTILIDADES =================== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const now=()=>new Date().toISOString();
+const tsN=s=>{ const t=Date.parse(s); return isNaN(t)?0:t; };
+function toast(t){ const e=$('toast'); e.textContent=t; e.style.display='block'; clearTimeout(e._t); e._t=setTimeout(()=>e.style.display='none',3200); }
+function seedRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return function(){ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); return ((h^=h>>>16)>>>0)/4294967296; }; }
+function orden(key,n){ const r=seedRand(norm(user.name)+'|'+key); const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const nivelDe=p=>p>=80?3:(p>=60?2:1);
+const NIVEL_TXT={3:'Logrado',2:'En proceso',1:'No logrado'};
+const pct=(s,t)=>t?Math.round(s/t*1000)/10:0;
+
+/* =================== PUENTE SHEETS =================== */
+function jsonp(url){ return new Promise(res=>{ const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5); const s=document.createElement('script');
+  window[cb]=d=>{ res(d); delete window[cb]; s.remove(); }; s.onerror=()=>{ res({rows:[]}); delete window[cb]; s.remove(); };
+  s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb; document.body.appendChild(s); setTimeout(()=>{ if(window[cb]){ res({rows:[]}); delete window[cb]; s.remove(); } },12000); }); }
+function sheetGet(n){ return jsonp(SHEET_API_URL+'?sheet='+encodeURIComponent(n)).then(d=>(d&&d.rows)?d.rows:[]); }
+function sheetPost(n,row){ // contrato JSON del doPost {sheet,row:[...]} con Content-Type text/plain. NO cambiar.
+  return fetch(SHEET_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:n,row:Object.keys(row).map(k=>row[k])}),keepalive:true}).catch(()=>{}); }
+function postProg(est,mod,score,total){ return sheetPost(SH_PROG,{Timestamp:now(),Estudiante:est,Modulo:mod,Score:String(score),Total:String(total)}); }
+function postCaso(obj){ return sheetPost(SH_DATA,{Timestamp:now(),CasoId:MODULE_ID+'_detalle',Nombre:user.name,Texto:JSON.stringify(obj)}); }
+function nombrePortal(){ try{ return (new URLSearchParams(location.search).get('nombre')||'').trim()||null; }catch(e){ return null; } }
+
+/* =================== CONTENIDO (programa MEP · RA 3) =================== */
+const INDS=[
+ {id:'ind1',cod:'RA3-I1',nombre:'Diferencia las características del protocolo y la etiqueta.',
+  n3:'Distingue con precisión las normas de protocolo (orden del evento) y de etiqueta (conducta personal) y elige una presentación personal y un estilo profesional adecuados.',
+  n2:'Distingue la mayoría de las situaciones, con algunas confusiones entre protocolo y etiqueta o en la presentación personal.',
+  n1:'Confunde con frecuencia protocolo y etiqueta; su presentación personal o su trato no se ajustan al evento.'},
+ {id:'ind2',cod:'RA3-I2',nombre:'Aplica las Normas de Protocolo y Etiqueta en un evento institucional.',
+  n3:'Organiza el programa, la mesa principal por precedencia, los símbolos patrios y la mesa del refrigerio según las normas, y resuelve imprevistos con criterio.',
+  n2:'Aplica parcialmente las normas: comete errores en el orden del programa, la precedencia, la bandera o los utensilios.',
+  n1:'No aplica las normas básicas del evento: orden, precedencia, símbolos patrios o servicio de mesa.'},
+ {id:'ind3',cod:'RA3-I3',nombre:'Implementa las normas atendiendo la Ley 7600 (accesibilidad) y la atención a la persona adulta mayor.',
+  n3:'Garantiza accesibilidad (rampa y rutas libres, ubicación adecuada) y trato respetuoso: pregunta antes de ayudar y habla directamente con la persona.',
+  n2:'Atiende algunas condiciones de accesibilidad o de trato, pero omite otras importantes.',
+  n1:'Omite las condiciones de accesibilidad de la Ley 7600 o da un trato inadecuado a la persona con discapacidad o adulta mayor.'}];
+
+const INV={
+ dCol:{n:'MSc. Ana Lucía Mora Castro',c:'Directora del CTP Mercedes Norte',s1:'Directora',s2:'del colegio',p:'Anfitriona · preside el acto'},
+ dReg:{n:'MSc. Laura Jiménez Solís',c:'Directora Regional de Educación (MEP)',s1:'Directora',s2:'regional MEP',p:'Precedencia 1 (mayor rango)'},
+ alc:{n:'Lic. Marco Rojas Vargas',c:'Alcalde municipal',s1:'Alcalde',s2:'municipal',p:'Precedencia 2'},
+ emp:{n:'Sr. Daniel Quesada Arias',c:'Gerente de la empresa patrocinadora',s1:'Empresario',s2:'patrocinador',p:'Precedencia 3'},
+ pat:{n:'Sr. Óscar Villalobos Chaves',c:'Presidente del patronato del colegio',s1:'Presidente',s2:'del patronato',p:'Precedencia 4'},
+ sof:{n:'Licda. Sofía Araya Núñez',c:'Contadora invitada; usa silla de ruedas',s1:'Sofía Araya',s2:'silla de ruedas',p:'Invitada especial'},
+ car:{n:'Doña Carmen Ulate Ramírez',c:'Exalumna de la primera generación, 78 años',s1:'Doña Carmen',s2:'adulta mayor',p:'Invitada especial'},
+ ban:{n:'Bandera de Costa Rica',c:'Símbolo patrio',s1:'Bandera',s2:'nacional',p:'Símbolo patrio'}};
+
+/* ---- Fase 0 ---- */
+const CLASIF=[
+ {id:'c1',t:'Definir en qué orden hablarán las autoridades',k:'P'},
+ {id:'c2',t:'Saludar a la directora regional con un apretón de manos firme, mirándola a los ojos',k:'E'},
+ {id:'c3',t:'Ubicar la bandera nacional en el lugar de honor',k:'P'},
+ {id:'c4',t:'Mantener el celular en silencio y guardado durante el acto',k:'E'},
+ {id:'c5',t:'Asignar los lugares de la mesa principal según la precedencia',k:'P'},
+ {id:'c6',t:'Colocar la servilleta sobre las piernas en el refrigerio',k:'E'},
+ {id:'c7',t:'Fijar la hora de inicio y la duración de cada parte del programa',k:'P'},
+ {id:'c8',t:'Vestir según el código de vestimenta indicado en la invitación',k:'E'},
+ {id:'c9',t:'Organizar que los anfitriones reciban a las autoridades en la entrada y las acompañen a su lugar',k:'P'},
+ {id:'c10',t:'No hablar con la boca llena ni interrumpir a quien conversa',k:'E'}];
+const REGLA_P='Protocolo: regula el ORDEN del evento (precedencia, ubicación, tiempos, símbolos) y lo aplica la institución que organiza.';
+const REGLA_E='Etiqueta: regula el COMPORTAMIENTO de cada persona (modales, vestimenta, trato).';
+const PRES=[
+ {id:'ves',cat:'Vestuario',ops:[['Uniforme completo del colegio, limpio y planchado, camisa por dentro y gafete de anfitrión',1],['Camiseta deportiva y jeans, porque el evento es en el propio colegio',0],['Traje de fiesta de noche con brillos, para destacar en las fotos',0]],why:'Vestuario: se sigue el código de vestimenta del evento (para el equipo anfitrión, el uniforme completo, limpio y planchado, con identificación). La moda se adapta a la etiqueta del evento, no al revés.'},
+ {id:'cal',cat:'Calzado',ops:[['Zapatos formales del uniforme, limpios y lustrados',1],['Tenis de colores fosforescentes',0],['Sandalias, porque son cómodas para estar de pie',0]],why:'El calzado completa la presentación personal: cerrado, limpio y acorde con el vestuario.'},
+ {id:'acc',cat:'Accesorios',ops:[['Pocos y discretos: reloj sencillo y, si acaso, aretes pequeños',1],['Varias pulseras, collares grandes y gorra',0],['Lentes oscuros dentro del salón para verse elegante',0]],why:'Accesorios: pocos y discretos; no deben distraer ni ocultar el rostro.'},
+ {id:'cui',cat:'Cuidados personales',ops:[['Baño, cabello limpio y peinado, uñas limpias y cortas, desodorante',1],['Mucho perfume para que lo recuerden',0],['Cabello sin peinar porque el evento es temprano',0]],why:'Cuidados personales: higiene, cabello y manos cuidados; aromas suaves.'},
+ {id:'maq',cat:'Maquillaje',ops:[['Si se usa: discreto y natural, acorde con un evento de mañana',1],['Intenso, de noche, con brillos',0],['De colores llamativos para salir bien en las fotos',0]],why:'Maquillaje: discreto y acorde con la hora del evento.'},
+ {id:'por',cat:'Porte y postura',ops:[['Espalda recta, hombros relajados y manos visibles; sentarse sin desplomarse',1],['Manos en los bolsillos y recostado en la pared mientras espera',0],['Brazos cruzados todo el tiempo para verse serio',0]],why:'Porte y postura: espalda recta al caminar, estar de pie y sentarse; lenguaje corporal abierto.'},
+ {id:'rel',cat:'Reloj y puntualidad',ops:[['Llegar antes de la hora de inicio para el montaje y controlar los tiempos con un reloj sencillo',1],['Llegar justo a la hora en que empieza el acto',0],['Revisar la hora en el celular frente a los invitados',0]],why:'Estilo profesional: la puntualidad (el reloj como símbolo de compromiso) permite controlar los tiempos sin sacar el celular.'},
+ {id:'com',cat:'Comunicación asertiva',ops:[['«Buenos días, señora directora regional. Bienvenida; con gusto la acompaño a su lugar.»',1],['«¡Hola! Pase adelante, siéntese donde quiera.»',0],['«Diay, ¿usted es la que va a hablar?»',0]],why:'Seguridad en sí mismo y comunicación asertiva: saludo claro y respetuoso, con el tratamiento correcto del cargo.'}];
+
+/* ---- Fase 1 ---- */
+const BLOQ=[
+ {id:'rec',t:'Recibimiento y registro de invitados'},
+ {id:'him',t:'Himno Nacional de Costa Rica'},
+ {id:'mc',t:'Bienvenida del maestro de ceremonias'},
+ {id:'dir',t:'Palabras de la directora del colegio (anfitriona)'},
+ {id:'aut',t:'Palabras de la autoridad de mayor rango (directora regional)'},
+ {id:'cin',t:'Corte de cinta'},
+ {id:'rcr',t:'Recorrido por el nuevo laboratorio'},
+ {id:'ref',t:'Refrigerio'}];
+const HORAS=['8:30','9:00','9:05','9:10','9:20','9:35','9:40','10:00'];
+const REGLAS1=[
+ {id:'r1',p:2,t:'El recibimiento y registro va primero',why:'Los invitados se reciben, registran y acompañan a su lugar ANTES de iniciar el acto.',f:o=>o.rec===0},
+ {id:'r2',p:3,t:'El Himno Nacional va al inicio del acto',why:'Los símbolos patrios abren el acto oficial: el himno se entona al inicio, antes de cualquier discurso.',f:o=>o.him>=1&&o.him<=2&&o.him<o.dir&&o.him<o.aut},
+ {id:'r3',p:2,t:'El maestro de ceremonias da la bienvenida antes de los discursos',why:'El maestro de ceremonias abre y conduce el acto; presenta a cada orador, por eso va antes de los discursos.',f:o=>o.mc>=1&&o.mc<=2&&o.mc<o.dir&&o.mc<o.aut},
+ {id:'r4',p:3,t:'La anfitriona habla antes que la autoridad de mayor rango',why:'La institución anfitriona da la bienvenida institucional; luego hablan las autoridades en orden de menor a mayor rango.',f:o=>o.dir>o.mc&&o.dir<o.aut},
+ {id:'r5',p:3,t:'La autoridad de mayor rango habla de última',why:'Regla de oro: la autoridad de mayor rango habla de última y cierra los discursos.',f:o=>o.aut>o.dir&&o.aut>o.mc&&o.aut>o.him&&o.aut<o.cin},
+ {id:'r6',p:2,t:'El corte de cinta va después de los discursos y antes del recorrido',why:'Primero se inaugura oficialmente (corte de cinta) y después se recorre el laboratorio inaugurado.',f:o=>o.cin>o.aut&&o.cin<o.rcr},
+ {id:'r7',p:1,t:'El refrigerio cierra el evento',why:'El refrigerio es el cierre social del acto, cuando ya terminó la parte oficial.',f:o=>o.ref===7}];
+const Q1=[
+ {id:'q1',t:'Durante el Himno Nacional, ¿cómo debe estar el público y el equipo anfitrión?',ops:[['De pie, en silencio y con el celular guardado',1],['Sentados, para no tapar la vista a los demás',0],['De pie, grabando con el celular para las redes del colegio',0]],why:'El Himno Nacional se escucha de pie y en silencio.'},
+ {id:'q2',t:'¿Cómo debe anunciar el maestro de ceremonias a la autoridad de mayor rango?',ops:[['«Les invito a escuchar las palabras de la señora directora regional de Educación, MSc. Laura Jiménez Solís.»',1],['«Ahora le damos el micrófono a doña Laura, la de la regional.»',0],['«Con ustedes… ¡la invitada especial de hoy!»',0]],why:'Acto gubernamental: se usa el tratamiento formal y el cargo completo («señora directora regional») y el nombre correcto de la autoridad.'}];
+
+/* ---- Fase 2 ---- */
+const SOL2={m1:'emp',m2:'dReg',m3:'dCol',m4:'alc',m5:'pat',fL:'ban',a1:'sof',a2:'car'};
+const SLOTS2={
+ m1:{x:104,y:58,w:112,h:50,l1:'Asiento 1',l2:'mesa principal',k:'m'},
+ m2:{x:224,y:58,w:112,h:50,l1:'Asiento 2',l2:'mesa principal',k:'m'},
+ m3:{x:344,y:58,w:112,h:50,l1:'Asiento 3',l2:'centro',k:'m'},
+ m4:{x:464,y:58,w:112,h:50,l1:'Asiento 4',l2:'mesa principal',k:'m'},
+ m5:{x:584,y:58,w:112,h:50,l1:'Asiento 5',l2:'mesa principal',k:'m'},
+ fL:{x:16,y:56,w:78,h:96,l1:'Asta A',l2:'extremo',k:'f'},
+ fC:{x:335,y:8,w:130,h:42,l1:'Asta B',l2:'tras la presidencia',k:'f'},
+ fR:{x:706,y:56,w:78,h:96,l1:'Asta C',l2:'extremo',k:'f'},
+ a3:{x:100,y:232,w:130,h:50,l1:'Fila 1 · centro',l2:'entre otras sillas',k:'a'},
+ a1:{x:246,y:232,w:130,h:50,l1:'Fila 1 · pasillo',l2:'espacio libre sin silla',k:'a'},
+ a2:{x:424,y:232,w:130,h:50,l1:'Fila 1 · pasillo',l2:'silla con apoyabrazos',k:'a'},
+ a4:{x:604,y:470,w:150,h:50,l1:'Última fila',l2:'junto a la puerta',k:'a'}};
+const TOK2=['dCol','dReg','alc','emp','pat','ban','sof','car'];
+const CHK2=[
+ {id:'k1',t:'La rampa de acceso está libre de obstáculos y tiene pasamanos.',v:true,why:'Ley 7600: el acceso debe ser utilizable de forma autónoma y segura.'},
+ {id:'k2',t:'La ruta del recorrido al laboratorio no tiene gradas, cables sueltos ni muebles en el paso, y el piso es antideslizante.',v:true,why:'Ruta accesible para silla de ruedas, bastón o problemas motores.'},
+ {id:'k3',t:'La mesa del refrigerio queda a una altura alcanzable desde una silla de ruedas, con espacio para acercarse.',v:true,why:'Mesa a la altura adecuada y espacio libre para circular.'},
+ {id:'k4',t:'Hay asientos con apoyabrazos cerca de la entrada para personas con bastón o problemas motores.',v:true,why:'Asientos cercanos a la entrada y con apoyabrazos facilitan sentarse y levantarse.'},
+ {id:'k5',t:'Ubicar a la invitada en silla de ruedas en la última fila, para que no obstruya el paso.',v:false,why:'Es discriminatorio: se le reserva un espacio en la primera fila, en igualdad de condiciones.'},
+ {id:'k6',t:'Dirigirse al acompañante de la persona adulta mayor en lugar de hablarle directamente a ella.',v:false,why:'Se habla directamente con la persona, no con su acompañante.'}];
+
+/* ---- Fase 3 ---- */
+const UT=[
+ {id:'tEnt',t:'Tenedor de entrada',ic:'fork',sz:.82,ok:'Lext',why:'Los cubiertos se usan de afuera hacia adentro: la entrada se come primero, por eso su tenedor va en el extremo izquierdo.'},
+ {id:'tFue',t:'Tenedor de plato fuerte',ic:'fork',sz:1,ok:'Lint',why:'El tenedor del plato fuerte se usa después de la entrada: va a la izquierda, junto al plato.'},
+ {id:'cFue',t:'Cuchillo de plato fuerte',ic:'knife',sz:1,ok:'Rint',why:'Los cuchillos van a la derecha; el del plato fuerte (se usa después) va junto al plato, con el filo hacia el plato.'},
+ {id:'cEnt',t:'Cuchillo de entrada',ic:'knife',sz:.82,ok:'Rext',why:'El cuchillo de la entrada se usa primero: va a la derecha, en el extremo exterior.'},
+ {id:'cPos',t:'Cuchara de postre',ic:'spoon',sz:.8,ok:'Top',why:'Los cubiertos de postre van arriba del plato.'},
+ {id:'pan',t:'Plato de pan con cuchillo de mantequilla',ic:'bread',sz:1,ok:'TL',why:'El pan va a la izquierda, arriba de los tenedores.'},
+ {id:'copa',t:'Copa de agua',ic:'glass',sz:1,ok:'TR',why:'Las bebidas van a la derecha, arriba de los cuchillos.'},
+ {id:'sop',t:'Cuchara sopera',ic:'spoon',sz:1,ok:null,why:'El menú no incluye sopa: solo se colocan los cubiertos que el menú necesita.'}];
+const SLOTS3={
+ Lext:{x:128,y:150,w:42,h:220,l:'Izq. exterior',v:1},
+ Lint:{x:174,y:150,w:42,h:220,l:'Izq. interior',v:1},
+ Rint:{x:424,y:150,w:42,h:220,l:'Der. interior',v:1},
+ Rext:{x:470,y:150,w:42,h:220,l:'Der. exterior',v:1},
+ Top:{x:240,y:102,w:160,h:40,l:'Arriba del plato',v:0},
+ TL:{x:110,y:40,w:110,h:96,l:'Arriba izquierda',v:0},
+ TR:{x:420,y:40,w:110,h:96,l:'Arriba derecha',v:0}};
+const Q3=[
+ {id:'q1',t:'¿Por dónde se sirven y por dónde se retiran los platos?',ops:[['Se sirve por la izquierda y se retira por la derecha',1],['Se sirve por la derecha y se retira por la izquierda',0],['Por donde haya más espacio en ese momento',0]],why:'Servir la mesa: se sirve por la izquierda y se retira por la derecha; las bebidas, por la derecha; primero a la persona de honor.'},
+ {id:'q2',t:'Al sentarse en la mesa del refrigerio, ¿qué se hace con la servilleta?',ops:[['Se coloca sobre las piernas',1],['Se amarra al cuello como babero',0],['Se deja doblada sobre la mesa hasta el final',0]],why:'Comportamiento en la mesa: la servilleta va sobre las piernas.'},
+ {id:'q3',t:'¿Qué se hace con el celular durante el refrigerio con las autoridades?',ops:[['En silencio y fuera de la mesa',1],['Sobre la mesa, boca abajo, para ver la hora',0],['En la mano para fotografiar la comida y publicarla',0]],why:'Comportamiento en la mesa: el celular en silencio y fuera de la mesa.'}];
+
+/* ---- Fase 4 ---- */
+const IMP=[
+ {id:'i1',ind:'ind2',hora:'9:00',t:'La autoridad de mayor rango se atrasa',sit:'La directora regional avisa que llegará 20 minutos tarde por una presa. Los demás invitados ya están sentados.',ops:[
+  ['Informar a la anfitriona; con su aval, el maestro de ceremonias anuncia con cortesía un breve atraso, se ofrece agua a los invitados y se corre el programa 20 minutos.',3,'El acto inicia completo y ordenado; los invitados se sienten atendidos.'],
+  ['Esperar en silencio, sin decir nada a los invitados, hasta que ella llegue.',1,'Se respeta la precedencia, pero la espera sin información genera incomodidad y murmullos.'],
+  ['Iniciar puntualmente y eliminar del programa las palabras de la directora regional.',0,'La autoridad llega y el acto avanzó sin ella: falta grave de protocolo frente a las autoridades.']],
+  regla:'Protocolo: no se inicia un acto oficial sin la autoridad de mayor rango; los tiempos se reajustan y se informa con cortesía.'},
+ {id:'i2',ind:'ind1',hora:'8:40',t:'Un invitado con vestuario inadecuado',sit:'Un invitado llega en pantaloneta y sandalias, aunque la invitación decía «formal».',ops:[
+  ['Recibirlo con la misma cortesía que a los demás, registrarlo y acompañarlo a su lugar sin hacer comentarios.',3,'El invitado se siente bien recibido y el evento sigue sin incomodidades.'],
+  ['Recibirlo, pero recordarle en voz baja que la invitación pedía vestimenta formal.',1,'La intención es buena, pero corregir a un invitado no le corresponde al anfitrión y lo incomoda.'],
+  ['Decirle frente a la fila que no cumple el código y que no puede pasar.',0,'Se exhibe públicamente a un invitado: la falta de etiqueta es del propio anfitrión.']],
+  regla:'Etiqueta del anfitrión: trato cortés y discreto con todas las personas; nunca exhibir ni corregir públicamente a un invitado.'},
+ {id:'i3',ind:'ind3',hora:'8:45',t:'La rampa está obstruida',sit:'Las cajas del equipo de sonido quedaron apiladas sobre la rampa de entrada al laboratorio.',ops:[
+  ['Despejar la rampa de inmediato y revisar toda la ruta (entrada, salón y recorrido) para que quede libre.',3,'La invitada en silla de ruedas entra de forma autónoma y segura, igual que los demás.'],
+  ['Dejar las cajas y moverlas solo si llega alguien que necesite la rampa.',1,'La rampa debe estar libre siempre; la persona tendría que esperar y pedir ayuda.'],
+  ['Indicarle a la invitada que entre por la puerta de carga del fondo, que no tiene gradas.',0,'Se le asigna una entrada distinta y menos digna: incumple la igualdad de oportunidades.']],
+  regla:'Ley 7600: espacios y actividades accesibles en igualdad de condiciones; rampa y rutas libres de obstáculos.'},
+ {id:'i4',ind:'ind3',hora:'8:50',t:'La persona adulta mayor necesita apoyo',sit:'Doña Carmen, de 78 años, se detiene frente al escalón del salón y parece dudar. Viene con su nieto.',ops:[
+  ['Acercarse, saludarla, preguntarle directamente si desea apoyo y cómo lo prefiere, y respetar su ritmo.',3,'Doña Carmen decide qué apoyo necesita y se siente respetada.'],
+  ['Preguntarle al nieto qué necesita su abuela.',1,'Se habla de doña Carmen como si no estuviera presente.'],
+  ['Tomarla del brazo sin preguntar y apurarla para que no haga fila.',0,'Se invade su espacio y se le apresura: puede desequilibrarse o sentirse irrespetada.']],
+  regla:'Preguntar antes de ayudar y hablar directamente con la persona; trato deferente y paciente a la persona adulta mayor.'},
+ {id:'i5',ind:'ind2',hora:'8:55',t:'Una bandera por encima de la nacional',sit:'El representante de la empresa patrocinadora quiere colgar la bandera de su empresa en el centro, más alta que la bandera de Costa Rica.',ops:[
+  ['Explicarle con cortesía que ningún estandarte va por encima de la bandera nacional y ofrecerle un lugar secundario, a menor altura.',3,'Se respeta el símbolo patrio y el patrocinador mantiene su visibilidad.'],
+  ['Decirle que no se puede, sin ofrecerle ninguna alternativa.',1,'Se cumple la norma, pero el patrocinador queda molesto: faltó comunicación asertiva.'],
+  ['Aceptar, para no incomodar al patrocinador.',0,'Se irrespeta un símbolo patrio frente a las autoridades del MEP y del cantón.']],
+  regla:'Símbolos patrios: ningún otro estandarte se coloca por encima de la bandera nacional, que ocupa el lugar de honor.'},
+ {id:'i6',ind:'ind1',hora:'9:20',t:'Celular durante el himno',sit:'Mientras suena el Himno Nacional, un compañero del equipo anfitrión está chateando con el celular.',ops:[
+  ['Hacerle una seña discreta para que lo guarde, mantenerse de pie y en silencio, y conversar con él en privado después.',3,'El himno continúa con respeto y nadie queda expuesto.'],
+  ['Esperar a que termine el himno y llamarle la atención en voz alta frente a todos.',1,'Se respeta el himno, pero corregir en público es otra falta de etiqueta.'],
+  ['Caminar hacia él durante el himno y quitarle el celular.',0,'Se interrumpe el himno con movimiento y se arma una escena frente a las autoridades.']],
+  regla:'El Himno Nacional se escucha de pie y en silencio; el celular, en silencio y guardado.'}];
+
+const FASES=[
+ {n:0,corto:'Calentamiento',titulo:'Calentamiento: protocolo, etiqueta y presentación personal',min:8,total:18},
+ {n:1,corto:'Programa del acto',titulo:'Programa del acto',min:10,total:20},
+ {n:2,corto:'Mesa y salón',titulo:'Mesa principal y salón',min:12,total:24},
+ {n:3,corto:'Refrigerio',titulo:'Mesa del refrigerio',min:10,total:20},
+ {n:4,corto:'Imprevistos',titulo:'El día del evento: imprevistos',min:10,total:18}];
+
+/* =================== CALIFICACIÓN =================== */
+function addInd(ind,k,s,t){ ind[k]=ind[k]||[0,0]; ind[k][0]+=s; ind[k][1]+=t; }
+function grade0(d){ const items=[], ind={}; let s=0;
+  CLASIF.forEach(c=>{ const ok=d.cl[c.id]===c.k; if(ok) s++; addInd(ind,'ind1',ok?1:0,1);
+    items.push({ok:ok,t:'«'+c.t+'» → '+(c.k==='P'?'Protocolo':'Etiqueta'),why:ok?'':(c.k==='P'?REGLA_P:REGLA_E)}); });
+  PRES.forEach(p=>{ const i=d.pr[p.id]; const ok=i!==undefined&&p.ops[i]&&p.ops[i][1]===1; if(ok) s++; addInd(ind,'ind1',ok?1:0,1);
+    items.push({ok:ok,t:p.cat+': '+(i!==undefined&&p.ops[i]?p.ops[i][0]:'(sin elegir)'),why:ok?'':p.why}); });
+  return {score:s,total:18,ind:ind,items:items}; }
+function posOf(orden){ const o={}; orden.forEach((id,i)=>o[id]=i); return o; }
+function grade1(d){ const items=[], ind={}; let s=0; const o=posOf(d.orden);
+  REGLAS1.forEach(r=>{ const ok=!!r.f(o); if(ok) s+=r.p; items.push({ok:ok,t:r.t+' ('+r.p+' pts)',why:ok?'':r.why}); });
+  Q1.forEach(q=>{ const i=d.q[q.id]; const ok=i!==undefined&&q.ops[i][1]===1; if(ok) s+=2; items.push({ok:ok,t:q.t+' ('+(i!==undefined?q.ops[i][0]:'sin responder')+')',why:ok?'':q.why}); });
+  addInd(ind,'ind2',s,20); return {score:s,total:20,ind:ind,items:items}; }
+function occ(asig){ const o={}; Object.keys(asig||{}).forEach(t=>{ if(asig[t]) o[asig[t]]=t; }); return o; }
+function grade2(d){ const items=[], ind={}; let s=0; const oc=occ(d.asig);
+  const regMesa='Mesa principal: la presidencia (la anfitriona) al centro; la persona de mayor jerarquía a su DERECHA, la segunda a su IZQUIERDA y así alternando. La derecha es la de quien preside, que mira al público.';
+  ['m1','m2','m3','m4','m5'].forEach(k=>{ const want=SOL2[k], got=oc[k]; const ok=got===want; if(ok) s+=2; addInd(ind,'ind2',ok?2:0,2);
+    items.push({ok:ok,t:SLOTS2[k].l1+': '+(got?INV[got].s1+' '+INV[got].s2:'(vacío)')+(ok?'':' — correcto: '+INV[want].s1+' '+INV[want].s2),why:ok?'':regMesa}); });
+  const okB=oc.fL==='ban'; if(okB) s+=4; addInd(ind,'ind2',okB?4:0,4);
+  items.push({ok:okB,t:'Bandera nacional en '+(d.asig.ban?SLOTS2[d.asig.ban].l1:'(sin ubicar)')+(okB?'':' — correcto: Asta A'),why:okB?'':'La bandera ocupa el lugar de honor: a la DERECHA de la mesa principal (vista desde la mesa); desde el público se ve a la izquierda.'});
+  const okS=oc.a1==='sof'; if(okS) s+=2; addInd(ind,'ind3',okS?2:0,2);
+  items.push({ok:okS,t:'Licda. Sofía Araya (silla de ruedas): '+(d.asig.sof?SLOTS2[d.asig.sof].l1+', '+SLOTS2[d.asig.sof].l2:'sin ubicar'),why:okS?'':'Ley 7600: se reserva un espacio en la PRIMERA FILA SIN SILLA, junto al pasillo, para que participe en igualdad de condiciones.'});
+  const okC=oc.a2==='car'; if(okC) s+=2; addInd(ind,'ind3',okC?2:0,2);
+  items.push({ok:okC,t:'Doña Carmen (adulta mayor): '+(d.asig.car?SLOTS2[d.asig.car].l1+', '+SLOTS2[d.asig.car].l2:'sin ubicar'),why:okC?'':'Persona adulta mayor: asiento preferente, con apoyabrazos, en la primera fila y cerca del pasillo, con buena visibilidad y sonido.'});
+  CHK2.forEach(c=>{ const m=!!d.chk[c.id]; const ok=m===c.v; if(ok) s+=1; addInd(ind,'ind3',ok?1:0,1);
+    items.push({ok:ok,t:(c.v?'Sí corresponde: ':'No corresponde: ')+c.t,why:ok?'':c.why}); });
+  return {score:s,total:24,ind:ind,items:items}; }
+function grade3(d){ const items=[], ind={}; let s=0; const oc=occ(d.asig);
+  Object.keys(SLOTS3).forEach(k=>{ const got=oc[k]; const want=UT.find(u=>u.ok===k); const ok=got===want.id; if(ok) s+=2;
+    const gu=got?UT.find(u=>u.id===got):null;
+    items.push({ok:ok,t:SLOTS3[k].l+': '+(gu?gu.t:'(vacío)')+(ok?'':' — correcto: '+want.t),why:ok?'':(gu&&gu.ok===null?gu.why+' ':'')+want.why}); });
+  Q3.forEach(q=>{ const i=d.q[q.id]; const ok=i!==undefined&&q.ops[i][1]===1; if(ok) s+=2; items.push({ok:ok,t:q.t+' ('+(i!==undefined?q.ops[i][0]:'sin responder')+')',why:ok?'':q.why}); });
+  addInd(ind,'ind2',s,20); return {score:s,total:20,ind:ind,items:items}; }
+function grade4(d){ const items=[], ind={}; let s=0;
+  IMP.forEach(c=>{ const i=d.r[c.id]; const p=i!==undefined?c.ops[i][1]:0; s+=p; addInd(ind,c.ind,p,3);
+    items.push({ok:p===3,t:c.t+': '+(i!==undefined?c.ops[i][0]:'(sin decidir)')+' ('+p+'/3)',why:p===3?'':c.regla}); });
+  return {score:s,total:18,ind:ind,items:items}; }
+const GRADE=[grade0,grade1,grade2,grade3,grade4];
+
+/* =================== ESTADO =================== */
+let user={name:'',sec:''}, ST=null, vista=0, enCurso=false, bloqueado=false, salidas=0;
+const LSK=()=>'orgeventos10_'+norm(user.name);
+function saveLS(){ try{ localStorage.setItem(LSK(),JSON.stringify(Object.assign({},ST,{ts:now()}))); }catch(e){} }
+function loadLS(){ try{ const s=localStorage.getItem(LSK()); return s?JSON.parse(s):null; }catch(e){ return null; } }
+function nuevoST(){ return {sec:user.sec,fases:{},draft:{},final:null}; }
+function fasesHechas(){ return FASES.filter(f=>ST.fases[f.n]).length; }
+function totalesInd(){ const ind={}; FASES.forEach(f=>{ const x=ST.fases[f.n]; if(x&&x.ind) Object.keys(x.ind).forEach(k=>addInd(ind,k,x.ind[k][0],x.ind[k][1])); }); return ind; }
+function totalScore(){ return FASES.reduce((a,f)=>a+(ST.fases[f.n]?(+ST.fases[f.n].score||0):0),0); }
+
+/* =================== MONITOREO DE SALIDA =================== */
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden||!enCurso||!user.name) return;
+  salidas++; const b=$('banner'); b.textContent='Salió de la pantalla de la actividad ('+salidas+(salidas===1?' vez':' veces')+')'; b.style.display='block';
+  sheetPost(SH_PROG,{Timestamp:now(),Estudiante:user.name,Modulo:'incidente_salida_pantalla_'+MODULE_ID,Score:String(salidas),Total:'1'});
+});
+
+/* =================== ARRASTRE + TOQUE (motor común) =================== */
+// Ficha: [data-tok] o ranura ocupada [data-occ]; destino: [data-slot] o bandeja [data-tray].
+function dnd(root,o){
+  let sel=null, drag=null, ghost=null, just=0;
+  const mark=()=>{ root.querySelectorAll('[data-tok],[data-occ]').forEach(e=>e.classList.toggle('sel',!!sel&&(e.dataset.tok||e.dataset.occ)===sel)); root.classList.toggle('armed',!!sel); if(o.onSel) o.onSel(sel); };
+  root.addEventListener('pointerdown',e=>{ if(o.locked()) return; if(e.target.closest('button.ud-b')) return; const t=e.target.closest('[data-tok],[data-occ]'); if(!t||!root.contains(t)) return;
+    drag={id:t.dataset.tok||t.dataset.occ,x:e.clientX,y:e.clientY,moved:false,label:t.dataset.lbl||t.textContent.trim().slice(0,60)}; });
+  const mv=e=>{ if(!drag) return; if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<8) return;
+    if(!drag.moved){ drag.moved=true; ghost=document.createElement('div'); ghost.className='dragghost'; ghost.textContent=drag.label; document.body.appendChild(ghost); sel=drag.id; mark(); }
+    ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px'; e.preventDefault(); };
+  const up=e=>{ if(!drag) return; const d=drag; drag=null; if(!d.moved) return; just=Date.now(); if(ghost){ ghost.remove(); ghost=null; }
+    const el=document.elementFromPoint(e.clientX,e.clientY); const s=el&&el.closest('[data-slot]'); const tr=el&&el.closest('[data-tray]');
+    sel=null; if(s&&root.contains(s)) o.drop(d.id,s.dataset.slot,true); else if(tr&&root.contains(tr)) o.drop(d.id,null,true); else mark(); };
+  window.addEventListener('pointermove',mv,{passive:false}); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',()=>{ if(ghost){ ghost.remove(); ghost=null; } drag=null; });
+  root.addEventListener('click',e=>{ if(o.locked()||Date.now()-just<60) return; if(e.target.closest('button.ud-b')) return;
+    const s=e.target.closest('[data-slot]'); const t=e.target.closest('[data-tok],[data-occ]'); const tr=e.target.closest('[data-tray]');
+    if(sel&&s&&root.contains(s)){ const id=sel; sel=null; o.drop(id,s.dataset.slot); return; }
+    if(t&&root.contains(t)){ const id=t.dataset.tok||t.dataset.occ; sel=(sel===id)?null:id; mark(); return; }
+    if(sel&&tr&&root.contains(tr)){ const id=sel; sel=null; o.drop(id,null); return; } });
+  root.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-slot]')&&e.target.tagName!=='BUTTON'){ e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click',{bubbles:true})); } });
+  return {clear(){ sel=null; mark(); }, get sel(){ return sel; }};
+}
+
+/* =================== PORTADA =================== */
+function portada(){
+  const np=nombrePortal(); $('who').innerHTML='';
+  $('app').innerHTML=`<div class="grid gx">
+   <div class="card"><span class="pill gold">RA 3 · Protocolo y etiqueta · ~50 min · 5 fases · 100 pts</span>
+    <h2 style="margin-top:12px;font-size:28px">Organice la inauguración del nuevo laboratorio de Contabilidad</h2>
+    <p>El CTP Mercedes Norte inaugura su <b>laboratorio de Contabilidad</b> y su grupo de 10° está a cargo del protocolo. Asistirán la directora regional del MEP, el alcalde, la directora del colegio, el empresario patrocinador, el presidente del patronato, una invitada que usa <b>silla de ruedas</b> y una <b>exalumna adulta mayor</b>.</p>
+    <p>Usted arma el programa, ubica a las autoridades y la bandera, prepara la mesa del refrigerio y resuelve los imprevistos del día. Al final obtiene su <b>informe de protocolo</b> imprimible.</p>
+    <div class="note gold"><b>Importante:</b> cada fase se califica <b>una sola vez</b>. Puede arrastrar las fichas o, en el celular, <b>tocar una ficha y luego tocar el lugar</b> donde va.</div>
+    <div class="grid g2"><div><label class="lb" for="inNom">Nombre completo</label><input type="text" id="inNom" ${np?'readonly':''} value="${np?esc(np):''}" placeholder="Nombre y apellidos" autocomplete="off"></div>
+     <div><label class="lb" for="inSec">Sección</label><select id="inSec"><option value="">Seleccione…</option>${SECCIONES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+    <div class="row" style="margin-top:14px"><button class="btn gold" id="bIn">Entrar al evento</button><span id="mIn" class="mut"></span></div></div>
+   <div class="card soft"><h3 style="margin-top:0">Ruta del evento</h3>
+    ${FASES.map(f=>`<div class="row" style="margin:8px 0;flex-wrap:nowrap"><span class="pill mono">F${f.n}</span><div style="flex:1"><b>${f.titulo}</b><div class="mut">${f.total} pts · ~${f.min} min</div></div></div>`).join('')}
+    <h3>Indicadores (rúbrica)</h3>${INDS.map(i=>`<div class="mut" style="margin:4px 0"><b style="color:var(--tx)">${i.cod}</b> · ${i.nombre}</div>`).join('')}</div></div>`;
+  $('bIn').onclick=entrar; $('inNom').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+}
+function entrar(){
+  const n=$('inNom').value.trim().replace(/\s+/g,' '), s=$('inSec').value;
+  if(n.split(' ').length<2){ $('mIn').innerHTML='<span class="bad-t">Escriba su nombre y al menos un apellido.</span>'; return; }
+  if(!s){ $('mIn').innerHTML='<span class="bad-t">Seleccione su sección.</span>'; return; }
+  user={name:n,sec:s}; $('mIn').textContent='Cargando su avance…'; $('bIn').disabled=true;
+  Promise.all([sheetGet(SH_PROG),sheetGet(SH_DATA)]).then(([prog,casos])=>{
+    const me=norm(n);
+    const mine=prog.filter(r=>norm(r.Estudiante)===me&&String(r.Modulo||'').indexOf(MODULE_ID+'_')===0);
+    const cut=Math.max(0,...mine.filter(r=>r.Modulo===MODULE_ID+'_reset').map(r=>tsN(r.Timestamp)));
+    const after=mine.filter(r=>tsN(r.Timestamp)>cut);
+    const fin=after.filter(r=>r.Modulo===MODULE_ID+'_final').pop();
+    ST=nuevoST();
+    casos.filter(r=>r.CasoId===MODULE_ID+'_detalle'&&norm(r.Nombre)===me&&tsN(r.Timestamp)>cut).forEach(r=>{ let d={}; try{ d=JSON.parse(r.Texto); }catch(e){}
+      if(typeof d.fase==='number'&&!ST.fases[d.fase]) ST.fases[d.fase]={score:d.score,total:d.total,ind:d.ind,data:d.data,ts:r.Timestamp}; if(d.fase==='final'&&d.fecha) ST.fecha=d.fecha; });
+    after.forEach(r=>{ const m=String(r.Modulo).match(/^orgeventos10_fase(\d)_paso$/); if(m&&!ST.fases[+m[1]]) ST.fases[+m[1]]={score:+r.Score,total:+r.Total,ind:null,data:null,ts:r.Timestamp}; });
+    const loc=loadLS();
+    if(loc&&tsN(loc.ts)>cut){ Object.keys(loc.fases||{}).forEach(k=>{ if(!ST.fases[k]||!ST.fases[k].data) ST.fases[k]=loc.fases[k]; }); ST.draft=loc.draft||{}; if(loc.final) ST.final=loc.final; if(loc.fecha) ST.fecha=loc.fecha; }
+    else if(loc){ try{ localStorage.removeItem(LSK()); }catch(e){} }
+    if(fin&&!ST.final) ST.final={ts:fin.Timestamp,score:+fin.Score};
+    ST.sec=s; saveLS();
+    if(ST.final){ bloqueado=true; enCurso=false; vista='inf'; render(); return; }
+    if(fasesHechas()===FASES.length){ finalizar(); return; }
+    enCurso=true; const p=FASES.find(f=>!ST.fases[f.n]); vista=p.n; render();
+  });
+}
+
+/* =================== NAVEGACIÓN =================== */
+function puedeVer(k){ if(bloqueado) return true; if(k==='inf') return !!ST.final; return k===0||!!ST.fases[k]||!!ST.fases[k-1]; }
+function render(){
+  $('who').innerHTML=`<b>${esc(user.name)}</b><br>${esc(user.sec)} · ${totalScore()} / 100`;
+  const steps=FASES.map(f=>{ const x=ST.fases[f.n]; return `<button class="st ${vista===f.n?'cur':''} ${x?'done':''} ${puedeVer(f.n)?'':'lock'}" data-v="${f.n}"><span class="n">FASE ${f.n}</span><span class="t">${f.corto}</span><span class="s">${x?'✓ '+x.score+' / '+x.total:(puedeVer(f.n)?'En curso · '+f.total+' pts':'Bloqueada')}</span></button>`; }).join('')
+    +`<button class="st ${vista==='inf'?'cur':''} ${ST.final?'done':''} ${puedeVer('inf')?'':'lock'}" data-v="inf"><span class="n">CIERRE</span><span class="t">Informe de protocolo</span><span class="s">${ST.final?'✓ '+totalScore()+' / 100':'Al terminar'}</span></button>`;
+  $('app').innerHTML=`<div class="steps noprint">${steps}</div><div id="stage"></div>`;
+  document.querySelectorAll('.st').forEach(b=>b.onclick=()=>{ const v=b.dataset.v==='inf'?'inf':+b.dataset.v; if(!puedeVer(v)) return; vista=v; render(); });
+  const el=$('stage');
+  if(vista==='inf') renderInforme(el); else [render0,render1,render2,render3,render4][vista](el,ST.fases[vista]);
+  window.scrollTo(0,0);
+}
+function cab(n,extra){ const f=FASES[n]; return `<div class="row"><span class="pill gold mono">FASE ${n}</span><span class="pill">${f.total} pts · ~${f.min} min</span>${extra||''}</div><h2 style="margin-top:8px">${f.titulo}</h2>`; }
+function resultadoHTML(n){ const x=ST.fases[n]; if(!x) return ''; const f=FASES[n];
+  const g=x.data?GRADE[n](x.data):null; const items=g?g.items:[]; const malos=items.filter(i=>!i.ok), buenos=items.filter(i=>i.ok);
+  return `<div class="card" id="res${n}"><div class="row"><h3 style="margin:0">Resultado de la fase ${n}</h3><span class="pill ${x.score/x.total>=.8?'teal':(x.score/x.total>=.6?'gold':'coral')}" style="margin-left:auto">${x.score} / ${x.total} pts</span></div>
+   <div class="meter"><div class="tr"><div class="fl" data-w="${pct(x.score,x.total)}"></div></div></div>
+   <p class="mut" style="margin:4px 0">Fase calificada: puede revisarla, pero ya no se puede volver a contestar.</p>
+   ${malos.length?`<h3>Lo que debe corregir (con la regla)</h3><ul class="fb">${malos.map(i=>`<li class="bad">${esc(i.t)}<span class="why">${esc(i.why)}</span></li>`).join('')}</ul>`:'<div class="note ok"><b>¡Fase perfecta!</b> Aplicó todas las normas.</div>'}
+   ${buenos.length?`<details style="margin-top:8px"><summary class="mut">Ver aciertos (${buenos.length})</summary><ul class="fb">${buenos.map(i=>`<li class="ok">${esc(i.t)}</li>`).join('')}</ul></details>`:''}
+   <div class="row" style="margin-top:12px">${n<FASES.length-1?`<button class="btn gold" data-go="${n+1}">Continuar a la fase ${n+1} →</button>`:`<button class="btn gold" data-go="inf">Ver mi informe de protocolo →</button>`}</div></div>`; }
+function wireResultado(el){ el.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const v=b.dataset.go==='inf'?'inf':+b.dataset.go; if(v==='inf'&&!ST.final) return; vista=v; render(); });
+  setTimeout(()=>el.querySelectorAll('.fl[data-w]').forEach(f=>f.style.width=f.dataset.w+'%'),60); }
+function completar(n,d){
+  if(ST.fases[n]||bloqueado) return; const g=GRADE[n](d);
+  ST.fases[n]={score:g.score,total:g.total,ind:g.ind,data:d,ts:now()}; delete ST.draft[n]; saveLS();
+  postProg(user.name,MODULE_ID+'_fase'+n+'_paso',g.score,g.total);
+  postCaso({fase:n,seccion:user.sec,titulo:FASES[n].titulo,score:g.score,total:g.total,ind:g.ind,data:d,errores:g.items.filter(i=>!i.ok).map(i=>i.t)});
+  if(fasesHechas()===FASES.length){ finalizar(); return; }
+  render(); setTimeout(()=>{ const r=$('res'+n); if(r) r.scrollIntoView({behavior:'smooth',block:'start'}); },80);
+}
+function finalizar(){
+  const tot=totalScore(), ind=totalesInd(); const fecha=now();
+  INDS.forEach((i,k)=>{ const v=ind[i.id]||[0,0]; postProg(user.name,MODULE_ID+'_ind'+(k+1)+'_ra_'+i.cod+'_paso',v[0],v[1]); });
+  postProg(user.name,MODULE_ID+'_final',tot,100);
+  const fases={}; FASES.forEach(f=>{ const x=ST.fases[f.n]; fases['fase'+f.n]=x?[x.score,x.total]:null; });
+  postCaso({fase:'final',seccion:user.sec,fecha:fecha,total:tot,de:100,fases:fases,ind:ind,niveles:INDS.reduce((o,i)=>{ const v=ind[i.id]||[0,0]; o[i.id]=nivelDe(pct(v[0],v[1])); return o; },{}),salidas:salidas});
+  ST.final={ts:fecha,score:tot}; ST.fecha=fecha; saveLS(); enCurso=false; vista='inf'; render();
+}
+
+/* =================== FASE 0 =================== */
+function render0(el,done){
+  const d=done?done.data:(ST.draft[0]=ST.draft[0]||{cl:{},pr:{}}); const locked=!!done;
+  if(done&&!d){ el.innerHTML=`<div class="card">${cab(0)}<p class="mut">Fase registrada en la plataforma (${done.score}/${done.total}).</p></div>`; return; }
+  const ordC=orden('f0c',CLASIF.length).map(i=>CLASIF[i]);
+  el.innerHTML=`<div class="card">${cab(0,'<span class="pill">Indicador RA3-I1</span>')}
+   <p>Antes del evento, la coordinación revisa que el equipo anfitrión distinga <b>protocolo</b> y <b>etiqueta</b> y que su <b>presentación personal</b> y su <b>estilo profesional</b> estén a la altura de las autoridades.</p>
+   <h3>A. ¿Protocolo o etiqueta? <span class="mut" style="font-weight:400">(10 situaciones · 1 pt c/u)</span></h3>
+   <p class="hint">Arrastre cada situación a su columna, o tóquela y luego toque la columna.</p>
+   <div id="z0"><div class="tray" data-tray="1" id="tray0"></div>
+    <div class="bins"><div class="bin P" data-slot="P"><h4>Protocolo</h4><div class="d">Orden del evento: precedencia, ubicación, tiempos, símbolos. Lo aplica la institución.</div><div class="lst" id="binP"></div></div>
+     <div class="bin E" data-slot="E"><h4>Etiqueta</h4><div class="d">Comportamiento de cada persona: modales, vestimenta, trato.</div><div class="lst" id="binE"></div></div></div></div>
+   <h3 style="margin-top:22px">B. Presentación personal y estilo profesional del anfitrión <span class="mut" style="font-weight:400">(8 decisiones · 1 pt c/u)</span></h3>
+   <p class="hint">Usted recibirá a las autoridades en la entrada. Código para el equipo anfitrión: <b>uniforme del colegio</b>. Evento de <b>mañana</b> (8:30 a. m.).</p>
+   <div class="grid g4" id="pres0">${PRES.map((p,pi)=>{ const ord=orden('f0p'+p.id,p.ops.length); return `<div class="cat"><div class="h"><span class="num">${String(pi+1).padStart(2,'0')}</span>${p.cat}</div><div class="opts">${ord.map(i=>{ const s=d.pr[p.id]===i; const cls=locked?(p.ops[i][1]?'ok':(s?'bad':'')):(s?'sel':''); return `<button class="opt ${cls}" data-p="${p.id}" data-i="${i}" ${locked?'disabled':''}>${esc(p.ops[i][0])}</button>`; }).join('')}</div>${locked&&!(p.ops[d.pr[p.id]]||[])[1]?`<div class="mut" style="margin-top:6px;color:#f2b3aa">${esc(p.why)}</div>`:''}</div>`; }).join('')}</div>
+   ${locked?'':`<div class="row" style="margin-top:16px"><button class="btn gold" id="bCal0" disabled>Calificar fase 0</button><span class="mut" id="m0"></span></div>`}</div>${resultadoHTML(0)}`;
+  const chip=c=>{ const st=locked?(d.cl[c.id]===c.k?'ok':'bad'):''; return `<div class="tok ${st}" data-tok="${c.id}" tabindex="0" role="button">${esc(c.t)}${locked&&st==='bad'?`<small>Es ${c.k==='P'?'protocolo':'etiqueta'}</small>`:''}</div>`; };
+  const draw=()=>{ $('tray0').innerHTML=ordC.filter(c=>!d.cl[c.id]).map(chip).join(''); $('tray0').classList.toggle('empty',!ordC.some(c=>!d.cl[c.id]));
+    $('binP').innerHTML=ordC.filter(c=>d.cl[c.id]==='P').map(chip).join(''); $('binE').innerHTML=ordC.filter(c=>d.cl[c.id]==='E').map(chip).join('');
+    if(!locked){ const falt=CLASIF.filter(c=>!d.cl[c.id]).length+PRES.filter(p=>d.pr[p.id]===undefined).length; $('bCal0').disabled=falt>0; $('m0').textContent=falt?'Faltan '+falt+' respuestas.':'Listo para calificar.'; } };
+  draw();
+  if(locked){ wireResultado(el); return; }
+  dnd($('z0'),{locked:()=>!!ST.fases[0],drop:(id,slot)=>{ if(slot) d.cl[id]=slot; else delete d.cl[id]; saveLS(); draw(); }});
+  el.querySelectorAll('#pres0 .opt').forEach(b=>b.onclick=()=>{ d.pr[b.dataset.p]=+b.dataset.i; el.querySelectorAll(`#pres0 .opt[data-p="${b.dataset.p}"]`).forEach(x=>x.classList.toggle('sel',x===b)); saveLS(); draw(); });
+  $('bCal0').onclick=()=>completar(0,d);
+}
+
+/* =================== FASE 1 =================== */
+function render1(el,done){
+  let d=done?done.data:ST.draft[1];
+  if(!done&&!d){ const ord=orden('f1',BLOQ.length).map(i=>BLOQ[i].id); if(ord[0]==='rec'&&ord[7]==='ref') ord.reverse(); d=ST.draft[1]={orden:ord,q:{}}; }
+  const locked=!!done;
+  if(done&&!d){ el.innerHTML=`<div class="card">${cab(1)}<p class="mut">Fase registrada en la plataforma (${done.score}/${done.total}).</p></div>`; return; }
+  const o=locked?posOf(d.orden):null; const corr=['rec','him','mc','dir','aut','cin','rcr','ref'];
+  el.innerHTML=`<div class="grid gx"><div class="card">${cab(1,'<span class="pill">Indicador RA3-I2</span>')}
+    <p>Ordene los bloques del <b>programa de la inauguración</b>. Las horas están fijas: usted decide qué ocurre en cada espacio.</p>
+    <p class="hint">Arrastre un bloque sobre otro para moverlo, use las flechas, o toque un bloque y luego otro para intercambiarlos.</p>
+    <div class="prog" id="z1"></div>
+    ${locked?`<h3>Reglas verificadas</h3><ul class="fb">${REGLAS1.map(r=>{ const ok=r.f(o); return `<li class="${ok?'ok':'bad'}">${esc(r.t)} <span class="mono" style="font-size:11px">(${r.p} pts)</span>${ok?'':`<span class="why">${esc(r.why)}</span>`}</li>`; }).join('')}</ul>
+     <details><summary class="mut">Ver un programa modelo</summary><ol class="mut">${corr.map((id,i)=>`<li><span class="mono">${HORAS[i]}</span> · ${esc(BLOQ.find(b=>b.id===id).t)}</li>`).join('')}</ol></details>`:''}
+   </div>
+   <div><div class="card soft"><h3 style="margin-top:0">Ficha del evento</h3>
+    <p class="mut" style="margin-top:0">Inauguración del laboratorio de Contabilidad · Salón multiuso · 8:30 a. m.</p>
+    <div class="case">${['dReg','alc','dCol','emp','pat'].map(k=>`<div class="guest"><span class="r">${esc(INV[k].p)}</span><b>${esc(INV[k].n)}</b>${esc(INV[k].c)}</div>`).join('')}</div>
+    <p class="mut">La precedencia fue confirmada con la oficina de protocolo de la Dirección Regional. Hablan: el maestro de ceremonias, la directora del colegio y la directora regional.</p></div>
+    <div class="card"><h3 style="margin-top:0">Acto gubernamental <span class="mut" style="font-weight:400">(2 preguntas · 2 pts c/u)</span></h3>
+    ${Q1.map(q=>mcHTML(q,d.q[q.id],locked,'f1')).join('')}</div></div></div>
+   ${locked?'':`<div class="card"><div class="row"><button class="btn gold" id="bCal1">Calificar fase 1</button><span class="mut" id="m1"></span></div></div>`}${resultadoHTML(1)}`;
+  const draw=()=>{ $('z1').innerHTML=d.orden.map((id,i)=>{ const b=BLOQ.find(x=>x.id===id); const st=locked?(corr[i]===id?'ok':'bad'):'';
+     return `<div class="blk ${st}" data-tok="${id}" data-slot="${i}" data-lbl="${esc(b.t)}" tabindex="0" role="button"><span class="h">${HORAS[i]}</span><span class="t">${esc(b.t)}</span>${locked?'':`<span class="ud"><button class="ud-b" data-up="${i}" aria-label="Subir">▲</button><button class="ud-b" data-dn="${i}" aria-label="Bajar">▼</button></span>`}</div>`; }).join('');
+    if(!locked){ $('z1').querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.up; if(i>0){ [d.orden[i-1],d.orden[i]]=[d.orden[i],d.orden[i-1]]; saveLS(); draw(); } });
+      $('z1').querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.dn; if(i<d.orden.length-1){ [d.orden[i+1],d.orden[i]]=[d.orden[i],d.orden[i+1]]; saveLS(); draw(); } });
+      const falt=Q1.filter(q=>d.q[q.id]===undefined).length; $('m1').textContent=falt?'Responda las '+falt+' pregunta(s) del acto gubernamental.':'Listo para calificar.'; $('bCal1').disabled=falt>0; } };
+  draw();
+  if(locked){ wireResultado(el); return; }
+  dnd($('z1'),{locked:()=>!!ST.fases[1],drop:(id,slot,viaDrag)=>{ if(slot===null) return draw(); const from=d.orden.indexOf(id), to=+slot; if(from===to) return draw();
+    if(viaDrag){ d.orden.splice(from,1); d.orden.splice(to,0,id); } else { [d.orden[from],d.orden[to]]=[d.orden[to],d.orden[from]]; } saveLS(); draw(); }});
+  wireMC(el,Q1,d,'f1',()=>draw());
+  $('bCal1').onclick=()=>completar(1,d);
+}
+function mcHTML(q,sel,locked,key){ const ord=orden(key+q.id,q.ops.length);
+  return `<div style="margin:10px 0"><b style="font-size:14px">${esc(q.t)}</b><div class="opts" style="margin-top:6px">${ord.map(i=>{ const s=sel===i; const cls=locked?(q.ops[i][1]?'ok':(s?'bad':'')):(s?'sel':''); return `<button class="opt ${cls}" data-q="${q.id}" data-i="${i}" ${locked?'disabled':''}>${esc(q.ops[i][0])}</button>`; }).join('')}</div>${locked&&!(q.ops[sel]||[])[1]?`<div class="mut" style="margin-top:6px;color:#f2b3aa">${esc(q.why)}</div>`:''}</div>`; }
+function wireMC(el,Q,d,key,after){ el.querySelectorAll('.opt[data-q]').forEach(b=>{ if(!Q.find(q=>q.id===b.dataset.q)) return; b.onclick=()=>{ d.q[b.dataset.q]=+b.dataset.i; el.querySelectorAll(`.opt[data-q="${b.dataset.q}"]`).forEach(x=>x.classList.toggle('sel',x===b)); saveLS(); if(after) after(); }; }); }
+
+/* =================== FASE 2: PLANO =================== */
+function flagCR(x,y,w,h){ const u=h/6; return `<g><rect x="${x}" y="${y}" width="${w}" height="${u}" fill="#002B7F"/><rect x="${x}" y="${y+u}" width="${w}" height="${u}" fill="#fff"/><rect x="${x}" y="${y+2*u}" width="${w}" height="${2*u}" fill="#CE1126"/><rect x="${x}" y="${y+4*u}" width="${w}" height="${u}" fill="#fff"/><rect x="${x}" y="${y+5*u}" width="${w}" height="${u}" fill="#002B7F"/></g>`; }
+function planSVG(asig,mode){ // mode: 'edit' | 'view'
+  const oc=occ(asig); let s=`<svg viewBox="0 0 800 620" xmlns="http://www.w3.org/2000/svg" font-family="Space Grotesk, system-ui, sans-serif" role="img" aria-label="Plano del salón, vista superior">
+   <rect x="4" y="4" width="792" height="612" rx="16" fill="#0d0d11" stroke="#2a2a31"/>
+   <text x="790" y="24" text-anchor="end" font-size="12" fill="#9b978d">FRENTE DEL SALÓN · vista superior</text>
+   <rect x="100" y="114" width="600" height="38" rx="8" fill="#2a2116" stroke="#C9973F"/><text x="400" y="138" text-anchor="middle" font-size="14" fill="#F4DD7A" font-weight="600">MESA PRINCIPAL</text>
+   <text x="400" y="176" text-anchor="middle" font-size="12" fill="#9b978d">quienes se sientan a la mesa miran hacia el público ↓</text>
+   <line x1="400" y1="196" x2="400" y2="560" stroke="#2a2a31" stroke-dasharray="6 6"/><text x="400" y="214" text-anchor="middle" font-size="11" fill="#6f6c64">PASILLO</text>`;
+  // sillas decorativas
+  const chairs=[]; for(let r=0;r<4;r++){ const y=310+r*48; [60,100,140,180,220,260,300,340].forEach(x=>chairs.push([x,y])); [436,476,516,556,596,636,676,716].forEach(x=>{ if(!(r===3&&x>=596)) chairs.push([x,y]); }); }
+  [[60,248],[566,248],[606,248],[646,248],[686,248],[726,248]].forEach(c=>chairs.push(c));
+  chairs.forEach(c=>s+=`<rect x="${c[0]}" y="${c[1]}" width="26" height="22" rx="5" fill="#1a1a20" stroke="#33333c"/>`);
+  s+=`<text x="16" y="300" font-size="11" fill="#6f6c64">PÚBLICO</text>`;
+  s+=`<rect x="330" y="574" width="140" height="34" rx="6" fill="none" stroke="#2FC2AD" stroke-dasharray="4 3"/><text x="400" y="596" text-anchor="middle" font-size="12" fill="#2FC2AD">Entrada con rampa</text>`;
+  Object.keys(SLOTS2).forEach(k=>{ const p=SLOTS2[k], t=oc[k]; const isTarget=k in SOL2; let stroke='#4a4a55', fill='#141418';
+    if(mode==='view'){ if(isTarget){ stroke=t===SOL2[k]?'#2FC2AD':'#EF6A5B'; } else if(t){ stroke='#EF6A5B'; } }
+    else if(t){ stroke='#C9973F'; fill='#221b10'; }
+    s+=`<g data-slot="${k}" ${t&&mode==='edit'?`data-occ="${t}" data-lbl="${esc(INV[t].s1+' '+INV[t].s2)}"`:''} tabindex="${mode==='edit'?0:-1}" role="button" aria-label="${esc(p.l1+' '+p.l2+(t?': '+INV[t].n:''))}">
+      <rect class="sl-rect" x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="${t?2:1.4}" ${t?'':'stroke-dasharray="5 4"'}/>`;
+    const cx=p.x+p.w/2;
+    if(t==='ban'){ s+=`<line x1="${cx-22}" y1="${p.y+8}" x2="${cx-22}" y2="${p.y+p.h-6}" stroke="#ccc" stroke-width="2"/>`+flagCR(cx-20,p.y+10,44,Math.min(30,p.h-18)); if(p.h>60) s+=`<text x="${cx}" y="${p.y+p.h-10}" text-anchor="middle" font-size="12" fill="#ECE9E1">Bandera</text>`; }
+    else if(t){ s+=`<text x="${cx}" y="${p.y+p.h/2-2}" text-anchor="middle" font-size="14" font-weight="600" fill="#ECE9E1">${esc(INV[t].s1)}</text><text x="${cx}" y="${p.y+p.h/2+15}" text-anchor="middle" font-size="12" fill="#c9c5bb">${esc(INV[t].s2)}</text>`; }
+    else { s+=`<text x="${cx}" y="${p.y+p.h/2-2}" text-anchor="middle" font-size="12.5" fill="#8a867d">${esc(p.l1)}</text><text x="${cx}" y="${p.y+p.h/2+14}" text-anchor="middle" font-size="11" fill="#6f6c64">${esc(p.l2)}</text>`; }
+    s+=`</g>`; });
+  s+=`</svg>`; return s; }
+function render2(el,done){
+  const d=done?done.data:(ST.draft[2]=ST.draft[2]||{asig:{},chk:{}}); const locked=!!done;
+  if(done&&!d){ el.innerHTML=`<div class="card">${cab(2)}<p class="mut">Fase registrada en la plataforma (${done.score}/${done.total}).</p></div>`; return; }
+  el.innerHTML=`<div class="grid gx"><div class="card">${cab(2,'<span class="pill">RA3-I2 · RA3-I3 · Ley 7600</span>')}
+    <p>Ubique a las autoridades en la <b>mesa principal</b>, coloque la <b>bandera</b> y asigne los lugares de las <b>invitadas especiales</b> en el público.</p>
+    <div id="z2">${locked?'':`<h3>Fichas por ubicar</h3><div class="tray" data-tray="1" id="tray2"></div><p class="hint">Arrastre al plano, o toque una ficha y luego el lugar. Toque una ficha ubicada y luego la bandeja para devolverla.</p>`}<div class="plan" id="plan2">${planSVG(d.asig,locked?'view':'edit')}</div>
+    ${locked?'<div class="legend"><span class="ok-t">Borde turquesa: correcto</span><span class="bad-t">Borde coral: incorrecto</span></div>':''}</div></div>
+   <div><div class="card soft"><h3 style="margin-top:0">Precedencia confirmada</h3>
+    <div class="case">${['dCol','dReg','alc','emp','pat'].map(k=>`<div class="guest"><span class="r">${esc(INV[k].p)}</span><b>${esc(INV[k].n)}</b>${esc(INV[k].c)}</div>`).join('')}</div>
+    <div class="note" style="font-size:12.5px"><b>Recuerde:</b> la presidencia se ubica al centro y mira al público. Su «derecha» no es la derecha de quien observa el plano desde el público.</div>
+    <div class="case" style="margin-top:8px">${['sof','car'].map(k=>`<div class="guest"><span class="r">${esc(INV[k].p)}</span><b>${esc(INV[k].n)}</b>${esc(INV[k].c)}</div>`).join('')}</div></div>
+    <div class="card"><h3 style="margin-top:0">Lista de verificación Ley 7600 <span class="mut" style="font-weight:400">(6 pts)</span></h3>
+    <p class="hint" style="margin-top:0">Marque <b>solo</b> las acciones que corresponden a un evento accesible.</p>
+    ${orden('f2k',CHK2.length).map(i=>CHK2[i]).map(c=>{ const m=!!d.chk[c.id]; const st=locked?(m===c.v?'ok':'bad'):''; return `<label class="chk ${st}"><input type="checkbox" data-k="${c.id}" ${m?'checked':''} ${locked?'disabled':''}><span>${esc(c.t)}${locked&&st==='bad'?`<span class="mut" style="display:block;color:#f2b3aa">${esc(c.why)}</span>`:''}</span></label>`; }).join('')}</div></div></div>
+   ${locked?'':`<div class="card"><div class="row"><button class="btn gold" id="bCal2" disabled>Calificar fase 2</button><span class="mut" id="m2"></span></div></div>`}${resultadoHTML(2)}`;
+  if(locked){ wireResultado(el); return; }
+  const draw=()=>{ $('plan2').innerHTML=planSVG(d.asig,'edit');
+    const rest=TOK2.filter(t=>!d.asig[t]); $('tray2').innerHTML=rest.map(t=>`<div class="tok" data-tok="${t}" data-lbl="${esc(INV[t].s1+' '+INV[t].s2)}" tabindex="0" role="button">${t==='ban'?`<svg class="ic" viewBox="0 0 26 26">${flagCR(1,5,24,16)}</svg>`:''}<span><b>${esc(INV[t].s1+' '+INV[t].s2)}</b><small>${esc(INV[t].p)}</small></span></div>`).join(''); $('tray2').classList.toggle('empty',!rest.length);
+    $('bCal2').disabled=rest.length>0; $('m2').textContent=rest.length?'Faltan '+rest.length+' fichas por ubicar.':'Listo para calificar (revise la lista de verificación).'; };
+  draw();
+  dnd($('z2'),{locked:()=>!!ST.fases[2],drop:(id,slot)=>{
+    if(slot){ const k=SLOTS2[slot].k; if(id==='ban'&&k!=='f'){ toast('La bandera va en una de las astas (A, B o C).'); return draw(); } if(id!=='ban'&&k==='f'){ toast('Las astas son solo para la bandera.'); return draw(); }
+      const prev=occ(d.asig)[slot]; const from=d.asig[id]; if(prev&&prev!==id){ if(from&&((prev==='ban')===(SLOTS2[from].k==='f'))) d.asig[prev]=from; else delete d.asig[prev]; } d.asig[id]=slot; }
+    else delete d.asig[id]; saveLS(); draw(); }});
+  el.querySelectorAll('input[data-k]').forEach(i=>i.onchange=()=>{ d.chk[i.dataset.k]=i.checked; saveLS(); });
+  $('bCal2').onclick=()=>completar(2,d);
+}
+
+/* =================== FASE 3: CUBIERTOS =================== */
+function utensil(ic,cx,cy,len,horiz,col){ col=col||'#d9d6ce'; const L=len, h=L/2; let g='';
+  if(ic==='fork') g=`<rect x="-2.5" y="${-h*0.15}" width="5" height="${h*1.15}" rx="2.5" fill="${col}"/><path d="M-9 ${-h} v${h*0.5} q0 ${h*0.35} 9 ${h*0.38} q9 -${h*0.03} 9 -${h*0.38} v-${h*0.5}" fill="none" stroke="${col}" stroke-width="2.4"/><line x1="-3" y1="${-h}" x2="-3" y2="${-h*0.45}" stroke="${col}" stroke-width="2"/><line x1="3" y1="${-h}" x2="3" y2="${-h*0.45}" stroke="${col}" stroke-width="2"/>`;
+  else if(ic==='knife') g=`<rect x="-3" y="${h*0.05}" width="6" height="${h*0.95}" rx="3" fill="${col}"/><path d="M-3 ${h*0.05} V${-h*0.8} Q0 ${-h} 4 ${-h*0.82} L4 ${h*0.05} Z" fill="${col}" opacity=".85"/>`;
+  else if(ic==='spoon') g=`<ellipse cx="0" cy="${-h*0.72}" rx="${Math.max(6,L*0.07)}" ry="${h*0.28}" fill="${col}"/><rect x="-2.5" y="${-h*0.48}" width="5" height="${h*1.48}" rx="2.5" fill="${col}"/>`;
+  else if(ic==='bread') return `<g transform="translate(${cx},${cy})"><circle r="${L*0.38}" fill="#1d1d23" stroke="${col}" stroke-width="2"/><ellipse cx="-4" cy="2" rx="${L*0.18}" ry="${L*0.12}" fill="#b98a4a"/><rect x="${-L*0.32}" y="${-L*0.2}" width="${L*0.64}" height="4" rx="2" fill="${col}"/></g>`;
+  else if(ic==='glass') return `<g transform="translate(${cx},${cy})"><path d="M${-L*0.2} ${-L*0.35} h${L*0.4} q0 ${L*0.38} ${-L*0.2} ${L*0.42} q${-L*0.2} -${L*0.04} ${-L*0.2} -${L*0.42}z" fill="rgba(91,141,239,.25)" stroke="${col}" stroke-width="2"/><line x1="0" y1="${L*0.07}" x2="0" y2="${L*0.3}" stroke="${col}" stroke-width="2.4"/><line x1="${-L*0.13}" y1="${L*0.31}" x2="${L*0.13}" y2="${L*0.31}" stroke="${col}" stroke-width="2.4"/></g>`;
+  return `<g transform="translate(${cx},${cy}) rotate(${horiz?-90:0})">${g}</g>`; }
+function mesaSVG(asig,mode){ const oc=occ(asig);
+  let s=`<svg viewBox="0 0 640 432" xmlns="http://www.w3.org/2000/svg" font-family="Space Grotesk, system-ui, sans-serif" role="img" aria-label="Cubierto de la mesa del refrigerio">
+   <rect x="4" y="4" width="632" height="424" rx="16" fill="#101014" stroke="#2a2a31"/>
+   <circle cx="320" cy="262" r="96" fill="#1b1b21" stroke="#ECE9E1" stroke-opacity=".5" stroke-width="2"/><circle cx="320" cy="262" r="66" fill="none" stroke="#ECE9E1" stroke-opacity=".25"/>
+   <text x="320" y="266" text-anchor="middle" font-size="13" fill="#9b978d">plato</text>
+   <text x="320" y="420" text-anchor="middle" font-size="11" fill="#6f6c64">borde de la mesa · aquí se sienta el comensal</text>`;
+  Object.keys(SLOTS3).forEach(k=>{ const p=SLOTS3[k], t=oc[k]; const want=UT.find(u=>u.ok===k).id; let stroke='#4a4a55';
+    if(mode==='view') stroke=t===want?'#2FC2AD':'#EF6A5B'; else if(t) stroke='#C9973F';
+    const u=t?UT.find(x=>x.id===t):null;
+    s+=`<g data-slot="${k}" ${t&&mode==='edit'?`data-occ="${t}" data-lbl="${esc(u.t)}"`:''} tabindex="${mode==='edit'?0:-1}" role="button" aria-label="${esc(p.l+(u?': '+u.t:''))}"><rect class="sl-rect" x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="9" fill="${t?'#17140e':'#131317'}" stroke="${stroke}" stroke-width="${t?2:1.3}" ${t?'':'stroke-dasharray="5 4"'}/>`;
+    const cx=p.x+p.w/2, cy=p.y+p.h/2;
+    if(u){ if(u.ic==='bread'||u.ic==='glass') s+=utensil(u.ic,cx,cy-6,70); else if(k==='Top') s+=utensil(u.ic,cx,cy,120*u.sz,true); else s+=utensil(u.ic,cx,cy,180*u.sz,false);
+      if(!p.v) s+=`<text x="${cx}" y="${p.y+p.h-5}" text-anchor="middle" font-size="10.5" fill="#c9c5bb">${esc(u.t.length>22?u.t.slice(0,21)+'…':u.t)}</text>`;
+      else s+=`<text x="${cx}" y="${p.y+p.h+14}" text-anchor="middle" font-size="9.5" fill="#c9c5bb">${esc(u.t.split(' de ')[0])}</text><text x="${cx}" y="${p.y+p.h+26}" text-anchor="middle" font-size="9.5" fill="#9b978d">${esc(u.t.split(' de ')[1]||'')}</text>`; }
+    else { if(p.v) s+=`<text transform="translate(${cx+4},${cy}) rotate(-90)" text-anchor="middle" font-size="11" fill="#8a867d">${esc(p.l)}</text>`; else s+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11.5" fill="#8a867d">${esc(p.l)}</text>`; }
+    s+='</g>'; });
+  return s+'</svg>'; }
+function icoSVG(ic){ return `<svg class="ic" viewBox="0 0 26 26">${(ic==='bread'||ic==='glass')?utensil(ic,13,13,26):utensil(ic,13,13,24,true)}</svg>`; }
+function render3(el,done){
+  const d=done?done.data:(ST.draft[3]=ST.draft[3]||{asig:{},q:{}}); const locked=!!done;
+  if(done&&!d){ el.innerHTML=`<div class="card">${cab(3)}<p class="mut">Fase registrada en la plataforma (${done.score}/${done.total}).</p></div>`; return; }
+  const ordU=orden('f3',UT.length).map(i=>UT[i]);
+  el.innerHTML=`<div class="grid gx"><div class="card">${cab(3,'<span class="pill">Indicador RA3-I2</span>')}
+    <p>Prepare el <b>cubierto de la autoridad de mayor rango</b> para el refrigerio. Hay <b>7 espacios</b> y <b>8 utensilios</b>: uno no corresponde al menú.</p>
+    <div id="z3">${locked?'':`<h3>Utensilios</h3><div class="tray" data-tray="1" id="tray3"></div><p class="hint">Arrastre a la mesa, o toque un utensilio y luego el espacio.</p>`}<div class="plan small" id="plan3">${mesaSVG(d.asig,locked?'view':'edit')}</div>
+    ${locked?'<div class="legend"><span class="ok-t">Borde turquesa: correcto</span><span class="bad-t">Borde coral: incorrecto</span></div>':''}</div></div>
+   <div><div class="card soft"><h3 style="margin-top:0">Menú de 3 tiempos</h3>
+    <ol style="margin:0;padding-left:20px"><li><b>Entrada:</b> ensalada de la casa</li><li><b>Plato fuerte:</b> pollo en salsa de hongos con vegetales</li><li><b>Postre:</b> tres leches</li></ol>
+    <p class="mut">Pan y agua para todos los comensales.</p></div>
+    <div class="card"><h3 style="margin-top:0">Servicio y comportamiento <span class="mut" style="font-weight:400">(3 preguntas · 2 pts c/u)</span></h3>${Q3.map(q=>mcHTML(q,d.q[q.id],locked,'f3')).join('')}</div></div></div>
+   ${locked?'':`<div class="card"><div class="row"><button class="btn gold" id="bCal3" disabled>Calificar fase 3</button><span class="mut" id="m3"></span></div></div>`}${resultadoHTML(3)}`;
+  if(locked){ wireResultado(el); return; }
+  const draw=()=>{ $('plan3').innerHTML=mesaSVG(d.asig,'edit'); const rest=ordU.filter(u=>!d.asig[u.id]);
+    $('tray3').innerHTML=rest.map(u=>`<div class="tok" data-tok="${u.id}" data-lbl="${esc(u.t)}" tabindex="0" role="button">${icoSVG(u.ic)}<span>${esc(u.t)}</span></div>`).join(''); $('tray3').classList.toggle('empty',!rest.length);
+    const libres=Object.keys(SLOTS3).filter(k=>!occ(d.asig)[k]).length, fq=Q3.filter(q=>d.q[q.id]===undefined).length;
+    $('bCal3').disabled=libres>0||fq>0; $('m3').textContent=libres?'Faltan '+libres+' espacios por llenar.':(fq?'Responda las preguntas de servicio.':'Listo para calificar.'); };
+  draw();
+  dnd($('z3'),{locked:()=>!!ST.fases[3],drop:(id,slot)=>{ if(slot){ const prev=occ(d.asig)[slot]; const from=d.asig[id]; if(prev&&prev!==id){ if(from) d.asig[prev]=from; else delete d.asig[prev]; } d.asig[id]=slot; } else delete d.asig[id]; saveLS(); draw(); }});
+  wireMC(el,Q3,d,'f3',()=>draw());
+  $('bCal3').onclick=()=>completar(3,d);
+}
+
+/* =================== FASE 4: IMPREVISTOS =================== */
+function render4(el,done){
+  const d=done?done.data:(ST.draft[4]=ST.draft[4]||{r:{}}); const locked=!!done;
+  if(done&&!d){ el.innerHTML=`<div class="card">${cab(4)}<p class="mut">Fase registrada en la plataforma (${done.score}/${done.total}).</p></div>`; return; }
+  const dots=`<div class="dots">${IMP.map(c=>{ const i=d.r[c.id]; return `<i class="${i!==undefined?'d'+c.ops[i][1]:''}"></i>`; }).join('')}</div>`;
+  const cardHTML=(c,ix)=>{ const i=d.r[c.id]; const ord=orden('f4'+c.id,c.ops.length); const ans=i!==undefined;
+    return `<div class="imp" id="imp_${c.id}"><div class="row"><span class="clock">${c.hora} a. m. · Imprevisto ${ix+1} de ${IMP.length}</span><span class="pill" style="margin-left:auto">${INDS.find(x=>x.id===c.ind).cod}</span></div>
+     <h3 style="margin-top:6px">${esc(c.t)}</h3><p>${esc(c.sit)}</p><p class="mut" style="margin:0 0 6px">¿Qué hace usted?</p>
+     <div class="opts">${ord.map(k=>{ const o=c.ops[k]; const cls=ans?(o[1]===3?'ok':(k===i?(o[1]===1?'sel':'bad'):'')):''; return `<button class="opt ${cls}" data-c="${c.id}" data-i="${k}" ${ans?'disabled':''}>${esc(o[0])}</button>`; }).join('')}</div>
+     ${ans?`<div class="note ${c.ops[i][1]===3?'ok':(c.ops[i][1]===1?'gold':'bad')}"><b>Consecuencia (${c.ops[i][1]}/3):</b> ${esc(c.ops[i][2])}<br><b>Regla:</b> ${esc(c.regla)}</div>`:''}</div>`; };
+  const actual=IMP.findIndex(c=>d.r[c.id]===undefined);
+  el.innerHTML=`<div class="card">${cab(4,'<span class="pill">RA3-I1 · RA3-I2 · RA3-I3</span>')}
+    <p>Es el día de la inauguración. Cada decisión es <b>definitiva</b>: al elegir verá su consecuencia y la regla. Mejor decisión 3 pts, aceptable 1 pt, inadecuada 0.</p>${dots}
+    <div class="grid g2" id="z4">${IMP.map((c,ix)=>(locked||d.r[c.id]!==undefined||ix===actual)?cardHTML(c,ix):'').join('')}</div>
+    ${!locked&&actual===-1?`<div class="row" style="margin-top:14px"><button class="btn gold" id="bCal4">Cerrar el evento y registrar la fase 4</button></div>`:''}</div>${resultadoHTML(4)}`;
+  if(locked){ wireResultado(el); return; }
+  el.querySelectorAll('.opt[data-c]').forEach(b=>b.onclick=()=>{ if(ST.fases[4]) return; const c=b.dataset.c; if(d.r[c]!==undefined) return; d.r[c]=+b.dataset.i; saveLS(); render4(el,null);
+    const nx=IMP.find(x=>d.r[x.id]===undefined); const t=$(nx?'imp_'+nx.id:'bCal4'); if(t) setTimeout(()=>t.scrollIntoView({behavior:'smooth',block:'center'}),60); });
+  if($('bCal4')) $('bCal4').onclick=()=>completar(4,d);
+}
+
+/* =================== INFORME =================== */
+function rubricaHTML(ind,marcar){ return `<div class="scroll"><table class="tb rub"><tr><th>Indicador (RA 3)</th><th>Logrado (3) · ≥ 80 %</th><th>En proceso (2) · 60–79 %</th><th>No logrado (1) · &lt; 60 %</th></tr>
+  ${INDS.map(i=>{ const v=ind&&ind[i.id]; const lv=v?nivelDe(pct(v[0],v[1])):0; return `<tr><td><b>${i.cod}</b><div class="mut">${esc(i.nombre)}</div>${v?`<div class="mono" style="font-size:12px;margin-top:4px">${v[0]} / ${v[1]} pts · ${pct(v[0],v[1])} %</div>`:''}</td>${[3,2,1].map(n=>`<td class="${marcar&&lv===n?'on':''}">${marcar&&lv===n?`<span class="lvl l${n}">${NIVEL_TXT[n]}</span><br>`:''}${esc(i['n'+n])}</td>`).join('')}</tr>`; }).join('')}</table></div>`; }
+function gaugeHTML(s,t){ const r=52, C=2*Math.PI*r, p=t?s/t:0; return `<svg viewBox="0 0 130 130"><circle cx="65" cy="65" r="${r}" fill="none" stroke="#1c1c22" stroke-width="12"/><circle class="v" cx="65" cy="65" r="${r}" fill="none" stroke="#C9973F" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C*(1-p)}" transform="rotate(-90 65 65)"/><text x="65" y="66" text-anchor="middle" font-size="28" font-weight="700" fill="#ECE9E1" font-family="Space Grotesk, sans-serif">${s}</text><text x="65" y="86" text-anchor="middle" font-size="12" fill="#9b978d" font-family="IBM Plex Mono, monospace">de ${t}</text></svg>`; }
+function renderInforme(el){
+  const tot=totalScore(), ind=totalesInd(); const f1=ST.fases[1]&&ST.fases[1].data, f2=ST.fases[2]&&ST.fases[2].data;
+  const fecha=new Date(ST.fecha||(ST.final&&ST.final.ts)||Date.now()).toLocaleDateString('es-CR',{day:'numeric',month:'long',year:'numeric'});
+  const lv=nivelDe(tot);
+  el.innerHTML=`${bloqueado?`<div class="card soft noprint"><span class="pill teal">Actividad ya completada</span><p style="margin-bottom:0">Usted ya completó esta actividad. Aquí está su resultado y su rúbrica. Solo su docente puede habilitar un nuevo intento.</p></div>`:''}
+   <div class="card"><div class="row"><div><span class="pill gold">Informe de protocolo</span><h2 style="margin-top:8px">Inauguración del laboratorio de Contabilidad · CTP Mercedes Norte</h2>
+    <div class="mut">${esc(user.name)} · Sección ${esc(user.sec)} · ${esc(fecha)}</div><div class="mut">Gestión Comercial y de Ventas · 10° · RA 3: Utilizar las Normas de Protocolo y Etiqueta, según las nuevas tendencias, en un evento institucional.</div></div>
+    <div class="row noprint" style="margin-left:auto"><button class="btn gold" id="bPrint">Imprimir informe</button></div></div>
+    <div class="gauge" style="margin-top:14px">${gaugeHTML(tot,100)}<div style="flex:1;min-width:240px">
+     ${FASES.map(f=>{ const x=ST.fases[f.n]; return `<div class="meter"><div class="lbl"><span>F${f.n} · ${f.titulo}</span><span class="mono">${x?x.score:0} / ${f.total}</span></div><div class="tr"><div class="fl" data-w="${x?pct(x.score,f.total):0}"></div></div></div>`; }).join('')}
+     <div class="mut">Nivel global: <span class="lvl l${lv}">${NIVEL_TXT[lv]}</span></div></div></div></div>
+   <div class="card"><h3 style="margin-top:0">Rúbrica por indicador</h3>${rubricaHTML(ind,true)}</div>
+   <div class="grid g2">
+    <div class="card"><h3 style="margin-top:0">Programa del acto (su versión)</h3>${f1?`<table class="tb"><tr><th>Hora</th><th>Actividad</th><th class="c">Regla</th></tr>${f1.orden.map((id,i)=>{ const ok=['rec','him','mc','dir','aut','cin','rcr','ref'][i]===id; return `<tr><td class="mono">${HORAS[i]}</td><td>${esc(BLOQ.find(b=>b.id===id).t)}</td><td class="c ${ok?'ok-t':'bad-t'}">${ok?'✓':'✗'}</td></tr>`; }).join('')}</table>`:'<p class="mut">Sin detalle disponible.</p>'}</div>
+    <div class="card"><h3 style="margin-top:0">Plano de la mesa principal y del salón</h3>${f2?`<div class="plan">${planSVG(f2.asig,'view')}</div><div class="legend"><span class="ok-t">Turquesa: correcto</span><span class="bad-t">Coral: incorrecto</span></div>`:'<p class="mut">Sin detalle disponible.</p>'}</div></div>
+   <div class="card"><h3 style="margin-top:0">Ideas clave del protocolo</h3><ul class="fb">
+    <li class="ok">Protocolo = <b>orden</b> del evento (precedencia, tiempos, símbolos); etiqueta = <b>conducta</b> de cada persona.</li>
+    <li class="ok">La autoridad de mayor rango habla de última; la presidencia al centro, la mayor jerarquía a su derecha, alternando.</li>
+    <li class="ok">La bandera nacional ocupa el lugar de honor y ningún estandarte va por encima de ella; el himno, de pie y en silencio.</li>
+    <li class="ok">Cubiertos de afuera hacia adentro; se sirve por la izquierda y se retira por la derecha.</li>
+    <li class="ok">Ley 7600: rutas libres y ubicación en igualdad de condiciones; preguntar antes de ayudar y hablar directamente con la persona.</li></ul>
+    <p class="print-only mut">Firma del estudiante: ______________________ &nbsp;&nbsp; Firma del docente: ______________________</p></div>`;
+  $('bPrint').onclick=()=>window.print();
+  setTimeout(()=>{ el.querySelectorAll('.fl[data-w]').forEach(f=>f.style.width=f.dataset.w+'%'); el.querySelectorAll('circle.v').forEach(c=>c.style.strokeDashoffset=c.dataset.off); },80);
+}
+
+/* =================== PANEL DOCENTE =================== */
+let PANEL={prog:[],casos:[]};
+function panel(){
+  const pin=prompt('PIN del panel docente:'); if(pin===null) return; if(pin!==TEACHER_PIN){ toast('PIN incorrecto.'); return; }
+  $('modal').classList.add('on'); $('modalIn').innerHTML='<div class="card"><p>Cargando datos…</p></div>';
+  Promise.all([sheetGet(SH_PROG),sheetGet(SH_DATA)]).then(([prog,casos])=>{ PANEL={prog:prog,casos:casos}; panelRender('Todas'); });
+}
+function panelDatos(){
+  const P=PANEL.prog.filter(r=>String(r.Modulo||'').indexOf(MODULE_ID+'_')===0||String(r.Modulo||'')==='incidente_salida_pantalla_'+MODULE_ID);
+  const C=PANEL.casos.filter(r=>r.CasoId===MODULE_ID+'_detalle');
+  const est={};
+  const get=n=>{ const k=norm(n); if(!est[k]) est[k]={nombre:String(n).trim(),sec:'',cut:0,fases:{},ind:{},final:null,salidas:0}; return est[k]; };
+  P.forEach(r=>{ if(r.Modulo===MODULE_ID+'_reset'){ const e=get(r.Estudiante); e.cut=Math.max(e.cut,tsN(r.Timestamp)); } });
+  C.forEach(r=>{ const e=get(r.Nombre); let d={}; try{ d=JSON.parse(r.Texto); }catch(x){} if(d.seccion) e.sec=d.seccion; });
+  P.forEach(r=>{ const e=get(r.Estudiante); if(tsN(r.Timestamp)<=e.cut) return; const m=String(r.Modulo);
+    let x; if(m==='incidente_salida_pantalla_'+MODULE_ID) e.salidas++;
+    else if((x=m.match(/_fase(\d)_paso$/))) e.fases[+x[1]]=[+r.Score,+r.Total];
+    else if((x=m.match(/_ind(\d)_ra_(.+)_paso$/))) e.ind['ind'+x[1]]=[+r.Score,+r.Total];
+    else if(m===MODULE_ID+'_final') e.final=+r.Score; });
+  return Object.values(est).filter(e=>Object.keys(e.fases).length||e.final!==null||e.salidas||e.sec).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es')); }
+function panelRender(sec){
+  const all=panelDatos(); const L=all.filter(e=>sec==='Todas'||e.sec===sec);
+  const nv=v=>v&&v[1]?nivelDe(pct(v[0],v[1])):0;
+  $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Organizador de Eventos (RA 3)</h2><button class="btn ghost sm" style="margin-left:auto" id="pClose">Cerrar ✕</button></div>
+   <div class="row" style="margin:12px 0">${['Todas'].concat(SECCIONES).map(s=>`<button class="btn sm ${s===sec?'gold':'ghost'}" data-sec="${s}">${s}</button>`).join('')}<button class="btn teal sm" id="pCsv" style="margin-left:auto">Exportar CSV</button></div>
+   <div class="scroll"><table class="tb"><tr><th>Estudiante</th><th>Sección</th>${FASES.map(f=>`<th class="c">F${f.n}<br><span style="font-weight:400">/${f.total}</span></th>`).join('')}<th class="c">Total</th><th class="c">Salidas</th>${INDS.map(i=>`<th>${i.cod}</th>`).join('')}<th></th></tr>
+   ${L.map(e=>{ const tot=FASES.reduce((a,f)=>a+(e.fases[f.n]?e.fases[f.n][0]:0),0);
+     return `<tr><td>${esc(e.nombre)}</td><td>${esc(e.sec||'—')}</td>${FASES.map(f=>`<td class="c mono">${e.fases[f.n]?e.fases[f.n][0]:'—'}</td>`).join('')}<td class="c mono"><b>${e.final!==null?e.final:tot}</b>${e.final!==null?'':' <span class="mut">(en curso)</span>'}</td><td class="c mono ${e.salidas?'bad-t':''}">${e.salidas}</td>
+      ${INDS.map(i=>{ const l=nv(e.ind[i.id]); return `<td>${l?`<span class="lvl l${l}" title="${esc(i['n'+l])}">${l} · ${NIVEL_TXT[l]}</span><div class="mut" style="font-size:11px;max-width:220px">${esc(i['n'+l])}</div>`:'<span class="mut">pendiente</span>'}</td>`; }).join('')}
+      <td><button class="btn ghost sm" data-reset="${esc(e.nombre)}">Repetir</button></td></tr>`; }).join('')||`<tr><td colspan="${FASES.length+INDS.length+5}" class="mut">Sin datos en esta sección.</td></tr>`}</table></div>
+   <p class="mut">Rúbrica 1–3 por indicador: Logrado ≥ 80 % · En proceso 60–79 % · No logrado &lt; 60 %. «Repetir» anula el intento y permite que el estudiante rehaga la actividad.</p></div>
+   <div class="card"><h3 style="margin-top:0">Rúbrica de evaluación</h3>${rubricaHTML(null,false)}</div>`;
+  $('pClose').onclick=()=>$('modal').classList.remove('on');
+  $('modalIn').querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>panelRender(b.dataset.sec));
+  $('modalIn').querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{ if(!b.dataset.arm){ b.dataset.arm='1'; b.textContent='¿Confirmar?'; b.classList.add('coral'); return; }
+    const n=b.dataset.reset; const ts=now(); sheetPost(SH_PROG,{Timestamp:ts,Estudiante:n,Modulo:MODULE_ID+'_reset',Score:'0',Total:'0'});
+    PANEL.prog.push({Timestamp:ts,Estudiante:n,Modulo:MODULE_ID+'_reset',Score:'0',Total:'0'}); toast('Reinicio registrado para '+n+'.'); panelRender(sec); });
+  $('pCsv').onclick=()=>{ const rows=[['Estudiante','Sección'].concat(FASES.map(f=>'Fase '+f.n+' (/'+f.total+')'),['Total (/100)','Salidas de pantalla'],INDS.map(i=>i.cod+' puntos'),INDS.map(i=>i.cod+' nivel'))];
+    L.forEach(e=>{ const tot=FASES.reduce((a,f)=>a+(e.fases[f.n]?e.fases[f.n][0]:0),0); rows.push([e.nombre,e.sec].concat(FASES.map(f=>e.fases[f.n]?e.fases[f.n][0]:''),[e.final!==null?e.final:tot,e.salidas],INDS.map(i=>e.ind[i.id]?e.ind[i.id][0]+'/'+e.ind[i.id][1]:''),INDS.map(i=>{ const l=nv(e.ind[i.id]); return l?l+' '+NIVEL_TXT[l]:''; }))); });
+    const csv='﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='OrganizadorEventos_'+sec+'.csv'; document.body.appendChild(a); a.click(); a.remove(); };
+}
+$('lnkDocente').onclick=e=>{ e.preventDefault(); panel(); };
+
+portada();
+})();
+</script>
+</body>
+</html>
