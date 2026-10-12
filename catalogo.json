@@ -1578,5 +1578,15 @@
     "URL": "Organizador_de_Eventos_Protocolo_Decimo.html",
     "Activo": "SI",
     "Orden": 21
+  },
+  {
+    "Id": "taller_gantt_11",
+    "Nivel": "11",
+    "Categoria": "Trabajo en clase",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Taller Gantt: etapas, Gantt y evaluación de proyectos",
+    "URL": "Taller_Gantt_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 17
   }
 ]
