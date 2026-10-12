@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ciudad Contable · Prueba de conexión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050506;--card:#111114;--line:rgba(255,255,255,.1);--gold:#C9973F;--gold2:#F4DD7A;--teal:#2FC2AD;--coral:#EF6A5B;--ink:#ECEAE4;--mut:#9b9aa4;
+--sans:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden}
+button,input{font-family:inherit}
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:10;
+  background:radial-gradient(ellipse at 30% 30%,rgba(201,151,63,.14),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(47,194,173,.1),transparent 55%),var(--bg)}
+.box{width:100%;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 28px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.k{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold2)}
+h1{margin:6px 0 6px;font-size:28px}
+p{color:var(--mut);font-size:14px;line-height:1.5;margin:0 0 18px}
+label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin:12px 0 6px}
+input[type=text]{width:100%;padding:13px 14px;background:#000;border:1px solid rgba(255,255,255,.15);border-radius:12px;color:#fff;font-size:16px}
+input:focus{outline:none;border-color:var(--gold)}
+.colors{display:flex;gap:10px;flex-wrap:wrap}
+.colors button{width:38px;height:38px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.colors button.on{border-color:#fff}
+.btn{margin-top:20px;width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:700;font-size:15px;cursor:pointer}
+.note{margin-top:14px;font-size:12px;color:var(--mut);font-family:var(--mono)}
+.note b{color:var(--teal)}
+#game{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:fixed;left:12px;top:12px;background:rgba(10,10,12,.85);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;min-width:230px;z-index:5}
+.hud .row{display:flex;justify-content:space-between;gap:14px;margin:3px 0}
+.hud .row span:first-child{color:var(--mut)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.list{position:fixed;right:12px;top:12px;background:rgba(10,10,12,.85);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;max-height:45vh;overflow:auto;min-width:190px;z-index:5}
+.list h3{margin:0 0 6px;font-size:12px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--gold2)}
+.list div{padding:3px 0;white-space:nowrap}
+.bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px;z-index:5;flex-wrap:wrap;justify-content:center;max-width:96vw}
+.bar button{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(15,15,18,.9);color:#fff;font-size:14px;cursor:pointer}
+.bar button:hover{border-color:var(--gold)}
+.mode{font-family:var(--mono);font-size:11px;color:var(--gold2)}
+@media (max-width:600px){ .list{top:auto;bottom:70px;right:8px;max-height:30vh;min-width:150px} .hud{min-width:0;left:8px;top:8px;font-size:12px} }
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="box">
+    <div class="k">Ciudad Contable · Etapa 1</div>
+    <h1>Prueba de conexión</h1>
+    <p>Entre desde varias computadoras o celulares al mismo tiempo. Si todo funciona, cada persona verá moverse a las demás en tiempo real.</p>
+    <label for="nom">Su nombre</label>
+    <input type="text" id="nom" maxlength="28" placeholder="Nombre y apellido" autocomplete="off">
+    <label>Color de su personaje</label>
+    <div class="colors" id="colors"></div>
+    <button class="btn" id="go">Entrar al mundo →</button>
+    <div class="note" id="modeNote"></div>
+  </div>
+</div>
+
+<div id="game" hidden>
+  <canvas id="cv"></canvas>
+  <div class="hud">
+    <div class="row"><span>Estado</span><b id="st"><span class="dot" style="background:#888"></span>…</b></div>
+    <div class="row"><span>Conectados</span><b id="cnt">0</b></div>
+    <div class="row"><span>Latencia</span><b id="lat">—</b></div>
+    <div class="row"><span>Sala</span><b id="sala">—</b></div>
+    <div class="mode" id="modeHud"></div>
+  </div>
+  <div class="list"><h3>En el mundo</h3><div id="who"></div></div>
+  <div class="bar">
+    <button data-e="👋">👋 Saludar</button>
+    <button data-e="✅">✅ Listo</button>
+    <button data-e="❓">❓ Duda</button>
+    <button data-e="💰">💰 Vendo</button>
+    <button id="medir">📶 Medir</button>
+  </div>
+</div>
+
+<!-- Firebase (Realtime Database), versión compat -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* ============================================================
+   CONFIGURACIÓN — pegar aquí el firebaseConfig del proyecto
+   (Consola de Firebase → Configuración del proyecto → Tus apps → Web).
+   Mientras esté vacío, el mundo funciona en "modo demostración":
+   solo se conectan pestañas del MISMO navegador (sirve para ver el
+   juego, no para probar entre computadoras).
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBS6ea8vhmDffugHc-3la99xPGq97kpf_I",
+  authDomain: "ciudad-contable.firebaseapp.com",
+  databaseURL: "https://ciudad-contable-default-rtdb.firebaseio.com",
+  projectId: "ciudad-contable",
+  storageBucket: "ciudad-contable.firebasestorage.app",
+  messagingSenderId: "331358015454",
+  appId: "1:331358015454:web:98e2d3dbf9b27ee6a4d74f"
+};
+
+/* ===================== utilidades ===================== */
+const $=id=>document.getElementById(id);
+const COLORS=['#F4DD7A','#2FC2AD','#EF6A5B','#7DA7FF','#C38BFF','#7EE07A','#FF9F43','#F58FD0'];
+const W=1600,H=1000;                       // tamaño del mundo
+const qs=new URLSearchParams(location.search);
+const SALA=(qs.get('sala')||'prueba').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,30)||'prueba';
+const ME_ID='u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iniciales=n=>n.trim().split(/\s+/).slice(0,2).map(p=>p[0]||'').join('').toUpperCase();
+const configOK=FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.databaseURL;
+
+/* ===================== red (Firebase o demostración) ===================== */
+// Interfaz común: join(me), update(pos), emote(e), onPlayers(cb), onStatus(cb), ping()->Promise<ms>, leave()
+function RedFirebase(){
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const db=firebase.database();
+  const base=db.ref('mundo/'+SALA);
+  const meRef=base.child('jugadores/'+ME_ID);
+  let cbP=()=>{}, cbS=()=>{};
+  db.ref('.info/connected').on('value',s=>{
+    const ok=!!s.val(); cbS(ok?'ok':'off');
+    if(ok && R.me){ meRef.onDisconnect().remove(); meRef.set(Object.assign({},R.me,{t:firebase.database.ServerValue.TIMESTAMP})); }
+  });
+  base.child('jugadores').on('value',s=>cbP(s.val()||{}), err=>cbS('err:'+err.code));
+  const R={
+    me:null,
+    join(me){ R.me=me; meRef.onDisconnect().remove(); return meRef.set(Object.assign({},me,{t:firebase.database.ServerValue.TIMESTAMP})).catch(e=>cbS('err:'+e.code)); },
+    update(p){ Object.assign(R.me,p); meRef.update(Object.assign({},p,{t:firebase.database.ServerValue.TIMESTAMP})).catch(()=>{}); },
+    onPlayers(f){ cbP=f; }, onStatus(f){ cbS=f; },
+    ping(){ const t0=performance.now(); const r=base.child('ping/'+ME_ID); return r.set(firebase.database.ServerValue.TIMESTAMP).then(()=>{ r.remove(); return Math.round(performance.now()-t0); }); },
+    leave(){ meRef.remove(); }
+  };
+  return R;
+}
+function RedDemo(){ // mismas funciones con BroadcastChannel (solo pestañas del mismo navegador)
+  const ch=('BroadcastChannel' in window)?new BroadcastChannel('ciudad_'+SALA):null;
+  const others={}; let cbP=()=>{}, cbS=()=>{};
+  const R={ me:null,
+    join(me){ R.me=me; send(); setTimeout(()=>cbS('demo'),50); setInterval(()=>{ send(); prune(); },1000); return Promise.resolve(); },
+    update(p){ Object.assign(R.me,p); send(); },
+    onPlayers(f){ cbP=f; }, onStatus(f){ cbS=f; },
+    ping(){ return Promise.resolve(1); },
+    leave(){ ch&&ch.postMessage({bye:ME_ID}); }
+  };
+  function all(){ const o=Object.assign({},others); if(R.me) o[ME_ID]=Object.assign({},R.me,{t:Date.now()}); return o; }
+  function send(){ ch&&ch.postMessage({id:ME_ID,d:Object.assign({},R.me,{t:Date.now()})}); cbP(all()); }
+  function prune(){ const now=Date.now(); Object.keys(others).forEach(k=>{ if(now-others[k].t>4000) delete others[k]; }); cbP(all()); }
+  if(ch) ch.onmessage=e=>{ const m=e.data; if(m.bye){ delete others[m.bye]; } else if(m.id&&m.id!==ME_ID){ others[m.id]=m.d; } cbP(all()); };
+  return R;
+}
+
+/* ===================== ingreso ===================== */
+let color=COLORS[Math.floor(Math.random()*COLORS.length)];
+$('colors').innerHTML=COLORS.map(c=>`<button style="background:${c}" data-c="${c}" class="${c===color?'on':''}" aria-label="color ${c}"></button>`).join('');
+$('colors').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; color=b.dataset.c; document.querySelectorAll('#colors button').forEach(x=>x.classList.toggle('on',x===b)); };
+const np=(qs.get('nombre')||'').trim(); if(np){ $('nom').value=np; }
+$('modeNote').innerHTML=configOK?'Conexión: <b>Firebase en tiempo real</b> · sala «'+esc(SALA)+'»':'Modo demostración: falta pegar la configuración de Firebase. Solo se ven pestañas de este mismo navegador.';
+$('go').onclick=entrar; $('nom').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+
+let NET=null, players={}, me=null;
+function entrar(){
+  const n=$('nom').value.trim().replace(/\s+/g,' ');
+  if(n.length<3){ $('nom').focus(); $('nom').style.borderColor='var(--coral)'; return; }
+  let fbErr='';
+  if(configOK && typeof firebase==='undefined') fbErr='la red bloqueó Firebase';
+  try{ NET=(configOK&&!fbErr)?RedFirebase():RedDemo(); }catch(e){ fbErr='Firebase: '+e.message; NET=RedDemo(); }
+  me={n:n.slice(0,28),c:color,x:200+Math.random()*1200,y:300+Math.random()*500,e:'',et:0};
+  NET.onStatus(x=>estado(fbErr?'err:'+fbErr:x)); NET.onPlayers(p=>{ players=p; lista(); });
+  NET.join(me);
+  $('login').hidden=true; $('game').hidden=false; $('sala').textContent=SALA;
+  $('modeHud').textContent=configOK?'Firebase · tiempo real':'Modo demostración (sin Firebase)';
+  resize(); requestAnimationFrame(loop); medir();
+  window.addEventListener('beforeunload',()=>NET.leave());
+}
+function estado(s){
+  const map={ok:['#2FC2AD','Conectado'],off:['#EF6A5B','Sin conexión'],demo:['#F4DD7A','Demostración']};
+  const v=map[s]||['#EF6A5B','Error: '+String(s).replace('err:','')];
+  $('st').innerHTML=`<span class="dot" style="background:${v[0]}"></span>${esc(v[1])}`;
+}
+function lista(){
+  const arr=Object.entries(players).filter(([k,v])=>v&&v.n);
+  $('cnt').textContent=arr.length;
+  $('who').innerHTML=arr.sort((a,b)=>String(a[1].n).localeCompare(b[1].n)).map(([k,v])=>`<div><span class="dot" style="background:${esc(v.c||'#fff')}"></span>${esc(v.n)}${k===ME_ID?' <span style="color:var(--mut)">(usted)</span>':''}</div>`).join('');
+}
+function medir(){ NET.ping().then(ms=>{ $('lat').textContent=ms+' ms'; }).catch(()=>{ $('lat').textContent='error'; }); }
+$('medir').onclick=medir;
+document.querySelectorAll('.bar [data-e]').forEach(b=>b.onclick=()=>{ NET.update({e:b.dataset.e,et:Date.now()}); });
+
+/* ===================== mundo y movimiento ===================== */
+const cv=$('cv'), cx=cv.getContext('2d'); let DPR=1, VW=0, VH=0, cam={x:0,y:0}, target=null; const keys={};
+const EDIF=[{n:'BANCO',x:150,y:120,w:240,h:140,c:'#2FC2AD'},{n:'HACIENDA · TRIBU-CR',x:620,y:90,w:330,h:150,c:'#C9973F'},{n:'CCSS',x:1200,y:130,w:220,h:130,c:'#7DA7FF'},
+  {n:'MERCADO',x:180,y:720,w:300,h:160,c:'#EF6A5B'},{n:'SU EMPRESA',x:1080,y:720,w:320,h:160,c:'#C38BFF'}];
+function resize(){ DPR=Math.min(devicePixelRatio||1,2); VW=innerWidth; VH=innerHeight; cv.width=VW*DPR; cv.height=VH*DPR; cx.setTransform(DPR,0,0,DPR,0,0); }
+addEventListener('resize',resize);
+addEventListener('keydown',e=>{ keys[e.key.toLowerCase()]=true; if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(e.key.toLowerCase())) e.preventDefault(); });
+addEventListener('keyup',e=>{ keys[e.key.toLowerCase()]=false; });
+cv.addEventListener('pointerdown',e=>{ target={x:e.clientX+cam.x,y:e.clientY+cam.y}; });
+let lastSend=0, last=performance.now();
+const disp={}; // posiciones suavizadas de los demás
+function loop(t){
+  const dt=Math.min(.05,(t-last)/1000); last=t;
+  if(me){
+    let vx=(keys['arrowright']||keys['d']?1:0)-(keys['arrowleft']||keys['a']?1:0), vy=(keys['arrowdown']||keys['s']?1:0)-(keys['arrowup']||keys['w']?1:0);
+    if(vx||vy) target=null;
+    if(target){ const dx=target.x-me.x, dy=target.y-me.y, d=Math.hypot(dx,dy); if(d<4) target=null; else { vx=dx/d; vy=dy/d; } }
+    const sp=260, m=Math.hypot(vx,vy)||1; me.x=Math.max(20,Math.min(W-20,me.x+vx/m*sp*dt)); me.y=Math.max(20,Math.min(H-20,me.y+vy/m*sp*dt));
+    if((vx||vy)&&t-lastSend>100){ lastSend=t; NET.update({x:Math.round(me.x),y:Math.round(me.y)}); }
+    cam.x=Math.max(Math.min(0,(W-VW)/2),Math.min(Math.max(0,W-VW),me.x-VW/2)); cam.y=Math.max(Math.min(0,(H-VH)/2),Math.min(Math.max(0,H-VH),me.y-VH/2));
+  }
+  draw(dt); requestAnimationFrame(loop);
+}
+function draw(dt){
+  cx.fillStyle='#050506'; cx.fillRect(0,0,VW,VH);
+  cx.save(); cx.translate(-cam.x,-cam.y);
+  // piso tipo hoja contable
+  cx.fillStyle='#0b0b0e'; cx.fillRect(0,0,W,H);
+  cx.strokeStyle='rgba(255,255,255,.045)'; cx.lineWidth=1;
+  for(let y=0;y<=H;y+=40){ cx.beginPath(); cx.moveTo(0,y+.5); cx.lineTo(W,y+.5); cx.stroke(); }
+  for(let x=0;x<=W;x+=200){ cx.strokeStyle='rgba(201,151,63,.07)'; cx.beginPath(); cx.moveTo(x+.5,0); cx.lineTo(x+.5,H); cx.stroke(); }
+  cx.strokeStyle='rgba(201,151,63,.5)'; cx.lineWidth=2; cx.strokeRect(1,1,W-2,H-2);
+  // calles
+  cx.fillStyle='rgba(255,255,255,.03)'; cx.fillRect(0,440,W,110); cx.fillRect(740,0,110,H);
+  // edificios
+  EDIF.forEach(b=>{ cx.fillStyle='rgba(20,20,24,.95)'; cx.strokeStyle=b.c; cx.lineWidth=2; rr(b.x,b.y,b.w,b.h,14); cx.fill(); cx.stroke();
+    cx.fillStyle=b.c; cx.font='600 15px '+getComputedStyle(document.body).fontFamily; cx.textAlign='center'; cx.fillText(b.n,b.x+b.w/2,b.y+b.h/2+5); });
+  cx.fillStyle='rgba(155,154,164,.6)'; cx.font='12px IBM Plex Mono, monospace'; cx.textAlign='center'; cx.fillText('Etapa 1 · los edificios se activarán en las siguientes etapas',W/2,H-18);
+  // jugadores
+  const now=Date.now();
+  Object.entries(players).forEach(([k,p])=>{ if(!p||!p.n) return;
+    let x=p.x,y=p.y; if(k===ME_ID){ x=me.x; y=me.y; } else { const d=disp[k]||(disp[k]={x:p.x,y:p.y}); d.x+=(p.x-d.x)*Math.min(1,dt*10); d.y+=(p.y-d.y)*Math.min(1,dt*10); x=d.x; y=d.y; }
+    cx.beginPath(); cx.arc(x,y+16,14,0,Math.PI*2); cx.fillStyle='rgba(0,0,0,.35)'; cx.fill();
+    cx.beginPath(); cx.arc(x,y,18,0,Math.PI*2); cx.fillStyle=p.c||'#fff'; cx.fill();
+    if(k===ME_ID){ cx.lineWidth=3; cx.strokeStyle='#fff'; cx.stroke(); }
+    cx.fillStyle='#111'; cx.font='700 13px sans-serif'; cx.textAlign='center'; cx.fillText(iniciales(p.n),x,y+5);
+    cx.fillStyle='#fff'; cx.font='600 12px sans-serif'; cx.fillText(p.n,x,y-26);
+    const e=(k===ME_ID?me:p); if(e.e&&now-(e.et||0)<3000){ cx.font='22px sans-serif'; cx.fillText(e.e,x,y-44); }
+  });
+  if(target){ cx.strokeStyle='rgba(244,221,122,.6)'; cx.lineWidth=2; cx.beginPath(); cx.arc(target.x,target.y,10,0,Math.PI*2); cx.stroke(); }
+  cx.restore();
+}
+function rr(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.closePath(); }
+</script>
+</body>
+</html>
