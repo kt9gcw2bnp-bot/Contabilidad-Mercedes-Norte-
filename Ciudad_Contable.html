@@ -114,6 +114,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .fb.bad{background:rgba(239,106,91,.12);border:1px solid rgba(239,106,91,.4);color:#ffd0ca}
 .fb ul{margin:6px 0 0;padding-left:18px}
 .prod{display:grid;grid-template-columns:1.6fr .9fr .9fr .8fr .7fr 36px;gap:8px;margin-bottom:8px;align-items:center}
+.pfgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:8px}
+.pfcard{padding:10px}
+.pfprev{width:100%;height:auto;background:radial-gradient(circle at 50% 70%,rgba(47,194,173,.10),transparent 70%);border-radius:10px}
 .prod.ind{grid-template-columns:1.5fr .75fr .75fr .75fr .85fr .85fr .65fr .75fr 36px}
 .prod .pr-cu{font-size:12.5px;text-align:right}
 .prodh{font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:1px;text-transform:uppercase}
@@ -5205,7 +5208,7 @@ function renderPanel(force){
   try{ h=P.fac?vistaFactura(P.fac):VIEWS[P.b+'_'+P.t](); }catch(err){ h='<div class="empty">Error al mostrar: '+esc(err.message)+'</div>'; console.warn(err); }
   $('pbody').innerHTML=h; $('pbody').scrollTop=st;
   if(ED&&P.b==='empresa'&&P.t==='pend') edTotales();
-  if(P.b==='tienda') probadorMontar();
+  if(P.b==='tienda'){ probadorMontar(); pfPrevias(); }
 }
 document.addEventListener('focusout',()=>{ setTimeout(()=>{ if(pendingRender&&!foco($('panel'))) renderPanel(); if(docPending&&!foco($('docente'))) renderDoc(); },60); });
 
@@ -5807,8 +5810,8 @@ function stockMat(m){ const ob=miObra(); return ((ob.mat||{})[m]||0)-(colocados(
 function costoBloques(ob,filtro){ const t={e:0,m:0}; Object.values((ob&&ob.b)||{}).forEach(v=>{ const s=String(v), mm=MID[s.slice(0,3)]; if(!mm) return; const ina=s.endsWith('*'); if(filtro==='ina'&&!ina) return; if(filtro==='pend'&&ina) return; t[mm.cta==='1204'?'m':'e']=r2(t[mm.cta==='1204'?'m':'e']+mm.pu); }); return t; }
 function comprasDeUso(uso){ const eid=myEid(); let s=0; Object.values(S.fac||{}).forEach(f=>{ if(f&&f.re&&f.re.e===eid&&f.uso===uso&&f.est!=='anulada') s=r2(s+(f.sub||0)); }); return s; }
 function activosRes(){
-  const ob=miObra(), ina=ob.ina||{}, baj=ob.bajas||{}, ac=ob.acum||{}, t=miTerreno();
-  const edif=r2((ina.e||0)-(baj.e||0)), mobO=r2((ina.m||0)-(baj.m||0)), mobM=comprasDeUso('1204'), comp=comprasDeUso('1206');
+  const ob=miObra(), ina=ob.ina||{}, baj=ob.bajas||{}, ac=ob.acum||{}, t=miTerreno(), pre=ob.pre||{};
+  const edif=r2((ina.e||0)+(pre.e||0)-(baj.e||0)), mobO=r2((ina.m||0)+(pre.m||0)-(baj.m||0)), mobM=comprasDeUso('1204'), comp=comprasDeUso('1206');
   const cip=r2(comprasDeUso('1203')-(ina.e||0)-(ina.m||0));
   let veh=0; Object.values(S.veh||{}).forEach(v=>{ if(v&&v.costo) veh=r2(veh+v.costo); });
   return {terreno:t?r2(t.costo||0):0,cip,edif,mob:r2(mobO+mobM),comp,veh,acE:r2(ac.e||0),acM:r2(ac.m||0),acC:r2(ac.c||0),acV:r2(ac.v||0)};
@@ -5830,7 +5833,15 @@ VIEWS.tienda_constr=()=>{
       <button class="btn full" style="margin-top:10px" data-act="tComprar" id="tComprar" ${sel==null?'disabled':''}>Comprar el terreno</button></div></div></div>`; }
   const ob=miObra(); const used=colocados(ob);
   const sub=r2(Object.keys(OB.cart).reduce((a,k)=>a+(OB.cart[k]||0)*MID[k].pu,0)), iva=r2(Object.keys(OB.cart).reduce((a,k)=>a+r2((OB.cart[k]||0)*MID[k].pu*0.13),0));
-  return `<p style="margin-top:0">Su terreno es el <b>N.° ${t.p+1}</b>. Compre materiales por bloque (1 m) y construya en 3D con <b>🧱 Construir</b>. Los materiales comprados van a <b>Construcciones en proceso</b> hasta que inaugure la obra.</p>
+  const vacio=!Object.keys(ob.b||{}).length, sal2=sal!=null?fromC(sal):0;
+  return `<p style="margin-top:0">Su terreno es el <b>N.° ${t.p+1}</b>. Compre un <b>edificio completo</b> construido por la ${esc(CONS.n)} (llave en mano, listo para usar). Después puede remodelarlo o ampliarlo bloque por bloque.</p>
+  <h3 style="margin-top:0">Edificios completos</h3>
+  <div class="pfgrid">${PREFABS.map(pf=>{ const c=pfCosto(pf), tot=r2(c.e+c.m+c.iva);
+    return `<div class="card pfcard"><canvas class="pfprev" data-pf="${pf.id}" width="220" height="150" aria-label="Vista del edificio ${esc(pf.n)}"></canvas><h3 style="margin:6px 0 2px">${esc(pf.n)}</h3><p style="font-size:12.5px;margin:0 0 6px" class="mut">${esc(pf.d)} · ${c.n} bloques</p>
+     <div style="font-size:13px">Edificio ${fm(c.e)}${c.m?' + mobiliario '+fm(c.m):''} + IVA ${fm(c.iva)}<br><b class="gold">Total ${fm(tot)}</b></div>
+     <button class="btn sm full" style="margin-top:8px" data-act="pfComprar" data-pf="${pf.id}" ${vacio&&tot<=sal2?'':'disabled'}>${vacio?(tot<=sal2?'Comprar y construir':'Saldo insuficiente'):'Su terreno ya tiene construcción'}</button></div>`; }).join('')}</div>
+  <p class="mut" style="font-size:12px;margin-top:6px">Bancos: ${sal!=null?fm(fromC(sal)):'—'}. Si no le alcanza, puede pedir un préstamo en el Banco.${vacio?'':' Para cambiar de edificio, demuela primero el actual en 🧱 Construir.'}</p>
+  <h3>Remodelar o ampliar: materiales por bloque</h3>
   <div class="vlay"><div><div class="mgrid">${MATS.map(m=>{ const q=OB.cart[m.id]||0, st=((ob.mat||{})[m.id]||0)-(used[m.id]||0);
     return `<div class="mcard"><span class="mblk" style="background:${m.c}"></span><div style="min-width:0"><b>${esc(m.n)}</b><div class="vp">${fm(m.pu)} <small class="mut">+ IVA</small></div><small class="mut">${esc(m.u)} · disponibles: ${st}</small></div>
      <div class="mq"><button class="btn sec sm" data-act="mMenos" data-m="${m.id}" aria-label="Menos ${esc(m.n)}">−</button><input type="number" min="0" max="500" value="${q||''}" placeholder="0" data-mat="${m.id}" aria-label="Cantidad de ${esc(m.n)}"><button class="btn sec sm" data-act="mMas" data-m="${m.id}" aria-label="Más ${esc(m.n)}">+</button></div></div>`; }).join('')}</div></div>
@@ -5843,6 +5854,47 @@ VIEWS.tienda_constr=()=>{
 };
 function matTotal(){ const sub=r2(Object.keys(OB.cart).reduce((a,k)=>a+(OB.cart[k]||0)*MID[k].pu,0)), iva=r2(Object.keys(OB.cart).reduce((a,k)=>a+r2((OB.cart[k]||0)*MID[k].pu*0.13),0));
   return `Subtotal ${fm(sub)} + IVA 13 % ${fm(iva)} = <b class="gold">${fm(r2(sub+iva))}</b>`; }
+/* ---------- edificios completos (llave en mano) ---------- */
+const CONS={u:'CONS',e:'CONS',n:'Constructora del Valle S.A.',ced:'3-101-000555'};
+function pfCaja(b,x0,z0,x1,z1,y0,y1,f){ for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++){ if(!(x===x0||x===x1||z===z0||z===z1)) continue; const m=f(x,y,z); if(m) b[x+'_'+y+'_'+z]=m; } }
+function pfLosa(b,x0,z0,x1,z1,y,m){ for(let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++) b[x+'_'+y+'_'+z]=typeof m==='function'?m(x,z):m; }
+const PREFABS=[
+ {id:'loc',n:'Local comercial',d:'Un piso de ladrillo con vitrina, puerta doble, techo de teja, jardineras y lámparas',g:()=>{ const b={}; pfCaja(b,2,2,7,6,0,2,(x,y,z)=> z===2&&y===0&&(x===4||x===5)?'pue':z===2&&y===1&&x>2&&x<7?'vid':(x===2||x===7)&&(z===2||z===6)?'con':y===1&&(x===2||x===7)&&z===4?'ven':'lad'); pfLosa(b,2,2,7,6,3,'tej'); b['5_3_1']='rot'; b['2_0_1']='jar'; b['7_0_1']='jar'; b['3_0_1']='lam'; b['6_0_1']='lam'; return b; }},
+ {id:'cas',n:'Casa-tienda de madera',d:'Madera con ventanas, techo de teja a dos niveles y jardín al frente',g:()=>{ const b={}; pfCaja(b,2,3,7,7,0,2,(x,y,z)=> z===3&&y<=1&&x===4?'pue':y===1&&(z===3||z===7)&&(x===3||x===6)?'ven':'mad'); pfLosa(b,1,2,8,8,3,'tej'); pfLosa(b,3,4,6,6,4,'tej'); for(let x=1;x<=8;x++) b[x+'_0_1']='jar'; return b; }},
+ {id:'bod',n:'Bodega de acero',d:'Paredes de acero, portón doble, franja de vidrio, losa de concreto y rótulo',g:()=>{ const b={}; pfCaja(b,1,2,8,8,0,3,(x,y,z)=> z===2&&y<=1&&(x===3||x===4)?'pue':y===3&&z===2?'vid':(x===1||x===8)&&(z===2||z===8)?'con':'ace'); pfLosa(b,1,2,8,8,4,'con'); b['6_4_2']='rot'; b['1_1_1']='lam'; b['8_1_1']='lam'; return b; }},
+ {id:'ofi',n:'Edificio de oficinas',d:'Tres pisos de vidrio con columnas de concreto, rótulo y paneles solares',g:()=>{ const b={}; for(let p=0;p<3;p++){ pfCaja(b,2,2,7,7,p*3,p*3+2,(x,y,z)=> p===0&&z===2&&y===0&&(x===4||x===5)?'pue':(x===2||x===7)&&(z===2||z===7)?'con':'vid'); pfLosa(b,2,2,7,7,p*3+3,'con'); } b['4_9_1']='rot'; b['5_10_4']='pan'; b['3_10_4']='pan'; b['2_0_1']='lam'; b['7_0_1']='lam'; b['3_0_1']='jar'; b['6_0_1']='jar'; return b; }},
+ {id:'fab',n:'Fábrica',d:'Nave industrial de concreto y acero, chimenea de piedra y techo con paneles solares',g:()=>{ const b={}; pfCaja(b,0,2,8,9,0,3,(x,y,z)=> z===2&&y<=1&&(x===2||x===3||x===6)?'pue':y===2&&z===2&&x%2?'ven':(x===0||x===8)&&(z===2||z===9)?'con':y===3?'ace':'con'); pfLosa(b,0,2,8,9,4,(x,z)=> (z===5||z===6)&&x>=2&&x<=6?'pan':'ace'); for(let y=0;y<=8;y++) b['9_'+y+'_8']='pie'; b['5_3_1']='lam'; return b; }}];
+const PFID={}; PREFABS.forEach(p=>{ PFID[p.id]=p; });
+function pfCosto(pf){ const b=pf.g(); let e=0,m=0,n=0; Object.values(b).forEach(v=>{ const mm=MID[v]; if(!mm) return; n++; if(mm.cta==='1204') m=r2(m+mm.pu); else e=r2(e+mm.pu); }); return {e,m,n,iva:r2((e+m)*0.13),b}; }
+function pfDibujar(cv,b){ const g=cv.getContext('2d'), W=cv.width, H=cv.height, s=7.2; g.clearRect(0,0,W,H);
+  const L=Object.entries(b).map(([k,v])=>{ const [x,y,z]=k.split('_').map(Number); return {x,y,z:9-z,c:(MID[v]||{c:'#888'}).c}; }).sort((a,b)=>(a.x+a.z)-(b.x+b.z)||a.y-b.y);
+  const ox=W/2, oy=H-14, P=(x,y,z)=>[ox+(x-z)*s*.87, oy-(x+z)*s*.5-y*s+38];
+  const sh=(hex,f)=>{ const n=parseInt(hex.slice(1),16); const r=Math.min(255,((n>>16)&255)*f|0), gg=Math.min(255,((n>>8)&255)*f|0), bb=Math.min(255,(n&255)*f|0); return `rgb(${r},${gg},${bb})`; };
+  const poly=(pts,col)=>{ g.beginPath(); pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath(); g.fillStyle=col; g.fill(); g.strokeStyle='rgba(0,0,0,.25)'; g.lineWidth=.6; g.stroke(); };
+  g.fillStyle='rgba(255,255,255,.04)'; poly([P(0,0,0),P(10,0,0),P(10,0,10),P(0,0,10)],'rgba(63,138,79,.18)');
+  L.forEach(v=>{ const {x,y,z,c}=v;
+    poly([P(x,y+1,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x,y+1,z+1)],sh(c,1.15));
+    poly([P(x+1,y,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x+1,y,z+1)],sh(c,.78));
+    poly([P(x,y,z+1),P(x+1,y,z+1),P(x+1,y+1,z+1),P(x,y+1,z+1)],sh(c,.95)); }); }
+function pfPrevias(){ document.querySelectorAll('canvas.pfprev').forEach(cv=>{ const pf=PFID[cv.dataset.pf]; if(pf&&!cv.dataset.ok){ cv.dataset.ok=1; pfDibujar(cv,pf.g()); } }); }
+async function comprarEdificio(id){
+  if(!puede()) return; const pf=PFID[id], e=myE(), t=miTerreno(); if(!pf||!t) return; const ob=miObra(); if(Object.keys(ob.b||{}).length) return toast('Su terreno ya tiene construcción.','w');
+  const c=pfCosto(pf), sub=r2(c.e+c.m), tot=r2(sub+c.iva), tC=toC(tot), fid=key(); let num=0;
+  if(!confirm('¿Comprar «'+pf.n+'» a la '+CONS.n+'? Total '+fm(tot)+' (IVA incluido), de contado. Se construye de inmediato en su terreno.')) return;
+  const r=await txN(n=>{ if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<tC) return 'sinFondos';
+    n.saldo[S.uid]-=tC; n.consec.CONS=(n.consec.CONS||0)+1; num=n.consec.CONS; n.ext.constr=(n.ext.constr||0)+tC; n.fac[fid]='pagada'; return 'ok'; });
+  if(r.out!=='ok') return toast(r.out==='sinFondos'?'Saldo insuficiente en Bancos ('+fm(tot)+'). Puede pedir un préstamo en el Banco.':'No se pudo completar la compra.','w');
+  const nf=fNum(num), u={}, cnt={};
+  Object.entries(c.b).forEach(([k,v])=>{ u['obras/'+S.uid+'/b/'+k]=v+'*'; cnt[v]=(cnt[v]||0)+1; });
+  Object.entries(cnt).forEach(([m,q])=>{ u['obras/'+S.uid+'/mat/'+m]=SV.increment(q); });
+  if(c.e) u['obras/'+S.uid+'/pre/e']=SV.increment(c.e); if(c.m) u['obras/'+S.uid+'/pre/m']=SV.increment(c.m); u['obras/'+S.uid+'/ts']=SV.TIMESTAMP;
+  u['facturas/'+fid]=facturaDoc(num,CONS,{u:S.uid,e:e.eid,n:e.nom,ced:e.ced},[{d:('Edificio '+pf.n+' (llave en mano)').slice(0,40),cant:1,pu:c.e,sub:c.e,tar:0.13,iva:r2(c.e*0.13)}].concat(c.m?[{d:'Mobiliario y equipo del edificio',cant:1,pu:c.m,sub:c.m,tar:0.13,iva:r2(c.iva-r2(c.e*0.13))}]:[]),'contado','',{uso:'1202',act:'bienes'});
+  u['pendientes/'+S.uid+'/'+key()]=pendiente('edificio','Compra de edificio · '+nf,
+    `Compró a la ${CONS.n} (factura ${nf}) un edificio completo «${pf.n}», construido llave en mano en su terreno N.° ${t.p+1}. Edificio ${fm(c.e)}${c.m?' + mobiliario y equipo (lámparas, rótulos, paneles) '+fm(c.m):''} + IVA 13 % ${fm(c.iva)} = ${fm(tot)}, de contado.`,
+    [{c:'1202',d:c.e},{c:'1204',d:c.m},{c:'1106',d:c.iva},{c:'1102',h:tot}],'El edificio terminado entra directo a Edificios (Debe) y lo que es mobiliario y equipo a su cuenta (Debe), por el costo sin IVA; el IVA del servicio de construcción es crédito fiscal (IVA Acreditable). Bancos disminuye (Haber). Como ya está listo para usarse, empieza a depreciarse; no pasa por Construcciones en Proceso.',{ref:fid});
+  u['movimientos/'+S.uid+'/'+key()]={d:('Pago a '+CONS.n+' · '+nf).slice(0,120),m:-tot,ts:SV.TIMESTAMP,ref:fid};
+  await upd(u); toast('¡Su '+pf.n.toLowerCase()+' está construido! Registre el asiento. Puede remodelarlo con 🧱 Construir.','y'); renderPanel(true);
+}
 VIEWS.empresa_act=()=>{
   const a=activosRes(), t=miTerreno(), ob=miObra(), pend=costoBloques(ob,'pend'), per=periodo(), ya=(S.depr||{})[slug(per)];
   const dep=ya?{e:ya.e||0,m:ya.m||0,c:ya.c||0,v:ya.v||0,t:r2((ya.e||0)+(ya.m||0)+(ya.c||0)+(ya.v||0))}:calcDep(a);
@@ -5980,6 +6032,7 @@ const ACT_OBRAS={
   mMas:b=>{ const k=b.dataset.m; OB.cart[k]=Math.min(500,(OB.cart[k]||0)+(OB.cart[k]>=10?5:1)); OB.err=''; renderPanel(true); },
   mMenos:b=>{ const k=b.dataset.m; OB.cart[k]=Math.max(0,(OB.cart[k]||0)-((OB.cart[k]||0)>10?5:1)); renderPanel(true); },
   mComprar:()=>comprarMateriales(),
+  pfComprar:b=>comprarEdificio(b.dataset.pf),
   bEntrar:()=>entrarConstruccion(),
   bSalir:()=>salirConstruccion(),
   bMat:b=>{ OB.mat=b.dataset.m; OB.modo='poner'; if(R3) R3.setBuildMode('poner'); buildbar(); },
@@ -6794,8 +6847,8 @@ function metricas(){
   return rows;
 }
 function integridad(){ const n=S.nuc||{}, sal=n.saldo||{}, x=n.ext||{}; let s=0; Object.keys(sal).forEach(k=>{ s+=sal[k]||0; });
-  const otros=(x.fabrica||0)+(x.agencia||0)+(x.municipal||0)+(x.naviera||0)+(x.pext||0)-(x.cext||0)+(x.donaciones||0)-(x.devol||0)-(x.prest||0)+(x.pagb||0)+(x.invb||0)-(x.cobb||0)+(x.ins||0);
-  return {bancos:s,prov:x.proveedor||0,hac:x.hacienda||0,inm:x.inmuebles||0,fab:x.fabrica||0,agen:x.agencia||0,mun:x.municipal||0,nav:x.naviera||0,pext:x.pext||0,cext:x.cext||0,don:x.donaciones||0,devol:x.devol||0,prest:x.prest||0,pagb:x.pagb||0,invb:x.invb||0,cobb:x.cobb||0,ins:x.ins||0,aportes:x.aportes||0,ok:s+(x.proveedor||0)+(x.hacienda||0)+(x.inmuebles||0)+otros===(x.aportes||0)}; }
+  const otros=(x.fabrica||0)+(x.agencia||0)+(x.municipal||0)+(x.naviera||0)+(x.pext||0)-(x.cext||0)+(x.donaciones||0)-(x.devol||0)-(x.prest||0)+(x.pagb||0)+(x.invb||0)-(x.cobb||0)+(x.ins||0)+(x.constr||0);
+  return {bancos:s,prov:x.proveedor||0,hac:x.hacienda||0,inm:x.inmuebles||0,fab:x.fabrica||0,agen:x.agencia||0,mun:x.municipal||0,nav:x.naviera||0,pext:x.pext||0,cext:x.cext||0,don:x.donaciones||0,devol:x.devol||0,prest:x.prest||0,pagb:x.pagb||0,invb:x.invb||0,cobb:x.cobb||0,ins:x.ins||0,constr:x.constr||0,aportes:x.aportes||0,ok:s+(x.proveedor||0)+(x.hacienda||0)+(x.inmuebles||0)+otros===(x.aportes||0)}; }
 function renderDoc(force){
   if($('docente').hidden) return;
   if(!force&&foco($('docente'))){ docPending=true; return; } docPending=false;
@@ -6834,7 +6887,7 @@ function renderDoc(force){
       const cod=c.codigo||'libre'; let nOk=0; const filas=js.sort((a,b)=>String(a[1].n).localeCompare(b[1].n)).map(([k,p])=>{ const nv=nivelVest(p.v||''), ok=cumpleCodigo(nv.k,cod); if(ok) nOk++;
         return `<tr><td>${esc(p.n)}</td><td>${esc(p.emp||'')}</td><td><i class="nv ${nv.cls}">${esc(nv.n)}</i></td><td>${cod==='libre'?'—':ok?'<span class="pill g">cumple</span>':'<span class="pill w">no cumple</span>'}</td><td class="mut" style="font-size:12px">${esc(nv.consejos.join(' '))}</td></tr>`; }).join('');
       return `<p style="margin:8px 0">${cod==='libre'?'Sin código fijado.':`Cumplen el código «${esc(CODIGOS[cod])}»: <b class="gold">${nOk} de ${js.length}</b> conectados.`}</p><div class="tw"><table class="tbl" id="dVest"><thead><tr><th>Estudiante</th><th>Empresa</th><th>Vestimenta</th><th>Código</th><th>Observaciones de etiqueta</th></tr></thead><tbody>${filas}</tbody></table></div>`; })()}
-    <h3>Verificación de integridad (céntimos exactos)</h3><div class="card" id="dInteg" style="font-family:var(--mono);font-size:13px;line-height:1.7">Σ Bancos de las empresas: ${fm(fromC(ig.bancos))}<br>+ Pagado al ${PROV.n}: ${fm(fromC(ig.prov))}<br>+ Impuestos pagados a Hacienda (IVA, traspasos y marchamos): ${fm(fromC(ig.hac))}<br>+ Terrenos pagados a la Inmobiliaria Municipal: ${fm(fromC(ig.inm))}<br>+ Mano de obra y CIF de las fábricas: ${fm(fromC(ig.fab))}<br>+ Vehículos pagados a la ${AGEN.n}: ${fm(fromC(ig.agen))}<br>+ Impuesto sobre bienes inmuebles (municipalidad): ${fm(fromC(ig.mun))}<br>+ Flete y seguro pagados a la naviera: ${fm(fromC(ig.nav))}<br>+ Pagos enviados al exterior: ${fm(fromC(ig.pext))}<br>− Cobros recibidos del exterior: ${fm(fromC(ig.cext))}<br>+ Donaciones: ${fm(fromC(ig.don))}<br>− Devoluciones de Hacienda: ${fm(fromC(ig.devol))}<br>− Préstamos recibidos del banco: ${fm(fromC(ig.prest))}<br>+ Cuotas pagadas al banco: ${fm(fromC(ig.pagb))}<br>+ Inversiones en CDP: ${fm(fromC(ig.invb))}<br>− CDP cobrados (capital e intereses): ${fm(fromC(ig.cobb))}<br>+ Primas pagadas al INS: ${fm(fromC(ig.ins))}<br>= ${fm(fromC(ig.bancos+ig.prov+ig.hac+ig.inm+ig.fab+ig.agen+ig.mun+ig.nav+ig.pext-ig.cext+ig.don-ig.devol-ig.prest+ig.pagb+ig.invb-ig.cobb+ig.ins))} · Aportes de capital: ${fm(fromC(ig.aportes))}<br><b class="${ig.ok?'ok':'bad'}">${ig.ok?'✓ El dinero de la sala cuadra':'✗ Diferencia detectada'}</b></div>`;
+    <h3>Verificación de integridad (céntimos exactos)</h3><div class="card" id="dInteg" style="font-family:var(--mono);font-size:13px;line-height:1.7">Σ Bancos de las empresas: ${fm(fromC(ig.bancos))}<br>+ Pagado al ${PROV.n}: ${fm(fromC(ig.prov))}<br>+ Impuestos pagados a Hacienda (IVA, traspasos y marchamos): ${fm(fromC(ig.hac))}<br>+ Terrenos pagados a la Inmobiliaria Municipal: ${fm(fromC(ig.inm))}<br>+ Mano de obra y CIF de las fábricas: ${fm(fromC(ig.fab))}<br>+ Vehículos pagados a la ${AGEN.n}: ${fm(fromC(ig.agen))}<br>+ Impuesto sobre bienes inmuebles (municipalidad): ${fm(fromC(ig.mun))}<br>+ Flete y seguro pagados a la naviera: ${fm(fromC(ig.nav))}<br>+ Pagos enviados al exterior: ${fm(fromC(ig.pext))}<br>− Cobros recibidos del exterior: ${fm(fromC(ig.cext))}<br>+ Donaciones: ${fm(fromC(ig.don))}<br>− Devoluciones de Hacienda: ${fm(fromC(ig.devol))}<br>− Préstamos recibidos del banco: ${fm(fromC(ig.prest))}<br>+ Cuotas pagadas al banco: ${fm(fromC(ig.pagb))}<br>+ Inversiones en CDP: ${fm(fromC(ig.invb))}<br>− CDP cobrados (capital e intereses): ${fm(fromC(ig.cobb))}<br>+ Primas pagadas al INS: ${fm(fromC(ig.ins))}<br>+ Edificios pagados a la constructora: ${fm(fromC(ig.constr))}<br>= ${fm(fromC(ig.bancos+ig.prov+ig.hac+ig.inm+ig.fab+ig.agen+ig.mun+ig.nav+ig.pext-ig.cext+ig.don-ig.devol-ig.prest+ig.pagb+ig.invb-ig.cobb+ig.ins+ig.constr))} · Aportes de capital: ${fm(fromC(ig.aportes))}<br><b class="${ig.ok?'ok':'bad'}">${ig.ok?'✓ El dinero de la sala cuadra':'✗ Diferencia detectada'}</b></div>`;
   } else if(D.t==='emp'){ const rs=metricas().sort((a,b)=>String(a.e.duen).localeCompare(b.e.duen));
     h=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px"><p style="margin:0">${rs.length} empresa(s) en la sala.</p><button class="btn sec sm" data-act="dCSV">⬇ Exportar CSV</button></div>
     ${rs.length?`<div class="tw"><table class="tbl" id="dTabla"><thead><tr><th>Estudiante</th><th>Empresa</th><th class="num">Bancos</th><th class="num">Ventas</th><th class="num">Compras</th><th class="num">Utilidad</th><th class="num">Asientos ✓/✗</th><th class="num">%</th><th class="num">Pend.</th><th class="num">Declar.</th><th class="num">Cumpl.</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr data-u="${esc(r.u)}"><td>${esc(r.e.duen)}<br><small class="mut">${esc(r.u)}</small></td><td><b>${esc(r.e.nom)}</b><br><small class="mut">${esc(r.e.giro)} · ${r.e.act==='bienes'?'bienes':'servicios'}</small></td><td class="num">${fm(r.saldo)}</td><td class="num">${fm(r.ventas)}</td><td class="num">${fm(r.compras)}</td><td class="num">${fm(r.util)}</td><td class="num"><span class="ok">${r.ok}</span>/<span class="bad">${r.er}</span></td><td class="num">${r.pct}%</td><td class="num ${r.pend?'bad':''}">${r.pend}</td><td class="num">${r.dOk}/${r.ndecl}${r.sinDecl?` <small class="mut">(${r.sinDecl} s/d)</small>`:''}</td><td class="num">${r.cumpl}%</td><td><button class="btn coral sm" data-act="dReset" data-u="${esc(r.u)}">Reiniciar</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Aún no hay empresas.</div>'}`;
@@ -6927,7 +6980,7 @@ Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA);
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(!b||b.disabled) return; const f=ACT[b.dataset.act]; if(f){ e.preventDefault(); const r=f(b,e); if(r&&r.catch) r.catch(err=>{ console.warn(err); toast('Error: '+err.message,'w'); }); } });
 document.addEventListener('click',e=>{ if(!$('frases').hidden&&!e.target.closest('#frases')&&!e.target.closest('[data-act="frases"]')) $('frases').hidden=true; });
 setInterval(()=>{ if(!$('game').hidden) hud(); },15000);
-window.CC={cuotaNivelada,tablaAmort,tasa,BK,rtsCalc,sancion,RTS_ACT,TR,MULTA79,MON,tcDe,liquidacion,misComercios,TBARCO,IX,FB,TX,VEHS,ipvCalc,baseBI,TPROD,anio,OB,MATS,PARCELAS,PAISES,activosRes,calcDep,miObra,miTerreno,get me(){ return me; },VS,VEST,nivelVest,vParse,vStr,vesObj,S,P,get DB(){ return DB; },get base(){ return base; },integridad,metricas,ivaCalc,saldosLibros,compararAsiento,txN,pn,slug,get MODE(){ return MODE; }};
+window.CC={PREFABS,pfCosto,cuotaNivelada,tablaAmort,tasa,BK,rtsCalc,sancion,RTS_ACT,TR,MULTA79,MON,tcDe,liquidacion,misComercios,TBARCO,IX,FB,TX,VEHS,ipvCalc,baseBI,TPROD,anio,OB,MATS,PARCELAS,PAISES,activosRes,calcDep,miObra,miTerreno,get me(){ return me; },VS,VEST,nivelVest,vParse,vStr,vesObj,S,P,get DB(){ return DB; },get base(){ return base; },integridad,metricas,ivaCalc,saldosLibros,compararAsiento,txN,pn,slug,get MODE(){ return MODE; }};
 </script>
 </body>
 </html>
