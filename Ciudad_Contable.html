@@ -67,7 +67,25 @@ button.pill{cursor:pointer}
 .bar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:7px;z-index:5;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100vw - 80px)}
 .bar button{padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(15,15,18,.92);color:#fff;font-size:14px}
 .bar button:hover{border-color:var(--gold)}
-#frases{position:fixed;left:50%;transform:translateX(-50%);bottom:70px;z-index:15;padding:10px;width:min(420px,calc(100vw - 24px));display:grid;gap:6px}
+#frases{position:fixed;left:50%;transform:translateX(-50%);bottom:70px;z-index:17;padding:10px;width:min(420px,calc(100vw - 24px));display:grid;gap:6px}
+#chatbox{position:fixed;right:12px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:16;width:min(370px,calc(100vw - 24px));height:min(460px,calc(100vh - 160px));display:flex;flex-direction:column;padding:0;overflow:hidden}
+#chatbox[hidden]{display:none}
+#chatbox .chh{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)} #chatbox .chh b{flex:none} #chatbox .chh small{flex:1;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#chatbox .chh .x{background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:4px 6px}
+.chlog{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.chm{max-width:85%;align-self:flex-start;background:#1c1c22;border:1px solid var(--line);border-radius:12px 12px 12px 4px;padding:6px 10px}
+.chm.yo{align-self:flex-end;background:rgba(201,151,63,.18);border-color:rgba(201,151,63,.4);border-radius:12px 12px 4px 12px}
+.chm.doc{border-color:var(--teal);background:rgba(47,194,173,.12)}
+.chn{font-size:11px;color:var(--gold2);font-weight:600} .chn small{color:#9b9aa4;font-weight:400}
+.chb{font-size:14px;line-height:1.35;word-wrap:break-word;overflow-wrap:anywhere}
+.chplay{background:var(--gold);color:#111;border:none;border-radius:50%;width:28px;height:28px;font-size:12px;cursor:pointer;margin-right:4px}
+.chf{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--line);align-items:center} .chf input{flex:1;min-width:0;font-size:15px}
+#bar [data-act="chat"]{position:relative} #bar .badge{position:absolute;top:-4px;right:-4px;background:var(--coral);color:#fff;border-radius:9px;font-size:10.5px;font-weight:700;padding:1px 5px;line-height:1.4}
+#callbar{position:fixed;left:50%;transform:translateX(-50%);top:12px;z-index:30;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;padding:10px 14px;font-size:14px;max-width:calc(100vw - 24px)}
+#callbar[hidden]{display:none}
+.pulse{display:inline-block;animation:pulso 1s infinite} @keyframes pulso{50%{transform:scale(1.3)}}
+.callb{background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;padding:1px 5px;margin-left:4px}
+@media (max-width:700px){ #chatbox{left:8px;right:8px;width:auto;bottom:calc(64px + env(safe-area-inset-bottom));height:min(60vh,460px)} #callbar{top:auto;bottom:calc(130px + env(safe-area-inset-bottom))} }
 #frases button{text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#16161a;color:#fff;font-size:14px}
 #btnDoc{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:6;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(15,15,18,.6);color:var(--mut);font-size:14px;opacity:.55}
 #toasts{position:fixed;right:12px;bottom:72px;z-index:40;display:flex;flex-direction:column;gap:8px;width:min(420px,calc(100vw - 24px));pointer-events:none}
@@ -287,7 +305,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
     <button data-emo="✅">✅<span class="tx"> Listo</span></button>
     <button data-emo="❓">❓<span class="tx"> Duda</span></button>
     <button data-emo="💰">💰<span class="tx"> Vendo</span></button>
-    <button data-act="frases">💬<span class="tx"> Frases</span></button>
+    <button data-act="chat">💬<span class="tx"> Chat</span></button>
     <button data-act="bEntrar" id="btnConstruir">🧱<span class="tx"> Construir</span></button>
     <button data-act="ayuda">📘<span class="tx"> Ayuda</span></button>
   </div>
@@ -4749,7 +4767,7 @@ function suscribir(){
     notifT0=now()-3000;
     base.child('notif/'+S.uid).limitToLast(25).on('child_added',s=>{ const v=s.val(); if(v&&v.ts&&v.ts>notifT0&&!vistos[s.key]){ vistos[s.key]=1; toast(v.txt,v.k||''); } });
   }
-  base.child('chat').limitToLast(14).on('value',s=>{ S.chat=s.val()||{}; chatlog(); });
+  base.child('chat').limitToLast(40).on('value',s=>{ S.chat=s.val()||{}; chatlog(); programar(); }); suscribirLlamadas();
   suscribirMundo(); suscribirInd(); suscribirIntl(); suscribirBanca(); suscribirCCSS(); suscribirCierre(); suscribirPlan();
 }
 const vistos={};
@@ -4766,6 +4784,7 @@ function renderTodo(){
   hud(); renderPanel(); if(!$('docente').hidden) renderDoc();
   if(R3&&R3.building) buildbar();
   const bc=$('btnConstruir'); if(bc) bc.hidden=!miTerreno();
+  renderChat(); if(vozOn()!==CH.vozL){ CH.vozL=vozOn(); lista(); }
 }
 function onCfg(){
   const c=S.cfg; const ev=c.evento;
@@ -4933,13 +4952,13 @@ function hud(){
 function lista(){
   const arr=Object.entries(S.jug).filter(([k,v])=>v&&v.n);
   $('cnt').textContent=arr.length;
-  $('who').innerHTML=arr.sort((a,b)=>String(a[1].n).localeCompare(b[1].n)).map(([k,v])=>`<div class="p"><span class="dot" style="background:${esc(v.c||'#fff')}"></span>${esc(v.n)}${k===S.ses?' <small>(usted)</small>':''}${v.emp?`<br><small>· ${esc(v.emp)}</small>`:''}</div>`).join('');
+  $('who').innerHTML=arr.sort((a,b)=>String(a[1].n).localeCompare(b[1].n)).map(([k,v])=>`<div class="p"><span class="dot" style="background:${esc(v.c||'#fff')}"></span>${esc(v.n)}${k===S.ses?' <small>(usted)</small>':(vozOn()&&v.u&&v.u!==S.uid?` <button class="callb" data-act="chLlamar" data-u="${esc(v.u)}" data-n="${esc(v.n)}" title="Llamar por voz" aria-label="Llamar a ${esc(v.n)}">📞</button>`:'')}${v.emp?`<br><small>· ${esc(v.emp)}</small>`:''}</div>`).join('');
 }
-function chatlog(){ const a=Object.values(S.chat).filter(Boolean).slice(-6);
-  $('chatlog').innerHTML=a.map(m=>`<div><b>${esc(String(m.n).split(' ')[0])}:</b> ${esc(FRASES[m.f]||'')}</div>`).join('')||'<div class="mut">Sin mensajes. Use 💬 Frases.</div>'; }
+function chatlog(){ const a=chatMsgs().slice(-6).map(x=>x[1]);
+  $('chatlog').innerHTML=a.map(m=>`<div><b>${esc(m.u==='docente'?'Docente':String(m.n).split(' ')[0])}:</b> ${esc(chTexto(m).slice(0,80))}</div>`).join('')||'<div class="mut">Sin mensajes. Use 💬 Chat.</div>'; renderChat(); }
 function enviarFrase(i){ if(S.cfg.congelada){ toast('El mundo está congelado.','w'); return; }
   const t=Date.now(); if(S.lastChat&&t-S.lastChat<2500){ toast('Espere un momento antes de enviar otra frase.','w'); return; } S.lastChat=t;
-  base.child('chat/'+key()).set({u:S.uid,n:S.nombre,f:i,ts:SV.TIMESTAMP}).catch(e=>toast('No se pudo enviar: '+e.message,'w')); base.child('jugadores/'+S.ses).update({b:i,bt:SV.TIMESTAMP}).catch(()=>{}); $('frases').hidden=true; }
+  base.child('chat/'+key()).set({u:S.uid,n:S.nombre,f:i,ts:SV.TIMESTAMP}).catch(e=>toast('No se pudo enviar: '+e.message,'w')); base.child('jugadores/'+S.ses).update({b:i,bx:null,bt:SV.TIMESTAMP}).catch(()=>{}); $('frases').hidden=true; }
 $('frases').innerHTML=FRASES.map((f,i)=>`<button data-act="frase" data-i="${i}">${esc(f)}</button>`).join('');
 document.querySelectorAll('[data-emo]').forEach(b=>b.onclick=()=>{ if(!S.ses) return; base.child('jugadores/'+S.ses).update({e:b.dataset.emo,et:SV.TIMESTAMP}).catch(()=>{}); emoLocal={e:b.dataset.emo,t:Date.now()}; });
 let emoLocal=null;
@@ -5011,7 +5030,7 @@ function draw(dt){
     if(p.emp){ cx.fillStyle='rgba(244,221,122,.85)'; cx.font='11px sans-serif'; cx.fillText(p.emp,x,y+44); }
     let emo=p.e, et=p.et||0; if(k===S.ses&&emoLocal&&Date.now()-emoLocal.t<3000){ emo=emoLocal.e; et=t; }
     if(emo&&t-et<3500){ cx.font='22px sans-serif'; cx.fillText(emo,x,y-44); }
-    if(p.b!=null&&p.bt&&t-p.bt<5000&&FRASES[p.b]){ const tx=FRASES[p.b]; cx.font='12px sans-serif'; const w=cx.measureText(tx).width+16; cx.fillStyle='rgba(255,255,255,.95)'; rr(x-w/2,y-80,w,24,10); cx.fill(); cx.fillStyle='#111'; cx.fillText(tx,x,y-63); }
+    if(burbuja(p,t)){ const tx=burbuja(p,t); cx.font='12px sans-serif'; const w=cx.measureText(tx).width+16; cx.fillStyle='rgba(255,255,255,.95)'; rr(x-w/2,y-80,w,24,10); cx.fill(); cx.fillStyle='#111'; cx.fillText(tx,x,y-63); }
   });
   if(target){ cx.strokeStyle='rgba(244,221,122,.6)'; cx.lineWidth=2; cx.beginPath(); cx.arc(target.x,target.y,10,0,Math.PI*2); cx.stroke(); }
   cx.restore();
@@ -5099,7 +5118,7 @@ function jugadores3d(dt){
     if(self){ x=me.x; y=me.y; } else { const d=disp[k]||(disp[k]={x:p.x,y:p.y,k:pk}); if(d.k!==pk){ d.x=p.x; d.y=p.y; d.k=pk; } d.x+=(p.x-d.x)*Math.min(1,dt*10); d.y+=(p.y-d.y)*Math.min(1,dt*10); x=d.x; y=d.y; }
     let emo=p.e, et=p.et||0; if(self&&emoLocal&&Date.now()-emoLocal.t<3000){ emo=emoLocal.e; et=t; }
     const vv=self?vPuesto():(p.v||''), nv=nivelVest(vv);
-    out.push({k,self,n:p.n,c:p.c,emp:p.emp+(home?'':' · '+contOf(contDeSala(sala)).name.replace('República de ','')),x:x+C.ox,y:y+C.oy,ves:vesObj(vv,p.c),vk:vv,niv:nv.n,nivk:nv.cls,emo:(emo&&t-et<3500)?emo:'',bub:(p.b!=null&&p.bt&&t-p.bt<5000&&FRASES[p.b])?FRASES[p.b]:''});
+    out.push({k,self,n:p.n,c:p.c,emp:p.emp+(home?'':' · '+contOf(contDeSala(sala)).name.replace('República de ','')),x:x+C.ox,y:y+C.oy,ves:vesObj(vv,p.c),vk:vv,niv:nv.n,nivk:nv.cls,emo:(emo&&t-et<3500)?emo:'',bub:burbuja(p,t)});
   }));
   if(S.ses&&!out.some(o=>o.self)){ const vv=vPuesto(), nv=nivelVest(vv), C=contOf(curK()); out.push({k:S.ses,self:true,n:S.nombre,c:S.color,emp:myE()?myE().nom:'',x:me.x+C.ox,y:me.y+C.oy,emo:'',bub:'',ves:vesObj(vv,S.color),vk:vv,niv:nv.n,nivk:nv.cls}); }
   return out;
@@ -7275,6 +7294,161 @@ const ACT_PLAN={ plGuardar:()=>guardarPres(), plProy:()=>revisarProyecto(), plEs
 document.addEventListener('input',e=>{ const d=e.target&&e.target.dataset; if(d&&d.pl) PLN[d.pl]=e.target.value; });
 document.addEventListener('change',e=>{ const d=e.target&&e.target.dataset; if(!d) return; if(d.pl) PLN[d.pl]=e.target.value; if(d.crit) PLN.crit[d.crit]=e.target.checked; });
 
+/* ===================== CHAT LIBRE, NOTAS DE VOZ Y LLAMADAS EN VIVO =====================
+   El docente controla tres interruptores: config/chat (texto libre), config/audio (notas de voz)
+   y config/voz (llamadas en vivo 1 a 1 por WebRTC). Las frases rápidas funcionan siempre. */
+const CH={abierto:false,visto:0,rec:null,recIni:0,recTm:null,aud:{},call:null,inc:null,ring:null,ignorar:{}};
+const chatOn=()=>S.cfg.chat===true, audioOn=()=>S.cfg.audio===true, vozOn=()=>S.cfg.voz===true;
+const CH_MAX_SEG=20, CH_MAX_LEN=200;
+const normW=w=>w.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/(.)\1+/g,'$1');
+const MALAS=new Set(['hp','hdp','hijueputa','hijoeputa','jueputa','mierda','puta','puto','idiota','estupido','estupida','imbecil','playo','culo','verga','pendejo','pendeja','maricon','marica','zorra','cabron','cabrona','malparido','malparida','carajo','huevon','mamon','perra','picha','pichudo','mamada','cochino','cochina'].map(w=>normW(w)));
+function limpiarChat(t){ return String(t||'').replace(/[\p{L}\p{N}]+/gu,w=>{ const n=normW(w); return (MALAS.has(n)||MALAS.has(n.replace(/s$/,'')))?'*'.repeat(w.length):w; }).replace(/\s+/g,' ').trim().slice(0,CH_MAX_LEN); }
+function chTexto(m){ return m.t!=null?m.t:m.a?'🎤 nota de voz ('+(m.s||0)+' s)':(FRASES[m.f]||''); }
+function burbuja(p,t){ if(!(p&&p.bt&&t-p.bt<5000)) return ''; if(p.bx) return String(p.bx); return (p.b!=null&&FRASES[p.b])?FRASES[p.b]:''; }
+const hora=ts=>ts?new Date(ts).toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'}):'';
+
+/* ---------- ventana de chat ---------- */
+(function(){ const d=document.createElement('div'); d.id='chatbox'; d.className='glass'; d.hidden=true; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Chat de la sala'); $('game').appendChild(d);
+  const c=document.createElement('div'); c.id='callbar'; c.className='glass'; c.hidden=true; c.setAttribute('role','status'); $('game').appendChild(c);
+  const a=document.createElement('audio'); a.id='callAudio'; a.autoplay=true; a.setAttribute('playsinline',''); $('game').appendChild(a); })();
+function chatMsgs(){ return Object.entries(S.chat||{}).filter(([k,m])=>m&&m.u).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0)); }
+function noLeidos(){ return chatMsgs().filter(([k,m])=>m.u!==S.uid&&(m.ts||0)>CH.visto).length; }
+function renderChat(){
+  const btn=document.querySelector('#bar [data-act="chat"]'); if(btn){ const n=CH.abierto?0:noLeidos(); btn.querySelector('.badge')?.remove(); if(n) btn.insertAdjacentHTML('beforeend',`<span class="badge">${n>9?'9+':n}</span>`); }
+  if(CH.call&&!vozOn()) colgar('El docente cerró las llamadas.');
+  if(CH.rec&&!audioOn()) pararGrabacion(true);
+  renderCallbar(); if(!CH.abierto) return;
+  const L0=chatMsgs(), sig=JSON.stringify([L0.length,L0.length?L0[L0.length-1][0]:'',chatOn(),audioOn(),vozOn(),!!CH.rec,CH.aud.k||'',!!CH.aud.on]); if(sig===CH.sig&&$('chatbox').firstChild) return; CH.sig=sig;
+  const box=$('chatbox'), L=L0, log=box.querySelector('#chLog'), abajo=!log||log.scrollHeight-log.scrollTop-log.clientHeight<40, borrador=box.querySelector('#chTxt')?.value||'', foc=document.activeElement&&document.activeElement.id==='chTxt';
+  const estado=[chatOn()?'💬 chat abierto':'💬 solo frases',audioOn()?'🎤 notas de voz':'',vozOn()?'📞 llamadas':''].filter(Boolean).join(' · ');
+  box.innerHTML=`<div class="chh"><b>💬 Chat de la sala ${esc(SALA)}</b><small class="mut">${estado}</small><button class="x" data-act="chat" aria-label="Cerrar el chat">✕</button></div>
+   <div id="chLog" class="chlog" aria-live="polite">${L.map(([k,m])=>{ const yo=m.u===S.uid, doc=m.u==='docente';
+     return `<div class="chm ${yo?'yo':''} ${doc?'doc':''}"><div class="chn">${esc(doc?'👨‍🏫 Docente':String(m.n||'').split(' ').slice(0,2).join(' '))} <small>${hora(m.ts)}</small></div><div class="chb">${m.a?`<button class="chplay" data-act="chPlay" data-k="${esc(m.a)}" aria-label="Escuchar nota de voz">${CH.aud.k===m.a&&CH.aud.on?'⏸':'▶'}</button> nota de voz · ${m.s||0} s`:esc(chTexto(m))}</div></div>`; }).join('')||'<p class="mut" style="text-align:center;margin:30px 0">Todavía no hay mensajes.</p>'}</div>
+   <div class="chf">${chatOn()?`<input type="text" id="chTxt" maxlength="${CH_MAX_LEN}" placeholder="Escriba un mensaje…" autocomplete="off" aria-label="Mensaje"><button class="btn sm" data-act="chEnviar" aria-label="Enviar">➤</button>`:`<span class="mut" style="flex:1;font-size:12.5px">El docente tiene el chat libre cerrado. Puede usar las frases.</span>`}
+    ${audioOn()?`<button class="btn sm ${CH.rec?'coral':'sec'}" data-act="chGrabar" id="chRec" aria-label="${CH.rec?'Detener y enviar la nota de voz':'Grabar una nota de voz'}">${CH.rec?'⏹ '+Math.floor((Date.now()-CH.recIni)/1000)+' s':'🎤'}</button>`:''}
+    <button class="btn sm sec" data-act="frases" aria-label="Frases rápidas">⚡</button></div>
+   ${vozOn()?'<div class="mut" style="font-size:11.5px;padding:0 12px 10px">📞 Para hablar en vivo, toque el teléfono junto al nombre de un compañero en «En el mundo».</div>':''}`;
+  const lg=box.querySelector('#chLog'); if(abajo) lg.scrollTop=lg.scrollHeight;
+  const ti=box.querySelector('#chTxt'); if(ti){ ti.value=borrador; if(foc){ ti.focus(); ti.setSelectionRange(ti.value.length,ti.value.length); } ti.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); enviarTexto(); } }; }
+  const ult=L.length?L[L.length-1][1].ts||0:0; if(ult>CH.visto) CH.visto=ult;
+}
+function abrirChat(){ CH.abierto=!CH.abierto; CH.sig=''; $('chatbox').hidden=!CH.abierto; if(CH.abierto){ renderChat(); setTimeout(()=>{ const t=$('chTxt'); if(t&&!matchMedia('(pointer:coarse)').matches) t.focus(); },50); } else renderChat(); }
+function puedeChatear(){ if(S.cfg.congelada){ toast('El mundo está congelado.','w'); return false; } const t=Date.now(); if(S.lastChat&&t-S.lastChat<2000){ toast('Espere un momento antes de enviar otro mensaje.','w'); return false; } S.lastChat=t; return true; }
+function enviarTexto(){
+  const i=$('chTxt'); if(!i) return; const t=limpiarChat(i.value); if(!t) return;
+  if(!chatOn()){ toast('El chat libre está cerrado.','w'); return; } if(!puedeChatear()) return;
+  i.value=''; base.child('chat/'+key()).set({u:S.uid,n:S.nombre,t,ts:SV.TIMESTAMP}).catch(e=>toast('No se pudo enviar: '+e.message,'w'));
+  if(S.ses) base.child('jugadores/'+S.ses).update({bx:t.slice(0,60),bt:SV.TIMESTAMP}).catch(()=>{});
+}
+
+/* ---------- notas de voz ---------- */
+function mimeAudio(){ const c=['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/mp4','audio/webm']; return (window.MediaRecorder&&MediaRecorder.isTypeSupported)?c.find(m=>MediaRecorder.isTypeSupported(m))||'':''; }
+async function grabar(){
+  if(CH.rec){ pararGrabacion(false); return; }
+  if(!audioOn()) return toast('El docente no ha habilitado las notas de voz.','w');
+  if(!navigator.mediaDevices||!window.MediaRecorder) return toast('Este navegador no permite grabar audio.','w');
+  if(CH.call) return toast('Termine la llamada antes de grabar.','w');
+  let st; try{ st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); }catch(e){ return toast('Permita el uso del micrófono para grabar.','w'); }
+  const mt=mimeAudio(), mr=new MediaRecorder(st,Object.assign({audioBitsPerSecond:16000},mt?{mimeType:mt}:{})), trozos=[];
+  mr.ondataavailable=e=>{ if(e.data&&e.data.size) trozos.push(e.data); };
+  mr.onstop=()=>{ st.getTracks().forEach(t=>t.stop()); const r=CH.rec; CH.rec=null; clearInterval(CH.recTm); renderChat(); if(!r||r.cancel) return;
+    const seg=Math.max(1,Math.round((Date.now()-CH.recIni)/1000)); if(seg<1||!trozos.length) return;
+    const fr=new FileReader(); fr.onload=()=>enviarAudio(String(fr.result),Math.min(seg,CH_MAX_SEG)); fr.readAsDataURL(new Blob(trozos,{type:mr.mimeType||mt||'audio/webm'})); };
+  CH.rec={mr}; CH.recIni=Date.now(); mr.start(500);
+  CH.recTm=setInterval(()=>{ const b=$('chRec'); if(b) b.textContent='⏹ '+Math.floor((Date.now()-CH.recIni)/1000)+' s'; if(Date.now()-CH.recIni>=CH_MAX_SEG*1000) pararGrabacion(false); },250); renderChat();
+}
+function pararGrabacion(cancel){ if(!CH.rec) return; CH.rec.cancel=cancel; try{ CH.rec.mr.stop(); }catch(e){ CH.rec=null; } }
+function enviarAudio(d,s){
+  if(!/^data:audio\//.test(d)) d=d.replace(/^data:[^;,]*/,'data:audio/webm');
+  if(d.length>250000) return toast('La nota de voz es muy pesada; grabe una más corta.','w');
+  if(!puedeChatear()) return; const k=key(), o={};
+  o['audios/'+k]={u:S.uid,d,ts:SV.TIMESTAMP}; o['chat/'+k]={u:S.uid,n:S.nombre,a:k,s,ts:SV.TIMESTAMP};
+  base.update(o).then(()=>toast('Nota de voz enviada.')).catch(e=>toast('No se pudo enviar la nota: '+e.message,'w'));
+}
+function reproducir(k){
+  if(CH.aud.el){ CH.aud.el.pause(); const misma=CH.aud.k===k&&CH.aud.on; CH.aud.on=false; if(misma){ renderChat(); return; } }
+  base.child('audios/'+k).once('value').then(s=>{ const v=s.val(); if(!v||!v.d) return toast('La nota de voz ya no está disponible.','w');
+    const el=new Audio(v.d); CH.aud={k,el,on:true}; el.onended=()=>{ CH.aud.on=false; renderChat(); }; el.play().catch(()=>toast('No se pudo reproducir el audio.','w')); renderChat(); });
+}
+
+/* ---------- llamadas de voz en vivo (WebRTC, 1 a 1) ---------- */
+const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}]};
+function esperarICE(pc){ return new Promise(r=>{ if(pc.iceGatheringState==='complete') return r(); const f=()=>{ if(pc.iceGatheringState==='complete'){ pc.removeEventListener('icegatheringstatechange',f); r(); } }; pc.addEventListener('icegatheringstatechange',f); setTimeout(r,3000); }); }
+async function microfono(){ if(!navigator.mediaDevices||!window.RTCPeerConnection){ toast('Este navegador no permite llamadas de voz.','w'); return null; }
+  try{ return await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}}); }catch(e){ toast('Permita el uso del micrófono para llamar.','w'); return null; } }
+function nuevaPC(st){ const pc=new RTCPeerConnection(ICE); st.getTracks().forEach(t=>pc.addTrack(t,st));
+  pc.ontrack=e=>{ const a=$('callAudio'); a.srcObject=e.streams[0]; a.play().catch(()=>{}); };
+  pc.onconnectionstatechange=()=>{ if(!CH.call||CH.call.pc!==pc) return; if(pc.connectionState==='connected'){ CH.call.est='activa'; CH.call.ini=CH.call.ini||Date.now(); renderCallbar(); } if(pc.connectionState==='failed') colgar('No se pudo conectar el audio (la red del colegio puede bloquearlo).'); };
+  return pc; }
+function vigilar(ref){ ref.on('value',s=>{ const v=s.val(), c=CH.call; if(!c||c.ref!==ref) return;
+  if(!v||v.est==='fin') return colgar(c.est==='llamando'&&c.rol==='de'?'No contestó.':'La llamada terminó.',true);
+  if(v.est==='rechazada'||v.est==='ocupado') return colgar(v.est==='ocupado'?c.cn+' está en otra llamada.':c.cn+' no puede atender ahora.',true);
+  if(c.rol==='de'&&v.an&&c.pc.signalingState==='have-local-offer'){ c.pc.setRemoteDescription({type:'answer',sdp:v.an}).catch(()=>colgar('No se pudo conectar.')); c.est='conectando'; renderCallbar(); } }); }
+async function llamar(uid,n){
+  if(!vozOn()) return toast('El docente no ha habilitado las llamadas.','w'); if(CH.call) return toast('Ya está en una llamada.','w'); if(uid===S.uid) return;
+  if(CH.rec) pararGrabacion(true);
+  const st=await microfono(); if(!st) return; const pc=nuevaPC(st), cid=key(), ref=base.child('llamadas/'+uid+'/'+cid);
+  CH.call={cid,con:uid,cn:String(n||'').split(' ')[0],pc,st,ref,rol:'de',est:'llamando'}; renderCallbar();
+  try{ await pc.setLocalDescription(await pc.createOffer()); await esperarICE(pc);
+    if(!CH.call||CH.call.pc!==pc) return;
+    await ref.set({de:S.uid,dn:S.nombre,est:'llamando',of:pc.localDescription.sdp,ts:SV.TIMESTAMP}); try{ ref.onDisconnect().remove(); }catch(e){}
+    vigilar(ref); CH.call.tm=setTimeout(()=>{ if(CH.call&&CH.call.pc===pc&&CH.call.est==='llamando') colgar('No contestó.'); },35000);
+  }catch(e){ colgar('No se pudo iniciar la llamada: '+e.message); }
+}
+function suscribirLlamadas(){ if(!S.uid) return; base.child('llamadas/'+S.uid).on('value',s=>{ const v=s.val()||{}, t=now();
+  const nueva=Object.entries(v).find(([k,c])=>c&&c.est==='llamando'&&!c.an&&!CH.ignorar[k]&&(!c.ts||t-c.ts<40000)&&c.de!==S.uid);
+  if(nueva){ const [k,c]=nueva; if(CH.call&&CH.call.cid!==k){ CH.ignorar[k]=1; base.child('llamadas/'+S.uid+'/'+k+'/est').set('ocupado').catch(()=>{}); }
+    else if(!CH.inc||CH.inc.cid!==k){ if(!vozOn()){ CH.ignorar[k]=1; base.child('llamadas/'+S.uid+'/'+k+'/est').set('rechazada').catch(()=>{}); } else { CH.inc={cid:k,de:c.de,dn:c.dn,of:c.of}; timbre(true); renderCallbar(); } } }
+  if(CH.inc&&!(v[CH.inc.cid]&&v[CH.inc.cid].est==='llamando')){ CH.inc=null; timbre(false); renderCallbar(); }
+ },()=>{}); }
+async function contestar(){
+  const i=CH.inc; if(!i) return; CH.inc=null; timbre(false); CH.ignorar[i.cid]=1;
+  const ref=base.child('llamadas/'+S.uid+'/'+i.cid); if(CH.rec) pararGrabacion(true);
+  const st=await microfono(); if(!st){ ref.update({est:'rechazada'}).catch(()=>{}); renderCallbar(); return; }
+  const pc=nuevaPC(st); CH.call={cid:i.cid,con:i.de,cn:String(i.dn||'').split(' ')[0],pc,st,ref,rol:'para',est:'conectando'}; renderCallbar();
+  try{ await pc.setRemoteDescription({type:'offer',sdp:i.of}); await pc.setLocalDescription(await pc.createAnswer()); await esperarICE(pc);
+    await ref.update({est:'activa',an:pc.localDescription.sdp}); try{ ref.onDisconnect().remove(); }catch(e){} vigilar(ref);
+  }catch(e){ colgar('No se pudo contestar: '+e.message); }
+}
+function rechazarLlamada(){ const i=CH.inc; if(!i) return; CH.inc=null; CH.ignorar[i.cid]=1; timbre(false); base.child('llamadas/'+S.uid+'/'+i.cid).update({est:'rechazada'}).catch(()=>{}); renderCallbar(); }
+function colgar(msg,remoto){
+  const c=CH.call; if(!c) return; CH.call=null; clearTimeout(c.tm);
+  try{ c.ref.off(); }catch(e){} try{ c.st.getTracks().forEach(t=>t.stop()); }catch(e){} try{ c.pc.close(); }catch(e){}
+  const a=$('callAudio'); a.srcObject=null;
+  if(!remoto) c.ref.update({est:'fin'}).catch(()=>{}).then(()=>setTimeout(()=>c.ref.remove().catch(()=>{}),1500)); else if(c.rol==='de') setTimeout(()=>c.ref.remove().catch(()=>{}),1500);
+  if(msg) toast(msg,'w'); renderCallbar();
+}
+function silenciar(){ const c=CH.call; if(!c) return; c.mute=!c.mute; c.st.getAudioTracks().forEach(t=>{ t.enabled=!c.mute; }); renderCallbar(); }
+function timbre(on){ clearInterval(CH.ring); CH.ring=null; if(!on) return; const bip=()=>{ try{ const ac=CH.ac||(CH.ac=new (window.AudioContext||window.webkitAudioContext)()), o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=660; g.gain.value=.06; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+.35); }catch(e){} }; bip(); CH.ring=setInterval(bip,1600); }
+function renderCallbar(){
+  const b=$('callbar'); if(!b) return; const c=CH.call, i=CH.inc;
+  if(!c&&!i){ b.hidden=true; b.innerHTML=''; return; } b.hidden=false;
+  if(i&&!c){ b.innerHTML=`<span class="pulse">📞</span> <b>${esc(String(i.dn||'').split(' ').slice(0,2).join(' '))}</b> lo está llamando <button class="btn sm teal" data-act="chContestar">Contestar</button><button class="btn sm coral" data-act="chRechazar">Rechazar</button>`; return; }
+  const dur=c.ini?Math.floor((Date.now()-c.ini)/1000):0;
+  b.innerHTML=(c.est==='activa'?`🔊 En llamada con <b>${esc(c.cn)}</b> <span class="num" id="callT">${Math.floor(dur/60)}:${pad(dur%60,2)}</span>`:c.est==='llamando'?`<span class="pulse">📞</span> Llamando a <b>${esc(c.cn)}</b>…`:`⏳ Conectando con <b>${esc(c.cn)}</b>…`)+
+   `<button class="btn sm sec" data-act="chMute" aria-label="${c.mute?'Activar micrófono':'Silenciar micrófono'}">${c.mute?'🔇 Silenciado':'🎙 Micrófono'}</button><button class="btn sm coral" data-act="chColgar">Colgar</button>`;
+}
+setInterval(()=>{ if(CH.call&&CH.call.est==='activa'){ const t=$('callT'), d=Math.floor((Date.now()-CH.call.ini)/1000); if(t) t.textContent=Math.floor(d/60)+':'+pad(d%60,2); } },1000);
+window.addEventListener('beforeunload',()=>{ if(CH.call) colgar(); });
+
+/* ---------- moderación del docente ---------- */
+function cajaChatDocente(){ const c=S.cfg, L=chatMsgs().slice(-25).reverse(), sw=(k,on,t)=>`<button class="btn ${on?'teal':'sec'}" data-act="dCom" data-k="${k}" aria-pressed="${on}">${on?'🟢':'🔒'} ${t}</button>`;
+  return `<h3>Comunicación entre estudiantes</h3>
+   <div class="switch">${sw('chat',c.chat===true,'Chat libre (texto)')}${sw('audio',c.audio===true,'Notas de voz')}${sw('voz',c.voz===true,'Llamadas de voz en vivo')}</div>
+   <p style="margin-top:6px;font-size:12.5px">Las frases rápidas funcionan siempre. El chat libre filtra palabras ofensivas. Las notas de voz duran hasta ${CH_MAX_SEG} s. Las llamadas son de persona a persona y se cortan apenas cierre ese interruptor.</p>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><input type="text" id="dChTxt" maxlength="${CH_MAX_LEN}" placeholder="Mensaje del docente para el chat" style="flex:1;min-width:220px"><button class="btn sec" data-act="dChEnviar">Enviar al chat</button><button class="btn coral" data-act="dChVaciar">Vaciar el chat</button></div>
+   <div class="tw" style="margin-top:8px;max-height:260px;overflow:auto"><table class="tbl" id="dChTbl"><tbody>${L.map(([k,m])=>`<tr><td style="white-space:nowrap">${hora(m.ts)}</td><td><b>${esc(m.u==='docente'?'Docente':String(m.n||''))}</b></td><td>${m.a?`<button class="pill" data-act="chPlay" data-k="${esc(m.a)}">▶ nota de voz ${m.s||0} s</button>`:esc(chTexto(m))}</td><td><button class="pill w" data-act="dChBorrar" data-k="${esc(k)}" aria-label="Borrar mensaje">🗑</button></td></tr>`).join('')||'<tr><td class="mut">Sin mensajes.</td></tr>'}</tbody></table></div>`; }
+async function vaciarChat(){ if(!confirm('¿Borrar todos los mensajes y notas de voz de la sala?')) return; await base.child('chat').remove(); await base.child('audios').remove(); toast('Chat vaciado.'); }
+function borrarMsg(k){ const m=(S.chat||{})[k]; const o={}; o['chat/'+k]=null; if(m&&m.a) o['audios/'+m.a]=null; base.update(o).then(()=>toast('Mensaje borrado.')); }
+
+const ACT_CHAT={
+  chat:()=>abrirChat(), chEnviar:()=>enviarTexto(), chGrabar:()=>grabar(), chPlay:b=>reproducir(b.dataset.k),
+  chLlamar:b=>llamar(b.dataset.u,b.dataset.n), chContestar:()=>contestar(), chRechazar:()=>rechazarLlamada(), chColgar:()=>colgar(), chMute:()=>silenciar(),
+  dCom:b=>{ const k=b.dataset.k; base.child('config/'+k).set(S.cfg[k]!==true).then(()=>toast((S.cfg[k]===true?'Activado: ':'Cerrado: ')+({chat:'chat libre',audio:'notas de voz',voz:'llamadas de voz'}[k]))); },
+  dChEnviar:()=>{ const t=limpiarChat($('dChTxt').value); if(!t) return; base.child('chat/'+key()).set({u:'docente',n:'Docente',t,ts:SV.TIMESTAMP}).then(()=>{ $('dChTxt').value=''; }); },
+  dChVaciar:()=>vaciarChat(), dChBorrar:b=>borrarMsg(b.dataset.k)
+};
+
 /* ===================== PANEL DOCENTE ===================== */
 const D={t:'ctl',sort:'puntaje',proj:false,subs:false};
 let docPending=false;
@@ -7322,6 +7496,7 @@ function renderDoc(force){
   if(D.t==='ctl'){ const ig=integridad();
     h=`<div class="grid3">${kpi('Estado de la sala',ab?'🟢 Abierta':'🔒 Cerrada',ab?'ok':'bad')}${kpi('Mundo',c.congelada?'❄️ Congelado':'▶️ En marcha',c.congelada?'gold':'ok')}${kpi('Conectados',Object.keys(S.jug).length)}</div>
     <div class="switch" style="margin-top:14px"><button class="btn ${ab?'coral':'teal'}" data-act="dAbrir" id="dAbrir">${ab?'Cerrar la sala':'Abrir la sala'}</button><button class="btn sec" data-act="dCongelar" id="dCongelar">${c.congelada?'Descongelar el mundo':'Congelar el mundo'}</button></div>
+    ${cajaChatDocente()}
     <h3>Lanzar evento (mensaje global en pantalla)</h3>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" id="dEvTxt" maxlength="200" placeholder="Escriba el mensaje para toda la sala" style="flex:1;min-width:220px"><button class="btn" data-act="dEvento" id="dEvBtn">Lanzar</button>${c.evento?'<button class="btn sec" data-act="dEvQuitar">Quitar aviso</button>':''}</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${['Reunión de negocios: preséntense con vestimenta formal','Fin de mes: presenten su declaración de IVA','Revisen sus pendientes: registren todos los asientos','¡Mercado abierto! Compren y vendan entre empresas','Día de cobro: paguen por SINPE sus facturas a crédito','Comparen el saldo del banco con su cuenta Bancos (conciliación)'].map(t=>`<button class="pill y" data-act="dEvPre" data-t="${esc(t)}" style="padding:7px 10px">${esc(t)}</button>`).join('')}</div>
@@ -7439,11 +7614,11 @@ const ACT={
   dSort:b=>{ D.sort=b.dataset.k; renderDoc(true); },
   dProy:()=>{ D.proj=!D.proj; const el=document.documentElement; try{ if(D.proj&&el.requestFullscreen) el.requestFullscreen().catch(()=>{}); else if(!D.proj&&document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }catch(e){} renderDoc(true); }
 };
-Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN);
+Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN,ACT_CHAT);
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(!b||b.disabled) return; const f=ACT[b.dataset.act]; if(f){ e.preventDefault(); const r=f(b,e); if(r&&r.catch) r.catch(err=>{ console.warn(err); toast('Error: '+err.message,'w'); }); } });
 document.addEventListener('click',e=>{ if(!$('frases').hidden&&!e.target.closest('#frases')&&!e.target.closest('[data-act="frases"]')) $('frases').hidden=true; });
 setInterval(()=>{ if(!$('game').hidden) hud(); },15000);
-window.CC={proyecto,datosCiudad,realPer,presPer,PLN,estados,rentaNeta,isrTramos,CI,tasaCIF,cifReales,aplicadosPer,estadoCostos,CX,rentaSalario,calcPlanilla,liquidacion6,deudaPlanillas,CC6,PUESTOS,PREFABS,pfCosto,cuotaNivelada,tablaAmort,tasa,BK,rtsCalc,sancion,RTS_ACT,TR,MULTA79,MON,tcDe,liquidacion,misComercios,TBARCO,IX,FB,TX,VEHS,ipvCalc,baseBI,TPROD,anio,OB,MATS,PARCELAS,PAISES,activosRes,calcDep,miObra,miTerreno,get me(){ return me; },VS,VEST,nivelVest,vParse,vStr,vesObj,S,P,get DB(){ return DB; },get base(){ return base; },integridad,metricas,ivaCalc,saldosLibros,compararAsiento,txN,pn,slug,get MODE(){ return MODE; }};
+window.CC={CH,limpiarChat,chatMsgs,proyecto,datosCiudad,realPer,presPer,PLN,estados,rentaNeta,isrTramos,CI,tasaCIF,cifReales,aplicadosPer,estadoCostos,CX,rentaSalario,calcPlanilla,liquidacion6,deudaPlanillas,CC6,PUESTOS,PREFABS,pfCosto,cuotaNivelada,tablaAmort,tasa,BK,rtsCalc,sancion,RTS_ACT,TR,MULTA79,MON,tcDe,liquidacion,misComercios,TBARCO,IX,FB,TX,VEHS,ipvCalc,baseBI,TPROD,anio,OB,MATS,PARCELAS,PAISES,activosRes,calcDep,miObra,miTerreno,get me(){ return me; },VS,VEST,nivelVest,vParse,vStr,vesObj,S,P,get DB(){ return DB; },get base(){ return base; },integridad,metricas,ivaCalc,saldosLibros,compararAsiento,txN,pn,slug,get MODE(){ return MODE; }};
 </script>
 </body>
 </html>
