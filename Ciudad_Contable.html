@@ -4804,6 +4804,7 @@ function renderTodo(){
       const jp=S.jug[S.ses]; if(presOK&&jp&&jp.emp!==String(e.nom).slice(0,60)) base.child('jugadores/'+S.ses+'/emp').set(String(e.nom).slice(0,60)).catch(()=>{}); }
   }
   if(S.listo) ciudadSync();
+  if(S.listo&&S.uid&&!S.docenteSolo) recibirCompras();
   hud(); renderPanel(); if(!$('docente').hidden) renderDoc();
   if(R3&&R3.building) buildbar();
   const bc=$('btnConstruir'); if(bc) bc.hidden=!miTerreno();
@@ -4976,6 +4977,7 @@ function hud(){
   const np=cuentaPend(), no=ordenesPorAtender().length;
   $('hud').innerHTML=(e?`<div class="emp"><div class="logo" style="background:${esc(e.color)}">${esc(e.ini)}</div><div style="min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.nom)}</b><small class="mut">${esc(e.ced)} · ${esc(S.nombre)}</small></div></div>`:`<b>${esc(S.nombre)}</b>`)+
    `<div class="row"><span>Bancos (estado bancario)</span><b class="num" id="hudSaldo">${sal!=null?fm(fromC(sal)):'—'}</b></div>${e?hudVida():''}
+    ${e?avisoStock(e):''}
     <div class="row"><span>Pendientes por registrar</span><button class="pill ${np?'w':'g'}" data-act="ir" data-b="empresa" data-t="pend" id="hudPend">${np}</button></div>
     <div class="row"><span>Órdenes por atender</span><button class="pill ${no?'y':''}" data-act="ir" data-b="empresa" data-t="ord" id="hudOrd">${no}</button></div>
     <div class="row hm"><span>Asientos ✓ / ✗</span><b><span class="ok">${st.ok||0}</span> / <span class="bad">${st.err||0}</span></b></div>
@@ -5484,7 +5486,7 @@ VIEWS.mercado_cat=()=>{
       <input type="number" min="1" step="1" placeholder="Cant." data-mq="${esc(k)}" data-f="cant" value="${esc(q.cant||(c&&(c.r==='vehiculos'||c.r==='ropa')?1:''))}" aria-label="Cantidad" ${c&&(c.r==='vehiculos'||c.r==='ropa')?'readonly':''}>
       <select data-mq="${esc(k)}" data-f="cond" aria-label="Condición"><option value="contado" ${q.cond!=='credito'?'selected':''}>Contado</option><option value="credito" ${q.cond==='credito'?'selected':''}>Crédito 30 días</option></select>
       ${c?ctrlRamo(c,k,q):`<select data-mq="${esc(k)}" data-f="uso" aria-label="Uso">${USOS.map(x=>`<option value="${x[0]}" ${q.uso===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>`}
-      <div style="text-align:right"><div data-mqt="${esc(k)}" style="font-size:12px;margin-bottom:4px">${mqTotal(k)}</div><button class="btn sm" data-act="comprar" data-k="${esc(k)}" ${disp===0?'disabled':''}>Enviar orden</button></div></div>`; }).join('')+'</div>'; }).join('');
+      <div style="text-align:right"><div data-mqt="${esc(k)}" style="font-size:12px;margin-bottom:4px">${mqTotal(k)}</div>${disp===0?'<span class="pill w">Agotado</span><br><small class="mut">el vendedor debe reabastecerse</small>':`<button class="btn sm" data-act="comprar" data-k="${esc(k)}">Enviar orden</button>`}</div></div>`; }).join('')+'</div>'; }).join('');
 };
 function mqTotal(k){ const a=k.split('|'), e=S.emp[a[0]], p=e&&e.prods[a[1]], c=p&&p.cat?CRID[a[1]]:null, q=c&&(c.r==='vehiculos'||c.r==='ropa')?1:parseInt((MQ[k]||{}).cant,10); if(!p||!(q>0)) return '<span class="mut">—</span>'; const s=r2(q*p.pv); return 'Total <b>'+fm(r2(s+r2(s*tarDe(e,p))))+'</b>'; }
 VIEWS.mercado_mis=()=>{
@@ -5638,7 +5640,6 @@ async function aceptar(oid){
   if(cont){ u['movimientos/'+S.uid+'/'+key()]={d:'SINPE recibido de '+comp.nom+' · '+nf,m:tot,ts:SV.TIMESTAMP,ref:fid};
     u['movimientos/'+o.co+'/'+key()]={d:'SINPE enviado a '+e.nom+' · '+nf,m:-tot,ts:SV.TIMESTAMP,ref:fid}; }
   Object.assign(u,notificar(o.co,`🧾 ${e.nom} aceptó su orden y emitió la factura ${nf} por ${fm(tot)} (${cont?'pagada de contado por SINPE':'a crédito 30 días'}). Registre la compra.`));
-  if(prod.cat&&CRID[o.pid]) efectosCompra(u,o,CRID[o.pid]);
   await upd(u);
   toast('Factura '+nf+' emitida a '+comp.nom+'. Registre la venta'+(bienes?' y su costo':'')+' en sus pendientes.');
   renderPanel(true);
@@ -7617,6 +7618,22 @@ function validarCompraRamo(c,q,cant){
   return {extra:ex};
 }
 function vehParaComb(cid){ return misVehiculos().filter(([k,v])=>TANQ[v.t]&&TANQ[v.t].f===cid); }
+/* el comprador recibe lo comprado cuando ve su orden facturada (sirve aunque el vendedor tenga una versión vieja del juego) */
+const RECIB={};
+async function recibirCompras(){
+  const e=myE(); if(!e||!S.uid) return;
+  for(const [oid,o] of Object.entries(S.ord||{})){
+    if(!o||o.co!==S.uid||o.coe!==e.eid||o.est!=='aceptada'||o.rec||RECIB[oid]) continue;
+    const c=CRID[o.pid]; if(!c) continue;
+    RECIB[oid]=1;
+    try{ const r=await base.child('ordenes/'+oid+'/rec').transaction(v=>v?undefined:1); if(!r.committed) continue; }catch(err){ delete RECIB[oid]; continue; }
+    const u={}, oo=Object.assign({},o);
+    if(c.r==='combustible'&&!(oo.vid&&(S.veh||{})[oo.vid])){ const ok=vehParaComb(c.id); oo.vid=ok.length?ok[0][0]:''; }
+    efectosCompra(u,oo,c);
+    if(c.r==='alimentos'||c.r==='farmacia') toast((c.r==='farmacia'?'💊 ':'🍗 ')+'Llegó a su despensa: '+o.cant+' × '+c.n+'. Úselo en ❤️ Vida.','y');
+    if(Object.keys(u).length) await upd(u).catch(err=>{ toast('No se pudo guardar lo comprado: '+err.message,'w'); });
+  }
+}
 function efectosCompra(u,o,c){
   const co=o.co;
   if(c.r==='ropa'){ u['vestuario/'+co+'/own/'+c.vest+(o.ci||0)]=1; u['vestuario/'+co+'/ts']=SV.TIMESTAMP; }
@@ -7706,6 +7723,8 @@ document.addEventListener('change',e=>{ const d=e.target&&e.target.dataset; if(d
 /* ---------- vistas: ❤️ Vida ---------- */
 function barra(v,col){ return `<span class="vbar"><i style="width:${Math.max(0,Math.min(100,v))}%;background:${col}"></i></span>`; }
 const colEn=v=>v<25?'#EF6A5B':v<50?'#F4DD7A':'#7EE07A', colSa=v=>v<25?'#EF6A5B':v<50?'#F4DD7A':'#2FC2AD';
+function avisoStock(e){ if(ramoDe(e)==='otro') return ''; const st=(S.nuc.stock||{})[S.uid]||{}, ag=Object.keys(e.prods||{}).filter(k=>CRID[k]&&!(st[k]>0)).length;
+  return ag?`<div class="row"><span>${RAMOS[ramoDe(e)].ic} Productos agotados</span><button class="pill w" data-act="ir" data-b="tienda" data-t="merc">${ag} · reabastecer</button></div>`:''; }
 function hudVida(){
   if(!vidaOn()||!S.vida) return S.drv?`<div class="row"><span>🚗 Combustible</span><b style="font-size:12px">${lit(combDe(S.drv.vid))}</b></div>`:'';
   const v=S.vida, E=v.enf&&ENF[v.enf];
