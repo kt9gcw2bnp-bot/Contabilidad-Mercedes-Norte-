@@ -1618,5 +1618,25 @@
     "URL": "Ciudad_Contable.html?sala=12",
     "Activo": "SI",
     "Orden": 30
+  },
+  {
+    "Id": "repaso_consultoria_11",
+    "Nivel": "11",
+    "Categoria": "Trabajo en clase",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Consultoría Contable: repaso para la prueba",
+    "URL": "Repaso_Consultoria_Contable_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 18
+  },
+  {
+    "Id": "repaso_lanzamiento_10",
+    "Nivel": "10",
+    "Categoria": "Trabajo en clase",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Lanzamiento Comercial: repaso para la prueba",
+    "URL": "Repaso_Lanzamiento_Comercial_Decimo.html",
+    "Activo": "SI",
+    "Orden": 22
   }
 ]
