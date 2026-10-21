@@ -4662,6 +4662,8 @@ const fmtN=x=>(Number(x)||0).toLocaleString('es-CR',{minimumFractionDigits:2,max
 const fm=x=>(Number(x)<0?'−₡':'₡')+fmtN(Math.abs(Number(x)||0));
 const pad=(n,l)=>String(n).padStart(l,'0');
 const iniciales=n=>String(n||'').trim().split(/\s+/).slice(0,2).map(p=>p[0]||'').join('').toUpperCase();
+const PER=u=>String(u||'').split('--')[0];   // la persona detrás de la empresa (la 2.ª empresa usa «uid--2»)
+const EMPN=(new URLSearchParams(location.search).get('emp')||'')==='2'?'2':'';
 function slug(n){ return String(n||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40); }
 function pn(s){ // número digitado por el estudiante (acepta 1 234,56 · 1.234,56 · 1234.56)
   s=String(s==null?'':s).replace(/[\s  ₡]/g,''); if(!s) return 0;
@@ -4826,7 +4828,7 @@ try{ S.g=localStorage.getItem('cc_g')||''; }catch(e){}
 function pintarGen(){ document.querySelectorAll('#genero label').forEach(l=>{ const on=l.dataset.g===S.g; l.classList.toggle('on',on); l.querySelector('input').checked=on; }); }
 pintarGen(); $('genero').addEventListener('change',e=>{ S.g=e.target.value; pintarGen(); });
 $('modeNote').innerHTML=(DEMO?'Modo demostración (simulador local): solo comparten el mundo las pestañas de este navegador.':'Conexión: <b>Firebase en tiempo real</b>')+' · sala «'+esc(SALA)+'»';
-$('go').onclick=entrar; $('nom').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+$('go').onclick=entrar; if(qs.get('auto')==='1'&&np&&(S.g==='m'||S.g==='f')) setTimeout(()=>entrar(),60); $('nom').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
 $('linkDoc').onclick=()=>pedirPin();
 iniciarRed();
 
@@ -4837,7 +4839,7 @@ async function entrar(){
   if(S.g!=='m'&&S.g!=='f'){ $('loginErr').textContent='Elija si su personaje es hombre o mujer.'; return; }
   $('go').disabled=true; $('go').textContent='Conectando…';
   await iniciarRed();
-  S.nombre=n.slice(0,40); S.uid=u; S.ses=u+'_'+Math.random().toString(36).slice(2,7);
+  S.nombre=n.slice(0,40); S.uid=u+(EMPN?'--'+EMPN:''); S.ses=S.uid+'_'+Math.random().toString(36).slice(2,7);
   try{ localStorage.setItem('cc_color',S.color); localStorage.setItem('cc_g',S.g); }catch(e){}
   suscribir();
   $('login').hidden=true; $('game').hidden=false;
@@ -4871,7 +4873,7 @@ function suscribir(){
     L('movimientos/'+S.uid,v=>{ S.mov=v||{}; });
     L('declaraciones/'+S.uid,v=>{ S.decl=v||{}; });
     L('stats/'+S.uid,v=>{ S.stats=v||{}; });
-    base.child('vestuario/'+S.uid).on('value',s=>{ S.ves=s.val()||{}; const jp=S.jug[S.ses]; if(presOK&&jp&&(jp.v||'')!==(S.ves.v||'')) base.child('jugadores/'+S.ses+'/v').set(S.ves.v||'').catch(()=>{}); programar(); },()=>{ S.ves={}; });
+    base.child('vestuario/'+PER(S.uid)).on('value',s=>{ S.ves=s.val()||{}; const jp=S.jug[S.ses]; if(presOK&&jp&&(jp.v||'')!==(S.ves.v||'')) base.child('jugadores/'+S.ses+'/v').set(S.ves.v||'').catch(()=>{}); programar(); },()=>{ S.ves={}; });
     notifT0=now()-3000;
     base.child('notif/'+S.uid).limitToLast(25).on('child_added',s=>{ const v=s.val(); if(v&&v.ts&&v.ts>notifT0&&!vistos[s.key]){ vistos[s.key]=1; toast(v.txt,v.k||''); } });
   }
@@ -4926,7 +4928,7 @@ function renderCrear(){
   if(CF.act==='industrial') return renderCrearInd();
   const b=CF.act==='bienes', rm=b&&CF.ramo&&CF.ramo!=='otro';
   const tot=totCompraInicial();
-  $('crearBox').innerHTML=`<div class="k">Paso 1 · Sala ${esc(SALA)} · ${esc(S.nombre)}</div><h1>Cree su empresa</h1>
+  $('crearBox').innerHTML=`<div class="k">Paso 1 · Sala ${esc(SALA)} · ${esc(S.nombre)}</div><h1>${EMPN?'Cree su segunda empresa':'Cree su empresa'}</h1>${EMPN?avisoSegunda():''}
   <p>Invente su propio negocio (giro libre). Los socios aportan <b class="gold">${fm(APORTE)}</b> que se depositan en Bancos: ese será su <b>asiento de apertura</b>.</p>
   <div class="grid2"><div><label class="l" for="cfNom">Nombre comercial</label><input type="text" id="cfNom" maxlength="50" value="${esc(CF.nom)}" placeholder="Ej.: Panadería La Espiga"></div>
   <div><label class="l" for="cfGiro">Giro del negocio (¿a qué se dedica?)</label><input type="text" id="cfGiro" maxlength="80" value="${esc(CF.giro)}" placeholder="Ej.: venta de pan artesanal"></div></div>
@@ -4981,6 +4983,9 @@ async function crearEmpresa(){
   if(nom.length<3) return fail('Escriba el nombre comercial (mínimo 3 caracteres).');
   if(giro.length<4) return fail('Describa el giro del negocio.');
   if(CF.ramo==='vehiculos'&&!vendeVeh()) return fail('Solo en la República de Undécimo hay agencias de vehículos. Elija otro ramo.');
+  if(EMPN){ const ed=edificioPersona(), e1=S.emp[PER(S.uid)];
+    if(!ed) return fail('Para abrir otra empresa primero construya un edificio en su terreno (Tienda Mayorista → Construcción).');
+    if(e1&&mismaActividad(e1,CF,giro)) return fail('Su otra empresa debe dedicarse a una actividad distinta de «'+actEmpTxt(e1)+'».'); }
   const prods={}; let i=0; const lin=[]; const rmC=bienes&&!ind&&CF.ramo&&CF.ramo!=='otro'&&RAMOS[CF.ramo];
   if(rmC){ for(const [id,o] of Object.entries(CF.rsel||{})){ const c=CRID[id]; if(!c||c.r!==CF.ramo||!dispPais(c)||!o.on) continue; const pr=pn(o.pv), q=parseInt(o.cant,10);
       if(!(pr>c.cu)) return fail('El precio de venta de «'+c.n+'» debe ser mayor que su costo mayorista ('+fm(c.cu)+').');
@@ -5019,6 +5024,7 @@ async function crearEmpresa(){
     return fail(r.out==='existe'?'Ya existe una empresa a su nombre en esta sala (si quedó a medio crear, pida al docente reiniciarla).':'No se pudo crear la empresa. Intente de nuevo.'); }
   const emp={nom:nom.slice(0,50),giro:giro.slice(0,80),act:CF.act,ced:CF.ced,reg:'General',color:CF.color,ini:(nom[0]||'?').toUpperCase(),duen:S.nombre,eid,prods,ts:SV.TIMESTAMP};
   if(rmC) emp.rubro=CF.ramo;
+  if(EMPN){ const ed=edificioPersona(); if(ed) emp.sede={de:ed,p:(S.terr[ed]||{}).p}; }
   const o={}; o['empresas/'+S.uid]=emp;
   o['pendientes/'+S.uid+'/'+key()]=pendiente('apertura','Asiento de apertura',
     `Los socios aportaron ${fm(APORTE)} en efectivo que se depositaron en la cuenta bancaria de ${nom}. Registre el asiento de apertura (aporte de capital).`,
@@ -5064,7 +5070,7 @@ function hud(){
   const est=MODE==='demo'?['#F4DD7A','Demostración']:(S.conectado?['#2FC2AD','Conectado']:['#EF6A5B','Sin conexión · reconectando…']);
   const np=cuentaPend(), no=ordenesPorAtender().length;
   $('hud').innerHTML=(e?`<div class="emp"><div class="logo" style="background:${esc(e.color)}">${esc(e.ini)}</div><div style="min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.nom)}</b><small class="mut">${esc(e.ced)} · ${esc(S.nombre)}</small></div></div>`:`<b>${esc(S.nombre)}</b>`)+
-   `<div class="row"><span>Bancos (estado bancario)</span><b class="num" id="hudSaldo">${sal!=null?fm(fromC(sal)):'—'}</b></div>${e?hudVida()+hudAgro()+hudEntregas():''}
+   `<div class="row"><span>Bancos (estado bancario)</span><b class="num" id="hudSaldo">${sal!=null?fm(fromC(sal)):'—'}</b></div>${e?hudVida()+hudAgro()+hudEntregas()+hudEmpresas():''}
     ${e?avisoStock(e):''}
     <div class="row"><span>Pendientes por registrar</span><button class="pill ${np?'w':'g'}" data-act="ir" data-b="empresa" data-t="pend" id="hudPend">${np}</button></div>
     <div class="row"><span>Órdenes por atender</span><button class="pill ${no?'y':''}" data-act="ir" data-b="empresa" data-t="ord" id="hudOrd">${no}</button></div>
@@ -5180,16 +5186,18 @@ const LOTES=(()=>{ const L=[]; const add=(xs,ys)=>ys.forEach(y=>xs.forEach(x=>L.
 const PROV3={x:1452,y:1062,alley:1465};          // frente de la Tienda Mayorista (distrito sur)
 let R3=null, SOLIDOS=[], LOT_OF={};
 function ordenarEmp(map){ return Object.entries(map||{}).filter(([u,e])=>e&&e.eid).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0)||a[0].localeCompare(b[0])); }
+function sedeLote(e,terr){ const t=e&&e.sede&&(terr||{})[e.sede.de]; const P=t&&typeof PARCELAS!=='undefined'&&PARCELAS[t.p]; return P?{x:P.x,y:P.y,w:P.w,h:P.h,idx:-1,sede:1}:null; }
+function lotesDe(emp,terr){ const m={}; let i=0; ordenarEmp(emp).forEach(([u,e])=>{ if(e.sede){ const L=sedeLote(e,terr); if(L) m[u]=L; return; } if(i<LOTES.length) m[u]=LOTES[i]; i++; }); return m; }
 function asignarLotes(){
   const es=ordenarEmp(S.emp);
-  LOT_OF={}; es.forEach(([u],i)=>{ if(i<LOTES.length) LOT_OF[u]=LOTES[i]; }); return es;
+  LOT_OF=lotesDe(S.emp,S.terr); return es;
 }
 const curK=()=>me.k||HOMEK;
 function datosDeK(k){ // empresas, terrenos, obras, vehículos y producción del país k (propio o vecino)
   if(k===HOMEK) return {emp:S.emp||{},terr:S.terr||{},obras:S.obras||{},consec:(S.nuc&&S.nuc.consec)||{},veh:S.vehAll||{},op:(S.nuc&&S.nuc.op)||{},sala:SALA,home:true};
   const s=salaDeK(k), V=s&&VEC[s]; return V?{emp:V.emp,terr:V.terr,obras:V.obras,consec:V.consec,veh:V.veh||{},op:V.op||{},sala:s,home:false}:{emp:{},terr:{},obras:{},consec:{},veh:{},op:{},sala:s,home:false};
 }
-function lotesDeK(k){ if(k===HOMEK) return LOT_OF; const m={}; ordenarEmp(datosDeK(k).emp).forEach(([u],i)=>{ if(i<LOTES.length) m[u]=LOTES[i]; }); return m; }
+function lotesDeK(k){ if(k===HOMEK) return LOT_OF; const d=datosDeK(k); return lotesDe(d.emp,d.terr); }
 function ciudadSync(){
   const es=asignarLotes();
   const ventas={}; Object.values(S.fac||{}).forEach(f=>{ if(f&&f.em&&f.em.u&&f.em.u!=='PROV'&&f.est!=='anulada') ventas[f.em.u]=(ventas[f.em.u]||0)+1; });
@@ -5203,7 +5211,7 @@ function ciudadSync(){
   if(!R3) return;
   const list=[];
   PAISES.forEach(p=>{ if(!HOME_P&&p.k!==HOMEK) return; const d=datosDeK(p.k), lm=p.k===HOMEK?LOT_OF:lotesDeK(p.k);
-    ordenarEmp(d.emp).forEach(([u,e])=>{ const L=lm[u]; if(!L) return; const n=d.home?(ventas[u]||0):((d.consec||{})[u]||0);
+    ordenarEmp(d.emp).forEach(([u,e])=>{ const L=lm[u]; if(!L||L.sede) return; const n=d.home?(ventas[u]||0):((d.consec||{})[u]||0);
       list.push({uid:d.home?u:d.sala+':'+u,k:p.k,idx:L.idx,x:L.x+p.ox,y:L.y+p.oy,w:L.w,h:L.h,c:e.color||'#C9973F',nom:String(e.nom||''),ini:e.ini||'?',duen:e.duen||'',floors:2+Math.min(14,n),self:d.home&&u===S.uid,top:d.home&&u===topU,staff:d.home?staffDe(u):0,ind:e.act==='industrial',smoke:e.act==='industrial'&&enProceso(u,d.op),veh:vehParqueados(p,u,(d.veh||{})[u]),show:vitrinaDe(p,u,e)}); }); });
   R3.syncLots(list);
   // terrenos y construcciones de los tres países
@@ -5911,8 +5919,8 @@ async function comprarVestuario(){
     [{c:'6110',d:sub},{c:'1106',d:iva},{c:'1102',h:tot}],
     'La vestimenta para atender clientes y asistir a actividades de la empresa no se vende ni es un activo duradero: es un gasto de operación (Gastos de Etiqueta y Protocolo, al Debe) por el monto sin IVA. El IVA pagado es crédito fiscal (IVA Acreditable, al Debe) y Bancos disminuye (al Haber) por el total.',{ref:fid});
   u['movimientos/'+S.uid+'/'+key()]={d:'Pago a '+PROV.n+' · vestuario · '+nf,m:-tot,ts:SV.TIMESTAMP,ref:fid};
-  lin.forEach(l=>{ u['vestuario/'+S.uid+'/own/'+l.k]=1; });
-  u['vestuario/'+S.uid+'/ts']=SV.TIMESTAMP;
+  lin.forEach(l=>{ u['vestuario/'+PER(S.uid)+'/own/'+l.k]=1; });
+  u['vestuario/'+PER(S.uid)+'/ts']=SV.TIMESTAMP;
   try{ await upd(u); }catch(err){ toast('La compra se cobró, pero no se pudo guardar el detalle: '+err.message+'. Avise al docente (reglas de Firebase).','w'); }
   VS.cart=[]; VS.try=null; toast('Compra de vestuario realizada ('+fm(tot)+', factura '+nf+'). Registre el asiento y póngase la ropa en «Mi guardarropa».');
   renderPanel(true);
@@ -5921,7 +5929,7 @@ async function guardarAtuendo(){
   if(S.cfg.congelada){ toast('El mundo está congelado por el docente.','w'); return; }
   const own=vOwn(), d=vParse(VS.draft); Object.keys(d).forEach(s=>{ if(!own[d[s].id+d[s].ci]) delete d[s]; });
   const v=vStr(d); S.ves=Object.assign({},S.ves||{},{v});
-  try{ await upd({['vestuario/'+S.uid+'/v']:v,['vestuario/'+S.uid+'/ts']:SV.TIMESTAMP}); if(S.ses) await base.child('jugadores/'+S.ses+'/v').set(v); }
+  try{ await upd({['vestuario/'+PER(S.uid)+'/v']:v,['vestuario/'+PER(S.uid)+'/ts']:SV.TIMESTAMP}); if(S.ses) await base.child('jugadores/'+S.ses+'/v').set(v); }
   catch(err){ toast('No se pudo guardar el atuendo: '+err.message+'. Las reglas de Firebase deben actualizarse (avise al docente).','w'); return; }
   const n=nivelVest(v); VS.draft=v; VS.draftDe=v; toast('Atuendo actualizado · '+n.n+'. Cierre el panel y acérquese con la cámara (＋) para verlo en la ciudad.'); renderPanel(true);
 }
@@ -6727,7 +6735,7 @@ async function nacionalizar(oid,ag){   // ag = {cid} cuando lo tramita el agente
   if(esConsumo(o.pid)){ const c=CRID[o.pid];
     if(o.uso==='1105'){ const ep=(e.prods||{})[o.pid], cu=ep?r2((st0*(ep.cu||0)+L.costo)/(st0+o.cant)):r2(L.costo/o.cant);
       if(ep) u[b+'empresas/'+yo+'/prods/'+o.pid+'/cu']=cu; else u[b+'empresas/'+yo+'/prods/'+o.pid]={n:c.n,cu,pv:Math.ceil(cu*1.35/10)*10,tar:c.tar,cat:c.r,imp:1}; }
-    else u[b+'despensa/'+yo+'/'+o.pid]=SV.increment(o.cant); }
+    else u[b+'despensa/'+PER(yo)+'/'+o.pid]=SV.increment(o.cant); }
   if(ag) Object.entries(ag.u||{}).forEach(([k,v])=>{ u[b+k]=v; });
   u['comercio/'+oid+'/est']='nacionalizada'; u['comercio/'+oid+'/liq']=L;
   await DB.ref().update(ajustarRTS(u)); if(!ag) toast('Importación nacionalizada. Registre el asiento; la factura del exterior queda por pagar.'+(esVehPid(o.pid)?' Su vehículo ya está en su lote.':'')); renderPanel(true); return true;
@@ -7706,13 +7714,13 @@ function combDe(vid){ const v=(S.veh||{})[vid]; if(!v||!TANQ[v.t]) return 0; let
 /* ---------- datos ---------- */
 function suscribirVida(){
   if(!S.uid) return;
-  base.child('vida/'+S.uid).once('value').then(s=>{ const v=s.val()||{}; S.vida={en:v.en!=null?+v.en:100,sa:v.sa!=null?+v.sa:100,enf:v.enf||'',inm:v.inm||0}; VD.ok=true; programar(); })
+  base.child('vida/'+PER(S.uid)).once('value').then(s=>{ const v=s.val()||{}; S.vida={en:v.en!=null?+v.en:100,sa:v.sa!=null?+v.sa:100,enf:v.enf||'',inm:v.inm||0}; VD.ok=true; programar(); })
     .catch(()=>{ S.vida={en:100,sa:100,enf:'',inm:0}; VD.ok=true; });
-  base.child('despensa/'+S.uid).on('value',s=>{ S.desp=s.val()||{}; programar(); },()=>{ S.desp={}; });
+  base.child('despensa/'+PER(S.uid)).on('value',s=>{ S.desp=s.val()||{}; programar(); },()=>{ S.desp={}; });
   base.child('ventasT').on('value',s=>{ S.ventasT=s.val()||{}; programar(); },()=>{ S.ventasT={}; });
 }
 function guardarVida(){ if(!S.uid||!S.vida) return; const v=S.vida;
-  base.child('vida/'+S.uid).set({en:Math.round(v.en*10)/10,sa:Math.round(v.sa*10)/10,enf:v.enf||'',inm:v.inm||0,n:S.nombre,ts:SV.TIMESTAMP}).catch(()=>{}); }
+  base.child('vida/'+PER(S.uid)).set({en:Math.round(v.en*10)/10,sa:Math.round(v.sa*10)/10,enf:v.enf||'',inm:v.inm||0,n:S.nombre,ts:SV.TIMESTAMP}).catch(()=>{}); }
 
 /* ---------- reloj de la vida (cada 5 s, solo mientras el estudiante juega) ---------- */
 function vidaTick(){
@@ -7759,7 +7767,7 @@ async function consumir(id){
   if(ef.cura){ if(v.enf===ef.cura){ v.enf=''; msg=' ¡Se curó!'; } else if(v.enf) msg=' Ojo: no cura '+ENF[v.enf].n.toLowerCase()+' (necesita '+CRID[ENF[v.enf].med].n+').'; }
   if(ef.inm){ v.inm=now()+20*60000; msg+=' Defensas reforzadas por 20 minutos.'; }
   S.desp=Object.assign({},S.desp,{[id]:(S.desp[id]||1)-1});
-  await upd({['despensa/'+S.uid+'/'+id]:SV.increment(-1)}).catch(err=>toast('No se pudo actualizar la despensa: '+err.message+' (reglas de Firebase).','w'));
+  await upd({['despensa/'+PER(S.uid)+'/'+id]:SV.increment(-1)}).catch(err=>toast('No se pudo actualizar la despensa: '+err.message+' (reglas de Firebase).','w'));
   guardarVida(); toast((c.r==='farmacia'?'💊 Tomó ':'🍗 Comió ')+c.n+'.'+(ef.en?' +'+ef.en+' energía.':'')+(ef.sa?' +'+ef.sa+' salud.':'')+msg,'y'); hud(); renderPanel(true);
 }
 
@@ -7790,7 +7798,7 @@ async function recibirCompras(){
     efectosCompra(u,oo,c);
     if(c.r==='ropa'){ if(o.ent&&o.ent!=='entregada') u['ordenes/'+oid+'/ent']='entregada';
       const it=VID[c.vest]; if(it){ const d=vParse(vPuesto()); d[it.s]={id:it.id,ci:+(o.ci||0)}; const v=vStr(d); S.ves=Object.assign({},S.ves||{},{v,own:Object.assign({},vOwn(),{[it.id+(o.ci||0)]:1})});
-        u['vestuario/'+S.uid+'/v']=v; if(S.ses) u['jugadores/'+S.ses+'/v']=v; VS.draft=null;
+        u['vestuario/'+PER(S.uid)+'/v']=v; if(S.ses) u['jugadores/'+S.ses+'/v']=v; VS.draft=null;
         toast('👔 Llegó a su guardarropa y ya la tiene puesta: '+it.n+' · '+it.cols[+(o.ci||0)][0]+'. Cámbiela cuando quiera en Tienda → Mi guardarropa.','y'); } }
     if(c.r==='alimentos'||c.r==='farmacia'||c.r==='agro') toast((c.r==='farmacia'?'💊 ':'🍗 ')+'Llegó a su despensa: '+o.cant+' × '+c.n+'. Úselo en ❤️ Vida.','y');
     if(Object.keys(u).length) await upd(u).catch(err=>{ toast('No se pudo guardar lo comprado: '+err.message,'w'); });
@@ -7798,10 +7806,10 @@ async function recibirCompras(){
 }
 function efectosCompra(u,o,c){
   const co=o.co;
-  if(c.r==='ropa'){ u['vestuario/'+co+'/own/'+c.vest+(o.ci||0)]=1; u['vestuario/'+co+'/ts']=SV.TIMESTAMP; }
+  if(c.r==='ropa'){ u['vestuario/'+PER(co)+'/own/'+c.vest+(o.ci||0)]=1; u['vestuario/'+PER(co)+'/ts']=SV.TIMESTAMP; }
   else if(c.r==='vehiculos'){ const pl=placa(); u['vehiculos/'+co+'/'+key()]={t:c.veh,costo:o.pu,pl,comb:Math.round(TANQ[c.veh].cap*0.1),ts:SV.TIMESTAMP};
     Object.assign(u,notificar(co,'🚚 Su '+VEHID[c.veh].n.toLowerCase()+' placa '+pl+' ya está en su lote. Póngale combustible y recuerde el marchamo.','y')); }
-  else if(c.r==='alimentos'||c.r==='farmacia'||c.r==='agro') u['despensa/'+co+'/'+o.pid]=SV.increment(o.cant);
+  else if(c.r==='alimentos'||c.r==='farmacia'||c.r==='agro') u['despensa/'+PER(co)+'/'+o.pid]=SV.increment(o.cant);
   else if(c.r==='combustible'&&o.vid) u['vehiculos/'+co+'/'+o.vid+'/comb']=SV.increment(o.cant);
 }
 function ctrlRamo(c,k,q){
@@ -7870,7 +7878,7 @@ async function comprarPropio(){
     `Compró al ${PROV.n} (factura ${nf}) para el consumo del personal de su empresa: ${lin.map(l=>l.cant+' × '+l.d).join('; ')}. Subtotal ${fm(sub)} + IVA ${fm(iva)} = ${fm(tot)}, de contado desde Bancos. No es mercadería para vender.`,
     [{c:uso,d:sub},{c:'1106',d:iva},{c:'1102',h:tot}],'Lo que la empresa consume no entra al inventario: es un gasto ('+CTA[uso].n+', al Debe) por el monto sin IVA'+(iva>0?'; el IVA pagado es crédito fiscal (IVA Acreditable, al Debe)':'')+'. Bancos disminuye (al Haber).',{ref:fid});
   u['movimientos/'+S.uid+'/'+key()]={d:'Pago a '+PROV.n+' · consumo propio · '+nf,m:-tot,ts:SV.TIMESTAMP,ref:fid};
-  lin.forEach(l=>{ if(r==='combustible') u['vehiculos/'+S.uid+'/'+vid+'/comb']=SV.increment(l.cant); else u['despensa/'+S.uid+'/'+l.id]=SV.increment(l.cant); });
+  lin.forEach(l=>{ if(r==='combustible') u['vehiculos/'+S.uid+'/'+vid+'/comb']=SV.increment(l.cant); else u['despensa/'+PER(S.uid)+'/'+l.id]=SV.increment(l.cant); });
   await upd(u); CP.q={}; toast('Compra para consumo propio realizada ('+fm(tot)+'). Registre el asiento.'); renderPanel(true);
 }
 function tablaPropio(r){
@@ -7989,7 +7997,7 @@ function ventaTerrenoHTML(){
 document.addEventListener('input',e=>{ const d=e.target&&e.target.dataset; if(d&&d.tv) TV[d.tv]=e.target.value; });
 document.addEventListener('change',e=>{ const d=e.target&&e.target.dataset; if(d&&d.tv) TV[d.tv]=e.target.value; });
 const _constrBase=VIEWS.tienda_constr;
-VIEWS.tienda_constr=()=>{ const t=miTerreno(); return t?_constrBase()+ventaTerrenoHTML():ofertasTerrenoHTML()+_constrBase(); };
+VIEWS.tienda_constr=()=>{ const t=miTerreno(); return (t?_constrBase()+ventaTerrenoHTML():ofertasTerrenoHTML()+_constrBase())+otraEmpresaHTML(); };
 async function ofrecerTerreno(){
   if(!puede()) return; const e=myE(), t=miTerreno(); TV.err=''; if(!t) return;
   if(Object.keys(miObra().b||{}).length){ TV.err='El terreno debe estar sin construcción.'; renderPanel(true); return; }
@@ -8412,7 +8420,7 @@ async function agroDespensa(pid){
   if(!puede()) return; const e=myE(), p=e.prods&&e.prods[pid], st=(((S.nuc.stock||{})[S.uid])||{})[pid]||0; if(!p||st<1) return toast('No tiene existencias de ese producto.','w');
   const r=await txN(x=>{ const s=((x.stock||{})[S.uid]||{})[pid]||0; if(s<1) return 'sinStock'; x.stock[S.uid][pid]=s-1; return 'ok'; });
   if(r.out!=='ok') return toast('No hay existencias.','w');
-  const u={}; u['despensa/'+S.uid+'/'+pid]=SV.increment(1);
+  const u={}; u['despensa/'+PER(S.uid)+'/'+pid]=SV.increment(1);
   u['pendientes/'+S.uid+'/'+key()]=pendiente('agro_auto','Autoconsumo de '+p.n.toLowerCase(),
     `Tomó 1 ${(CRID[pid]||{u:'unidad'}).u} de ${p.n.toLowerCase()} de su inventario para la alimentación de su personal (costo ${fm(p.cu)}).`,
     [{c:'6128',d:p.cu},{c:'1105',h:p.cu}],'Lo que la empresa consume de su propio inventario deja de ser mercadería: es un gasto (Gastos de Alimentación, Debe) por su costo, y el Inventario disminuye (Haber).');
@@ -8576,6 +8584,30 @@ function dibujarVeh2D(){
 }
 let VSIG='';
 setInterval(()=>{ if(!R3||!S.listo) return; const sig=JSON.stringify([Object.values(S.jug||{}).map(j=>j&&j.dv?j.u+j.dv:'').join(','),Object.keys(S.vehAll||{}).map(u=>u+Object.keys(S.vehAll[u]||{}).length).join(',')]); if(sig!==VSIG){ VSIG=sig; ciudadSync(); } },1500);
+/* ===================== ETAPA 19 · OTRA EMPRESA EN SU EDIFICIO =====================
+   Quien construyó un edificio en su terreno puede abrir una segunda empresa con otra actividad.
+   La segunda empresa usa el uid «persona--2», funciona en el edificio (sede) y tiene su propia contabilidad;
+   la vida, el vestuario y la despensa son de la persona y se comparten. Se cambia de empresa recargando el juego. */
+function empresasPersona(){ const b=PER(S.uid); return [b,b+'--2'].filter(u=>S.emp&&S.emp[u]&&S.emp[u].eid).map(u=>[u,S.emp[u]]); }
+function edificioPersona(){ const b=PER(S.uid); return [b,b+'--2'].find(u=>(S.terr||{})[u]&&Object.keys(((S.obras||{})[u]||{}).b||{}).length)||null; }
+const ACT_N={bienes:'Comercio',servicios:'Servicios',industrial:'Industria'};
+function actEmpTxt(e){ return (ACT_N[e.act]||e.act)+(e.rubro&&RAMOS[e.rubro]?' · '+RAMOS[e.rubro].n:'')+(SOLO_IND?' · '+(e.giro||''):''); }
+function mismaActividad(e1,cf,giro){ if(SOLO_IND) return String(e1.giro||'').trim().toLowerCase()===String(giro||'').trim().toLowerCase();
+  if(e1.act!==cf.act) return false; if(cf.act!=='bienes') return true; return (e1.rubro||'otro')===((cf.ramo&&cf.ramo!=='otro')?cf.ramo:'otro'); }
+function avisoSegunda(){ const ed=edificioPersona(), e1=S.emp[PER(S.uid)], t=ed&&S.terr[ed];
+  return `<div class="fb ${ed?'ok':'bad'}" style="margin:8px 0 12px">${ed?`🏢 Su nueva empresa funcionará en su edificio del <b>terreno N.° ${t.p+1}</b>. Debe tener una actividad distinta${e1?' de «'+esc(actEmpTxt(e1))+'»':''}${SOLO_IND?' (otro giro)':''}. Tendrá su propia contabilidad, cédula jurídica y aporte de capital.`:'Para abrir otra empresa primero construya un edificio en su terreno.'}
+   ${e1?`<div style="margin-top:8px"><button class="btn sm sec" data-act="empIr" data-n="">↩ Volver a ${esc(e1.nom)}</button></div>`:''}</div>`; }
+function irEmpresa(n){ try{ if(typeof guardarVida==='function') guardarVida(); }catch(e){}
+  const q=new URLSearchParams(location.search); q.set('nombre',S.nombre); q.set('auto','1'); if(n) q.set('emp',n); else q.delete('emp');
+  toast('Cambiando de empresa…'); setTimeout(()=>{ location.search=q.toString(); },400); }
+function otraEmpresaHTML(){ const L=empresasPersona(), ed=edificioPersona(), b=PER(S.uid);
+  if(L.length<2&&!ed) return `<div class="card" style="margin-top:14px"><h3 style="margin-top:0">🏢 Otra empresa en su edificio</h3><p style="font-size:13px;margin:0">Cuando construya un edificio en su terreno podrá abrir ahí una <b>segunda empresa</b> con otra actividad.</p></div>`;
+  return `<div class="card" style="margin-top:14px;border-color:var(--gold)"><h3 style="margin-top:0">🏢 Sus empresas</h3>
+   ${L.map(([u,e])=>`<div class="pend"><div class="d"><b>${esc(e.nom)}</b> ${u===S.uid?'<span class="pill g">aquí está</span>':''}<br><small class="mut">${esc(actEmpTxt(e))}${e.sede?' · en su edificio del terreno N.° '+((e.sede.p||0)+1):''}</small></div>${u===S.uid?'':`<button class="btn sm" data-act="empIr" data-n="${u===b?'':'2'}">Ir a esta empresa</button>`}</div>`).join('')}
+   ${L.length<2&&ed?`<p style="font-size:13px">Ya tiene un edificio: puede abrir ahí <b>otra empresa con otra actividad</b>. Tendrá su propia contabilidad y su propio aporte de capital; su personaje (vida, ropa y despensa) es el mismo.</p><button class="btn" data-act="empIr" data-n="2">➕ Abrir otra empresa</button>`:''}</div>`; }
+function hudEmpresas(){ const L=empresasPersona(); if(L.length<2) return ''; const o=L.find(([u])=>u!==S.uid);
+  return `<div class="row"><span>🏢 Otra empresa: ${esc(String(o[1].nom).slice(0,18))}</span><button class="pill w" data-act="empIr" data-n="${o[0]===PER(S.uid)?'':'2'}">ir</button></div>`; }
+const ACT_EMP={ empIr:b=>irEmpresa(b.dataset.n||'') };
 function dibujarFincas2D(){
   if((me.k||HOMEK)!==HOMEK) return;
   const items=fincaItems({terr:S.terr,finca:S.finca}); if(!items.length) return;
@@ -8983,7 +9015,7 @@ VIEWS.puerto_emb=()=>{ const L=declActivas().filter(([k,x])=>x.cl===S.uid&&x.k==
   return (L.length?`<div class="fb" style="margin:0 0 12px">🧾 Su agente aduanal tramita: ${L.map(([k,x])=>'<b>'+esc(x.det||'')+'</b> ('+esc(x.pn)+')').join(', ')}. Al llegar la carga, él presenta el DUA y paga los tributos desde su cuenta.</div>`:'')+_vistaEmb15(); };
 const ACT_DECL={ dContratar:()=>declContratar(), dsAbrir:b=>{ DS={cid:b.dataset.id,res:'pagar'}; renderPanel(true); $('pbody').scrollTop=0; }, dsBack:()=>{ DS=null; renderPanel(true); }, dsPres:()=>presentarDeclCliente(), dsCerrar:b=>declCerrar(b.dataset.id) };
 window.CCD={opcionesDecl,declContratar,presentarDeclCliente,vistaDecl,vendeVeh,declarantes};
-Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN,ACT_CHAT,ACT_VIDA,ACT_AERO,ACT_AGRO,ACT_ENT,ACT_DECL);
+Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN,ACT_CHAT,ACT_VIDA,ACT_AERO,ACT_AGRO,ACT_ENT,ACT_DECL,ACT_EMP);
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(!b||b.disabled) return; const f=ACT[b.dataset.act]; if(f){ e.preventDefault(); const r=f(b,e); if(r&&r.catch) r.catch(err=>{ console.warn(err); toast('Error: '+err.message,'w'); }); } });
 document.addEventListener('click',e=>{ if(!$('frases').hidden&&!e.target.closest('#frases')&&!e.target.closest('[data-act="frases"]')) $('frases').hidden=true; });
 setInterval(()=>{ if(!$('game').hidden) hud(); },15000);
