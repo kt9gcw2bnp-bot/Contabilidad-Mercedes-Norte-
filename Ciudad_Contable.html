@@ -331,6 +331,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
     <button data-emo="💰">💰<span class="tx"> Vendo</span></button>
     <button data-act="chat">💬<span class="tx"> Chat</span></button>
     <button data-act="bEntrar" id="btnConstruir">🧱<span class="tx"> Construir</span></button>
+    <button data-act="vhToggle" id="btnVeh" hidden>🚗<span class="tx"> Conducir</span></button>
     <button data-act="ayuda">📘<span class="tx"> Ayuda</span></button>
   </div>
   <div id="frases" class="glass" hidden></div>
@@ -5052,7 +5053,9 @@ function facturaDoc(num,em,re,lin,cond,oid,extra){
 }
 
 /* ===================== HUD, lista, chat ===================== */
-function cuentaPend(){ return Object.keys(S.pend).length; }
+function pDelegado(p){ return !!(p&&p.svc&&(S.svcs||{})[p.svc]&&S.svcs[p.svc].est==='activo'); }
+function cuentaPend(){ return Object.values(S.pend).filter(p=>!pDelegado(p)).length; }
+function cuentaPendTodos(){ return Object.keys(S.pend).length; }
 function ordenesPorAtender(){ const e=myE(); if(!e) return []; return Object.entries(S.ord).filter(([k,o])=>o&&o.ve===S.uid&&o.vee===e.eid&&o.est==='pendiente'); }
 function hud(){
   if($('game').hidden) return;
@@ -5060,7 +5063,7 @@ function hud(){
   const est=MODE==='demo'?['#F4DD7A','Demostración']:(S.conectado?['#2FC2AD','Conectado']:['#EF6A5B','Sin conexión · reconectando…']);
   const np=cuentaPend(), no=ordenesPorAtender().length;
   $('hud').innerHTML=(e?`<div class="emp"><div class="logo" style="background:${esc(e.color)}">${esc(e.ini)}</div><div style="min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.nom)}</b><small class="mut">${esc(e.ced)} · ${esc(S.nombre)}</small></div></div>`:`<b>${esc(S.nombre)}</b>`)+
-   `<div class="row"><span>Bancos (estado bancario)</span><b class="num" id="hudSaldo">${sal!=null?fm(fromC(sal)):'—'}</b></div>${e?hudVida()+hudAgro():''}
+   `<div class="row"><span>Bancos (estado bancario)</span><b class="num" id="hudSaldo">${sal!=null?fm(fromC(sal)):'—'}</b></div>${e?hudVida()+hudAgro()+hudEntregas():''}
     ${e?avisoStock(e):''}
     <div class="row"><span>Pendientes por registrar</span><button class="pill ${np?'w':'g'}" data-act="ir" data-b="empresa" data-t="pend" id="hudPend">${np}</button></div>
     <div class="row"><span>Órdenes por atender</span><button class="pill ${no?'y':''}" data-act="ir" data-b="empresa" data-t="ord" id="hudOrd">${no}</button></div>
@@ -5119,7 +5122,7 @@ function loop(t){
     if(vx||vy){ let dist=sp*dt; if(target) dist=Math.min(dist,Math.hypot(target.x-me.x,target.y-me.y)); const n=Math.max(1,Math.ceil(dist/7)), h=dist/n; let mv=true; for(let i=0;i<n&&mv;i++) mv=moverCon(vx/m*h, vy/m*h); if(!mv&&target) target=null; }
     if(S.drv&&(me.x!==ox||me.y!==oy)) gastarComb(Math.hypot(me.x-ox,me.y-oy));
     if((vx||vy)&&t-lastSend>(MODE==='demo'?160:100)&&S.ses){ lastSend=t; base.child('jugadores/'+S.ses).update({x:Math.round(me.x),y:Math.round(me.y),t:SV.TIMESTAMP}).catch(()=>{}); }
-    const z=zona(); if(z&&z.id!==zonaActual){ zonaActual=z.id; if(vx||vy) entrarInterior(z.id); } else if(!z) zonaActual=null;
+    const z=zona(); if(z&&z.id!==zonaActual){ zonaActual=z.id; if((vx||vy)&&(!target||(target.x>=z.x-26&&target.x<=z.x+z.w+26&&target.y>=z.y-26&&target.y<=z.y+z.h+26))) entrarInterior(z.id); } else if(!z) zonaActual=null;
   } else target=null;
   cam.x=W<=VW?(W-VW)/2:Math.max(0,Math.min(W-VW,me.x-VW/2)); cam.y=H<=VH?(H-VH)/2:Math.max(0,Math.min(H-VH,me.y-VH/2));
   if(R3) frame3d(dt); else draw(dt);
@@ -5344,7 +5347,7 @@ const P={b:null,t:null,fac:null};
 let ED=null, HF={deb:'',cred:'',res:'pagar',monto:'',fb:null,int:0}, MQ={}, RQ={};
 let pendingRender=false;
 const TABS={
-  empresa:[['res','Resumen'],['ramo','Ramo'],['pend','Pendientes'],['diario','Libro diario'],['bal','Balance de comprobación'],['ef','Estados financieros'],['pres','Presupuesto'],['proy','Proyectos'],['fac','Facturas'],['ord','Órdenes'],['inv','Inventario'],['act','Activos'],['finca','Finca'],['svc','Servicios contables'],['ayuda','Ayuda']],
+  empresa:[['res','Resumen'],['ramo','Ramo'],['pend','Pendientes'],['diario','Libro diario'],['bal','Balance de comprobación'],['ef','Estados financieros'],['pres','Presupuesto'],['proy','Proyectos'],['fac','Facturas'],['ord','Órdenes'],['ent','Entregas'],['inv','Inventario'],['act','Activos'],['finca','Finca'],['svc','Servicios contables'],['ayuda','Ayuda']],
   mercado:[['cat','Catálogo de la sala'],['mis','Mis órdenes de compra'],['est','Estadísticas']],
   banco:[['cta','Cuenta y SINPE'],['mov','Movimientos'],['pre','Préstamos'],['inv','Inversiones'],['seg','Seguros (INS)']],
   hacienda:[['decl','Declaración'],['hist','Declaraciones presentadas'],['rut','RUT y régimen'],['imp','Marchamo y bienes inmuebles'],['otros','Donaciones y devoluciones']],
@@ -5399,10 +5402,11 @@ VIEWS.empresa_pend=()=>{
   if(ED&&ED.fbOk) return `<div class="fb ok">${ED.fbOk}</div><div style="margin-top:12px"><button class="btn" data-act="tab" data-t="pend">Continuar con los pendientes${cuentaPend()?' ('+cuentaPend()+')':''}</button></div>`;
   if(ED&&S.pend[ED.pid]) return vistaEditor();
   if(ED) ED=null;
-  const a=Object.entries(S.pend).sort((x,y)=>(x[1].ts||0)-(y[1].ts||0));
-  if(!a.length) return '<div class="empty">✅ No tiene pendientes. ¡Sus libros están al día!</div>';
+  const todos=Object.entries(S.pend).sort((x,y)=>(x[1].ts||0)-(y[1].ts||0)), a=todos.filter(([k,p])=>!pDelegado(p)), dg=todos.filter(([k,p])=>pDelegado(p));
+  const delegHTML=dg.length?`<div class="card" style="margin-top:12px"><b>🤝 Su contador(a) se encarga de ${dg.length} asiento(s)</b><div class="mut" style="font-size:12.5px;margin-top:4px">${dg.map(([k,p])=>esc(p.tit)+' · '+esc(S.svcs[p.svc].pn)).join('<br>')}</div><div class="mut" style="font-size:12px;margin-top:6px">No cuentan como sus pendientes: aparecerán en su libro diario cuando su contador(a) los registre.</div></div>`:'';
+  if(!a.length) return '<div class="empty">✅ No tiene pendientes. ¡Sus libros están al día!</div>'+delegHTML;
   return `<p>Cada operación de su empresa genera un pendiente. Registre el asiento en el libro diario eligiendo las cuentas y los montos al Debe y al Haber.</p>`+
-   a.map(([k,p])=>{ const sv=p.svc&&(S.svcs||{})[p.svc]&&S.svcs[p.svc].est==='activo'?S.svcs[p.svc]:null; return `<div class="pend" data-pend="${k}"><div class="d"><b>${esc(p.tit)}</b><br>${esc(p.desc)}${p.int?`<br><span class="pill w">${p.int} intento(s) con error</span>`:''}${sv?`<br><span class="pill y">🤝 Lo registra su contador(a): ${esc(sv.pn)}</span>`:''}</div>${sv?'':`<button class="btn sm" data-act="edit" data-id="${k}">Registrar asiento</button>`}</div>`; }).join('');
+   a.map(([k,p])=>{ const sv=null; return `<div class="pend" data-pend="${k}"><div class="d"><b>${esc(p.tit)}</b><br>${esc(p.desc)}${p.int?`<br><span class="pill w">${p.int} intento(s) con error</span>`:''}${sv?`<br><span class="pill y">🤝 Lo registra su contador(a): ${esc(sv.pn)}</span>`:''}</div>${sv?'':`<button class="btn sm" data-act="edit" data-id="${k}">Registrar asiento</button>`}</div>`; }).join('')+delegHTML;
 };
 function optsCuentas(sel){ return '<option value="">— Elija la cuenta —</option>'+CAT.map(g=>`<optgroup label="${g.g}">${g.c.map(c=>`<option value="${c[0]}" ${sel===c[0]?'selected':''}>${c[0]} ${esc(c[1])}</option>`).join('')}</optgroup>`).join(''); }
 function vistaEditor(pp){
@@ -5522,7 +5526,7 @@ VIEWS.empresa_ord=()=>{
   return `<h3 style="margin-top:0">Órdenes de compra recibidas por atender</h3>${pend.length?pend.map(([k,o])=>{ const sub=r2(o.cant*o.pu), iva=r2(sub*o.tar);
     return `<div class="pend" data-ord="${k}"><div class="d"><b>${esc(o.cn)}</b> quiere comprarle <b>${o.cant} × ${esc(o.pn)}</b> a ${fm(o.pu)} c/u (${o.tar*100} % IVA) · <b>${o.cond==='credito'?'Crédito 30 días':'Contado'}</b><br>Subtotal ${fm(sub)} + IVA ${fm(iva)} = <b>${fm(r2(sub+iva))}</b>${conStock(e)?` · Existencia actual: ${stock[o.pid]||0}`:''}</div>
      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="btn teal sm" data-act="aceptar" data-id="${k}">Aceptar y facturar</button><button class="btn coral sm" data-act="rechazar" data-id="${k}">Rechazar</button></div></div>`; }).join(''):'<div class="empty">No hay órdenes por atender.</div>'}
-  <h3>Historial</h3>${hist.length?`<div class="tw"><table class="tbl"><thead><tr><th>Fecha</th><th>Cliente</th><th>Detalle</th><th>Condición</th><th>Estado</th></tr></thead><tbody>${hist.map(([k,o])=>`<tr><td class="mut" style="font-size:12px">${fecha(o.ts)}</td><td>${esc(o.cn)}</td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.cond==='credito'?'Crédito':'Contado'}</td><td>${o.est==='aceptada'?'<span class="pill g">facturada</span>':'<span class="pill w">rechazada</span> <small class="mut">'+esc(o.mot||'')+'</small>'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Sin historial.</div>'}`;
+  <h3>Historial</h3>${hist.length?`<div class="tw"><table class="tbl"><thead><tr><th>Fecha</th><th>Cliente</th><th>Detalle</th><th>Condición</th><th>Estado</th></tr></thead><tbody>${hist.map(([k,o])=>`<tr><td class="mut" style="font-size:12px">${fecha(o.ts)}</td><td>${esc(o.cn)}</td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.cond==='credito'?'Crédito':'Contado'}</td><td>${o.est==='aceptada'?'<span class="pill g">facturada</span>'+(o.ent==='pendiente'?' <span class="pill y">por cargar</span>':o.ent==='cargada'?' <span class="pill y">🚚 en camino</span>':' <span class="pill">entregada</span>'):'<span class="pill w">rechazada</span> <small class="mut">'+esc(o.mot||'')+'</small>'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Sin historial.</div>'}`;
 };
 VIEWS.empresa_inv=()=>{
   const e=myE(); if(e.act==='industrial') return VIEWS.empresa_fab(); if(e.act!=='bienes') return '<div class="empty">Su empresa presta servicios: no lleva inventario de mercancías.</div>';
@@ -5580,7 +5584,7 @@ function mqTotal(k){ const a=k.split('|'), e=S.emp[a[0]], p=e&&e.prods[a[1]], c=
 VIEWS.mercado_mis=()=>{
   const e=myE(); const a=Object.entries(S.ord).filter(([k,o])=>o&&o.co===S.uid&&o.coe===e.eid).sort((x,y)=>(y[1].ts||0)-(x[1].ts||0));
   if(!a.length) return '<div class="empty">No ha enviado órdenes de compra.</div>';
-  return `<div class="tw"><table class="tbl"><thead><tr><th>Fecha</th><th>Vendedor</th><th>Detalle</th><th>Condición</th><th class="num">Total</th><th>Estado</th></tr></thead><tbody>${a.map(([k,o])=>{ const s=r2(o.cant*o.pu); return `<tr><td class="mut" style="font-size:12px">${fecha(o.ts)}</td><td>${esc(o.vn)}</td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.cond==='credito'?'Crédito':'Contado'}</td><td class="num">${fm(r2(s+r2(s*o.tar)))}</td><td>${o.est==='pendiente'?'<span class="pill y">esperando al vendedor</span>':o.est==='aceptada'?`<span class="pill g">facturada</span> <button class="btn sec sm" data-act="verFac" data-id="${o.fac}">Ver factura</button>`:'<span class="pill w">rechazada</span> <small class="mut">'+esc(o.mot||'')+'</small>'}</td></tr>`; }).join('')}</tbody></table></div>`;
+  return `<div class="tw"><table class="tbl"><thead><tr><th>Fecha</th><th>Vendedor</th><th>Detalle</th><th>Condición</th><th class="num">Total</th><th>Estado</th></tr></thead><tbody>${a.map(([k,o])=>{ const s=r2(o.cant*o.pu); return `<tr><td class="mut" style="font-size:12px">${fecha(o.ts)}</td><td>${esc(o.vn)}</td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.cond==='credito'?'Crédito':'Contado'}</td><td class="num">${fm(r2(s+r2(s*o.tar)))}</td><td>${o.est==='pendiente'?'<span class="pill y">esperando al vendedor</span>':o.est==='aceptada'?`<span class="pill g">facturada</span>${o.ent==='pendiente'?' <span class="pill y">📦 esperando entrega</span>':o.ent==='cargada'?' <span class="pill y">🚚 en camino</span>':' <span class="pill">entregada</span>'} <button class="btn sec sm" data-act="verFac" data-id="${o.fac}">Ver factura</button>`:'<span class="pill w">rechazada</span> <small class="mut">'+esc(o.mot||'')+'</small>'}</td></tr>`; }).join('')}</tbody></table></div>`;
 };
 VIEWS.banco_cta=()=>{
   const sal=fromC((S.nuc.saldo||{})[S.uid]||0), m=misFacturas();
@@ -5710,7 +5714,7 @@ async function aceptar(oid){
   const em={u:S.uid,e:e.eid,n:e.nom,ced:e.ced}, re={u:o.co,e:comp.eid,n:comp.nom,ced:comp.ced}, cont=o.cond==='contado', nf=fNum(num);
   const u={};
   u['facturas/'+fid]=facturaDoc(num,em,re,lin,o.cond,oid,{uso:o.uso,act:e.act});
-  u['ordenes/'+oid+'/est']='aceptada'; u['ordenes/'+oid+'/fac']=fid;
+  u['ordenes/'+oid+'/est']='aceptada'; u['ordenes/'+oid+'/fac']=fid; const reqEnt=entregasOn()&&bienes; u['ordenes/'+oid+'/ent']=reqEnt?'pendiente':'entregada';
   const cuentaIng=bienes?'4101':'4102';
   u['pendientes/'+S.uid+'/'+key()]=pendiente('venta','Venta '+(cont?'de contado':'a crédito')+' · '+nf,
     `Vendió a ${comp.nom} según la factura ${nf}: ${o.cant} × ${prod.n} a ${fm(o.pu)}. Subtotal ${fm(sub)} + IVA ${tarE*100} % ${fm(iva)} = total ${fm(tot)}. `+(cont?'El cliente pagó de contado por SINPE (ingresó a Bancos).':'Condición: crédito a 30 días.'),
@@ -5727,9 +5731,9 @@ async function aceptar(oid){
     'Lo comprado se registra según su uso ('+CTA[o.uso].n+') por el monto sin IVA; '+(iva>0?'el IVA pagado es crédito fiscal (IVA Acreditable, Debe); ':'')+(cont?'Bancos disminuye (Haber).':'la deuda queda en Cuentas por Pagar (Haber).'),{ref:fid});
   if(cont){ u['movimientos/'+S.uid+'/'+key()]={d:'SINPE recibido de '+comp.nom+' · '+nf,m:tot,ts:SV.TIMESTAMP,ref:fid};
     u['movimientos/'+o.co+'/'+key()]={d:'SINPE enviado a '+e.nom+' · '+nf,m:-tot,ts:SV.TIMESTAMP,ref:fid}; }
-  Object.assign(u,notificar(o.co,`🧾 ${e.nom} aceptó su orden y emitió la factura ${nf} por ${fm(tot)} (${cont?'pagada de contado por SINPE':'a crédito 30 días'}). Registre la compra.`));
+  Object.assign(u,notificar(o.co,`🧾 ${e.nom} aceptó su orden y emitió la factura ${nf} por ${fm(tot)} (${cont?'pagada de contado por SINPE':'a crédito 30 días'}). Registre la compra.`+(reqEnt?' La mercadería llegará cuando la entreguen en su empresa.':'')));
   await upd(u);
-  toast('Factura '+nf+' emitida a '+comp.nom+'. Registre la venta'+(bienes?' y su costo':'')+' en sus pendientes.');
+  toast('Factura '+nf+' emitida a '+comp.nom+'. Registre la venta'+(bienes?' y su costo':'')+' en sus pendientes.'+(reqEnt?' 📦 Ahora cárguelo en su empresa y llévelo a '+comp.nom+' (Su Empresa → Entregas).':''));
   renderPanel(true);
 }
 async function pagar(fid){
@@ -7262,7 +7266,7 @@ VIEWS.empresa_ef=()=>{
     ['Rendimiento sobre activos (ROA)',E.at?Math.round(E.un/E.at*1000)/10+' %':null,'Utilidad neta ÷ activo total.'],
     ['Rendimiento sobre patrimonio (ROE)',E.pat?Math.round(E.un/E.pat*1000)/10+' %':null,'Utilidad neta ÷ patrimonio. Lo que ganan los socios sobre lo invertido.'],
     ['Rotación de inventarios',E.inv?razon(E.costo,E.inv)+' veces':null,'Costo de ventas ÷ inventarios. Cuántas veces se vendió el inventario.']];
-  const c=cierreAnio(), a=anio(), np=cuentaPend();
+  const c=cierreAnio(), a=anio(), np=cuentaPendTodos();
   return `<p style="margin-top:0">Estados financieros de <b>${esc(myE().nom)}</b> con los asientos que usted ya registró (${Object.keys(S.asi||{}).length}). ${np?`<span class="pill w">${np} pendiente(s) sin registrar</span>`:''}</p>
   <div class="grid2"><div><h3 style="margin-top:0">Estado de resultados</h3><div class="tw"><table class="tbl" id="efRes"><tbody>
    ${f('Ventas',E.ventas)}${E.dev?f('− Devoluciones sobre ventas',E.dev,0,1):''}${f('Ventas netas',E.ventasN,1)}${f('− Costo de ventas',E.costo)}${f('Utilidad bruta',E.ub,1)}
@@ -7295,7 +7299,7 @@ function cajaDividendos(E){ const disp=r2(E.ret);
 
 /* ---------- operaciones ---------- */
 async function registrarISR(){
-  if(!puede()) return; if(cuentaPend()) return; const E=estados(), R=rentaNeta(E), q=pn(CI.isr); CI.int=(CI.int||0)+1;
+  if(!puede()) return; if(cuentaPendTodos()) return; const E=estados(), R=rentaNeta(E), q=pn(CI.isr); CI.int=(CI.int||0)+1;
   if(isNaN(q)||Math.abs(q-R.isr)>1){ CI.fb={ok:false,html:'El impuesto no es correcto. '+(R.pyme?'Aplique 5 % a los primeros ₡5 621 000 de renta neta, 10 % hasta ₡8 433 000, 15 % hasta ₡11 243 000 y 20 % al exceso.':'Aplique el 30 % a la renta neta.')+(CI.int>=2?` Impuesto correcto: <b>${fm(R.isr)}</b>.`:'')}; renderPanel(true); return; }
   const o={}, k=slug(anio())||'anio'; o['cierres/'+S.uid+'/'+k]={anio:anio(),paso:1,isr:R.isr,rn:R.rn,ts:SV.TIMESTAMP};
   if(R.isr>0) o['pendientes/'+S.uid+'/'+key()]=pendiente('isr','Impuesto sobre la renta '+anio(),`Calculó el impuesto sobre la renta del año ${anio()}: renta neta ${fm(R.rn)} → impuesto ${fm(R.isr)}. Regístrelo como gasto y como deuda con Hacienda.`,
@@ -7303,7 +7307,7 @@ async function registrarISR(){
   await upd(o); CI.isr=''; CI.fb=null; CI.int=0; toast(R.isr>0?'Impuesto calculado. Registre el asiento y continúe con el cierre.':'Sin impuesto por pagar. Continúe con el cierre.','y'); renderPanel(true);
 }
 async function asientoCierre(){
-  if(!puede()) return; const c=cierreAnio(); if(!c||c.paso!==1||cuentaPend()) return; const E=estados(), esp=[];
+  if(!puede()) return; const c=cierreAnio(); if(!c||c.paso!==1||cuentaPendTodos()) return; const E=estados(), esp=[];
   Object.keys(E.sl).filter(esRes).sort().forEach(cc=>{ const s=saldoDe(E.sl,cc); if(Math.abs(s)<0.005) return; esp.push(s>0?{c:cc,h:s}:{c:cc,d:-s}); });
   if(!esp.length) return toast('No hay cuentas de resultados con saldo.','w');
   if(E.un>0) esp.push({c:'3103',h:E.un}); else if(E.un<0) esp.push({c:'3103',d:-E.un});
@@ -7313,7 +7317,7 @@ async function asientoCierre(){
   await upd(o); toast('Asiento de cierre generado. Regístrelo con los saldos del balance de comprobación.','y'); renderPanel(true);
 }
 async function distribuir(){
-  if(!puede()) return; const c=cierreAnio(); if(!c||c.paso!==2||cuentaPend()) return; const E=estados(), un=r2(c.un||0), o={}, k=slug(anio())||'anio';
+  if(!puede()) return; const c=cierreAnio(); if(!c||c.paso!==2||cuentaPendTodos()) return; const E=estados(), un=r2(c.un||0), o={}, k=slug(anio())||'anio';
   let leg=0;
   if(un>0){ const tope=r2(E.cap*0.20), yaLeg=E.leg; leg=r2(Math.max(0,Math.min(un*0.05,tope-yaLeg)));
     o['pendientes/'+S.uid+'/'+key()]=pendiente('distribucion','Distribución de la utilidad '+anio(),`Traslade la utilidad neta de ${fm(un)} desde Resumen de Pérdidas y Ganancias: reserva legal 5 % = ${fm(leg)}${leg<r2(un*0.05)?' (limitada al 20 % del capital)':''} y el resto, ${fm(r2(un-leg))}, a Utilidades Retenidas.`,
@@ -7732,7 +7736,7 @@ const RECIB={};
 async function recibirCompras(){
   const e=myE(); if(!e||!S.uid) return;
   for(const [oid,o] of Object.entries(S.ord||{})){
-    if(!o||o.co!==S.uid||o.coe!==e.eid||o.est!=='aceptada'||o.rec||RECIB[oid]) continue;
+    if(!o||o.co!==S.uid||o.coe!==e.eid||o.est!=='aceptada'||o.rec||RECIB[oid]||(o.ent&&o.ent!=='entregada')) continue;
     const c=CRID[o.pid]; if(!c) continue;
     RECIB[oid]=1;
     try{ const r=await base.child('ordenes/'+oid+'/rec').transaction(v=>v?undefined:1); if(!r.committed) continue; }catch(err){ delete RECIB[oid]; continue; }
@@ -7791,7 +7795,7 @@ function dejarDeConducir(silencio){
   if(!silencio) toast('Se bajó del vehículo.'); hud(); renderPanel(true);
 }
 function gastarComb(d){
-  if(!S.drv) return; const T=TANQ[S.drv.t]; VD.gasto+=d/100*T.l;
+  if(!S.drv) return; const T=TANQ[S.drv.t], carga=(typeof misEntregas==='function')?misEntregas().filter(([k,o])=>o.ent==='cargada').length:0; VD.gasto+=d/100*T.l*(1+0.12*carga);   // la carga aumenta el consumo
   if(combDe(S.drv.vid)<=0){ toast('⛽ Se quedó sin combustible. Compre en una estación de servicio del Mercado.','w'); dejarDeConducir(true); return; }
   if(Date.now()-VD.flushT>5000) flushComb();
 }
@@ -7982,7 +7986,8 @@ async function aceptarOferta(oid){
 /* ---------- panel docente ---------- */
 function cajaVidaDocente(){ const on=vidaOn(), V=S.vidaAll||{};
   const js=Object.entries(S.emp||{}).filter(([u,e])=>e&&e.eid).sort((a,b)=>String(a[1].duen).localeCompare(b[1].duen));
-  return `<h3>Vida de los personajes (comida, salud y enfermedades)</h3>
+  return `<h3>Entregas a domicilio</h3><div class="switch"><button class="btn ${entregasOn()?'coral':'teal'}" data-act="dEntregas">${entregasOn()?'⏸ Hacer las entregas automáticas':'▶ Exigir que el vendedor lleve los pedidos'}</button></div><p style="margin-top:6px;font-size:12.5px">${entregasOn()?'Los vendedores deben cargar los pedidos en su empresa y llevarlos al lote del comprador (a pie 1 por viaje, moto 2, pick-up 4, camión 10).':'Los pedidos llegan solos al facturar.'}</p>
+  <h3>Vida de los personajes (comida, salud y enfermedades)</h3>
   <div class="switch"><button class="btn ${on?'coral':'teal'}" data-act="dVida">${on?'⏸ Pausar hambre y enfermedades':'▶ Activar hambre y enfermedades'}</button></div>
   <p style="margin-top:6px;font-size:12.5px">La energía baja de 100 a 0 en unos ${Math.round(100/VRATE.en)} minutos de juego; sin energía o enfermo se pierde salud. Con salud 0 el personaje se desmaya y su empresa paga ${fm(EMERG)} a la CCSS. Solo corre mientras el estudiante tiene el juego abierto.</p>
   ${js.length?`<div class="tw"><table class="tbl"><thead><tr><th>Estudiante</th><th>Ramo</th><th class="num">Energía</th><th class="num">Salud</th><th>Estado</th></tr></thead><tbody>${js.map(([u,e])=>{ const v=V[u]||{}, E=v.enf&&ENF[v.enf];
@@ -8161,8 +8166,9 @@ function entrarInterior(id){
   if(INT.on&&INT.id===id) return;
   if(INT.on) salirInterior(true);
   const D=defInterior(id); if(!D){ abrirPanel(id); return; }
+  if(S.drv&&id==='empresa'){ zonaActual=id; if(Date.now()-(INT.avDrv||0)>8000){ INT.avDrv=Date.now(); toast('🚚 Está en su empresa con su vehículo: los pedidos se cargan solos. Bájese (🅿️) si quiere entrar.',''); } return; }
   if(R3){ if(!(window.City3D&&City3D.interior)){ abrirPanel(id); return; } const c=intCanvas(); if(!INT.R){ try{ INT.R=City3D.interior({canvas:c}); }catch(e){ console.warn('interior 3D',e); INT.R=null; } } if(!INT.R){ abrirPanel(id); return; } }
-  if(S.drv) dejarDeConducir(true);
+  INT.drv=S.drv?S.drv.vid:null; if(S.drv) dejarDeConducir(true);
   const b=EDIF.find(x=>x.id===id);
   if(b&&b.x>=0&&id!=='puerto'&&id!=='aeropuerto'){ const cx0=b.x+b.w/2, cy0=b.y+b.h/2;
     const cand=[[cx0,id==='empresa'?b.y+b.h+15:(b.y>500?b.y-34:b.y+b.h+34)],[cx0,b.y+b.h+34],[cx0,b.y-34],[b.x+b.w+40,cy0],[b.x-40,cy0]].filter(([x,y])=>x>20&&x<W-20&&y>20&&y<H-20);
@@ -8181,7 +8187,8 @@ function salirInterior(silencio){
   if(R3){ $('camc').hidden=false; $('mini').hidden=false; }
   zonaActual=id; intBar();
   if(S.ses) base.child('jugadores/'+S.ses).update({in:null,x:Math.round(me.x),y:Math.round(me.y),t:SV.TIMESTAMP}).catch(()=>{});
-  if(!silencio){ cerrarPanel(); toast('Salió a la calle.',''); }
+  if(!silencio){ cerrarPanel(); toast('Salió a la calle.',''); if(INT.drv&&(S.veh||{})[INT.drv]&&combDe(INT.drv)>=0.2) conducir(INT.drv); }
+  INT.drv=null;
 }
 function intPres(force){
   if(!S.ses||!INT.on) return; const t=performance.now(); if(!force&&t-INT.send<(MODE==='demo'?160:110)) return; INT.send=t;
@@ -8525,6 +8532,66 @@ const ACT_AGRO={
 };
 window.CCA={AGRO,AG,madurez,vrLote,produccion,agroComprar,agroMedir,agroRecolectar,agroCosechar,agroDespensa,svcContratar,svcRegistrar,fincaItems,trabajoContador};
 
+/* ===================== ETAPA 14 · ENTREGAS A DOMICILIO Y VEHÍCULOS =====================
+   Las ventas de bienes se facturan al aceptar la orden, pero la mercadería llega al comprador solo cuando el
+   vendedor la lleva: la carga en su empresa y camina o maneja hasta el lote de la empresa compradora.
+   Capacidad por viaje: a pie 1 pedido · moto 2 · pick-up 4 · camión 10. Así los vehículos (y el combustible) importan. */
+const CAPA={pie:1,mot:2,pic:4,cam:10};
+const entregasOn=()=>S.cfg.entregas!==false;
+const ENT={t:0,aviso:0,cargaT:0};
+function capacidad(){ return S.drv&&CAPA[S.drv.t]?CAPA[S.drv.t]:CAPA.pie; }
+function capTxt(){ return S.drv?'en su '+VEHID[S.drv.t].n.toLowerCase():'a pie'; }
+const misEntregas=()=>{ const e=myE(); if(!e) return []; return Object.entries(S.ord||{}).filter(([k,o])=>o&&o.ve===S.uid&&o.vee===e.eid&&o.est==='aceptada'&&(o.ent==='pendiente'||o.ent==='cargada')).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0)); };
+function loteDe(u){ return (typeof LOT_OF!=='undefined'&&LOT_OF[u])||null; }
+function cercaDeLote(L,m){ return !!L&&me.x>=L.x-m&&me.x<=L.x+L.w+m&&me.y>=L.y-m&&me.y<=L.y+L.h+m; }
+function enMiEmpresa(){ if(INT.on) return INT.id==='empresa'; return (me.k||HOMEK)===HOMEK&&(zonaActual==='empresa'||cercaDeLote(loteDe(S.uid),45)); }
+async function entregasTick(){
+  if(!S.uid||!myE()||S.docenteSolo||$('game').hidden||S.cfg.congelada) return;
+  const L=misEntregas(); if(!L.length) return;
+  const casa=(me.k||HOMEK)===HOMEK;
+  // cargar en la empresa propia
+  if(enMiEmpresa()){ const cargadas=L.filter(([k,o])=>o.ent==='cargada').length, libre=capacidad()-cargadas;
+    const porCargar=L.filter(([k,o])=>o.ent==='pendiente').slice(0,Math.max(0,libre));
+    if(porCargar.length&&Date.now()-ENT.cargaT>1500){ ENT.cargaT=Date.now(); const u={}; porCargar.forEach(([k])=>{ u['ordenes/'+k+'/ent']='cargada'; S.ord[k].ent='cargada'; });
+      await upd(u).catch(()=>{}); const tot=cargadas+porCargar.length, faltan=L.length-tot;
+      toast('📦 Cargó '+porCargar.length+' pedido(s) ('+tot+' de '+capacidad()+' que caben '+capTxt()+'). Llévelos a las empresas compradoras.'+(faltan>0?' Quedan '+faltan+' por cargar en otro viaje'+(S.drv&&S.drv.t==='cam'?'':' (un camión lleva hasta 10)')+'.':''),'y'); hud(); renderPanel(); } }
+  // entregar al llegar al lote del comprador
+  if(!casa||INT.on) return;
+  const u={}, ok=[];
+  L.filter(([k,o])=>o.ent==='cargada').forEach(([k,o])=>{ if(cercaDeLote(loteDe(o.co),45)){ u['ordenes/'+k+'/ent']='entregada'; u['ordenes/'+k+'/entT']=SV.TIMESTAMP; S.ord[k].ent='entregada'; ok.push(o);
+    Object.assign(u,notificar(o.co,'🚚 '+o.vn+' le entregó '+o.cant+' × '+o.pn+'. Ya está en su empresa.','y')); } });
+  if(ok.length){ await upd(u).catch(()=>{}); toast('✅ Entregó '+ok.map(o=>o.cant+' × '+o.pn).join(', ')+' a '+ok[0].cn+'.','y'); hud(); renderPanel(); }
+}
+setInterval(()=>{ entregasTick().catch(()=>{}); },700);
+function irAEntregar(oid){ const o=(S.ord||{})[oid]; if(!o) return; if(INT.on) salirInterior(true);
+  if((me.k||HOMEK)!==HOMEK) return toast('Regrese a su país para hacer las entregas.','w');
+  const L=o.ent==='cargada'?loteDe(o.co):loteDe(S.uid); if(!L) return toast('No se encontró el lote de esa empresa.','w');
+  target={x:L.x+L.w/2,y:Math.min(H-20,L.y+L.h+18)}; const z0=zona(); zonaActual=z0?z0.id:null; cerrarPanel();
+  toast(o.ent==='cargada'?'📍 Vaya hasta '+o.cn+' (marcado en el mapa). Al llegar se entrega solo.':'📍 Vaya a su empresa a cargar el pedido.','y'); }
+VIEWS.empresa_ent=()=>{
+  const L=misEntregas(), carg=L.filter(([k,o])=>o.ent==='cargada').length;
+  const cap=capacidad();
+  return `<p style="margin-top:0">${entregasOn()?'Lo que vende a sus compañeros <b>no llega solo</b>: después de facturar, cargue los pedidos en su empresa y llévelos hasta el lote de la empresa compradora. Cuantos más pedidos lleve por viaje, menos viajes hace.':'⏸ El docente desactivó las entregas a domicilio: los pedidos llegan solos al facturar.'}</p>
+  <div class="grid3"><div class="card"><div class="k">A pie</div><b>${CAPA.pie}</b> pedido por viaje</div><div class="card"><div class="k">🏍 Moto · 🛻 Pick-up</div><b>${CAPA.mot}</b> · <b>${CAPA.pic}</b> pedidos por viaje</div><div class="card"><div class="k">🚚 Camión</div><b>${CAPA.cam}</b> pedidos por viaje</div></div>
+  <div class="fb ${carg?'ok':''}" style="margin:12px 0">Usted va <b>${esc(capTxt())}</b>: lleva ${carg} de ${cap} pedido(s). ${S.drv?'':misVehiculos().length?'<button class="btn sm" data-act="vhToggle" style="margin-left:6px">🚗 Subirse a su vehículo</button>':'Compre un vehículo a una agencia para llevar más pedidos y moverse más rápido.'}</div>
+  ${L.length?`<div class="tw"><table class="tbl"><thead><tr><th>Cliente</th><th>Pedido</th><th>Estado</th><th></th></tr></thead><tbody>${L.map(([k,o])=>`<tr><td><b>${esc(o.cn)}</b></td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.ent==='cargada'?(S.drv?'<span class="pill g">🚚 en su vehículo</span>':'<span class="pill g">📦 lo lleva usted</span>'):'<span class="pill y">por cargar en su empresa</span>'}</td><td><button class="btn sm ${o.ent==='cargada'?'':'sec'}" data-act="entIr" data-id="${k}">📍 ${o.ent==='cargada'?'Ir a entregar':'Ir a cargar'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No tiene entregas pendientes.</div>'}`;
+};
+function hudEntregas(){ const L=misEntregas(); if(!L.length) return ''; const c=L.filter(([k,o])=>o.ent==='cargada').length;
+  return `<div class="row"><span>📦 Entregas: ${L.length-c} por cargar · ${c} en camino</span><button class="pill w" data-act="ir" data-b="empresa" data-t="ent">ver</button></div>`; }
+function vhToggle(){
+  if(S.drv){ dejarDeConducir(); return; }
+  const mios=misVehiculos(); if(!mios.length){ toast('Su empresa no tiene vehículos. Pídalos a una agencia de vehículos de la sala (Tienda Mayorista → Vehículos).','w'); return; }
+  const con=mios.filter(([k])=>combDe(k)>=0.2).sort((a,b)=>CAPA[b[1].t]-CAPA[a[1].t]);
+  if(!con.length){ toast('⛽ Sus vehículos no tienen combustible. Cómprelo en una estación de servicio del Mercado.','w'); MF.f='combustible'; irA('mercado','cat'); return; }
+  if(INT.on) salirInterior(true);
+  conducir(con[0][0]);
+}
+function botonVehiculo(){ const b=$('btnVeh'); if(!b) return; const n=misVehiculos().length; b.hidden=!n; b.classList.toggle('on',!!S.drv); b.innerHTML=S.drv?'🅿️<span class="tx"> Bajarse</span>':'🚗<span class="tx"> Conducir</span>'; }
+setInterval(botonVehiculo,1000);
+const ACT_ENT={ entIr:b=>irAEntregar(b.dataset.id), vhToggle:()=>vhToggle(),
+  dEntregas:()=>base.child('config/entregas').set(!entregasOn()).then(()=>toast(entregasOn()?'Entregas a domicilio obligatorias.':'Entregas automáticas (sin viaje).')).catch(err=>toast('No se pudo cambiar: '+err.message,'w')) };
+window.CCE={capacidad,misEntregas,entregasTick,irAEntregar,vhToggle,CAPA,loteDe};
+
 /* ===================== PANEL DOCENTE ===================== */
 const D={t:'ctl',sort:'puntaje',proj:false,subs:false};
 let docPending=false;
@@ -8552,7 +8619,7 @@ function metricas(){
     const dOk=decl.filter(d=>d.ok).length;
     const cumpl=decl.length?Math.round(100*dOk/decl.length*(sinDecl?0.5:1)):0;
     const util=r2(ventas-costo-gastos);
-    return {u,e,saldo:fromC(sal[u]||0),ventas:r2(ventas),costo:r2(costo),gastos:r2(gastos),compras:r2(compras),util,ok,er,pct,pend:Object.keys(S.all.pend[u]||{}).length,
+    return {u,e,saldo:fromC(sal[u]||0),ventas:r2(ventas),costo:r2(costo),gastos:r2(gastos),compras:r2(compras),util,ok,er,pct,pend:Object.values(S.all.pend[u]||{}).filter(p=>!pDelegado(p)).length,
       nasi:Object.keys(S.all.asi[u]||{}).length,vest:r2(vest),ndecl:decl.length,dOk,sinDecl,cumpl,nfe,nfr};
   });
   const nz=(k)=>{ const v=rows.map(r=>r[k]); const mn=Math.min.apply(null,v), mx=Math.max.apply(null,v); rows.forEach(r=>{ r[k+'N']=mx>mn?100*(r[k]-mn)/(mx-mn):(rows.length?100:0); }); };
@@ -8692,7 +8759,7 @@ const ACT={
   dSort:b=>{ D.sort=b.dataset.k; renderDoc(true); },
   dProy:()=>{ D.proj=!D.proj; const el=document.documentElement; try{ if(D.proj&&el.requestFullscreen) el.requestFullscreen().catch(()=>{}); else if(!D.proj&&document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }catch(e){} renderDoc(true); }
 };
-Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN,ACT_CHAT,ACT_VIDA,ACT_AERO,ACT_AGRO);
+Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN,ACT_CHAT,ACT_VIDA,ACT_AERO,ACT_AGRO,ACT_ENT);
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(!b||b.disabled) return; const f=ACT[b.dataset.act]; if(f){ e.preventDefault(); const r=f(b,e); if(r&&r.catch) r.catch(err=>{ console.warn(err); toast('Error: '+err.message,'w'); }); } });
 document.addEventListener('click',e=>{ if(!$('frases').hidden&&!e.target.closest('#frases')&&!e.target.closest('[data-act="frases"]')) $('frases').hidden=true; });
 setInterval(()=>{ if(!$('game').hidden) hud(); },15000);
