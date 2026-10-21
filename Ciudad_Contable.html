@@ -4963,7 +4963,7 @@ function leerCF(){
   document.querySelectorAll('#cfProds .rprod').forEach(r=>{ const id=r.dataset.id, o=CF.rsel[id]||(CF.rsel[id]={}); o.on=r.querySelector('.rp-on').checked; o.pv=r.querySelector('.rp-p').value; const rq=r.querySelector('.rp-q'); o.cant=rq?rq.value:''; });
 }
 function totCompraInicial(){ let sub=0,iva=0; if(!conStock(CF)) return {sub:0,iva:0,tot:0}; const ind=CF.act==='industrial';
-  if(CF.act==='bienes'&&CF.ramo&&CF.ramo!=='otro'){ Object.entries(CF.rsel||{}).forEach(([id,o])=>{ const c=CRID[id], q=parseInt(o.cant,10); if(c&&c.r===CF.ramo&&o.on&&q>0){ const s0=r2(c.cu*q); sub=r2(sub+s0); iva=r2(iva+r2(s0*c.tar)); } }); return {sub,iva,tot:r2(sub+iva)}; }
+  if(CF.act==='bienes'&&CF.ramo&&CF.ramo!=='otro'){ Object.entries(CF.rsel||{}).forEach(([id,o])=>{ const c=CRID[id], q=parseInt(o.cant,10); if(c&&c.r===CF.ramo&&dispPais(c)&&o.on&&q>0){ const s0=r2(c.cu*q); sub=r2(sub+s0); iva=r2(iva+r2(s0*c.tar)); } }); return {sub,iva,tot:r2(sub+iva)}; }
   CF.prods.forEach(p=>{ const c=pn(ind?p.mp:p.costo), q=parseInt(p.cant,10); if(c>0&&q>0){ const s=r2(c*q); sub=r2(sub+s); iva=r2(iva+r2(s*0.13)); } }); return {sub,iva,tot:r2(sub+iva)}; }
 $('crear').addEventListener('input',e=>{ leerCF(); if(e.target.id==='cfNom') $('cfLogo').textContent=(CF.nom.trim()[0]||'?').toUpperCase();
   if(e.target.closest('.pr-mp,.pr-mod,.pr-cif')) cfCostoUnit();
@@ -4982,7 +4982,7 @@ async function crearEmpresa(){
   if(giro.length<4) return fail('Describa el giro del negocio.');
   if(CF.ramo==='vehiculos'&&!vendeVeh()) return fail('Solo en la República de Undécimo hay agencias de vehículos. Elija otro ramo.');
   const prods={}; let i=0; const lin=[]; const rmC=bienes&&!ind&&CF.ramo&&CF.ramo!=='otro'&&RAMOS[CF.ramo];
-  if(rmC){ for(const [id,o] of Object.entries(CF.rsel||{})){ const c=CRID[id]; if(!c||c.r!==CF.ramo||!o.on) continue; const pr=pn(o.pv), q=parseInt(o.cant,10);
+  if(rmC){ for(const [id,o] of Object.entries(CF.rsel||{})){ const c=CRID[id]; if(!c||c.r!==CF.ramo||!dispPais(c)||!o.on) continue; const pr=pn(o.pv), q=parseInt(o.cant,10);
       if(!(pr>c.cu)) return fail('El precio de venta de «'+c.n+'» debe ser mayor que su costo mayorista ('+fm(c.cu)+').');
       if(!c.prod&&!(q>=1&&q<=10000)) return fail('Indique la cantidad inicial de «'+c.n+'» (1 a 10 000).');
       prods[id]={n:c.n,cu:c.cu,pv:r2(pr),tar:c.tar,cat:c.r}; if(c.prod) continue; const s0=r2(c.cu*q); lin.push({d:c.n.slice(0,40),cant:q,pu:c.cu,sub:s0,tar:c.tar,iva:r2(s0*c.tar),pid:id}); }
@@ -5537,7 +5537,7 @@ VIEWS.empresa_inv=()=>{
   <div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo unit.</th><th class="num">Valor al costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">Valor del inventario (según existencias)</td><td class="num">${fm(r2(tv))}</td><td></td></tr></tfoot></table></div>
   <div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`;
 };
-function rqTotal(){ const e=myE(); let sub=0,iva=0; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(p&&q>0){ const t=p.cat&&CRID[k]?CRID[k].tar:0.13, s=r2(q*p.cu); sub=r2(sub+s); iva=r2(iva+r2(s*t)); } }); return `Subtotal ${fm(sub)} + IVA ${fm(iva)} = <b class="gold">${fm(r2(sub+iva))}</b>`; }
+function rqTotal(){ const e=myE(); let sub=0,iva=0; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(p&&q>0){ const t=p.cat&&CRID[k]?CRID[k].tar:0.13, s=r2(q*(p.cat&&CRID[k]?CRID[k].cu:p.cu)); sub=r2(sub+s); iva=r2(iva+r2(s*t)); } }); return `Subtotal ${fm(sub)} + IVA ${fm(iva)} = <b class="gold">${fm(r2(sub+iva))}</b>`; }
 VIEWS.empresa_ayuda=()=>ayudaHTML();
 VIEWS.ayuda_ayuda=()=>ayudaHTML();
 function ayudaHTML(){ return `<div class="help"><h3 style="margin-top:0">¿Cómo funciona Ciudad Contable?</h3><ol>
@@ -5756,16 +5756,18 @@ async function pagar(fid){
   await upd(u); toast('Pago por SINPE realizado: '+nf+' · '+fm(f.tot)); renderPanel(true);
 }
 async function reabastecer(){
-  if(!puede()) return; const e=myE(); if(e.act==='servicios') return;
-  const lin=[]; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(!p||!(q>0&&q<=10000)) return; if(e.act!=='bienes'&&!p.cat) return; const c=p.cat?CRID[k]:null; if(p.cat&&(!c||c.r!==ramoDe(e))) return;
+  if(!puede()) return; const e=myE(); if(e.act==='servicios') return; const noDisp=[];
+  const lin=[]; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(!p||!(q>0&&q<=10000)) return; if(e.act!=='bienes'&&!p.cat) return; const c=p.cat?CRID[k]:null; if(p.cat&&(!c||c.r!==ramoDe(e))) return; if(c&&!dispPais(c)){ noDisp.push(p.n); return; }
     const pu=c?c.cu:p.cu, tar=c?c.tar:0.13, s=r2(q*pu); lin.push({d:p.n,cant:q,pu,sub:s,tar,iva:r2(s*tar),pid:k}); });
-  if(!lin.length) return toast('Indique al menos una cantidad a comprar.','w');
+  if(noDisp.length) toast('El mayorista de su país no vende '+noDisp.join(', ')+': para tener más, impórtelo en el Puerto.','w');
+  if(!lin.length) return noDisp.length?null:toast('Indique al menos una cantidad a comprar.','w');
   const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0)), tot=r2(sub+iva), tC=toC(tot), fid=key(); let num=0;
   const r=await txN(n=>{ if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<tC) return 'sinFondos';
     n.saldo[S.uid]-=tC; if(!n.stock[S.uid]) n.stock[S.uid]={}; lin.forEach(l=>{ n.stock[S.uid][l.pid]=(n.stock[S.uid][l.pid]||0)+l.cant; });
     n.consec.PROV=(n.consec.PROV||0)+1; num=n.consec.PROV; n.ext.proveedor=(n.ext.proveedor||0)+tC; n.fac[fid]='pagada'; return 'ok'; });
   if(r.out!=='ok') return toast(r.out==='sinFondos'?'Saldo insuficiente en Bancos ('+fm(tot)+').':'No se pudo comprar.','w');
   const u={}; u['facturas/'+fid]=facturaDoc(num,PROV,{u:S.uid,e:e.eid,n:e.nom,ced:e.ced},lin,'contado','',{uso:'1105',act:'bienes'});
+  const st0=(S.nuc.stock||{})[S.uid]||{}; lin.forEach(l=>{ const p=e.prods[l.pid]; if(p&&Math.abs((p.cu||0)-l.pu)>0.004){ const q0=Math.max(0,st0[l.pid]||0); u['empresas/'+S.uid+'/prods/'+l.pid+'/cu']=r2((q0*p.cu+l.cant*l.pu)/(q0+l.cant)); } });   // costo promedio ponderado
   u['pendientes/'+S.uid+'/'+key()]=pendCompraProv(fNum(num),sub,iva,tot,fid);
   u['movimientos/'+S.uid+'/'+key()]={d:'Pago a '+PROV.n+' · '+fNum(num),m:-tot,ts:SV.TIMESTAMP,ref:fid};
   await upd(u); RQ={}; toast('Compra al proveedor realizada ('+fm(tot)+'). Registre el asiento.'); renderPanel(true);
@@ -6575,6 +6577,10 @@ const TC_DEF={usd:{c:505,v:512},eur:{c:585,v:600},dai:0.09};
 const TBARCO=Math.max(1,+qs.get('tbarco')||60);          // segundos de travesía del barco de carga
 const LEY6946=0.01;
 const esVehPid=pid=>!!(CRID[pid]&&CRID[pid].r==='vehiculos');
+const esConsumo=pid=>{ const c=CRID[pid]; return !!c&&(c.r==='alimentos'||c.r==='farmacia'||c.r==='agro'); };
+function usosImp(pid){ if(!esConsumo(pid)) return null; const c=CRID[pid], e=myE(), r=ramoDe(e), out=[];
+  if(e&&conStock(e)&&e.act!=='industrial'&&(r===c.r||(r==='alimentos'&&c.r==='agro')||(r==='agro'&&c.r==='alimentos'))) out.push(['1105','Inventario para revenderlo en su país (activo)']);
+  out.push([RAMOS[c.r].uso,'Despensa: consumo de su personal ('+CTA[RAMOS[c.r].uso].n.toLowerCase()+')']); return out; }
 const ADUA={u:'ADUA',e:'ADUA',n:'Servicio Nacional de Aduanas (DUA)',ced:'2-100-042005'};
 const IX={tab:'exp',q:{},err:''};
 const monDeSala=s=>MON[contDeSala(s)]||MON.c10;
@@ -6625,10 +6631,10 @@ VIEWS.puerto_imp=()=>{
     ordenarEmp(V.emp||{}).forEach(([u,e])=>{ if(!e||!e.prods||!conStock(e)) return; const st=(V.stock||{})[u]||{};
       filas.push(`<div class="mk" data-xemp="${esc(p.s+':'+u)}"><div class="mk-h"><div class="logo" style="background:${esc(e.color)}">${esc(e.ini)}</div><div><b>${esc(e.nom)}</b><div class="mut" style="font-size:12px">${esc(p.name)} · ${esc(e.giro)} · factura en ${esc(m.n)}</div></div></div>`+
       Object.entries(e.prods).map(([pid,pr])=>{ const k=p.s+'|'+u+'|'+pid, q=IX.q[k]||{}, disp=st[pid]||0, pu=m.k==='CRC'?pr.pv:r2(pr.pv/tcDe(m,'c'));
-        return `<div class="mk-p" data-xprod="${esc(k)}"><div class="pn"><b>${esc(pr.n)}</b><br><small class="mut">Existencia: ${disp}${e.act==='industrial'?' · fábrica':''}</small></div>
+        return `<div class="mk-p" data-xprod="${esc(k)}"><div class="pn"><b>${esc(pr.n)}</b>${CRID[pid]&&CRID[pid].pais&&!dispPais(CRID[pid])?' <span class="pill y">⭐ no se vende en su país</span>':''}<br><small class="mut">Existencia: ${disp}${e.act==='industrial'?' · fábrica':''}</small></div>
         <div class="num">${fmM(pu,m)} FOB<br><small class="mut">≈ ${fm(r2(pu*tcDe(m,'v')))} · IVA imp. ${pr.tar*100} %</small></div>
         <input type="number" min="1" step="1" placeholder="Cant." data-xq="${esc(k)}" data-f="cant" value="${esc(q.cant||'')}" aria-label="Cantidad">
-        <div>${esVehPid(pid)?'<select disabled aria-label="Uso"><option>Vehículo para la empresa (activo 1209)</option></select>':`<select data-xq="${esc(k)}" data-f="uso" aria-label="Uso">${USOS.map(x=>`<option value="${x[0]}" ${q.uso===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>`}
+        <div>${usosImp(pid)?`<select data-xq="${esc(k)}" data-f="uso" aria-label="Uso">${usosImp(pid).map(x=>`<option value="${x[0]}" ${(q.uso||usosImp(pid)[0][0])===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>`:esVehPid(pid)?'<select disabled aria-label="Uso"><option>Vehículo para la empresa (activo 1209)</option></select>':`<select data-xq="${esc(k)}" data-f="uso" aria-label="Uso">${USOS.map(x=>`<option value="${x[0]}" ${q.uso===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>`}
         <select data-xq="${esc(k)}" data-f="via" aria-label="Transporte" style="margin-top:4px"><option value="maritimo" ${(q.via||IX.via)!=='aereo'?'selected':''}>🚢 Barco · ${TBARCO} s · flete ${Math.round(fleteTasa(p.s,SALA)*100)} %</option><option value="aereo" ${(q.via||IX.via)==='aereo'?'selected':''}>✈️ Avión · ${TAVION} s · flete ${Math.round(fleteAereo(p.s,SALA)*100)} %</option></select></div>
         <div style="text-align:right"><button class="btn sm" data-act="xOrden" data-k="${esc(k)}" ${disp>0?'':'disabled'}>Pedir importación</button></div></div>`; }).join('')+'</div>'); }); });
   return `<p style="margin-top:0">Importe productos de empresas de los otros continentes. El exportador acepta, embarca la mercadería en su puerto (FOB) y el barco tarda ${TBARCO} s en llegar. Al llegar usted la <b>nacionaliza</b>: paga flete, seguro, arancel e IVA de importación. La factura del exterior queda por pagar en su moneda.</p>
@@ -6661,7 +6667,7 @@ async function pedirImportacion(k){
   if(cant>disp) return toast('El exportador solo tiene '+disp+' unidad(es).','w');
   if(esVehPid(pid)){ const enCamino=misComercios().imp.filter(([k2,x])=>esVehPid(x.pid)&&(x.est==='pendiente'||x.est==='transito')).reduce((a,[k2,x])=>a+x.cant,0), libre=MAX_VEH-misVehiculos().length-enCamino;
     if(cant>libre) return toast(libre>0?'Solo puede importar '+libre+' vehículo(s) más (máximo '+MAX_VEH+' por empresa, contando los que vienen en camino).':'Su empresa ya tiene (o tiene en camino) el máximo de '+MAX_VEH+' vehículos.','w'); }
-  const puME=m.k==='CRC'?pr.pv:r2(pr.pv/tcDe(m,'c')), totME=r2(cant*puME), oid=DB.ref('comercio').push().key, o={}; if(esVehPid(pid)) uso='1209';
+  const puME=m.k==='CRC'?pr.pv:r2(pr.pv/tcDe(m,'c')), totME=r2(cant*puME), oid=DB.ref('comercio').push().key, o={}; if(esVehPid(pid)) uso='1209'; const ui=usosImp(pid); if(ui){ uso=q.uso&&ui.some(x=>x[0]===q.uso)?q.uso:ui[0][0]; }
   o['comercio/'+oid]={c:{s:SALA,u:S.uid,e:e.eid,n:e.nom,ced:e.ced},v:{s,u,e:v.eid,n:v.nom,ced:v.ced},pid,pn:pr.n,cant,puME,totME,mon:m.k==='CRC'?'c10':m.k==='USD'?'c11':'c12',tar:pr.tar,uso,via,est:'pendiente',ts:SV.TIMESTAMP};
   o['mundo/'+s+'/notif/'+u+'/'+DB.ref('x').push().key]={txt:((via==='aereo'?'✈️ ':'🚢 ')+e.nom+' ('+contOf(HOMEK).name+') quiere importar '+cant+' × '+pr.n+(via==='aereo'?' por carga aérea':'')+'. Atiéndalo en el Puerto → Embarques.').slice(0,200),k:'y',ts:SV.TIMESTAMP};
   await DB.ref().update(o); IX.q[k]={uso,via:q.via}; toast('Pedido de importación '+(via==='aereo'?'por avión ':'')+'enviado a '+v.nom+'. Siga el envío en Embarques.'); renderPanel(true);
@@ -6691,13 +6697,14 @@ async function embarcar(oid){
   await DB.ref().update(u); toast('Mercadería embarcada (factura '+nf+'). Registre la exportación y su costo.'); renderPanel(true);
 }
 async function nacionalizar(oid,ag){   // ag = {cid} cuando lo tramita el agente aduanal (contador) del importador
-  if(!puede()) return; const o=S.com[oid], yo=ag?ag.cl:yo, e=ag?S.emp[yo]:myE(); if(!o||!e||o.est!=='transito'||o.c.u!==yo||o.c.e!==e.eid) return;
+  if(!puede()) return; const o=S.com[oid], yo=ag?ag.cl:S.uid, e=ag?S.emp[yo]:myE(); if(!o||!e||o.est!=='transito'||o.c.u!==yo||o.c.e!==e.eid) return;
   if(llegada(o)>now()){ toast('La carga todavía no llega.','w'); return false; }
-  const m=MON[o.mon]||MON.c10, L=liquidacion(o,tcDe(m,'v')), tC=toC(L.hoy), dfid=key(); let num=0;
+  const m=MON[o.mon]||MON.c10, L=liquidacion(o,tcDe(m,'v')), tC=toC(L.hoy), dfid=key(); let num=0, st0=0;
   document.querySelectorAll('[data-id="'+oid+'"]').forEach(b=>b.disabled=true);
   const r=await txN(n=>{ if(!n.xi||typeof n.xi!=='object') n.xi={}; if(n.xi[oid]) return 'procesada'; if(n.saldo[yo]==null) return 'sinEmpresa'; if(n.saldo[yo]<tC) return 'sinFondos';
     n.saldo[yo]-=tC; n.ext.naviera=(n.ext.naviera||0)+toC(r2(L.fl+L.seg)); n.ext.hacienda=(n.ext.hacienda||0)+tC-toC(r2(L.fl+L.seg));
-    n.consec.ADUA=(n.consec.ADUA||0)+1; num=n.consec.ADUA; n.fac[dfid]='pagada'; n.xi[oid]='n'; return 'ok'; });
+    n.consec.ADUA=(n.consec.ADUA||0)+1; num=n.consec.ADUA; n.fac[dfid]='pagada'; n.xi[oid]='n';
+    if(esConsumo(o.pid)&&o.uso==='1105'){ if(!n.stock[yo]) n.stock[yo]={}; st0=n.stock[yo][o.pid]||0; n.stock[yo][o.pid]=st0+o.cant; } return 'ok'; });
   if(r.out!=='ok') { toast(r.out==='sinFondos'?(ag?'El cliente no tiene saldo suficiente en Bancos para pagar el DUA (':'Saldo insuficiente en Bancos para pagar el DUA (')+fm(L.hoy)+').':'Esa importación ya fue nacionalizada.','w'); return false; }
   const u={}, b='mundo/'+SALA+'/';
   u[b+'facturas/'+dfid]=facturaDoc(num,ADUA,{u:yo,e:e.eid,n:e.nom,ced:e.ced},[{d:('DUA · '+o.pn).slice(0,40),cant:o.cant,pu:r2(L.costo/o.cant),sub:L.costo,tar:o.tar||0,iva:L.iva}],'contado','',{uso:o.uso,act:'bienes'});
@@ -6706,6 +6713,10 @@ async function nacionalizar(oid,ag){   // ag = {cid} cuando lo tramita el agente
     [{c:o.uso,d:L.costo},{c:'1106',d:L.iva},{c:'2104',h:L.fob},{c:'1102',h:L.hoy}],'El costo de lo importado incluye el valor FOB, el flete, el seguro y los aranceles (DAI y Ley 6946): todo va a la cuenta según su uso (Debe). El IVA de importación es crédito fiscal (IVA Acreditable). La factura del exterior queda en Cuentas por Pagar al Exterior (Haber) y lo pagado hoy sale de Bancos (Haber).');
   u[b+'movimientos/'+yo+'/'+key()]={d:'Pago de DUA, flete y seguro · importación de '+o.pn,m:-L.hoy,ts:SV.TIMESTAMP};
   if(esVehPid(o.pid)){ const c=CRID[o.pid], cu=r2((L.costo+((ag&&ag.fee)||0))/o.cant); for(let q=0;q<o.cant;q++){ const pl=placa(); u[b+'vehiculos/'+yo+'/'+key()]={t:c.veh,costo:cu,pl,comb:Math.round(TANQ[c.veh].cap*0.1),imp:1,ts:SV.TIMESTAMP}; } }
+  if(esConsumo(o.pid)){ const c=CRID[o.pid];
+    if(o.uso==='1105'){ const ep=(e.prods||{})[o.pid], cu=ep?r2((st0*(ep.cu||0)+L.costo)/(st0+o.cant)):r2(L.costo/o.cant);
+      if(ep) u[b+'empresas/'+yo+'/prods/'+o.pid+'/cu']=cu; else u[b+'empresas/'+yo+'/prods/'+o.pid]={n:c.n,cu,pv:Math.ceil(cu*1.35/10)*10,tar:c.tar,cat:c.r,imp:1}; }
+    else u[b+'despensa/'+yo+'/'+o.pid]=SV.increment(o.cant); }
   if(ag) Object.entries(ag.u||{}).forEach(([k,v])=>{ u[b+k]=v; });
   u['comercio/'+oid+'/est']='nacionalizada'; u['comercio/'+oid+'/liq']=L;
   await DB.ref().update(ajustarRTS(u)); if(!ag) toast('Importación nacionalizada. Registre el asiento; la factura del exterior queda por pagar.'+(esVehPid(o.pid)?' Su vehículo ya está en su lote.':'')); renderPanel(true); return true;
@@ -7656,6 +7667,17 @@ VEHS.forEach(v=>CATR.push({id:'v_'+v.t,r:'vehiculos',n:v.n,cu:v.pu,tar:0.13,u:'u
  .forEach(([id,n,cu])=>CATR.push({id,r:'papeleria',n,cu,tar:0.13,u:'unidad'}));
 [['t_lap','Laptop empresarial',380000],['t_imp','Impresora multifuncional',145000],['t_mon','Monitor de 24 pulgadas',95000],['t_cel','Celular empresarial',210000],['t_tab','Tableta',160000]]
  .forEach(([id,n,cu])=>CATR.push({id,r:'tecnologia',n,cu,tar:0.13,u:'unidad'}));
+/* Etapa 16: comida y medicinas distintas en cada país, para que haya que importar.
+   Décimo es fuerte en comida (más barata) y Undécimo en medicinas. Cada país tiene productos propios que el mayorista
+   del otro país no vende: quien los quiera debe importarlos (Puerto) y puede revenderlos en su país. */
+[['a_tor','Tortillas con queso (paquete)',450,0.01,{en:32},'10'],['a_chi','Chifrijo',1300,0.13,{en:55,sa:2},'10'],['a_bur','Burrito de pollo',1500,0.13,{en:40},'11']]
+ .forEach(([id,n,cu,tar,ef,pais])=>CATR.push({id,r:'alimentos',n,cu,tar,u:'unidad',ef,pais}));
+[['m_jen','Té de jengibre antigripal',1000,{sa:10,cura:'gripe'},'10'],['m_ome','Omeprazol genérico',600,{sa:12,cura:'estomago'},'11'],['m_amx','Amoxicilina genérica',2400,{sa:18,cura:'infeccion'},'11'],['m_mul','Multivitamínico',1800,{sa:25,inm:1},'11']]
+ .forEach(([id,n,cu,ef,pais])=>CATR.push({id,r:'farmacia',n,cu,tar:0.02,u:'caja',ef,pais}));
+const PAIS_F={'10':{alimentos:0.85,farmacia:1.4},'11':{alimentos:1.4,farmacia:0.85}};
+CATR.forEach(c=>{ const f=HOME_P&&(PAIS_F[SALA]||{})[c.r]; if(f&&!c.pais) c.cu=Math.round(c.cu*f/10)*10; });
+const dispPais=c=>!!c&&(!c.pais||!HOME_P||c.pais===SALA);      // ¿lo vende el mayorista de este país?
+const paisTxt=c=>c&&c.pais?contOf('c'+c.pais).name:'';
 const CRID={}; CATR.forEach(c=>{ CRID[c.id]=c; });
 const TANQ={mot:{f:'c_gas',cap:12,l:0.01},pic:{f:'c_gas',cap:70,l:0.06},cam:{f:'c_die',cap:100,l:0.1}};   // litros por cada 100 m del mapa
 const minTanque=t=>Math.round(TANQ[t].cap/(TANQ[t].l*140*2.4*60/100));   // minutos de manejo con el tanque lleno
@@ -7822,7 +7844,7 @@ function flushComb(){ if(!S.drv||VD.gasto<0.05) return; const g=Math.round(VD.ga
 async function comprarPropio(){
   if(!puede()) return; const e=myE(), r=ramoDe(e); CP.err='';
   const lin=[]; let vid='';
-  Object.keys(CP.q).forEach(id=>{ const c=CRID[id], q=parseInt(CP.q[id],10); if(!c||c.r!==r||!(q>0&&q<=500)) return; const s0=r2(q*c.cu); lin.push({d:c.n.slice(0,40),cant:q,pu:c.cu,sub:s0,tar:c.tar,iva:r2(s0*c.tar),id}); });
+  Object.keys(CP.q).forEach(id=>{ const c=CRID[id], q=parseInt(CP.q[id],10); if(!c||c.r!==r||!dispPais(c)||!(q>0&&q<=500)) return; const s0=r2(q*c.cu); lin.push({d:c.n.slice(0,40),cant:q,pu:c.cu,sub:s0,tar:c.tar,iva:r2(s0*c.tar),id}); });
   if(!lin.length) return toast('Indique cuánto desea comprar.','w');
   if(r==='combustible'){ const ok=vehParaComb(lin[0].id); vid=CP.vid&&ok.some(([k])=>k===CP.vid)?CP.vid:(ok[0]||[])[0]; if(lin.length>1) return toast('Compre un tipo de combustible a la vez.','w');
     if(!vid) return toast('No tiene un vehículo que use '+CRID[lin[0].id].n.toLowerCase()+'.','w'); const libre=Math.floor(TANQ[S.veh[vid].t].cap-combDe(vid)); if(lin[0].cant>libre) return toast('Al tanque solo le caben '+libre+' L.','w'); }
@@ -7840,7 +7862,7 @@ async function comprarPropio(){
   await upd(u); CP.q={}; toast('Compra para consumo propio realizada ('+fm(tot)+'). Registre el asiento.'); renderPanel(true);
 }
 function tablaPropio(r){
-  const items=CATR.filter(c=>c.r===r), comb=r==='combustible';
+  const items=CATR.filter(c=>c.r===r&&dispPais(c)), comb=r==='combustible';
   return `<div class="card" style="margin-top:12px"><h3 style="margin-top:0">${RAMOS[r].ic} Comprar al mayorista para consumo propio</h3><p style="font-size:12.5px;margin:0 0 8px">Como su empresa es ${esc(RAMOS[r].n.toLowerCase())}, puede comprar al costo mayorista para usted. Se registra como gasto, no como inventario.</p>
    <div class="tw"><table class="tbl"><tbody>${items.map(c=>`<tr><td>${esc(c.n)}</td><td class="num">${fm(c.cu)} /${c.u}</td><td><input type="number" min="0" step="1" style="max-width:90px;padding:6px 8px" data-cp="${c.id}" value="${esc(CP.q[c.id]||'')}" placeholder="0" aria-label="Cantidad de ${esc(c.n)}"></td></tr>`).join('')}</tbody></table></div>
    ${comb&&misVehiculos().length?`<label class="l" for="cpVid">Vehículo</label><select id="cpVid" data-cpvid="1">${misVehiculos().filter(([k,v])=>TANQ[v.t]).map(([k,v])=>`<option value="${k}" ${CP.vid===k?'selected':''}>${esc(VEHID[v.t].n)} ${esc(v.pl||'')} · ${lit(combDe(k))}/${TANQ[v.t].cap} L</option>`).join('')}</select>`:''}
@@ -7894,7 +7916,7 @@ VIEWS.empresa_ramo=()=>{
   const e=myE(), r=ramoDe(e);
   if(e.act==='servicios') return `<p style="margin-top:0">Su empresa presta servicios: no compra mercadería al mayorista. Los ramos comerciales (${Object.keys(RAMOS).filter(k=>k!=='otro').map(k=>RAMOS[k].ic+' '+esc(RAMOS[k].n.toLowerCase())).join(', ')}) son para empresas que venden bienes.</p>`;
   const sel=r!=='otro'?r:(RM.r||'');
-  const lista=sel?CATR.filter(c=>c.r===sel):[];
+  const lista=sel?CATR.filter(c=>c.r===sel&&(dispPais(c)||e.prods[c.id])):[];
   const fila=c=>{ const ya=!!e.prods[c.id], on=ya||!!RM.sel[c.id], pv=RM.pv[c.id]!=null?RM.pv[c.id]:(ya?e.prods[c.id].pv:'');
     return `<tr><td><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-rmsel="${c.id}" ${on?'checked':''} ${ya?'disabled':''}> ${esc(c.n)}</label></td><td class="num">${fm(c.cu)} /${c.u}</td><td class="num">${String(+(c.tar*100).toFixed(2)).replace('.',',')} %</td><td><input type="text" inputmode="decimal" style="max-width:120px;padding:6px 8px" data-rmpv="${c.id}" value="${esc(pv)}" placeholder="Precio sin IVA" aria-label="Precio de venta de ${esc(c.n)}"></td></tr>`; };
   return `<p style="margin-top:0">El <b>ramo comercial</b> define qué mercadería le vende el ${esc(PROV.n)}. Solo las tiendas de ropa compran ropa, solo las agencias compran vehículos, solo los supermercados o restaurantes compran comida, solo las farmacias compran medicamentos y solo las estaciones de servicio compran combustible. Los demás deben comprárselo a ustedes en el Mercado.</p>
@@ -7913,7 +7935,7 @@ async function guardarRamo(){
   if(!puede()) return; const e=myE(), r0=ramoDe(e), r=r0!=='otro'?r0:RM.r; RM.err='';
   if(!r||!RAMOS[r]||r==='otro'){ RM.err='Elija un ramo.'; renderPanel(true); return; }
   const u={}; let n=0;
-  for(const c of CATR.filter(x=>x.r===r)){ const ya=!!e.prods[c.id]; if(!ya&&!RM.sel[c.id]) continue;
+  for(const c of CATR.filter(x=>x.r===r&&(dispPais(x)||e.prods[x.id]))){ const ya=!!e.prods[c.id]; if(!ya&&!RM.sel[c.id]) continue;
     const pv=RM.pv[c.id]!=null?pn(RM.pv[c.id]):(ya?e.prods[c.id].pv:NaN);
     if(!(pv>c.cu)){ RM.err='El precio de «'+c.n+'» debe ser mayor que su costo mayorista ('+fm(c.cu)+').'; renderPanel(true); return; }
     if(ya) u['empresas/'+S.uid+'/prods/'+c.id+'/pv']=r2(pv); else u['empresas/'+S.uid+'/prods/'+c.id]={n:c.n,cu:c.cu,pv:r2(pv),tar:c.tar,cat:r}; n++; }
@@ -7928,7 +7950,7 @@ function ramoCrearHTML(){
   const r=CF.ramo, sel=CF.rsel||(CF.rsel={});
   return `<h3>Productos de su ramo: ${RAMOS[r].ic} ${esc(RAMOS[r].n)}</h3><p style="font-size:12.5px">Marque lo que venderá. El costo lo fija el ${esc(PROV.n)}; usted decide el <b>precio de venta sin IVA</b> y cuánto comprar para empezar.</p>
   <div class="prod prodh"><span>Producto</span><span>Costo mayorista</span><span>Precio venta ₡</span><span>IVA</span><span>Cant. inicial</span><span></span></div>
-  <div id="cfProds">${CATR.filter(c=>c.r===r).map(c=>{ const o=sel[c.id]||{}; return `<div class="prod rprod" data-id="${c.id}"><label class="pn"><input type="checkbox" class="rp-on" ${o.on?'checked':''}> ${esc(c.n)}</label><span class="num" style="align-self:center">${fm(c.cu)}</span>
+  <div id="cfProds">${CATR.filter(c=>c.r===r&&dispPais(c)).map(c=>{ const o=sel[c.id]||{}; return `<div class="prod rprod" data-id="${c.id}"><label class="pn"><input type="checkbox" class="rp-on" ${o.on?'checked':''}> ${esc(c.n)}</label><span class="num" style="align-self:center">${fm(c.cu)}</span>
     <input class="rp-p" type="text" inputmode="decimal" placeholder="Precio" value="${esc(o.pv||'')}"><span style="align-self:center">${String(+(c.tar*100).toFixed(2)).replace('.',',')} %</span>${c.prod?'<span class="mut" style="font-size:11px;align-self:center">lo produce</span>':`<input class="rp-q" type="number" min="1" step="1" placeholder="Cant." value="${esc(o.cant||'')}">`}<span></span></div>`; }).join('')}</div>${r==='agro'?'<p class="mut" style="font-size:12.5px">🌾 Una finca no compra mercadería: produce. Después de crear la empresa compre un terreno (Tienda Mayorista → Construcción) y sus crías o almácigos en Su Empresa → Finca.</p>':''}`; }
 
 /* ---------- compraventa de terrenos entre compañeros ---------- */
