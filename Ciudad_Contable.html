@@ -5714,7 +5714,7 @@ async function aceptar(oid){
   const em={u:S.uid,e:e.eid,n:e.nom,ced:e.ced}, re={u:o.co,e:comp.eid,n:comp.nom,ced:comp.ced}, cont=o.cond==='contado', nf=fNum(num);
   const u={};
   u['facturas/'+fid]=facturaDoc(num,em,re,lin,o.cond,oid,{uso:o.uso,act:e.act});
-  u['ordenes/'+oid+'/est']='aceptada'; u['ordenes/'+oid+'/fac']=fid; const reqEnt=entregasOn()&&bienes; u['ordenes/'+oid+'/ent']=reqEnt?'pendiente':'entregada';
+  u['ordenes/'+oid+'/est']='aceptada'; u['ordenes/'+oid+'/fac']=fid; const reqEnt=entregasOn()&&bienes&&!esRopaPid(o.pid); u['ordenes/'+oid+'/ent']=reqEnt?'pendiente':'entregada';
   const cuentaIng=bienes?'4101':'4102';
   u['pendientes/'+S.uid+'/'+key()]=pendiente('venta','Venta '+(cont?'de contado':'a crédito')+' · '+nf,
     `Vendió a ${comp.nom} según la factura ${nf}: ${o.cant} × ${prod.n} a ${fm(o.pu)}. Subtotal ${fm(sub)} + IVA ${tarE*100} % ${fm(iva)} = total ${fm(tot)}. `+(cont?'El cliente pagó de contado por SINPE (ingresó a Bancos).':'Condición: crédito a 30 días.'),
@@ -5834,12 +5834,12 @@ function vCodigoAviso(k){ const cod=S.cfg.codigo; if(!cod||cod==='libre') return
 VIEWS.tienda_vest=()=>{
   const own=vOwn(), niv=nivelVest(vPuesto()); const e=myE(); const sal=S.nuc.saldo&&S.nuc.saldo[S.uid]; const esRopa=ramoDe(e)==='ropa';
   const grupos=[['formal','Formal y de negocios',x=>x.niv>=2],['informal','Informal',x=>x.niv===1],['protocolo','Protocolo',x=>x.niv===0]];
-  const card=it=>{ const ci=VS.sel[it.id]!=null?VS.sel[it.id]:0; const k=it.id+ci; const tiene=!!own[k], enCarro=VS.cart.some(c=>c.id===it.id&&c.ci===ci);
+  const card=it=>{ const ci=VS.sel[it.id]!=null?VS.sel[it.id]:0; const k=it.id+ci; const tiene=!!own[k], ped=Object.values(S.ord||{}).find(o=>o&&o.co===S.uid&&o.pid==='r_'+it.id&&String(o.ci||0)===String(ci)&&(o.est==='pendiente'||(o.est==='aceptada'&&!o.rec))), enCarro=VS.cart.some(c=>c.id===it.id&&c.ci===ci);
     return `<div class="vcard${VS.try&&VS.try.id===it.id?' on':''}"><div class="vt"><b>${esc(it.n)}</b>${it.niv?`<i class="nv ${['','nv1','nv2','nv3'][it.niv]}">${['','Informal','Casual de negocios','Formal'][it.niv]}</i>`:'<i class="nv nv0">Protocolo</i>'}</div>
       <div class="vp">${fm(it.pu)} <small class="mut">+ IVA 13 %</small></div>
       <div class="sws">${it.cols.map((c,i)=>`<button class="swb" data-act="vCol" data-id="${it.id}" data-ci="${i}" title="${esc(c[0])}" aria-label="${esc(it.n)} color ${esc(c[0])}">${vSw(c[1],i===ci)}</button>`).join('')}<small class="mut" style="margin-left:4px">${esc(it.cols[ci][0])}</small></div>
       <p class="vtip">${esc(it.tip)}</p>
-      <div class="vb">${tiene?'<span class="pill g">✓ En su guardarropa</span>':!esRopa?pedirRopaHTML(it,ci):enCarro?'<span class="pill y">En el carrito</span>':`<button class="btn sm" data-act="vAdd" data-id="${it.id}">Agregar</button>`}<button class="btn sec sm" data-act="vTry" data-id="${it.id}">Probármelo</button></div></div>`; };
+      <div class="vb">${tiene?'<span class="pill g">✓ En su guardarropa</span>':ped?`<span class="pill y">⏳ ${ped.est==='pendiente'?'Pedida a '+esc(ped.vn||'la tienda')+': falta que la facture':'Facturada: llegando a su guardarropa'}</span>`:!esRopa?pedirRopaHTML(it,ci):enCarro?'<span class="pill y">En el carrito</span>':`<button class="btn sm" data-act="vAdd" data-id="${it.id}">Agregar</button>`}<button class="btn sec sm" data-act="vTry" data-id="${it.id}">Probármelo</button></div></div>`; };
   const sub=r2(VS.cart.reduce((a,c)=>a+VID[c.id].pu,0)), iva=r2(VS.cart.reduce((a,c)=>a+r2(VID[c.id].pu*0.13),0)), tot=r2(sub+iva);
   return `<p style="margin-top:0">La imagen personal también comunica: en <b>etiqueta y protocolo</b> la vestimenta se elige según la ocasión. ${esRopa?`Como su empresa es una <b>tienda de ropa</b>, puede comprar prendas para su propio avatar directamente al <b>${esc(PROV.n)}</b> (de contado). Para revender, reabastézcase en la pestaña «Mercadería».`:`El mayorista solo le vende ropa a las <b>tiendas de ropa</b>: elija la prenda y el color, escoja la tienda de un compañero y presione <b>Pedir</b>. Cuando la tienda acepte la orden, la prenda llega a su guardarropa.`} Cada compra es un <b>gasto de etiqueta y protocolo</b> de su empresa: genera un pendiente que debe registrar.</p>
   ${vCodigoAviso(niv.k)}
@@ -7733,16 +7733,21 @@ function validarCompraRamo(c,q,cant){
 function vehParaComb(cid){ return misVehiculos().filter(([k,v])=>TANQ[v.t]&&TANQ[v.t].f===cid); }
 /* el comprador recibe lo comprado cuando ve su orden facturada (sirve aunque el vendedor tenga una versión vieja del juego) */
 const RECIB={};
+const esRopaPid=pid=>!!(CRID[pid]&&CRID[pid].r==='ropa');
 async function recibirCompras(){
   const e=myE(); if(!e||!S.uid) return;
   for(const [oid,o] of Object.entries(S.ord||{})){
-    if(!o||o.co!==S.uid||o.coe!==e.eid||o.est!=='aceptada'||o.rec||RECIB[oid]||(o.ent&&o.ent!=='entregada')) continue;
+    if(!o||o.co!==S.uid||o.coe!==e.eid||o.est!=='aceptada'||o.rec||RECIB[oid]||(o.ent&&o.ent!=='entregada'&&!esRopaPid(o.pid))) continue;
     const c=CRID[o.pid]; if(!c) continue;
     RECIB[oid]=1;
     try{ const r=await base.child('ordenes/'+oid+'/rec').transaction(v=>v?undefined:1); if(!r.committed) continue; }catch(err){ delete RECIB[oid]; continue; }
     const u={}, oo=Object.assign({},o);
     if(c.r==='combustible'&&!(oo.vid&&(S.veh||{})[oo.vid])){ const ok=vehParaComb(c.id); oo.vid=ok.length?ok[0][0]:''; }
     efectosCompra(u,oo,c);
+    if(c.r==='ropa'){ if(o.ent&&o.ent!=='entregada') u['ordenes/'+oid+'/ent']='entregada';
+      const it=VID[c.vest]; if(it){ const d=vParse(vPuesto()); d[it.s]={id:it.id,ci:+(o.ci||0)}; const v=vStr(d); S.ves=Object.assign({},S.ves||{},{v,own:Object.assign({},vOwn(),{[it.id+(o.ci||0)]:1})});
+        u['vestuario/'+S.uid+'/v']=v; if(S.ses) u['jugadores/'+S.ses+'/v']=v; VS.draft=null;
+        toast('👔 Llegó a su guardarropa y ya la tiene puesta: '+it.n+' · '+it.cols[+(o.ci||0)][0]+'. Cámbiela cuando quiera en Tienda → Mi guardarropa.','y'); } }
     if(c.r==='alimentos'||c.r==='farmacia'||c.r==='agro') toast((c.r==='farmacia'?'💊 ':'🍗 ')+'Llegó a su despensa: '+o.cant+' × '+c.n+'. Úselo en ❤️ Vida.','y');
     if(Object.keys(u).length) await upd(u).catch(err=>{ toast('No se pudo guardar lo comprado: '+err.message,'w'); });
   }
@@ -8541,7 +8546,7 @@ const entregasOn=()=>S.cfg.entregas!==false;
 const ENT={t:0,aviso:0,cargaT:0};
 function capacidad(){ return S.drv&&CAPA[S.drv.t]?CAPA[S.drv.t]:CAPA.pie; }
 function capTxt(){ return S.drv?'en su '+VEHID[S.drv.t].n.toLowerCase():'a pie'; }
-const misEntregas=()=>{ const e=myE(); if(!e) return []; return Object.entries(S.ord||{}).filter(([k,o])=>o&&o.ve===S.uid&&o.vee===e.eid&&o.est==='aceptada'&&(o.ent==='pendiente'||o.ent==='cargada')).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0)); };
+const misEntregas=()=>{ const e=myE(); if(!e) return []; return Object.entries(S.ord||{}).filter(([k,o])=>o&&o.ve===S.uid&&o.vee===e.eid&&o.est==='aceptada'&&(o.ent==='pendiente'||o.ent==='cargada')&&!esRopaPid(o.pid)).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0)); };
 function loteDe(u){ return (typeof LOT_OF!=='undefined'&&LOT_OF[u])||null; }
 function cercaDeLote(L,m){ return !!L&&me.x>=L.x-m&&me.x<=L.x+L.w+m&&me.y>=L.y-m&&me.y<=L.y+L.h+m; }
 function enMiEmpresa(){ if(INT.on) return INT.id==='empresa'; return (me.k||HOMEK)===HOMEK&&(zonaActual==='empresa'||cercaDeLote(loteDe(S.uid),45)); }
