@@ -4933,7 +4933,7 @@ function renderCrear(){
   <label class="l">Actividad</label><div class="radios" id="cfAct">
    <label class="${b?'on':''}"><input type="radio" name="cfAct" value="bienes" ${b?'checked':''}> Venta de bienes (con inventario)</label>
    <label class="${!b?'on':''}"><input type="radio" name="cfAct" value="servicios" ${!b?'checked':''}> Prestación de servicios</label></div>
-  ${b?`<label class="l" for="cfRamo">Ramo comercial</label><select id="cfRamo">${Object.entries(RAMOS).map(([k,r])=>`<option value="${k}" ${(CF.ramo||'otro')===k?'selected':''}>${r.ic} ${esc(r.n)}</option>`).join('')}</select><p class="mut" style="font-size:12.5px;margin:6px 0 0">${esc(RAMOS[CF.ramo||'otro'].d)} El Proveedor Mayorista solo le vende a cada empresa la mercadería de su ramo: la comida, los medicamentos, la ropa, los vehículos y el combustible se compran a los compañeros que tienen ese ramo.</p>`:''}
+  ${b?`<label class="l" for="cfRamo">Ramo comercial</label><select id="cfRamo">${Object.entries(RAMOS).filter(([k])=>k!=='vehiculos'||vendeVeh()).map(([k,r])=>`<option value="${k}" ${(CF.ramo||'otro')===k?'selected':''}>${r.ic} ${esc(r.n)}</option>`).join('')}</select><p class="mut" style="font-size:12.5px;margin:6px 0 0">${esc(RAMOS[CF.ramo||'otro'].d)} El Proveedor Mayorista solo le vende a cada empresa la mercadería de su ramo: la comida, los medicamentos, la ropa, los vehículos y el combustible se compran a los compañeros que tienen ese ramo.</p>`:''}
   <div class="grid2"><div><label class="l">Cédula jurídica (ficticia)</label><div style="display:flex;gap:8px"><input type="text" id="cfCed" value="${esc(CF.ced)}" readonly><button class="btn sec sm" data-act="cfCed" type="button">↻</button></div></div>
   <div><label class="l">Régimen tributario</label><input type="text" value="Régimen General (IVA)" readonly></div></div>
   <label class="l">Logo (inicial y color)</label><div style="display:flex;gap:12px;align-items:center"><div class="logo big" id="cfLogo" style="background:${CF.color}">${esc((CF.nom.trim()[0]||'?').toUpperCase())}</div><div class="colors" id="cfColors">${COLORS.map(c=>`<button type="button" style="background:${c}" data-cfc="${c}" class="${c===CF.color?'on':''}"></button>`).join('')}</div></div>
@@ -4963,7 +4963,7 @@ function leerCF(){
   document.querySelectorAll('#cfProds .rprod').forEach(r=>{ const id=r.dataset.id, o=CF.rsel[id]||(CF.rsel[id]={}); o.on=r.querySelector('.rp-on').checked; o.pv=r.querySelector('.rp-p').value; const rq=r.querySelector('.rp-q'); o.cant=rq?rq.value:''; });
 }
 function totCompraInicial(){ let sub=0,iva=0; if(!conStock(CF)) return {sub:0,iva:0,tot:0}; const ind=CF.act==='industrial';
-  if(CF.act==='bienes'&&CF.ramo&&CF.ramo!=='otro'){ Object.entries(CF.rsel||{}).forEach(([id,o])=>{ const c=CRID[id], q=parseInt(o.cant,10); if(c&&c.r===CF.ramo&&o.on&&q>0){ const s0=r2(c.cu*q); sub=r2(sub+s0); iva=r2(iva+r2(s0*c.tar)); } }); return {sub,iva,tot:r2(sub+iva)}; }
+  if(CF.act==='bienes'&&CF.ramo&&CF.ramo!=='otro'){ Object.entries(CF.rsel||{}).forEach(([id,o])=>{ const c=CRID[id], q=parseInt(o.cant,10); if(c&&c.r===CF.ramo&&dispPais(c)&&o.on&&q>0){ const s0=r2(c.cu*q); sub=r2(sub+s0); iva=r2(iva+r2(s0*c.tar)); } }); return {sub,iva,tot:r2(sub+iva)}; }
   CF.prods.forEach(p=>{ const c=pn(ind?p.mp:p.costo), q=parseInt(p.cant,10); if(c>0&&q>0){ const s=r2(c*q); sub=r2(sub+s); iva=r2(iva+r2(s*0.13)); } }); return {sub,iva,tot:r2(sub+iva)}; }
 $('crear').addEventListener('input',e=>{ leerCF(); if(e.target.id==='cfNom') $('cfLogo').textContent=(CF.nom.trim()[0]||'?').toUpperCase();
   if(e.target.closest('.pr-mp,.pr-mod,.pr-cif')) cfCostoUnit();
@@ -4980,8 +4980,9 @@ async function crearEmpresa(){
   const fail=m=>{ CF.err=m; $('cfErr').textContent=m; };
   if(nom.length<3) return fail('Escriba el nombre comercial (mínimo 3 caracteres).');
   if(giro.length<4) return fail('Describa el giro del negocio.');
+  if(CF.ramo==='vehiculos'&&!vendeVeh()) return fail('Solo en la República de Undécimo hay agencias de vehículos. Elija otro ramo.');
   const prods={}; let i=0; const lin=[]; const rmC=bienes&&!ind&&CF.ramo&&CF.ramo!=='otro'&&RAMOS[CF.ramo];
-  if(rmC){ for(const [id,o] of Object.entries(CF.rsel||{})){ const c=CRID[id]; if(!c||c.r!==CF.ramo||!o.on) continue; const pr=pn(o.pv), q=parseInt(o.cant,10);
+  if(rmC){ for(const [id,o] of Object.entries(CF.rsel||{})){ const c=CRID[id]; if(!c||c.r!==CF.ramo||!dispPais(c)||!o.on) continue; const pr=pn(o.pv), q=parseInt(o.cant,10);
       if(!(pr>c.cu)) return fail('El precio de venta de «'+c.n+'» debe ser mayor que su costo mayorista ('+fm(c.cu)+').');
       if(!c.prod&&!(q>=1&&q<=10000)) return fail('Indique la cantidad inicial de «'+c.n+'» (1 a 10 000).');
       prods[id]={n:c.n,cu:c.cu,pv:r2(pr),tar:c.tar,cat:c.r}; if(c.prod) continue; const s0=r2(c.cu*q); lin.push({d:c.n.slice(0,40),cant:q,pu:c.cu,sub:s0,tar:c.tar,iva:r2(s0*c.tar),pid:id}); }
@@ -5536,7 +5537,7 @@ VIEWS.empresa_inv=()=>{
   <div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo unit.</th><th class="num">Valor al costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">Valor del inventario (según existencias)</td><td class="num">${fm(r2(tv))}</td><td></td></tr></tfoot></table></div>
   <div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`;
 };
-function rqTotal(){ const e=myE(); let sub=0,iva=0; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(p&&q>0){ const t=p.cat&&CRID[k]?CRID[k].tar:0.13, s=r2(q*p.cu); sub=r2(sub+s); iva=r2(iva+r2(s*t)); } }); return `Subtotal ${fm(sub)} + IVA ${fm(iva)} = <b class="gold">${fm(r2(sub+iva))}</b>`; }
+function rqTotal(){ const e=myE(); let sub=0,iva=0; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(p&&q>0){ const t=p.cat&&CRID[k]?CRID[k].tar:0.13, s=r2(q*(p.cat&&CRID[k]?CRID[k].cu:p.cu)); sub=r2(sub+s); iva=r2(iva+r2(s*t)); } }); return `Subtotal ${fm(sub)} + IVA ${fm(iva)} = <b class="gold">${fm(r2(sub+iva))}</b>`; }
 VIEWS.empresa_ayuda=()=>ayudaHTML();
 VIEWS.ayuda_ayuda=()=>ayudaHTML();
 function ayudaHTML(){ return `<div class="help"><h3 style="margin-top:0">¿Cómo funciona Ciudad Contable?</h3><ol>
@@ -5601,8 +5602,8 @@ VIEWS.banco_mov=()=>{
 };
 
 /* ---------- Hacienda ---------- */
-function ivaCalc(){
-  const eid=myEid(), inc={}; const ds=Object.values(S.decl).filter(Boolean).sort((a,b)=>(a.n||0)-(b.n||0));
+function ivaCalc(eid,decl){
+  eid=eid||myEid(); const inc={}; const ds=Object.values(decl||S.decl||{}).filter(Boolean).sort((a,b)=>(a.n||0)-(b.n||0));
   ds.forEach(d=>Object.keys(d.inc||{}).forEach(k=>{ inc[k]=1; }));
   const em=[],re=[]; Object.entries(S.fac).forEach(([k,f])=>{ if(!f||!f.em||inc[k]) return; if(f.em.e===eid) em.push([k,f]); else if(f.re&&f.re.e===eid) re.push([k,f]); });
   const deb=r2(em.reduce((a,x)=>a+(x[1].iva||0),0)), cred=r2(re.reduce((a,x)=>a+(x[1].iva||0),0));
@@ -5627,12 +5628,13 @@ VIEWS.hacienda_decl=()=>{
 };
 VIEWS.hacienda_hist=()=>{ const c=ivaCalc(); if(!c.ds.length) return '<div class="empty">No ha presentado declaraciones.</div>';
   return `<div class="tw"><table class="tbl"><thead><tr><th>N.°</th><th>Período</th><th>Fecha</th><th class="num">Débito</th><th class="num">Crédito</th><th class="num">Pagado</th><th class="num">Saldo a favor</th><th>Revisión</th></tr></thead><tbody>${c.ds.map(d=>`<tr><td>${d.n}</td><td>${esc(d.per)}${d.tipo==='rts'?' · RTS':''}${d.multa?' · sanción '+fm(d.multa):''}${d.dev?' · devuelto':''}</td><td class="mut" style="font-size:12px">${fecha(d.ts)}</td><td class="num">${fm(d.deb)}</td><td class="num">${fm(d.credTot)}</td><td class="num">${fm(d.pagar)}</td><td class="num">${fm(d.favor)}</td><td>${d.ok?'<span class="pill g">correcta</span>':'<span class="pill w">con diferencias</span>'}</td></tr>`).join('')}</tbody></table></div>`; };
-function revisarIVA(c){
-  const d=pn(HF.deb), cr=pn(HF.cred), m=pn(HF.monto), msgs=[];
+function revisarIVA(c,F){
+  F=F||HF;
+  const d=pn(F.deb), cr=pn(F.cred), m=pn(F.monto), msgs=[];
   if(isNaN(d)||Math.abs(d-c.deb)>1) msgs.push('El <b>débito fiscal</b> no coincide: sume el IVA de todas sus facturas emitidas no declaradas.');
   if(isNaN(cr)||Math.abs(cr-c.cred)>1) msgs.push('El <b>crédito fiscal</b> no coincide: sume el IVA de todas sus facturas recibidas (compañeros y proveedor) no declaradas.');
   const tipo=c.res>0?'pagar':'favor', monto=Math.abs(c.res);
-  if(HF.res!==tipo&&monto>1) msgs.push('El resultado es <b>'+(tipo==='pagar'?'IVA por pagar':'saldo a favor')+'</b>: débito − (crédito + saldo a favor anterior).');
+  if(F.res!==tipo&&monto>1) msgs.push('El resultado es <b>'+(tipo==='pagar'?'IVA por pagar':'saldo a favor')+'</b>: débito − (crédito + saldo a favor anterior).');
   else if(isNaN(m)||Math.abs(m-monto)>1) msgs.push('El <b>monto del resultado</b> no es correcto: débito − (crédito + saldo a favor anterior).');
   return msgs;
 }
@@ -5754,16 +5756,18 @@ async function pagar(fid){
   await upd(u); toast('Pago por SINPE realizado: '+nf+' · '+fm(f.tot)); renderPanel(true);
 }
 async function reabastecer(){
-  if(!puede()) return; const e=myE(); if(e.act==='servicios') return;
-  const lin=[]; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(!p||!(q>0&&q<=10000)) return; if(e.act!=='bienes'&&!p.cat) return; const c=p.cat?CRID[k]:null; if(p.cat&&(!c||c.r!==ramoDe(e))) return;
+  if(!puede()) return; const e=myE(); if(e.act==='servicios') return; const noDisp=[];
+  const lin=[]; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(!p||!(q>0&&q<=10000)) return; if(e.act!=='bienes'&&!p.cat) return; const c=p.cat?CRID[k]:null; if(p.cat&&(!c||c.r!==ramoDe(e))) return; if(c&&!dispPais(c)){ noDisp.push(p.n); return; }
     const pu=c?c.cu:p.cu, tar=c?c.tar:0.13, s=r2(q*pu); lin.push({d:p.n,cant:q,pu,sub:s,tar,iva:r2(s*tar),pid:k}); });
-  if(!lin.length) return toast('Indique al menos una cantidad a comprar.','w');
+  if(noDisp.length) toast('El mayorista de su país no vende '+noDisp.join(', ')+': para tener más, impórtelo en el Puerto.','w');
+  if(!lin.length) return noDisp.length?null:toast('Indique al menos una cantidad a comprar.','w');
   const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0)), tot=r2(sub+iva), tC=toC(tot), fid=key(); let num=0;
   const r=await txN(n=>{ if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<tC) return 'sinFondos';
     n.saldo[S.uid]-=tC; if(!n.stock[S.uid]) n.stock[S.uid]={}; lin.forEach(l=>{ n.stock[S.uid][l.pid]=(n.stock[S.uid][l.pid]||0)+l.cant; });
     n.consec.PROV=(n.consec.PROV||0)+1; num=n.consec.PROV; n.ext.proveedor=(n.ext.proveedor||0)+tC; n.fac[fid]='pagada'; return 'ok'; });
   if(r.out!=='ok') return toast(r.out==='sinFondos'?'Saldo insuficiente en Bancos ('+fm(tot)+').':'No se pudo comprar.','w');
   const u={}; u['facturas/'+fid]=facturaDoc(num,PROV,{u:S.uid,e:e.eid,n:e.nom,ced:e.ced},lin,'contado','',{uso:'1105',act:'bienes'});
+  const st0=(S.nuc.stock||{})[S.uid]||{}; lin.forEach(l=>{ const p=e.prods[l.pid]; if(p&&Math.abs((p.cu||0)-l.pu)>0.004){ const q0=Math.max(0,st0[l.pid]||0); u['empresas/'+S.uid+'/prods/'+l.pid+'/cu']=r2((q0*p.cu+l.cant*l.pu)/(q0+l.cant)); } });   // costo promedio ponderado
   u['pendientes/'+S.uid+'/'+key()]=pendCompraProv(fNum(num),sub,iva,tot,fid);
   u['movimientos/'+S.uid+'/'+key()]={d:'Pago a '+PROV.n+' · '+fNum(num),m:-tot,ts:SV.TIMESTAMP,ref:fid};
   await upd(u); RQ={}; toast('Compra al proveedor realizada ('+fm(tot)+'). Registre el asiento.'); renderPanel(true);
@@ -5945,6 +5949,7 @@ const ACT_VEST={
      Demoler (bloque ya inaugurado): Dep. Acumulada + 6112 Pérdida por Retiro de Activos / 1202 o 1204. */
 const PAISES=[{s:'10',k:'c10',name:'República de Décimo',sub:'10.° año',ox:0,oy:0},{s:'11',k:'c11',name:'República de Undécimo',sub:'11.° año',ox:2300,oy:0},{s:'12',k:'c12',name:'República de Duodécimo',sub:'12.° año',ox:4600,oy:0}];
 const HOME_P=PAISES.find(p=>p.s===SALA)||null;
+const VEH_PAIS='11', vendeVeh=()=>!HOME_P||SALA===VEH_PAIS;   // solo la República de Undécimo tiene agencias de vehículos
 const HOMEK=HOME_P?HOME_P.k:'c10';
 const contOf=k=>PAISES.find(p=>p.k===k)||PAISES[0];
 const contDeSala=s=>{ const p=PAISES.find(x=>x.s===s); return p?p.k:HOMEK; };
@@ -6405,6 +6410,7 @@ document.addEventListener('change',e=>{ const d=e.target&&e.target.dataset; if(d
 /* ---------- vista: Vehículos (Tienda Mayorista) ---------- */
 VIEWS.tienda_veh=()=>{
   const sal=S.nuc.saldo&&S.nuc.saldo[S.uid], mios=misVehiculos();
+  if(!vendeVeh()) return vehImportarHTML();
   if(ramoDe(myE())!=='vehiculos') return vehDeCompaneros();
   return `<p style="margin-top:0">Vehículos de reparto para su empresa, vendidos por la <b>${esc(AGEN.n)}</b>. Se registran como activo (<b>Vehículos</b>), se deprecian (vida útil ${VIDA.v} años) y cada año pagan el <b>marchamo</b> (impuesto a la propiedad de vehículos) en Hacienda. Máximo ${MAX_VEH} por empresa.</p>
   <div class="grid3">${VEHS.map(v=>{ const iva=r2(v.pu*0.13); return `<div class="card"><div class="k">${esc(v.t==='mot'?'Moto':v.t==='pic'?'Pick-up':'Camión')}</div><h3 style="margin:4px 0 6px">${esc(v.n)}</h3><p style="font-size:12.5px;margin:0 0 8px">${esc(v.d)}</p>
@@ -6498,7 +6504,7 @@ async function terminarOrden(oid){
 /* ---------- vehículos ---------- */
 function placa(){ return 'CL-'+pad(Math.floor(100000+Math.random()*899999),6); }
 async function comprarVehiculo(t){
-  if(!puede()) return; const e=myE(), v=VEHID[t]; VHC.err=''; if(!v) return; if(ramoDe(e)!=='vehiculos') return toast('Solo las agencias de vehículos le compran a la agencia mayorista. Pida el vehículo a la agencia de un compañero.','w');
+  if(!puede()) return; const e=myE(), v=VEHID[t]; VHC.err=''; if(!v) return; if(!vendeVeh()) return toast('En este país no se venden vehículos: impórtelos de la República de Undécimo en el Puerto.','w'); if(ramoDe(e)!=='vehiculos') return toast('Solo las agencias de vehículos le compran a la agencia mayorista. Pida el vehículo a la agencia de un compañero.','w');
   if(misVehiculos().length>=MAX_VEH) return toast('Su empresa ya tiene '+MAX_VEH+' vehículos.','w');
   const iva=r2(v.pu*0.13), tot=r2(v.pu+iva), tC=toC(tot), fid=key(), vid=key(), pl=placa(); let num=0;
   if(!confirm('¿Comprar '+v.n+' por '+fm(tot)+' (IVA incluido) de contado?')) return;
@@ -6570,6 +6576,11 @@ const MON={c10:{k:'CRC',s:'₡',n:'colones'},c11:{k:'USD',s:'US$',n:'dólares'},
 const TC_DEF={usd:{c:505,v:512},eur:{c:585,v:600},dai:0.09};
 const TBARCO=Math.max(1,+qs.get('tbarco')||60);          // segundos de travesía del barco de carga
 const LEY6946=0.01;
+const esVehPid=pid=>!!(CRID[pid]&&CRID[pid].r==='vehiculos');
+const esConsumo=pid=>{ const c=CRID[pid]; return !!c&&(c.r==='alimentos'||c.r==='farmacia'||c.r==='agro'); };
+function usosImp(pid){ if(!esConsumo(pid)) return null; const c=CRID[pid], e=myE(), r=ramoDe(e), out=[];
+  if(e&&conStock(e)&&e.act!=='industrial'&&(r===c.r||(r==='alimentos'&&c.r==='agro')||(r==='agro'&&c.r==='alimentos'))) out.push(['1105','Inventario para revenderlo en su país (activo)']);
+  out.push([RAMOS[c.r].uso,'Despensa: consumo de su personal ('+CTA[RAMOS[c.r].uso].n.toLowerCase()+')']); return out; }
 const ADUA={u:'ADUA',e:'ADUA',n:'Servicio Nacional de Aduanas (DUA)',ced:'2-100-042005'};
 const IX={tab:'exp',q:{},err:''};
 const monDeSala=s=>MON[contDeSala(s)]||MON.c10;
@@ -6620,10 +6631,10 @@ VIEWS.puerto_imp=()=>{
     ordenarEmp(V.emp||{}).forEach(([u,e])=>{ if(!e||!e.prods||!conStock(e)) return; const st=(V.stock||{})[u]||{};
       filas.push(`<div class="mk" data-xemp="${esc(p.s+':'+u)}"><div class="mk-h"><div class="logo" style="background:${esc(e.color)}">${esc(e.ini)}</div><div><b>${esc(e.nom)}</b><div class="mut" style="font-size:12px">${esc(p.name)} · ${esc(e.giro)} · factura en ${esc(m.n)}</div></div></div>`+
       Object.entries(e.prods).map(([pid,pr])=>{ const k=p.s+'|'+u+'|'+pid, q=IX.q[k]||{}, disp=st[pid]||0, pu=m.k==='CRC'?pr.pv:r2(pr.pv/tcDe(m,'c'));
-        return `<div class="mk-p" data-xprod="${esc(k)}"><div class="pn"><b>${esc(pr.n)}</b><br><small class="mut">Existencia: ${disp}${e.act==='industrial'?' · fábrica':''}</small></div>
+        return `<div class="mk-p" data-xprod="${esc(k)}"><div class="pn"><b>${esc(pr.n)}</b>${CRID[pid]&&CRID[pid].pais&&!dispPais(CRID[pid])?' <span class="pill y">⭐ no se vende en su país</span>':''}<br><small class="mut">Existencia: ${disp}${e.act==='industrial'?' · fábrica':''}</small></div>
         <div class="num">${fmM(pu,m)} FOB<br><small class="mut">≈ ${fm(r2(pu*tcDe(m,'v')))} · IVA imp. ${pr.tar*100} %</small></div>
         <input type="number" min="1" step="1" placeholder="Cant." data-xq="${esc(k)}" data-f="cant" value="${esc(q.cant||'')}" aria-label="Cantidad">
-        <div><select data-xq="${esc(k)}" data-f="uso" aria-label="Uso">${USOS.map(x=>`<option value="${x[0]}" ${q.uso===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>
+        <div>${usosImp(pid)?`<select data-xq="${esc(k)}" data-f="uso" aria-label="Uso">${usosImp(pid).map(x=>`<option value="${x[0]}" ${(q.uso||usosImp(pid)[0][0])===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>`:esVehPid(pid)?'<select disabled aria-label="Uso"><option>Vehículo para la empresa (activo 1209)</option></select>':`<select data-xq="${esc(k)}" data-f="uso" aria-label="Uso">${USOS.map(x=>`<option value="${x[0]}" ${q.uso===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select>`}
         <select data-xq="${esc(k)}" data-f="via" aria-label="Transporte" style="margin-top:4px"><option value="maritimo" ${(q.via||IX.via)!=='aereo'?'selected':''}>🚢 Barco · ${TBARCO} s · flete ${Math.round(fleteTasa(p.s,SALA)*100)} %</option><option value="aereo" ${(q.via||IX.via)==='aereo'?'selected':''}>✈️ Avión · ${TAVION} s · flete ${Math.round(fleteAereo(p.s,SALA)*100)} %</option></select></div>
         <div style="text-align:right"><button class="btn sm" data-act="xOrden" data-k="${esc(k)}" ${disp>0?'':'disabled'}>Pedir importación</button></div></div>`; }).join('')+'</div>'); }); });
   return `<p style="margin-top:0">Importe productos de empresas de los otros continentes. El exportador acepta, embarca la mercadería en su puerto (FOB) y el barco tarda ${TBARCO} s en llegar. Al llegar usted la <b>nacionaliza</b>: paga flete, seguro, arancel e IVA de importación. La factura del exterior queda por pagar en su moneda.</p>
@@ -6651,10 +6662,12 @@ VIEWS.puerto_emb=()=>{
 /* ---------- operaciones ---------- */
 async function pedirImportacion(k){
   if(!puede()) return; IX.err=''; const [s,u,pid]=k.split('|'), V=VEC[s]||{}, v=(V.emp||{})[u], pr=v&&v.prods&&v.prods[pid], e=myE(); if(!pr) return;
-  const q=IX.q[k]||{}, cant=parseInt(q.cant,10), uso=q.uso||USOS[0][0], disp=((V.stock||{})[u]||{})[pid]||0, m=monDeSala(s), via=(q.via||IX.via)==='aereo'?'aereo':'maritimo';
+  const q=IX.q[k]||{}, cant=parseInt(q.cant,10); let uso=q.uso||USOS[0][0]; const disp=((V.stock||{})[u]||{})[pid]||0, m=monDeSala(s), via=(q.via||IX.via)==='aereo'?'aereo':'maritimo';
   if(!(cant>=1&&cant<=10000)) return toast('Indique una cantidad válida.','w');
   if(cant>disp) return toast('El exportador solo tiene '+disp+' unidad(es).','w');
-  const puME=m.k==='CRC'?pr.pv:r2(pr.pv/tcDe(m,'c')), totME=r2(cant*puME), oid=DB.ref('comercio').push().key, o={};
+  if(esVehPid(pid)){ const enCamino=misComercios().imp.filter(([k2,x])=>esVehPid(x.pid)&&(x.est==='pendiente'||x.est==='transito')).reduce((a,[k2,x])=>a+x.cant,0), libre=MAX_VEH-misVehiculos().length-enCamino;
+    if(cant>libre) return toast(libre>0?'Solo puede importar '+libre+' vehículo(s) más (máximo '+MAX_VEH+' por empresa, contando los que vienen en camino).':'Su empresa ya tiene (o tiene en camino) el máximo de '+MAX_VEH+' vehículos.','w'); }
+  const puME=m.k==='CRC'?pr.pv:r2(pr.pv/tcDe(m,'c')), totME=r2(cant*puME), oid=DB.ref('comercio').push().key, o={}; if(esVehPid(pid)) uso='1209'; const ui=usosImp(pid); if(ui){ uso=q.uso&&ui.some(x=>x[0]===q.uso)?q.uso:ui[0][0]; }
   o['comercio/'+oid]={c:{s:SALA,u:S.uid,e:e.eid,n:e.nom,ced:e.ced},v:{s,u,e:v.eid,n:v.nom,ced:v.ced},pid,pn:pr.n,cant,puME,totME,mon:m.k==='CRC'?'c10':m.k==='USD'?'c11':'c12',tar:pr.tar,uso,via,est:'pendiente',ts:SV.TIMESTAMP};
   o['mundo/'+s+'/notif/'+u+'/'+DB.ref('x').push().key]={txt:((via==='aereo'?'✈️ ':'🚢 ')+e.nom+' ('+contOf(HOMEK).name+') quiere importar '+cant+' × '+pr.n+(via==='aereo'?' por carga aérea':'')+'. Atiéndalo en el Puerto → Embarques.').slice(0,200),k:'y',ts:SV.TIMESTAMP};
   await DB.ref().update(o); IX.q[k]={uso,via:q.via}; toast('Pedido de importación '+(via==='aereo'?'por avión ':'')+'enviado a '+v.nom+'. Siga el envío en Embarques.'); renderPanel(true);
@@ -6683,23 +6696,30 @@ async function embarcar(oid){
   u['mundo/'+o.c.s+'/notif/'+o.c.u+'/'+DB.ref('x').push().key]={txt:(o.via==='aereo'?'✈️ '+e.nom+' despachó su pedido de '+o.cant+' × '+o.pn+' por avión. Llega en '+TAVION+' s.':'🚢 '+e.nom+' embarcó su pedido de '+o.cant+' × '+o.pn+'. El barco llega en '+TBARCO+' s.').slice(0,200),k:'y',ts:SV.TIMESTAMP};
   await DB.ref().update(u); toast('Mercadería embarcada (factura '+nf+'). Registre la exportación y su costo.'); renderPanel(true);
 }
-async function nacionalizar(oid){
-  if(!puede()) return; const o=S.com[oid], e=myE(); if(!o||o.est!=='transito'||o.c.u!==S.uid||o.c.e!==e.eid) return;
-  if(llegada(o)>now()) return toast('El barco todavía no llega.','w');
-  const m=MON[o.mon]||MON.c10, L=liquidacion(o,tcDe(m,'v')), tC=toC(L.hoy), dfid=key(); let num=0;
+async function nacionalizar(oid,ag){   // ag = {cid} cuando lo tramita el agente aduanal (contador) del importador
+  if(!puede()) return; const o=S.com[oid], yo=ag?ag.cl:S.uid, e=ag?S.emp[yo]:myE(); if(!o||!e||o.est!=='transito'||o.c.u!==yo||o.c.e!==e.eid) return;
+  if(llegada(o)>now()){ toast('La carga todavía no llega.','w'); return false; }
+  const m=MON[o.mon]||MON.c10, L=liquidacion(o,tcDe(m,'v')), tC=toC(L.hoy), dfid=key(); let num=0, st0=0;
   document.querySelectorAll('[data-id="'+oid+'"]').forEach(b=>b.disabled=true);
-  const r=await txN(n=>{ if(!n.xi||typeof n.xi!=='object') n.xi={}; if(n.xi[oid]) return 'procesada'; if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<tC) return 'sinFondos';
-    n.saldo[S.uid]-=tC; n.ext.naviera=(n.ext.naviera||0)+toC(r2(L.fl+L.seg)); n.ext.hacienda=(n.ext.hacienda||0)+tC-toC(r2(L.fl+L.seg));
-    n.consec.ADUA=(n.consec.ADUA||0)+1; num=n.consec.ADUA; n.fac[dfid]='pagada'; n.xi[oid]='n'; return 'ok'; });
-  if(r.out!=='ok') return toast(r.out==='sinFondos'?'Saldo insuficiente en Bancos para pagar el DUA ('+fm(L.hoy)+').':'Esa importación ya fue nacionalizada.','w');
+  const r=await txN(n=>{ if(!n.xi||typeof n.xi!=='object') n.xi={}; if(n.xi[oid]) return 'procesada'; if(n.saldo[yo]==null) return 'sinEmpresa'; if(n.saldo[yo]<tC) return 'sinFondos';
+    n.saldo[yo]-=tC; n.ext.naviera=(n.ext.naviera||0)+toC(r2(L.fl+L.seg)); n.ext.hacienda=(n.ext.hacienda||0)+tC-toC(r2(L.fl+L.seg));
+    n.consec.ADUA=(n.consec.ADUA||0)+1; num=n.consec.ADUA; n.fac[dfid]='pagada'; n.xi[oid]='n';
+    if(esConsumo(o.pid)&&o.uso==='1105'){ if(!n.stock[yo]) n.stock[yo]={}; st0=n.stock[yo][o.pid]||0; n.stock[yo][o.pid]=st0+o.cant; } return 'ok'; });
+  if(r.out!=='ok') { toast(r.out==='sinFondos'?(ag?'El cliente no tiene saldo suficiente en Bancos para pagar el DUA (':'Saldo insuficiente en Bancos para pagar el DUA (')+fm(L.hoy)+').':'Esa importación ya fue nacionalizada.','w'); return false; }
   const u={}, b='mundo/'+SALA+'/';
-  u[b+'facturas/'+dfid]=facturaDoc(num,ADUA,{u:S.uid,e:e.eid,n:e.nom,ced:e.ced},[{d:('DUA · '+o.pn).slice(0,40),cant:o.cant,pu:r2(L.costo/o.cant),sub:L.costo,tar:o.tar||0,iva:L.iva}],'contado','',{uso:o.uso,act:'bienes'});
-  u[b+'pendientes/'+S.uid+'/'+key()]=pendiente('importacion','Importación nacionalizada · DUA',
+  u[b+'facturas/'+dfid]=facturaDoc(num,ADUA,{u:yo,e:e.eid,n:e.nom,ced:e.ced},[{d:('DUA · '+o.pn).slice(0,40),cant:o.cant,pu:r2(L.costo/o.cant),sub:L.costo,tar:o.tar||0,iva:L.iva}],'contado','',{uso:o.uso,act:'bienes'});
+  u[b+'pendientes/'+yo+'/'+key()]=pendiente('importacion','Importación nacionalizada · DUA',
     `Nacionalizó ${o.cant} × ${o.pn} comprados a ${o.v.n} (${contOf(contDeSala(o.v.s)).name}). Factura del exterior ${fmM(o.totME,m)} FOB`+(m.k==='CRC'?'':` al tipo de cambio de venta ₡${fmtN(L.tcV)}`)+` = ${fm(L.fob)}, queda por pagar. Pagó hoy por SINPE: flete ${fm(L.fl)}, seguro ${fm(L.seg)}, arancel DAI ${fm(L.dai)}, Ley 6946 ${fm(L.ley)} e IVA de importación ${fm(L.iva)} (total ${fm(L.hoy)}). Uso: ${usoTxt(o.uso).toLowerCase()}.`,
     [{c:o.uso,d:L.costo},{c:'1106',d:L.iva},{c:'2104',h:L.fob},{c:'1102',h:L.hoy}],'El costo de lo importado incluye el valor FOB, el flete, el seguro y los aranceles (DAI y Ley 6946): todo va a la cuenta según su uso (Debe). El IVA de importación es crédito fiscal (IVA Acreditable). La factura del exterior queda en Cuentas por Pagar al Exterior (Haber) y lo pagado hoy sale de Bancos (Haber).');
-  u[b+'movimientos/'+S.uid+'/'+key()]={d:'Pago de DUA, flete y seguro · importación de '+o.pn,m:-L.hoy,ts:SV.TIMESTAMP};
+  u[b+'movimientos/'+yo+'/'+key()]={d:'Pago de DUA, flete y seguro · importación de '+o.pn,m:-L.hoy,ts:SV.TIMESTAMP};
+  if(esVehPid(o.pid)){ const c=CRID[o.pid], cu=r2((L.costo+((ag&&ag.fee)||0))/o.cant); for(let q=0;q<o.cant;q++){ const pl=placa(); u[b+'vehiculos/'+yo+'/'+key()]={t:c.veh,costo:cu,pl,comb:Math.round(TANQ[c.veh].cap*0.1),imp:1,ts:SV.TIMESTAMP}; } }
+  if(esConsumo(o.pid)){ const c=CRID[o.pid];
+    if(o.uso==='1105'){ const ep=(e.prods||{})[o.pid], cu=ep?r2((st0*(ep.cu||0)+L.costo)/(st0+o.cant)):r2(L.costo/o.cant);
+      if(ep) u[b+'empresas/'+yo+'/prods/'+o.pid+'/cu']=cu; else u[b+'empresas/'+yo+'/prods/'+o.pid]={n:c.n,cu,pv:Math.ceil(cu*1.35/10)*10,tar:c.tar,cat:c.r,imp:1}; }
+    else u[b+'despensa/'+yo+'/'+o.pid]=SV.increment(o.cant); }
+  if(ag) Object.entries(ag.u||{}).forEach(([k,v])=>{ u[b+k]=v; });
   u['comercio/'+oid+'/est']='nacionalizada'; u['comercio/'+oid+'/liq']=L;
-  await DB.ref().update(ajustarRTS(u)); toast('Importación nacionalizada. Registre el asiento; la factura del exterior queda por pagar.'); renderPanel(true);
+  await DB.ref().update(ajustarRTS(u)); if(!ag) toast('Importación nacionalizada. Registre el asiento; la factura del exterior queda por pagar.'+(esVehPid(o.pid)?' Su vehículo ya está en su lote.':'')); renderPanel(true); return true;
 }
 async function pagarExterior(oid){
   if(!puede()) return; const o=S.com[oid], e=myE(); if(!o||o.est!=='nacionalizada'||o.c.u!==S.uid||!o.liq) return;
@@ -6797,11 +6817,11 @@ function ajustarRTS(o){
 }
 
 /* ---------- cálculos ---------- */
-function declsOrd(){ return Object.entries(S.decl||{}).filter(([k,d])=>d).sort((a,b)=>(a[1].n||0)-(b[1].n||0)); }
-function rtsCalc(){
-  const eid=myEid(), inc={}; declsOrd().forEach(([k,d])=>Object.keys(d.inc||{}).forEach(f=>{ inc[f]=1; }));
+function declsOrd(decl){ return Object.entries(decl||S.decl||{}).filter(([k,d])=>d).sort((a,b)=>(a[1].n||0)-(b[1].n||0)); }
+function rtsCalc(eid,decl,emp){
+  eid=eid||myEid(); const inc={}; declsOrd(decl).forEach(([k,d])=>Object.keys(d.inc||{}).forEach(f=>{ inc[f]=1; }));
   const re=[], em=[]; Object.entries(S.fac).forEach(([k,f])=>{ if(!f||!f.em||inc[k]||f.est==='anulada') return; if(f.em.e===eid) em.push([k,f]); else if(f.re&&f.re.e===eid) re.push([k,f]); });
-  const a=RTSID[(myE()||{}).rts]||RTS_ACT[0], base=r2(re.reduce((s,x)=>s+(x[1].tot||0),0)), cr=r2(base*a.r), ci=r2(base*a.i);
+  const a=RTSID[(emp||myE()||{}).rts]||RTS_ACT[0], base=r2(re.reduce((s,x)=>s+(x[1].tot||0),0)), cr=r2(base*a.r), ci=r2(base*a.i);
   return {re,em,a,base,cr,ci,cuota:r2(cr+ci)};
 }
 function plazo(){ const v=S.cfg.vence; return v&&v.per===periodo()&&v.ts?v:null; }
@@ -7647,6 +7667,17 @@ VEHS.forEach(v=>CATR.push({id:'v_'+v.t,r:'vehiculos',n:v.n,cu:v.pu,tar:0.13,u:'u
  .forEach(([id,n,cu])=>CATR.push({id,r:'papeleria',n,cu,tar:0.13,u:'unidad'}));
 [['t_lap','Laptop empresarial',380000],['t_imp','Impresora multifuncional',145000],['t_mon','Monitor de 24 pulgadas',95000],['t_cel','Celular empresarial',210000],['t_tab','Tableta',160000]]
  .forEach(([id,n,cu])=>CATR.push({id,r:'tecnologia',n,cu,tar:0.13,u:'unidad'}));
+/* Etapa 16: comida y medicinas distintas en cada país, para que haya que importar.
+   Décimo es fuerte en comida (más barata) y Undécimo en medicinas. Cada país tiene productos propios que el mayorista
+   del otro país no vende: quien los quiera debe importarlos (Puerto) y puede revenderlos en su país. */
+[['a_tor','Tortillas con queso (paquete)',450,0.01,{en:32},'10'],['a_chi','Chifrijo',1300,0.13,{en:55,sa:2},'10'],['a_bur','Burrito de pollo',1500,0.13,{en:40},'11']]
+ .forEach(([id,n,cu,tar,ef,pais])=>CATR.push({id,r:'alimentos',n,cu,tar,u:'unidad',ef,pais}));
+[['m_jen','Té de jengibre antigripal',1000,{sa:10,cura:'gripe'},'10'],['m_ome','Omeprazol genérico',600,{sa:12,cura:'estomago'},'11'],['m_amx','Amoxicilina genérica',2400,{sa:18,cura:'infeccion'},'11'],['m_mul','Multivitamínico',1800,{sa:25,inm:1},'11']]
+ .forEach(([id,n,cu,ef,pais])=>CATR.push({id,r:'farmacia',n,cu,tar:0.02,u:'caja',ef,pais}));
+const PAIS_F={'10':{alimentos:0.85,farmacia:1.4},'11':{alimentos:1.4,farmacia:0.85}};
+CATR.forEach(c=>{ const f=HOME_P&&(PAIS_F[SALA]||{})[c.r]; if(f&&!c.pais) c.cu=Math.round(c.cu*f/10)*10; });
+const dispPais=c=>!!c&&(!c.pais||!HOME_P||c.pais===SALA);      // ¿lo vende el mayorista de este país?
+const paisTxt=c=>c&&c.pais?contOf('c'+c.pais).name:'';
 const CRID={}; CATR.forEach(c=>{ CRID[c.id]=c; });
 const TANQ={mot:{f:'c_gas',cap:12,l:0.01},pic:{f:'c_gas',cap:70,l:0.06},cam:{f:'c_die',cap:100,l:0.1}};   // litros por cada 100 m del mapa
 const minTanque=t=>Math.round(TANQ[t].cap/(TANQ[t].l*140*2.4*60/100));   // minutos de manejo con el tanque lleno
@@ -7723,6 +7754,7 @@ async function consumir(id){
 /* ---------- compras de ramo: validación y efectos ---------- */
 function validarCompraRamo(c,q,cant){
   const ex={};
+  if(c.r==='vehiculos'&&!vendeVeh()) return {err:'En este país no se venden vehículos: impórtelo de la República de Undécimo (Puerto → Importar).'};
   if(c.r==='vehiculos'){ if(cant!==1) return {err:'Los vehículos se compran de uno en uno.'}; if(misVehiculos().length>=MAX_VEH) return {err:'Su empresa ya tiene '+MAX_VEH+' vehículos.'}; }
   if(c.r==='ropa'){ const it=VID[c.vest], ci=parseInt(q.ci||0,10)||0; if(!it||!it.cols[ci]) return {err:'Elija el color de la prenda.'}; if(vOwn()[c.vest+ci]) return {err:'Ya tiene esa prenda y ese color en su guardarropa.'}; ex.ci=ci; }
   if(c.r==='combustible'){ const ok=vehParaComb(c.id); const vid=q.vid&&ok.some(([k])=>k===q.vid)?q.vid:(ok[0]||[])[0];
@@ -7812,7 +7844,7 @@ function flushComb(){ if(!S.drv||VD.gasto<0.05) return; const g=Math.round(VD.ga
 async function comprarPropio(){
   if(!puede()) return; const e=myE(), r=ramoDe(e); CP.err='';
   const lin=[]; let vid='';
-  Object.keys(CP.q).forEach(id=>{ const c=CRID[id], q=parseInt(CP.q[id],10); if(!c||c.r!==r||!(q>0&&q<=500)) return; const s0=r2(q*c.cu); lin.push({d:c.n.slice(0,40),cant:q,pu:c.cu,sub:s0,tar:c.tar,iva:r2(s0*c.tar),id}); });
+  Object.keys(CP.q).forEach(id=>{ const c=CRID[id], q=parseInt(CP.q[id],10); if(!c||c.r!==r||!dispPais(c)||!(q>0&&q<=500)) return; const s0=r2(q*c.cu); lin.push({d:c.n.slice(0,40),cant:q,pu:c.cu,sub:s0,tar:c.tar,iva:r2(s0*c.tar),id}); });
   if(!lin.length) return toast('Indique cuánto desea comprar.','w');
   if(r==='combustible'){ const ok=vehParaComb(lin[0].id); vid=CP.vid&&ok.some(([k])=>k===CP.vid)?CP.vid:(ok[0]||[])[0]; if(lin.length>1) return toast('Compre un tipo de combustible a la vez.','w');
     if(!vid) return toast('No tiene un vehículo que use '+CRID[lin[0].id].n.toLowerCase()+'.','w'); const libre=Math.floor(TANQ[S.veh[vid].t].cap-combDe(vid)); if(lin[0].cant>libre) return toast('Al tanque solo le caben '+libre+' L.','w'); }
@@ -7830,7 +7862,7 @@ async function comprarPropio(){
   await upd(u); CP.q={}; toast('Compra para consumo propio realizada ('+fm(tot)+'). Registre el asiento.'); renderPanel(true);
 }
 function tablaPropio(r){
-  const items=CATR.filter(c=>c.r===r), comb=r==='combustible';
+  const items=CATR.filter(c=>c.r===r&&dispPais(c)), comb=r==='combustible';
   return `<div class="card" style="margin-top:12px"><h3 style="margin-top:0">${RAMOS[r].ic} Comprar al mayorista para consumo propio</h3><p style="font-size:12.5px;margin:0 0 8px">Como su empresa es ${esc(RAMOS[r].n.toLowerCase())}, puede comprar al costo mayorista para usted. Se registra como gasto, no como inventario.</p>
    <div class="tw"><table class="tbl"><tbody>${items.map(c=>`<tr><td>${esc(c.n)}</td><td class="num">${fm(c.cu)} /${c.u}</td><td><input type="number" min="0" step="1" style="max-width:90px;padding:6px 8px" data-cp="${c.id}" value="${esc(CP.q[c.id]||'')}" placeholder="0" aria-label="Cantidad de ${esc(c.n)}"></td></tr>`).join('')}</tbody></table></div>
    ${comb&&misVehiculos().length?`<label class="l" for="cpVid">Vehículo</label><select id="cpVid" data-cpvid="1">${misVehiculos().filter(([k,v])=>TANQ[v.t]).map(([k,v])=>`<option value="${k}" ${CP.vid===k?'selected':''}>${esc(VEHID[v.t].n)} ${esc(v.pl||'')} · ${lit(combDe(k))}/${TANQ[v.t].cap} L</option>`).join('')}</select>`:''}
@@ -7884,7 +7916,7 @@ VIEWS.empresa_ramo=()=>{
   const e=myE(), r=ramoDe(e);
   if(e.act==='servicios') return `<p style="margin-top:0">Su empresa presta servicios: no compra mercadería al mayorista. Los ramos comerciales (${Object.keys(RAMOS).filter(k=>k!=='otro').map(k=>RAMOS[k].ic+' '+esc(RAMOS[k].n.toLowerCase())).join(', ')}) son para empresas que venden bienes.</p>`;
   const sel=r!=='otro'?r:(RM.r||'');
-  const lista=sel?CATR.filter(c=>c.r===sel):[];
+  const lista=sel?CATR.filter(c=>c.r===sel&&(dispPais(c)||e.prods[c.id])):[];
   const fila=c=>{ const ya=!!e.prods[c.id], on=ya||!!RM.sel[c.id], pv=RM.pv[c.id]!=null?RM.pv[c.id]:(ya?e.prods[c.id].pv:'');
     return `<tr><td><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-rmsel="${c.id}" ${on?'checked':''} ${ya?'disabled':''}> ${esc(c.n)}</label></td><td class="num">${fm(c.cu)} /${c.u}</td><td class="num">${String(+(c.tar*100).toFixed(2)).replace('.',',')} %</td><td><input type="text" inputmode="decimal" style="max-width:120px;padding:6px 8px" data-rmpv="${c.id}" value="${esc(pv)}" placeholder="Precio sin IVA" aria-label="Precio de venta de ${esc(c.n)}"></td></tr>`; };
   return `<p style="margin-top:0">El <b>ramo comercial</b> define qué mercadería le vende el ${esc(PROV.n)}. Solo las tiendas de ropa compran ropa, solo las agencias compran vehículos, solo los supermercados o restaurantes compran comida, solo las farmacias compran medicamentos y solo las estaciones de servicio compran combustible. Los demás deben comprárselo a ustedes en el Mercado.</p>
@@ -7903,7 +7935,7 @@ async function guardarRamo(){
   if(!puede()) return; const e=myE(), r0=ramoDe(e), r=r0!=='otro'?r0:RM.r; RM.err='';
   if(!r||!RAMOS[r]||r==='otro'){ RM.err='Elija un ramo.'; renderPanel(true); return; }
   const u={}; let n=0;
-  for(const c of CATR.filter(x=>x.r===r)){ const ya=!!e.prods[c.id]; if(!ya&&!RM.sel[c.id]) continue;
+  for(const c of CATR.filter(x=>x.r===r&&(dispPais(x)||e.prods[x.id]))){ const ya=!!e.prods[c.id]; if(!ya&&!RM.sel[c.id]) continue;
     const pv=RM.pv[c.id]!=null?pn(RM.pv[c.id]):(ya?e.prods[c.id].pv:NaN);
     if(!(pv>c.cu)){ RM.err='El precio de «'+c.n+'» debe ser mayor que su costo mayorista ('+fm(c.cu)+').'; renderPanel(true); return; }
     if(ya) u['empresas/'+S.uid+'/prods/'+c.id+'/pv']=r2(pv); else u['empresas/'+S.uid+'/prods/'+c.id]={n:c.n,cu:c.cu,pv:r2(pv),tar:c.tar,cat:r}; n++; }
@@ -7918,7 +7950,7 @@ function ramoCrearHTML(){
   const r=CF.ramo, sel=CF.rsel||(CF.rsel={});
   return `<h3>Productos de su ramo: ${RAMOS[r].ic} ${esc(RAMOS[r].n)}</h3><p style="font-size:12.5px">Marque lo que venderá. El costo lo fija el ${esc(PROV.n)}; usted decide el <b>precio de venta sin IVA</b> y cuánto comprar para empezar.</p>
   <div class="prod prodh"><span>Producto</span><span>Costo mayorista</span><span>Precio venta ₡</span><span>IVA</span><span>Cant. inicial</span><span></span></div>
-  <div id="cfProds">${CATR.filter(c=>c.r===r).map(c=>{ const o=sel[c.id]||{}; return `<div class="prod rprod" data-id="${c.id}"><label class="pn"><input type="checkbox" class="rp-on" ${o.on?'checked':''}> ${esc(c.n)}</label><span class="num" style="align-self:center">${fm(c.cu)}</span>
+  <div id="cfProds">${CATR.filter(c=>c.r===r&&dispPais(c)).map(c=>{ const o=sel[c.id]||{}; return `<div class="prod rprod" data-id="${c.id}"><label class="pn"><input type="checkbox" class="rp-on" ${o.on?'checked':''}> ${esc(c.n)}</label><span class="num" style="align-self:center">${fm(c.cu)}</span>
     <input class="rp-p" type="text" inputmode="decimal" placeholder="Precio" value="${esc(o.pv||'')}"><span style="align-self:center">${String(+(c.tar*100).toFixed(2)).replace('.',',')} %</span>${c.prod?'<span class="mut" style="font-size:11px;align-self:center">lo produce</span>':`<input class="rp-q" type="number" min="1" step="1" placeholder="Cant." value="${esc(o.cant||'')}">`}<span></span></div>`; }).join('')}</div>${r==='agro'?'<p class="mut" style="font-size:12.5px">🌾 Una finca no compra mercadería: produce. Después de crear la empresa compre un terreno (Tienda Mayorista → Construcción) y sus crías o almácigos en Su Empresa → Finca.</p>':''}`; }
 
 /* ---------- compraventa de terrenos entre compañeros ---------- */
@@ -8301,6 +8333,9 @@ function suscribirAgro(){
 }
 function svSubs(){ // el contador lee los pendientes de sus clientes con contrato activo
   const need={}; Object.entries(S.svcs||{}).forEach(([k,c])=>{ if(c&&c.pr===S.uid&&c.est==='activo') need[c.cl]=1; });
+  AG.dsubs=AG.dsubs||{}; AG.cdecl=AG.cdecl||{};
+  Object.keys(AG.dsubs).forEach(cl=>{ if(!need[cl]){ base.child('declaraciones/'+cl).off('value',AG.dsubs[cl]); delete AG.dsubs[cl]; delete AG.cdecl[cl]; } });
+  Object.keys(need).forEach(cl=>{ if(AG.dsubs[cl]) return; AG.dsubs[cl]=base.child('declaraciones/'+cl).on('value',s=>{ AG.cdecl[cl]=s.val()||{}; programar(); },()=>{ AG.cdecl[cl]={}; }); });
   Object.keys(AG.subs).forEach(cl=>{ if(!need[cl]){ base.child('pendientes/'+cl).off('value',AG.subs[cl]); delete AG.subs[cl]; delete AG.cpend[cl]; } });
   Object.keys(need).forEach(cl=>{ if(AG.subs[cl]) return; AG.subs[cl]=base.child('pendientes/'+cl).on('value',s=>{ AG.cpend[cl]=s.val()||{}; programar(); },()=>{ AG.cpend[cl]={}; }); });
 }
@@ -8401,17 +8436,20 @@ document.addEventListener('input',e=>{ const d=e.target&&e.target.dataset; if(d&
 document.addEventListener('change',e=>{ const d=e.target&&e.target.dataset; if(!d) return; if(d.svsel){ AG.sv[d.svsel]=e.target.checked; renderPanel(true); } if(d.svprov!=null){ AG.svp=e.target.value; renderPanel(true); } });
 
 /* ---------- servicios contables ---------- */
-const TAR_SVC=0.13, MAX_SVC=10;
+const TAR_SVC=0.13, MAX_SVC=10, TAR_MIN=50, DEC_MIN=10000;
 const contadores=()=>Object.entries(S.emp||{}).filter(([u,e])=>e&&e.eid&&u!==S.uid&&e.svc&&e.svc.on&&e.svc.tar>0).sort((a,b)=>a[1].svc.tar-b[1].svc.tar);
 const misContratosCl=()=>Object.entries(S.svcs||{}).filter(([k,c])=>c&&c.cl===S.uid);
 const misContratosPr=()=>Object.entries(S.svcs||{}).filter(([k,c])=>c&&c.pr===S.uid);
 function svcActivo(cid){ const c=(S.svcs||{})[cid]; return !!(c&&c.est==='activo'); }
 function pendCliente(cid){ const c=(S.svcs||{})[cid]; if(!c) return []; return Object.entries(AG.cpend[c.cl]||{}).filter(([k,p])=>p&&p.svc===cid&&c.pids&&c.pids[k]); }
-function trabajoContador(){ return misContratosPr().filter(([k,c])=>c.est==='activo').reduce((s,[k])=>s+pendCliente(k).length,0); }
+function trabajoContador(){ return misContratosPr().filter(([k,c])=>c.est==='activo').reduce((s,[k,c])=>s+(c.tipo==='decl'?1:pendCliente(k).length),0); }
 async function svcGuardarOferta(on){
   if(!puede()) return; AG.svErr=''; const tar=pn(AG.svTar||((myE().svc||{}).tar||''));
-  if(on&&!(tar>=500&&tar<=20000)){ AG.svErr='La tarifa por asiento debe estar entre ₡500 y ₡20 000.'; renderPanel(true); return; }
-  await upd({['empresas/'+S.uid+'/svc']:on?{on:true,tar:r2(tar)}:{on:false,tar:r2(tar||0)}}); toast(on?'🤝 Ya aparece como contador(a) en la sala.':'Dejó de ofrecer servicios contables.','y'); renderPanel(true);
+  const dec=pn(AG.svDec!=null&&AG.svDec!==''?AG.svDec:((myE().svc||{}).dec||''));
+  if(on&&!(tar>0)&&!(dec>0)){ AG.svErr='Fije la tarifa por asiento (mínimo ₡'+TAR_MIN+') o la tarifa por declaración (mínimo ₡10 000).'; renderPanel(true); return; }
+  if(on&&tar&&!(tar>=TAR_MIN&&tar<=20000)){ AG.svErr='La tarifa por asiento debe estar entre ₡'+TAR_MIN+' y ₡20 000 (o déjela vacía si solo presenta declaraciones).'; renderPanel(true); return; }
+  if(on&&dec&&!(dec>=DEC_MIN&&dec<=200000)){ AG.svErr='La tarifa por declaración debe estar entre ₡10 000 y ₡200 000.'; renderPanel(true); return; }
+  await upd({['empresas/'+S.uid+'/svc']:{on:!!on,tar:r2(tar>0?tar:0),dec:r2(dec>0?dec:0)}}); toast(on?'🤝 Ya aparece como contador(a) en la sala.':'Dejó de ofrecer servicios contables.','y'); renderPanel(true);
 }
 async function svcContratar(){
   if(!puede()) return; const e=myE(); AG.svErr='';
@@ -8443,11 +8481,11 @@ async function svcRetomar(cid){ const c=(S.svcs||{})[cid]; if(!c||c.cl!==S.uid||
   const u={}; Object.keys(c.pids||{}).forEach(k=>{ if(S.pend[k]&&S.pend[k].svc===cid) u['pendientes/'+S.uid+'/'+k+'/svc']=null; }); u['svcs/'+cid+'/est']='cancelado';
   Object.assign(u,notificar(c.pr,'🤝 '+c.cn+' retomó sus asientos pendientes y cerró el contrato.','w')); await upd(u); renderPanel(true); }
 VIEWS.empresa_svc=()=>{
-  const e=myE(), cont=contadores(), mis=misContratosCl(), prs=misContratosPr(), of=e.svc||{};
+  const e=myE(), cont=contadores(), mis=misContratosCl().filter(([k,c])=>c.tipo!=='decl'), prs=misContratosPr(), of=e.svc||{};
   const libres=Object.entries(S.pend||{}).filter(([k,p])=>p&&!p.svc).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0));
   const prSel=AG.svp&&S.emp[AG.svp]&&S.emp[AG.svp].svc&&S.emp[AG.svp].svc.on?S.emp[AG.svp]:null, nSel=libres.filter(([k])=>AG.sv[k]).length;
   const tot=prSel?r2(nSel*prSel.svc.tar*(1+TAR_SVC)):0;
-  const trab=prs.filter(([k,c])=>c.est==='activo');
+  const trab=prs.filter(([k,c])=>c.est==='activo'&&c.tipo!=='decl');
   return `<p style="margin-top:0">Una empresa puede <b>prestar servicios contables</b> a sus compañeros: el cliente le paga por asiento y el contador(a) registra esos asientos en el libro diario del cliente. El cliente registra el pago del servicio (Gastos por Servicios Contables) y el contador su ingreso (Ingresos por Servicios).</p>
   ${trab.length?`<div class="card" style="border-color:var(--gold);margin-bottom:12px"><h3 style="margin-top:0">📒 Sus clientes</h3>${trab.map(([k,c])=>{ const L=pendCliente(k);
     return `<div style="padding:8px 0;border-top:1px solid var(--line)"><b>${esc(c.cn)}</b> <span class="mut">(${esc(c.cd||'')})</span> · ${c.hechos||0} de ${c.n} asiento(s) registrados
@@ -8458,8 +8496,9 @@ VIEWS.empresa_svc=()=>{
     ${prSel&&nSel?`<div class="card" style="margin-top:8px;font-family:var(--mono);font-size:12.5px">${nSel} × ${fm(prSel.svc.tar)} = ${fm(r2(nSel*prSel.svc.tar))} + IVA 13 % = <b>${fm(tot)}</b></div>`:''}
     <button class="btn" style="margin-top:10px" data-act="svContratar" ${prSel&&nSel?'':'disabled'}>Contratar y pagar</button>`:'<div class="empty">Todavía nadie en la sala ofrece servicios contables.</div>'}</div>
    <div class="card"><h3 style="margin-top:0">📒 Ofrecer mis servicios contables</h3>
-    <p style="font-size:12.5px;margin-top:0">${of.on?`Usted aparece como contador(a) a <b>${fm(of.tar)}</b> por asiento (+ IVA 13 %).`:'Fije su tarifa por asiento y aparezca en la lista de contadores de la sala.'}</p>
-    <label class="l" for="svTar">Tarifa por asiento ₡</label><input type="text" inputmode="decimal" id="svTar" data-svq="svTar" value="${esc(AG.svTar!==''?AG.svTar:(of.tar||''))}" placeholder="2 500" style="max-width:160px">
+    <p style="font-size:12.5px;margin-top:0">${of.on?`Usted aparece como contador(a)${of.tar>0?` a <b>${fm(of.tar)}</b> por asiento`:''}${of.dec>0?`${of.tar>0?' y':''} a <b>${fm(of.dec)}</b> por declaración`:''} (+ IVA 13 %).`:'Fije su tarifa por asiento y aparezca en la lista de contadores de la sala.'}</p>
+    <label class="l" for="svTar">Tarifa por asiento ₡</label><input type="text" inputmode="decimal" id="svTar" data-svq="svTar" value="${esc(AG.svTar!==''?AG.svTar:(of.tar||''))}" placeholder="mínimo 50" style="max-width:160px">
+    <label class="l" for="svDec">Tarifa por declaración presentada ₡ <small class="mut">(IVA, Régimen Simplificado o DUA de aduanas · mínimo ₡10 000)</small></label><input type="text" inputmode="decimal" id="svDec" data-svq="svDec" value="${esc(AG.svDec!=null&&AG.svDec!==''?AG.svDec:(of.dec||''))}" placeholder="10 000" style="max-width:160px">
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" data-act="svOfrecer">${of.on?'Actualizar tarifa':'Ofrecer servicios'}</button>${of.on?'<button class="btn sec" data-act="svRetirar">Dejar de ofrecer</button>':''}</div></div></div>
   ${AG.svErr?`<div class="err">${esc(AG.svErr)}</div>`:''}
   ${mis.length?`<h3>Sus contratos como cliente</h3><div class="tw"><table class="tbl"><thead><tr><th>Contador(a)</th><th class="num">Asientos</th><th class="num">Total pagado</th><th>Estado</th><th></th></tr></thead><tbody>${mis.sort((a,b)=>(b[1].ts||0)-(a[1].ts||0)).map(([k,c])=>`<tr><td>${esc(c.pn)}</td><td class="num">${c.hechos||0} / ${c.n}</td><td class="num">${fm(c.tot)}</td><td>${c.est==='activo'?'<span class="pill y">en proceso</span>':c.est==='terminado'?'<span class="pill">terminado</span>':'<span class="pill w">cancelado</span>'}</td><td>${c.est==='activo'?`<button class="btn sm sec" data-act="svRetomar" data-id="${k}">Retomar mis asientos</button>`:''}</td></tr>`).join('')}</tbody></table></div>`:''}`;
@@ -8585,7 +8624,7 @@ function hudEntregas(){ const L=misEntregas(); if(!L.length) return ''; const c=
   return `<div class="row"><span>📦 Entregas: ${L.length-c} por cargar · ${c} en camino</span><button class="pill w" data-act="ir" data-b="empresa" data-t="ent">ver</button></div>`; }
 function vhToggle(){
   if(S.drv){ dejarDeConducir(); return; }
-  const mios=misVehiculos(); if(!mios.length){ toast('Su empresa no tiene vehículos. Pídalos a una agencia de vehículos de la sala (Tienda Mayorista → Vehículos).','w'); return; }
+  const mios=misVehiculos(); if(!mios.length){ toast(vendeVeh()?'Su empresa no tiene vehículos. Pídalos a una agencia de vehículos de la sala (Tienda Mayorista → Vehículos).':'Su empresa no tiene vehículos. Impórtelo de una agencia de la República de Undécimo (Puerto → Importar).','w'); return; }
   const con=mios.filter(([k])=>combDe(k)>=0.2).sort((a,b)=>CAPA[b[1].t]-CAPA[a[1].t]);
   if(!con.length){ toast('⛽ Sus vehículos no tienen combustible. Cómprelo en una estación de servicio del Mercado.','w'); MF.f='combustible'; irA('mercado','cat'); return; }
   if(INT.on) salirInterior(true);
@@ -8764,7 +8803,165 @@ const ACT={
   dSort:b=>{ D.sort=b.dataset.k; renderDoc(true); },
   dProy:()=>{ D.proj=!D.proj; const el=document.documentElement; try{ if(D.proj&&el.requestFullscreen) el.requestFullscreen().catch(()=>{}); else if(!D.proj&&document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }catch(e){} renderDoc(true); }
 };
-Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN,ACT_CHAT,ACT_VIDA,ACT_AERO,ACT_AGRO,ACT_ENT);
+/* ===================== ETAPA 15 · VEHÍCULOS IMPORTADOS Y DECLARACIONES COMO SERVICIO =====================
+   · Solo la República de Undécimo tiene agencias de vehículos. Décimo y Duodécimo los importan desde Undécimo
+     (Puerto → Importar): el DUA lleva el costo (FOB + flete + seguro + DAI + Ley 6946) a 1209 Vehículos.
+   · El contador(a) también presenta declaraciones de sus clientes (IVA D-150, Régimen Simplificado o DUA de aduanas)
+     por una tarifa por declaración (mínimo ₡10 000 + IVA). Paga con los fondos del cliente y le deja el asiento.
+       Cliente:  6133 Gastos por Servicios Contables (o, si es un DUA, la cuenta del costo de lo importado) + 1106 / 1102
+       Contador: 1102 / 4102 Ingresos por Servicios + 2103 IVA por Pagar */
+let DS=null;   // declaración que el contador está preparando para un cliente
+function vehImportarHTML(){
+  const V=VEC[VEH_PAIS]||{}, m=monDeSala(VEH_PAIS), ofs=[];
+  ordenarEmp(V.emp||{}).forEach(([u,e])=>{ if(!e||!e.prods) return; Object.entries(e.prods).forEach(([pid,pr])=>{ if(!esVehPid(pid)) return; const st=((V.stock||{})[u]||{})[pid]||0; if(st>0) ofs.push({e,pr,st,pid}); }); });
+  const pu=pr=>m.k==='CRC'?pr.pv:r2(pr.pv/tcDe(m,'c'));
+  return `<div class="fb" style="margin:0 0 12px">🚢 En la <b>${esc(contOf(HOMEK).name)}</b> no hay agencias de vehículos: solo la <b>${esc(contOf('c'+VEH_PAIS).name)}</b> los vende. Para tener moto, pick-up o camión <b>impórtelo</b> desde una agencia de Undécimo en el ⚓ Puerto → <b>Importar</b>.</div>
+   <p style="margin-top:0;font-size:13.5px">Al llegar la carga usted <b>nacionaliza</b> el vehículo con el DUA: paga flete, seguro, arancel (DAI), Ley 6946 e IVA de importación. Todo, menos el IVA, forma parte del costo del activo <b>1209 Vehículos</b>; la factura del exterior queda por pagar en dólares. Si prefiere, contrate a un contador(a) de la sala como <b>agente aduanal</b> para que presente el DUA por usted (Su Empresa → Servicios contables).</p>
+   ${ofs.length?`<div class="tw"><table class="tbl"><thead><tr><th>Agencia en Undécimo</th><th>Vehículo</th><th class="num">Precio FOB</th><th class="num">Existencia</th></tr></thead><tbody>${ofs.map(x=>`<tr><td><b>${esc(x.e.nom)}</b></td><td>${esc(x.pr.n)}</td><td class="num">${fmM(pu(x.pr),m)}</td><td class="num">${x.st}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Por ahora ninguna agencia de Undécimo tiene vehículos en existencia.</div>'}
+   <button class="btn" style="margin-top:12px" data-act="ir" data-b="puerto" data-t="imp">⚓ Ir al Puerto a importar</button>
+   <h3>Sus vehículos</h3>${tablaVehiculos()}`;
+}
+/* ---------- contratos de declaraciones ---------- */
+const declarantes=()=>Object.entries(S.emp||{}).filter(([u,e])=>e&&e.eid&&u!==S.uid&&e.svc&&e.svc.on&&e.svc.dec>=DEC_MIN).sort((a,b)=>a[1].svc.dec-b[1].svc.dec);
+const declActivas=()=>Object.entries(S.svcs||{}).filter(([k,c])=>c&&c.tipo==='decl'&&c.est==='activo');
+function declTxt(c){ if(c.k==='dua') return 'DUA de aduanas · '+(c.det||'importación');
+  const ce=S.emp[c.cl]; return (esRTS(ce)?'Declaración del Régimen Simplificado':'Declaración de IVA (D-150)')+' · '+(c.per||''); }
+function opcionesDecl(){
+  const e=myE(), per=periodo(), act=declActivas().filter(([k,c])=>c.cl===S.uid), out=[];
+  const yaIVA=declsOrd().some(([k,d])=>d.per===per)||act.some(([k,c])=>c.k==='iva'&&c.per===per);
+  if(!yaIVA) out.push(['iva',(esRTS(e)?'Declaración del Régimen Simplificado':'Declaración de IVA (D-150)')+' · '+per]);
+  if(HOME_P) misComercios().imp.forEach(([k,o])=>{ if(o.est==='transito'&&!act.some(([k2,c])=>c.k==='dua'&&c.ref===k)) out.push(['dua:'+k,'DUA · importación de '+o.cant+' × '+o.pn+' ('+o.v.n+')']); });
+  return out;
+}
+async function declContratar(){
+  if(!puede()) return; const e=myE(); AG.dErr='';
+  const pr=S.emp[AG.dp]; if(!pr||!pr.svc||!pr.svc.on||!(pr.svc.dec>=DEC_MIN)){ AG.dErr='Elija un contador(a) que presente declaraciones.'; renderPanel(true); return; }
+  const op=opcionesDecl().find(x=>x[0]===AG.dk); if(!op){ AG.dErr='Elija la declaración que le confiará.'; renderPanel(true); return; }
+  const k=op[0].startsWith('dua:')?'dua':'iva', ref=k==='dua'?op[0].slice(4):'', ox=k==='dua'?S.com[ref]:null;
+  const tar=pr.svc.dec, sub=r2(tar), iva=r2(sub*TAR_SVC), tot=r2(sub+iva), tC=toC(tot), cid=key(), fid=key(); let num=0;
+  const cta=k==='dua'?(ox.uso||'1105'):'6133';
+  if(!confirm('¿Contratar a '+pr.nom+' para presentar: '+op[1]+'? Honorarios '+fm(sub)+' + IVA = '+fm(tot)+'. Los impuestos que resulten se pagan desde su cuenta en Bancos.')) return;
+  const r=await txN(x=>{ if(x.saldo[S.uid]==null||x.saldo[AG.dp]==null) return 'sinEmpresa'; if(x.saldo[S.uid]<tC) return 'sinFondos';
+    x.saldo[S.uid]-=tC; x.saldo[AG.dp]+=tC; x.consec[AG.dp]=(x.consec[AG.dp]||0)+1; num=x.consec[AG.dp]; x.fac[fid]='pagada'; return 'ok'; });
+  if(r.out!=='ok'){ AG.dErr=r.out==='sinFondos'?'Saldo insuficiente en Bancos ('+fm(tot)+').':'No se pudo contratar.'; renderPanel(true); return; }
+  const nf=fNum(num), u={}, det=k==='dua'?(ox.cant+' × '+ox.pn):'', qu=k==='dua'?'el DUA de su importación de '+det:'su '+(esRTS(e)?'declaración del Régimen Simplificado':'declaración de IVA (D-150)')+' del período '+periodo();
+  u['svcs/'+cid]={tipo:'decl',k,ref,det,per:periodo(),pr:AG.dp,pn:pr.nom,pd:pr.duen,cl:S.uid,cn:e.nom,cd:e.duen,n:1,tar,sub,iva,tot,hechos:0,est:'activo',fac:fid,ts:SV.TIMESTAMP};
+  u['facturas/'+fid]=facturaDoc(num,{u:AG.dp,e:pr.eid,n:pr.nom,ced:pr.ced},{u:S.uid,e:e.eid,n:e.nom,ced:e.ced},[{d:(k==='dua'?'Agencia aduanal · DUA':'Presentación de declaración').slice(0,40),cant:1,pu:sub,sub,tar:TAR_SVC,iva}],'contado','',{uso:cta,act:'servicios'});
+  u['pendientes/'+S.uid+'/'+key()]=pendiente('svc_pago',(k==='dua'?'Agente aduanal ':'Presentación de declaración por ')+pr.nom+' · '+nf,
+    `Contrató a ${pr.nom} (${pr.duen}) para presentar ${qu}. Factura ${nf}: honorarios ${fm(sub)} + IVA 13 % ${fm(iva)} = ${fm(tot)}, pagado por SINPE desde Bancos.`,
+    [{c:cta,d:sub},{c:'1106',d:iva},{c:'1102',h:tot}],k==='dua'?'Los honorarios del agente aduanal son un costo necesario para traer la mercadería: se suman al costo de lo importado (misma cuenta del DUA, Debe). El IVA pagado es crédito fiscal (IVA Acreditable, Debe) y Bancos disminuye (Haber).':'Los honorarios por presentar declaraciones son un gasto del período (Gastos por Servicios Contables, Debe) sin IVA; el IVA pagado es crédito fiscal (IVA Acreditable, Debe) y Bancos disminuye (Haber).',{ref:fid});
+  u['pendientes/'+AG.dp+'/'+key()]=pendiente('svc_cobro',(k==='dua'?'Agencia aduanal a ':'Presentación de declaración a ')+e.nom+' · '+nf,
+    `Facturó a ${e.nom} (${e.duen}) la presentación de ${k==='dua'?'un DUA de aduanas':'una declaración tributaria'}. Factura ${nf}: ${fm(sub)} + IVA 13 % ${fm(iva)} = ${fm(tot)}, cobrado por SINPE.`,
+    [{c:'1102',d:tot},{c:'4102',h:sub},{c:'2103',h:iva}],'Entra el dinero a Bancos (Debe) por el total; el ingreso por servicios se reconoce sin IVA (Ingresos por Servicios, Haber) y el IVA cobrado se le debe a Hacienda (IVA por Pagar, Haber).',{ref:fid});
+  u['movimientos/'+S.uid+'/'+key()]={d:('SINPE a '+pr.nom+' · '+(k==='dua'?'agencia aduanal ':'declaración ')+nf).slice(0,120),m:-tot,ts:SV.TIMESTAMP,ref:fid};
+  u['movimientos/'+AG.dp+'/'+key()]={d:('SINPE de '+e.nom+' · '+(k==='dua'?'agencia aduanal ':'declaración ')+nf).slice(0,120),m:tot,ts:SV.TIMESTAMP,ref:fid};
+  Object.assign(u,notificar(AG.dp,'🧾 '+e.nom+' lo contrató para presentar '+(k==='dua'?'un DUA de aduanas':'su declaración')+'. Atiéndalo en Su Empresa → Servicios contables.','y'));
+  await upd(u); AG.dk=''; toast('🧾 Contrató a '+pr.nom+'. Registre el pago del servicio; la declaración la presenta su contador(a).','y'); renderPanel(true);
+}
+async function declCerrar(cid){ const c=(S.svcs||{})[cid]; if(!c||c.pr!==S.uid||c.est!=='activo') return;
+  const u={['svcs/'+cid+'/est']:'terminado'}; Object.assign(u,notificar(c.cl,'🧾 '+c.pn+' cerró el contrato: '+declTxt(c)+' ya estaba presentada.','w')); await upd(u); DS=null; renderPanel(true); }
+/* ---------- el contador prepara y presenta ---------- */
+function ctxDecl(cid){ const c=(S.svcs||{})[cid]; if(!c||c.tipo!=='decl'||c.pr!==S.uid) return null; const ce=S.emp[c.cl]; if(!ce) return null; return {c,ce,dec:AG.cdecl&&AG.cdecl[c.cl]}; }
+function vistaDecl(){
+  const X=ctxDecl(DS.cid); if(!X){ DS=null; return ''; } const {c,ce,dec}=X;
+  const head=`<div class="fb ok" style="margin:0 0 10px">🧾 Presenta por <b>${esc(c.cn)}</b> (${esc(c.cd||'')}) · ${esc(declTxt(c))}. Los impuestos se pagan desde la cuenta del cliente.</div>`;
+  const pie=(btn)=>`<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn sec" data-act="dsBack">Volver</button>${btn}</div>${DS.fb?`<div class="fb ${DS.fb.ok?'ok':'bad'}">${DS.fb.html}</div>`:''}`;
+  if(c.est!=='activo') return head+`<div class="fb ok">Contrato terminado.</div>`+pie('');
+  const inp=(f,l)=>`<div><label class="l" for="ds_${f}">${l}</label><input type="text" inputmode="decimal" id="ds_${f}" data-ds="${f}" value="${esc(DS[f]||'')}" placeholder="0,00"></div>`;
+  if(c.k==='dua'){ const o=S.com[c.ref];
+    if(!o) return head+'<div class="empty">Cargando la importación…</div>'+pie('');
+    if(o.est!=='transito') return head+`<div class="fb">Esa importación ya fue nacionalizada.</div>`+pie(`<button class="btn" data-act="dsCerrar" data-id="${DS.cid}">Cerrar el contrato</button>`);
+    const falta=llegada(o)-now(); if(falta>0) return head+`<div class="fb">${o.via==='aereo'?'✈️ La carga viene en vuelo':'🚢 El barco viene en camino'}: llega en ${Math.ceil(falta/1000)} s. Vuelva cuando llegue para presentar el DUA.</div>`+pie('');
+    const m=MON[o.mon]||MON.c10, tv=tcDe(m,'v'), air=o.via==='aereo', ft=air?fleteAereo(o.v.s,o.c.s):fleteTasa(o.v.s,o.c.s), dai=o.dai!=null?o.dai:daiTasa();
+    return head+`<p style="margin-top:0">Calcule la liquidación del DUA de <b>${o.cant} × ${esc(o.pn)}</b> comprados a ${esc(o.v.n)} (${esc(contOf(contDeSala(o.v.s)).name)}).</p>
+     <div class="card" style="font-size:13px;line-height:1.75">Factura del exterior: <b>${fmM(o.totME,m)} FOB</b>${m.k==='CRC'?'':` · tipo de cambio de venta hoy <b>₡${fmtN(tv)}</b>`}<br>
+      Flete ${air?'aéreo':'marítimo'}: ${Math.round(ft*100)} % del FOB en colones (mínimo ${fm(air?25000:10000)}) · Seguro: 1 % de (FOB + flete)<br>
+      Arancel DAI: ${pct(dai)} del CIF · Ley 6946: 1 % del CIF · IVA de importación: ${pct(o.tar||0)} de (CIF + DAI + Ley 6946)</div>
+     <div class="grid2" style="margin-top:12px">${inp('cif','Valor CIF ₡')}${inp('dai','Arancel DAI ₡')}${inp('ley','Ley 6946 ₡')}${inp('iva','IVA de importación ₡')}</div>`+pie(`<button class="btn" data-act="dsPres">Presentar el DUA y pagar con fondos del cliente</button>`); }
+  if(!dec) return head+'<div class="empty">Cargando las declaraciones del cliente…</div>'+pie('');
+  const per=periodo();
+  if(esRTS(ce)){ const r=rtsCalc(ce.eid,dec,ce); if(declsOrd(dec).some(([k,d])=>d.per===per)) return head+'<div class="fb">El cliente ya presentó la declaración de este período.</div>'+pie(`<button class="btn" data-act="dsCerrar" data-id="${DS.cid}">Cerrar el contrato</button>`);
+    return head+`<p style="margin-top:0">Régimen Simplificado · actividad <b>${esc(r.a.n||'')}</b> · factor ${pct(r.a.r+r.a.i)} sobre las compras con IVA.</p>
+     ${r.re.length?`<div class="tw"><table class="tbl"><thead><tr><th>Comprobante</th><th>Proveedor</th><th class="num">Total</th></tr></thead><tbody>${r.re.map(([k,f])=>`<tr><td class="gold">${fNum(f.num)}</td><td>${esc(f.em.n)}</td><td class="num">${fm(f.tot)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Sin compras en el período.</div>'}
+     <div class="grid2" style="margin-top:12px">${inp('rb','Total de compras del período ₡')}${inp('rc','Cuota a pagar ₡')}</div>`+pie(`<button class="btn" data-act="dsPres">Presentar y pagar con fondos del cliente</button>`); }
+  const iv=ivaCalc(ce.eid,dec); if(iv.ds.some(d=>d.per===per)) return head+'<div class="fb">El cliente ya presentó la declaración de IVA de este período.</div>'+pie(`<button class="btn" data-act="dsCerrar" data-id="${DS.cid}">Cerrar el contrato</button>`);
+  const t=(arr,em)=>arr.length?`<div class="tw"><table class="tbl"><thead><tr><th>Comprobante</th><th>${em?'Cliente':'Proveedor'}</th><th class="num">Base</th><th class="num">IVA</th></tr></thead><tbody>${arr.map(([k,f])=>`<tr><td class="gold">${fNum(f.num)}</td><td>${esc(em?f.re.n:f.em.n)}</td><td class="num">${fm(f.sub)}</td><td class="num">${fm(f.iva)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Ninguno.</div>';
+  return head+`<div class="grid2"><div><h3 style="margin-top:0">Ventas del cliente</h3>${t(iv.em,true)}</div><div><h3 style="margin-top:0">Compras del cliente</h3>${t(iv.re,false)}</div></div>
+   <div class="card" style="margin-top:14px"><h3 style="margin-top:0">D-150 · Liquidación de ${esc(c.cn)}</h3><div class="grid2">${inp('deb','Débito fiscal (IVA de las ventas)')}${inp('cred','Crédito fiscal (IVA de las compras)')}
+    <div><label class="l">Saldo a favor del período anterior</label><input type="text" value="${fmtN(iv.ant)}" readonly></div>
+    <div><label class="l" for="ds_res">Resultado</label><div style="display:flex;gap:8px"><select id="ds_res" data-ds="res" style="max-width:170px"><option value="pagar" ${DS.res!=='favor'?'selected':''}>IVA por pagar</option><option value="favor" ${DS.res==='favor'?'selected':''}>Saldo a favor</option></select><input type="text" inputmode="decimal" data-ds="monto" value="${esc(DS.monto||'')}" placeholder="0,00" aria-label="Monto"></div></div></div></div>`+pie(`<button class="btn" data-act="dsPres">Presentar${iv.pagar>0?' y pagar con fondos del cliente':''}</button>`);
+}
+function dsFallo(msgs){ DS.int=(DS.int||0)+1; DS.fb={ok:false,html:'<b>Revise antes de presentar:</b><ul>'+msgs.map(x=>'<li>'+x+'</li>').join('')+'</ul>'}; base.child('stats/'+S.uid+'/err').set(SV.increment(1)).catch(()=>{}); renderPanel(true); }
+async function presentarDeclCliente(){
+  if(!puede()) return; const X=ctxDecl(DS&&DS.cid); if(!X||X.c.est!=='activo') return; const {c,ce}=X, cl=c.cl, cid=DS.cid, me0=myE(), per=periodo();
+  const fin=(extra)=>{ const u={['svcs/'+cid+'/hechos']:1,['svcs/'+cid+'/est']:'terminado',['stats/'+S.uid+'/ok']:SV.increment(1)}; Object.assign(u,notificar(cl,'🧾 '+me0.nom+' presentó '+extra+'. Registre el asiento en sus pendientes.','y')); return u; };
+  if(c.k==='dua'){ const o=S.com[c.ref]; if(!o||o.est!=='transito') return; const L=liquidacion(o,tcDe(MON[o.mon]||MON.c10,'v')), msgs=[];
+    const chk=(f,v,t)=>{ const x=pn(DS[f]); if(isNaN(x)||Math.abs(x-v)>1) msgs.push(t); };
+    chk('cif',L.cif,'El <b>valor CIF</b> no es correcto: FOB en colones + flete + seguro.'); chk('dai',L.dai,'El <b>DAI</b> no es correcto: tasa del arancel × CIF.');
+    chk('ley',L.ley,'La <b>Ley 6946</b> no es correcta: 1 % del CIF.'); chk('iva',L.iva,'El <b>IVA de importación</b> no es correcto: tasa × (CIF + DAI + Ley 6946).');
+    if(msgs.length) return dsFallo(msgs);
+    const ok=await nacionalizar(c.ref,{cl,fee:c.sub||0,u:fin('el DUA de su importación de '+o.cant+' × '+o.pn+' (agente aduanal)')});
+    if(ok){ DS={cid,fb:{ok:true,html:'<b>¡DUA presentado!</b> La mercadería de '+esc(c.cn)+' quedó nacionalizada y los tributos se pagaron desde su cuenta.'}}; toast('DUA presentado para '+c.cn+' ✓'); renderPanel(true); }
+    return; }
+  const dec=X.dec||{}, s=sancion(), multa=s?s.monto:0;
+  if(esRTS(ce)){ const r=rtsCalc(ce.eid,dec,ce), ds=declsOrd(dec); if(ds.some(([k,d])=>d.per===per)) return; const msgs=[];
+    const b=pn(DS.rb), q=pn(DS.rc); if(isNaN(b)||Math.abs(b-r.base)>1) msgs.push('El <b>total de compras</b> no coincide: sume el total (con IVA) de los comprobantes de compra del cliente.');
+    if(isNaN(q)||Math.abs(q-r.cuota)>1) msgs.push('La <b>cuota</b> no es correcta: compras × factor de la actividad ('+pct(r.a.r+r.a.i)+').');
+    if(msgs.length) return dsFallo(msgs);
+    const tot=r2(r.cuota+multa), tC=toC(tot), n0=ds.length;
+    const rr=await txN(n=>{ if((n.dc[cl]||0)!==n0) return 'dup'; if(tC>0){ if((n.saldo[cl]||0)<tC) return 'sinFondos'; n.saldo[cl]-=tC; n.ext.hacienda=(n.ext.hacienda||0)+tC; } n.dc[cl]=n0+1; return 'ok'; });
+    if(rr.out!=='ok') return toast(rr.out==='sinFondos'?'El cliente no tiene saldo suficiente en Bancos ('+fm(tot)+').':'La declaración ya fue presentada.','w');
+    const inc={}; r.re.concat(r.em).forEach(x=>{ inc[x[0]]=true; });
+    const o=fin('su declaración del Régimen Simplificado ('+per+')');
+    o['declaraciones/'+cl+'/'+key()]={n:n0+1,per,tipo:'rts',deb:r.cuota,cred:0,ant:0,credTot:0,pagar:r.cuota,favor:0,ok:true,int:DS.int||0,base:r.base,fr:r.a.r,fi:r.a.i,multa,inc,por:(me0.duen+' · '+me0.nom).slice(0,80),ts:SV.TIMESTAMP};
+    if(r.cuota>0) o['pendientes/'+cl+'/'+key()]=pendiente('rts','Cuota del Régimen Simplificado ('+per+')',`Su contador(a) ${me0.nom} presentó la declaración del Régimen Simplificado del período ${per}: compras con IVA ${fm(r.base)} × ${pct(r.a.r+r.a.i)} = cuota ${fm(r.cuota)}, pagada por SINPE desde su cuenta.`,
+      [{c:'6116',d:r.cuota},{c:'1102',h:r.cuota}],'En el Régimen Simplificado la cuota sustituye la declaración de IVA y de renta: es un gasto por impuestos (Debe) pagado desde Bancos (Haber).');
+    if(multa) o['pendientes/'+cl+'/'+key()]=pendSancion(per,s);
+    if(tot>0) o['movimientos/'+cl+'/'+key()]={d:'Pago a Hacienda · RTS '+per+(multa?' + sanción':''),m:-tot,ts:SV.TIMESTAMP};
+    await upd(o); DS={cid,fb:{ok:true,html:'<b>¡Declaración presentada!</b> Cuota '+fm(r.cuota)+' pagada desde la cuenta de '+esc(c.cn)+'.'}}; toast('Declaración presentada para '+c.cn+' ✓'); renderPanel(true); return; }
+  const iv=ivaCalc(ce.eid,dec); if(iv.ds.some(d=>d.per===per)) return; const msgs=revisarIVA(iv,DS); if(msgs.length) return dsFallo(msgs);
+  const pC=toC(r2(iv.pagar+multa)), n0=iv.ds.length;
+  const rr=await txN(n=>{ if((n.dc[cl]||0)!==n0) return 'dup'; if(pC>0){ if((n.saldo[cl]||0)<pC) return 'sinFondos'; n.saldo[cl]-=pC; n.ext.hacienda=(n.ext.hacienda||0)+pC; } n.dc[cl]=n0+1; return 'ok'; });
+  if(rr.out!=='ok') return toast(rr.out==='sinFondos'?'El cliente no tiene saldo suficiente en Bancos para pagar el IVA ('+fm(r2(iv.pagar+multa))+').':'La declaración ya fue presentada.','w');
+  const inc={}; iv.em.concat(iv.re).forEach(x=>{ inc[x[0]]=true; });
+  const o=fin('su declaración de IVA D-150 ('+per+')');
+  o['declaraciones/'+cl+'/'+key()]={n:n0+1,per,deb:iv.deb,cred:iv.cred,ant:iv.ant,credTot:iv.credTot,pagar:iv.pagar,favor:iv.favor,ok:true,int:DS.int||0,multa,dig:{deb:r2(pn(DS.deb)||0),cred:r2(pn(DS.cred)||0),res:DS.res||'pagar',monto:r2(pn(DS.monto)||0)},inc,por:(me0.duen+' · '+me0.nom).slice(0,80),ts:SV.TIMESTAMP};
+  if(iv.deb>0){ const apl=r2(Math.min(iv.credTot,iv.deb));
+    o['pendientes/'+cl+'/'+key()]=pendiente('iva','Liquidación del IVA ('+per+')',`Su contador(a) ${me0.nom} presentó la declaración D-150 del período ${per}: débito fiscal ${fm(iv.deb)}, crédito fiscal disponible ${fm(iv.credTot)}. `+(iv.pagar>0?`Pagó ${fm(iv.pagar)} a Hacienda por SINPE desde su cuenta.`:`Le queda un saldo a favor de ${fm(iv.favor)}.`)+' Registre la liquidación del IVA.',
+      [{c:'2103',d:iv.deb},{c:'1106',h:apl},{c:'1102',h:iv.pagar}],'Al liquidar se cancela el débito fiscal (IVA por Pagar al Debe) contra el crédito fiscal (IVA Acreditable al Haber); si el débito es mayor, la diferencia se paga desde Bancos (Haber).'); }
+  if(iv.pagar>0) o['movimientos/'+cl+'/'+key()]={d:'Pago de IVA a Hacienda (D-150 · '+per+')',m:-iv.pagar,ts:SV.TIMESTAMP};
+  if(multa){ o['pendientes/'+cl+'/'+key()]=pendSancion(per,s); o['movimientos/'+cl+'/'+key()]={d:'Pago de sanción por declarar tarde ('+per+')',m:-multa,ts:SV.TIMESTAMP}; }
+  await upd(o); DS={cid,fb:{ok:true,html:'<b>¡Declaración presentada!</b> '+(iv.pagar>0?'IVA de '+fm(iv.pagar)+' pagado desde la cuenta de '+esc(c.cn)+'.':'Saldo a favor de '+fm(iv.favor)+'.')}}; toast('Declaración presentada para '+c.cn+' ✓'); renderPanel(true);
+}
+document.addEventListener('input',e=>{ const d=e.target&&e.target.dataset; if(d&&d.ds&&DS) DS[d.ds]=e.target.value; });
+document.addEventListener('change',e=>{ const d=e.target&&e.target.dataset; if(!d) return; if(d.ds&&DS) DS[d.ds]=e.target.value; if(d.dprov!=null){ AG.dp=e.target.value; renderPanel(true); } if(d.dsel!=null){ AG.dk=e.target.value; renderPanel(true); } });
+/* ---------- vistas ---------- */
+const _vistaSvc15=VIEWS.empresa_svc;
+VIEWS.empresa_svc=()=>{
+  if(DS&&DS.cid){ const h=vistaDecl(); if(h) return h; }
+  const base0=_vistaSvc15(); if(ED&&ED.cid) return base0;
+  const mias=declActivas().filter(([k,c])=>c.pr===S.uid), decs=declarantes(), ops=opcionesDecl(), prSel=AG.dp&&S.emp[AG.dp]&&S.emp[AG.dp].svc&&S.emp[AG.dp].svc.dec>=DEC_MIN?S.emp[AG.dp]:null;
+  const misCl=Object.entries(S.svcs||{}).filter(([k,c])=>c&&c.tipo==='decl'&&c.cl===S.uid).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+  const tareas=mias.length?`<div class="card" style="border-color:var(--gold);margin-bottom:12px"><h3 style="margin-top:0">🧾 Declaraciones por presentar</h3>${mias.map(([k,c])=>`<div class="pend"><div class="d"><b>${esc(c.cn)}</b> <span class="mut">(${esc(c.cd||'')})</span><br>${esc(declTxt(c))}</div><button class="btn sm" data-act="dsAbrir" data-id="${k}">Preparar y presentar</button></div>`).join('')}</div>`:'';
+  const contratar=`<div class="card" style="margin-top:12px"><h3 style="margin-top:0">🧾 Contratar la presentación de una declaración</h3>
+   <p style="font-size:12.5px;margin-top:0">Su contador(a) prepara y presenta por usted la declaración de IVA (o del Régimen Simplificado) o el DUA de una importación (agente aduanal). Los impuestos se pagan desde su cuenta; los honorarios mínimos son ₡10 000 + IVA por declaración.</p>
+   ${decs.length?`<div class="grid2"><div><label class="l" for="dProv">Contador(a)</label><select id="dProv" data-dprov="1"><option value="">— Elija —</option>${decs.map(([u,x])=>`<option value="${esc(u)}" ${AG.dp===u?'selected':''}>${esc(x.nom)} · ${esc(x.duen)} · ${fm(x.svc.dec)} por declaración</option>`).join('')}</select></div>
+    <div><label class="l" for="dSel">Declaración</label><select id="dSel" data-dsel="1"><option value="">— Elija —</option>${ops.map(x=>`<option value="${esc(x[0])}" ${AG.dk===x[0]?'selected':''}>${esc(x[1])}</option>`).join('')}</select></div></div>
+    ${prSel&&AG.dk?`<div class="card" style="margin-top:8px;font-family:var(--mono);font-size:12.5px">Honorarios ${fm(prSel.svc.dec)} + IVA 13 % ${fm(r2(prSel.svc.dec*TAR_SVC))} = <b>${fm(r2(prSel.svc.dec*(1+TAR_SVC)))}</b></div>`:''}
+    <button class="btn" style="margin-top:10px" data-act="dContratar" ${prSel&&AG.dk&&ops.some(x=>x[0]===AG.dk)?'':'disabled'}>Contratar y pagar</button>${ops.length?'':'<div class="mut" style="font-size:12.5px;margin-top:6px">No tiene declaraciones pendientes que confiar en este período.</div>'}`:'<div class="empty">Todavía nadie en la sala ofrece presentar declaraciones.</div>'}
+   ${AG.dErr?`<div class="err">${esc(AG.dErr)}</div>`:''}
+   ${misCl.length?`<div class="tw" style="margin-top:10px"><table class="tbl"><thead><tr><th>Contador(a)</th><th>Declaración</th><th class="num">Pagado</th><th>Estado</th></tr></thead><tbody>${misCl.map(([k,c])=>`<tr><td>${esc(c.pn)}</td><td>${esc(declTxt(c))}</td><td class="num">${fm(c.tot)}</td><td>${c.est==='activo'?'<span class="pill y">por presentar</span>':'<span class="pill g">presentada</span>'}</td></tr>`).join('')}</tbody></table></div>`:''}</div>`;
+  return tareas+base0+contratar;
+};
+const _vistaDecl15=VIEWS.hacienda_decl;
+VIEWS.hacienda_decl=()=>{ const c=declActivas().find(([k,x])=>x.cl===S.uid&&x.k==='iva'&&x.per===periodo());
+  return (c?`<div class="fb" style="margin:0 0 12px">🧾 Contrató a <b>${esc(c[1].pn)}</b> para presentar esta declaración. Espere a que la presente; los impuestos se pagan desde su cuenta y usted registra el asiento.</div>`:'')+_vistaDecl15(); };
+const _vistaEmb15=VIEWS.puerto_emb;
+VIEWS.puerto_emb=()=>{ const L=declActivas().filter(([k,x])=>x.cl===S.uid&&x.k==='dua');
+  return (L.length?`<div class="fb" style="margin:0 0 12px">🧾 Su agente aduanal tramita: ${L.map(([k,x])=>'<b>'+esc(x.det||'')+'</b> ('+esc(x.pn)+')').join(', ')}. Al llegar la carga, él presenta el DUA y paga los tributos desde su cuenta.</div>`:'')+_vistaEmb15(); };
+const ACT_DECL={ dContratar:()=>declContratar(), dsAbrir:b=>{ DS={cid:b.dataset.id,res:'pagar'}; renderPanel(true); $('pbody').scrollTop=0; }, dsBack:()=>{ DS=null; renderPanel(true); }, dsPres:()=>presentarDeclCliente(), dsCerrar:b=>declCerrar(b.dataset.id) };
+window.CCD={opcionesDecl,declContratar,presentarDeclCliente,vistaDecl,vendeVeh,declarantes};
+Object.assign(ACT,ACT_VEST,ACT_OBRAS,ACT_IND,ACT_INTL,ACT_TRIB,ACT_BANCA,ACT_CCSS,ACT_CIERRE,ACT_PLAN,ACT_CHAT,ACT_VIDA,ACT_AERO,ACT_AGRO,ACT_ENT,ACT_DECL);
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(!b||b.disabled) return; const f=ACT[b.dataset.act]; if(f){ e.preventDefault(); const r=f(b,e); if(r&&r.catch) r.catch(err=>{ console.warn(err); toast('Error: '+err.message,'w'); }); } });
 document.addEventListener('click',e=>{ if(!$('frases').hidden&&!e.target.closest('#frases')&&!e.target.closest('[data-act="frases"]')) $('frases').hidden=true; });
 setInterval(()=>{ if(!$('game').hidden) hud(); },15000);
