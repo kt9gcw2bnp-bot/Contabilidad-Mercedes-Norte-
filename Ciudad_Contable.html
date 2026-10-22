@@ -5555,9 +5555,9 @@ VIEWS.empresa_ord=()=>{
 VIEWS.empresa_inv=()=>{
   const e=myE(); if(e.act==='industrial') return VIEWS.empresa_fab(); if(e.act!=='bienes') return '<div class="empty">Su empresa presta servicios: no lleva inventario de mercancías.</div>';
   const st=(S.nuc.stock||{})[S.uid]||{}; let tv=0;
-  const rows=Object.entries(e.prods).map(([k,p])=>{ const q=st[k]||0, v=r2(q*p.cu); tv+=v; return `<tr><td>${esc(p.n)}</td><td class="num">${q}</td><td class="num">${fm(p.cu)}</td><td class="num">${fm(v)}</td><td><input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0" aria-label="Cantidad a comprar de ${esc(p.n)}"></td></tr>`; }).join('');
+  const rows=Object.entries(e.prods).map(([k,p])=>{ const q=st[k]||0, v=r2(q*p.cu); tv+=v; return `<tr><td>${esc(p.n)}${esAgroMay(CRID[k],e)?"<br>"+infoProductores(k):""}</td><td class="num">${q}</td><td class="num">${fm(p.cu)}</td><td class="num">${fm(v)}</td><td><input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0" aria-label="Cantidad a comprar de ${esc(p.n)}"></td></tr>`; }).join('');
   return `<p>Inventario perpetuo: la existencia se actualiza con cada compra y cada venta. Puede reabastecerse comprando <b>de contado</b> al ${PROV.n}${ramoDe(e)!=='otro'?' (como '+esc(RAMOS[ramoDe(e)].n.toLowerCase())+', el mayorista le vende la mercadería de su ramo)':''}.</p>
-  <div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo unit.</th><th class="num">Valor al costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">Valor del inventario (según existencias)</td><td class="num">${fm(r2(tv))}</td><td></td></tr></tfoot></table></div>
+  ${avisoFincas(e)}<div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo unit.</th><th class="num">Valor al costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">Valor del inventario (según existencias)</td><td class="num">${fm(r2(tv))}</td><td></td></tr></tfoot></table></div>
   <div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`;
 };
 function rqTotal(){ const e=myE(); let sub=0,iva=0; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(p&&q>0){ const t=p.cat&&CRID[k]?CRID[k].tar:0.13, s=r2(q*(p.cat&&CRID[k]?CRID[k].cu:p.cu)); sub=r2(sub+s); iva=r2(iva+r2(s*t)); } }); return `Subtotal ${fm(sub)} + IVA ${fm(iva)} = <b class="gold">${fm(r2(sub+iva))}</b>`; }
@@ -5779,11 +5779,12 @@ async function pagar(fid){
   await upd(u); toast('Pago por SINPE realizado: '+nf+' · '+fm(f.tot)); renderPanel(true);
 }
 async function reabastecer(){
-  if(!puede()) return; const e=myE(); if(e.act==='servicios') return; const noDisp=[];
-  const lin=[]; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(!p||!(q>0&&q<=10000)) return; if(e.act!=='bienes'&&!p.cat) return; const c=p.cat?CRID[k]:null; if(p.cat&&(!c||c.r!==ramoDe(e))) return; if(c&&!dispPais(c)){ noDisp.push(p.n); return; }
-    const pu=c?c.cu:p.cu, tar=c?c.tar:0.13, s=r2(q*pu); lin.push({d:p.n,cant:q,pu,sub:s,tar,iva:r2(s*tar),pid:k}); });
+  if(!puede()) return; const e=myE(); if(e.act==='servicios') return; const noDisp=[], agL=[];
+  const lin=[]; Object.keys(RQ).forEach(k=>{ const q=parseInt(RQ[k],10), p=e.prods[k]; if(!p||!(q>0&&q<=10000)) return; if(e.act!=='bienes'&&!p.cat) return; const c=p.cat?CRID[k]:null; if(p.cat&&(!c||(c.r!==ramoDe(e)&&!esAgroMay(c,e)))) return; if(c&&!dispPais(c)){ noDisp.push(p.n); return; }
+    const pu=c?c.cu:p.cu, tar=c?c.tar:0.13, s=r2(q*pu); (c&&esAgroMay(c,e)?agL:lin).push({d:p.n,cant:q,pu,sub:s,tar,iva:r2(s*tar),pid:k}); });
   if(noDisp.length) toast('El mayorista de su país no vende '+noDisp.join(', ')+': para tener más, impórtelo en el Puerto.','w');
-  if(!lin.length) return noDisp.length?null:toast('Indique al menos una cantidad a comprar.','w');
+  if(!lin.length&&!agL.length) return noDisp.length?null:toast('Indique al menos una cantidad a comprar.','w');
+  if(agL.length){ await comprarAProductores(agL); if(!lin.length){ RQ={}; renderPanel(true); return; } }
   const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0)), tot=r2(sub+iva), tC=toC(tot), fid=key(); let num=0;
   const r=await txN(n=>{ if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<tC) return 'sinFondos';
     n.saldo[S.uid]-=tC; if(!n.stock[S.uid]) n.stock[S.uid]={}; lin.forEach(l=>{ n.stock[S.uid][l.pid]=(n.stock[S.uid][l.pid]||0)+l.cant; });
@@ -7957,9 +7958,9 @@ VIEWS.empresa_ramo=()=>{
   const e=myE(), r=ramoDe(e);
   if(e.act==='servicios') return `<p style="margin-top:0">Su empresa presta servicios: no compra mercadería al mayorista. Los ramos comerciales (${Object.keys(RAMOS).filter(k=>k!=='otro').map(k=>RAMOS[k].ic+' '+esc(RAMOS[k].n.toLowerCase())).join(', ')}) son para empresas que venden bienes.</p>`;
   const sel=r!=='otro'?r:(RM.r||'');
-  const lista=sel?CATR.filter(c=>c.r===sel&&(dispPais(c)||e.prods[c.id])):[];
+  const lista=sel?CATR.filter(c=>(c.r===sel||(sel==='alimentos'&&c.r==='agro'&&!c.pais))&&(dispPais(c)||e.prods[c.id])):[];
   const fila=c=>{ const ya=!!e.prods[c.id], on=ya||!!RM.sel[c.id], pv=RM.pv[c.id]!=null?RM.pv[c.id]:(ya?e.prods[c.id].pv:'');
-    return `<tr><td><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-rmsel="${c.id}" ${on?'checked':''} ${ya?'disabled':''}> ${esc(c.n)}</label></td><td class="num">${fm(c.cu)} /${c.u}</td><td class="num">${String(+(c.tar*100).toFixed(2)).replace('.',',')} %</td><td><input type="text" inputmode="decimal" style="max-width:120px;padding:6px 8px" data-rmpv="${c.id}" value="${esc(pv)}" placeholder="Precio sin IVA" aria-label="Precio de venta de ${esc(c.n)}"></td></tr>`; };
+    return `<tr><td><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-rmsel="${c.id}" ${on?'checked':''} ${ya?'disabled':''}> ${esc(c.n)}${c.r==='agro'&&sel==='alimentos'?' <small class="mut">🌾 de las fincas de la sala</small>':''}</label></td><td class="num">${fm(c.cu)} /${c.u}</td><td class="num">${String(+(c.tar*100).toFixed(2)).replace('.',',')} %</td><td><input type="text" inputmode="decimal" style="max-width:120px;padding:6px 8px" data-rmpv="${c.id}" value="${esc(pv)}" placeholder="Precio sin IVA" aria-label="Precio de venta de ${esc(c.n)}"></td></tr>`; };
   return `<p style="margin-top:0">El <b>ramo comercial</b> define qué mercadería le vende el ${esc(PROV.n)}. Solo las tiendas de ropa compran ropa, solo las agencias compran vehículos, solo los supermercados o restaurantes compran comida, solo las farmacias compran medicamentos y solo las estaciones de servicio compran combustible. Los demás deben comprárselo a ustedes en el Mercado.</p>
   ${r!=='otro'?`<div class="fb ok" style="margin:0 0 12px">${RAMOS[r].ic} Su empresa es <b>${esc(RAMOS[r].n)}</b>. Puede agregar más productos del ramo o cambiar sus precios de venta.</div>`
    :`<label class="l">Elija su ramo (una sola vez)</label><div class="radios">${Object.keys(RAMOS).filter(k=>k!=='otro').map(k=>`<label class="${sel===k?'on':''}"><input type="radio" name="rmR" data-rmr="${k}" ${sel===k?'checked':''}> ${RAMOS[k].ic} ${esc(RAMOS[k].n)}</label>`).join('')}</div>
@@ -7976,17 +7977,17 @@ async function guardarRamo(){
   if(!puede()) return; const e=myE(), r0=ramoDe(e), r=r0!=='otro'?r0:RM.r; RM.err='';
   if(!r||!RAMOS[r]||r==='otro'){ RM.err='Elija un ramo.'; renderPanel(true); return; }
   const u={}; let n=0;
-  for(const c of CATR.filter(x=>x.r===r&&(dispPais(x)||e.prods[x.id]))){ const ya=!!e.prods[c.id]; if(!ya&&!RM.sel[c.id]) continue;
+  for(const c of CATR.filter(x=>(x.r===r||(r==='alimentos'&&x.r==='agro'&&!x.pais))&&(dispPais(x)||e.prods[x.id]))){ const ya=!!e.prods[c.id]; if(!ya&&!RM.sel[c.id]) continue;
     const pv=RM.pv[c.id]!=null?pn(RM.pv[c.id]):(ya?e.prods[c.id].pv:NaN);
     if(!(pv>c.cu)){ RM.err='El precio de «'+c.n+'» debe ser mayor que su costo mayorista ('+fm(c.cu)+').'; renderPanel(true); return; }
-    if(ya) u['empresas/'+S.uid+'/prods/'+c.id+'/pv']=r2(pv); else u['empresas/'+S.uid+'/prods/'+c.id]={n:c.n,cu:c.cu,pv:r2(pv),tar:c.tar,cat:r}; n++; }
+    if(ya) u['empresas/'+S.uid+'/prods/'+c.id+'/pv']=r2(pv); else u['empresas/'+S.uid+'/prods/'+c.id]={n:c.n,cu:c.cu,pv:r2(pv),tar:c.tar,cat:c.r}; n++; }
   if(!n){ RM.err='Marque al menos un producto.'; renderPanel(true); return; }
   if(r0==='otro'){ if(!confirm('¿Confirmar que su empresa será «'+RAMOS[r].n+'»? El ramo no se puede cambiar después.')) return; u['empresas/'+S.uid+'/rubro']=r; }
   await upd(u); RM.sel={}; RM.pv={}; toast(RAMOS[r].ic+' Ramo guardado. Compre su mercadería en la Tienda Mayorista → Mercadería.','y'); renderPanel(true);
 }
 function tablaReabRamo(){ const e=myE(), st=(S.nuc.stock||{})[S.uid]||{};
-  const rows=Object.entries(e.prods).filter(([k,p])=>p.cat&&p.cat!=='agro').map(([k,p])=>`<tr><td>${esc(p.n)}</td><td class="num">${st[k]||0}</td><td class="num">${fm(p.cu)}</td><td><input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0"></td></tr>`).join('');
-  return `<div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody></table></div><div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`; }
+  const rows=Object.entries(e.prods).filter(([k,p])=>p.cat&&(p.cat!=='agro'||ramoDe(e)!=='agro')).map(([k,p])=>`<tr><td>${esc(p.n)}${esAgroMay(CRID[k],e)?"<br>"+infoProductores(k):""}</td><td class="num">${st[k]||0}</td><td class="num">${fm(p.cu)}</td><td><input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0"></td></tr>`).join('');
+  return avisoFincas(e)+`<div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody></table></div><div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`; }
 function ramoCrearHTML(){
   const r=CF.ramo, sel=CF.rsel||(CF.rsel={});
   return `<h3>Productos de su ramo: ${RAMOS[r].ic} ${esc(RAMOS[r].n)}</h3><p style="font-size:12.5px">Marque lo que venderá. El costo lo fija el ${esc(PROV.n)}; usted decide el <b>precio de venta sin IVA</b> y cuánto comprar para empezar.</p>
@@ -8791,6 +8792,49 @@ function minimapaAgro(g){ g.fillStyle='#24401f'; g.fillRect(0,0,W,H); g.fillStyl
   EDIF.filter(b=>b.id==='puerto'||b.id==='aeropuerto').forEach(b=>{ g.fillStyle=b.c; g.fillRect(b.x,b.y,b.w,b.h); }); }
 
 const miParcelaSafe=()=>{ try{ return miParcela()!=null; }catch(e){ return false; } };
+/* ===================== ETAPA 21 · PRODUCTORES DE FINCA EN EL MAYORISTA =====================
+   Los huevos, la leche, el plátano, la carne, la tilapia y las hortalizas no los fabrica el Proveedor Mayorista:
+   cuando un supermercado se reabastece, el mayorista se los compra automáticamente a las fincas de la sala al
+   precio de costo del mayorista. La finca factura la venta y registra su costo; el comprador registra su compra. */
+function avisoFincas(e){ const ag=Object.keys(e.prods||{}).filter(k=>esAgroMay(CRID[k],e)); if(!ag.length) return ''; const sin=ag.filter(k=>!productoresDe(k).length);
+  return `<div class="fb ${sin.length?'bad':'ok'}" style="margin:0 0 12px">🌾 Los productos de finca (${ag.map(k=>esc(CRID[k].n)).join(', ')}) el mayorista se los compra a las fincas de la sala al precio de costo.${sin.length?` <b>Nadie produce ${sin.map(k=>'«'+esc(CRID[k].n)+'»').join(', ')} en la sala.</b> ${sugerirFinca()}`:''}</div>`; }
+function esAgroMay(c,e){ return !!c&&c.r==='agro'&&!c.pais&&ramoDe(e)==='alimentos'; }
+function productoresDe(pid){ const st=(S.nuc&&S.nuc.stock)||{}; return Object.entries(S.emp||{}).filter(([u,x])=>x&&x.eid&&u!==S.uid&&ramoDe(x)==='agro'&&((st[u]||{})[pid]||0)>0).map(([u,x])=>[u,x,(st[u]||{})[pid]||0]).sort((a,b)=>b[2]-a[2]); }
+function sugerirFinca(){ const ed=typeof edificioPersona==='function'&&edificioPersona(), dos=typeof empresasPersona==='function'&&empresasPersona().length>=2;
+  return ed&&!dos?'<button class="btn sm sec" data-act="empIr" data-n="2">🌾 Abrir una finca como segunda empresa</button>':'<span class="mut" style="font-size:12px">Puede pedirle a un compañero que abra una finca (o abrirla usted como segunda empresa cuando tenga un edificio).</span>'; }
+function infoProductores(pid){ const L=productoresDe(pid), tot=L.reduce((a,x)=>a+x[2],0);
+  return L.length?`<small class="mut">🌾 ${L.length} finca(s) · ${tot} disponible(s)</small>`:`<small class="bad">⚠ Nadie produce este artículo en la sala</small>`; }
+async function comprarAProductores(agL){
+  const e=myE(), plan=[], faltan=[];
+  agL.forEach(l=>{ let q=l.cant; for(const [u,x,st] of productoresDe(l.pid)){ if(q<=0) break; const t=Math.min(q,st); plan.push({u,x,pid:l.pid,d:l.d,cant:t,pu:l.pu,tar:l.tar}); q-=t; } if(q>0) faltan.push([l,q]); });
+  faltan.forEach(([l,q])=>{ const nada=q===l.cant; toast(nada?'🌾 Nadie produce «'+l.d+'» en la sala: no se pudo comprar. ¿Por qué no lo produce usted? Abra una finca (segunda empresa) o pídaselo a un compañero.':'🌾 Las fincas solo tenían '+(l.cant-q)+' de «'+l.d+'»; faltaron '+q+'.','w'); });
+  if(!plan.length) return false;
+  const porU={}; plan.forEach(x=>{ (porU[x.u]=porU[x.u]||{x:x.x,lin:[]}).lin.push(x); });
+  const fact=Object.entries(porU).map(([u,o])=>{ const lin=o.lin.map(l=>{ const s0=r2(l.cant*l.pu); return {d:l.d.slice(0,40),cant:l.cant,pu:l.pu,sub:s0,tar:l.tar,iva:r2(s0*l.tar),pid:l.pid}; }); const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0)); return {u,x:o.x,lin,sub,iva,tot:r2(sub+iva),fid:key(),num:0}; });
+  const totC=fact.reduce((a,f)=>a+toC(f.tot),0);
+  const r=await txN(n=>{ if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<totC) return 'sinFondos';
+    for(const f of fact) for(const l of f.lin) if(((n.stock[f.u]||{})[l.pid]||0)<l.cant) return 'sinStock';
+    if(!n.stock[S.uid]) n.stock[S.uid]={};
+    fact.forEach(f=>{ f.lin.forEach(l=>{ n.stock[f.u][l.pid]-=l.cant; n.stock[S.uid][l.pid]=(n.stock[S.uid][l.pid]||0)+l.cant; }); n.saldo[S.uid]-=toC(f.tot); n.saldo[f.u]=(n.saldo[f.u]||0)+toC(f.tot); n.consec[f.u]=(n.consec[f.u]||0)+1; f.num=n.consec[f.u]; n.fac[f.fid]='pagada'; });
+    return 'ok'; });
+  if(r.out!=='ok'){ toast(r.out==='sinFondos'?'Saldo insuficiente en Bancos ('+fm(fromC(totC))+') para comprar a las fincas.':r.out==='sinStock'?'Una finca acaba de vender esa existencia. Intente de nuevo.':'No se pudo comprar a las fincas.','w'); return false; }
+  const u={}, st0=(S.nuc.stock||{})[S.uid]||{};
+  fact.forEach(f=>{ const nf=fNum(f.num), x=f.x, det=f.lin.map(l=>l.cant+' × '+l.d).join('; '), costo=r2(f.lin.reduce((a,l)=>a+l.cant*(((x.prods||{})[l.pid]||{}).cu||l.pu),0));
+    u['facturas/'+f.fid]=facturaDoc(f.num,{u:f.u,e:x.eid,n:x.nom,ced:x.ced},{u:S.uid,e:e.eid,n:e.nom,ced:e.ced},f.lin,'contado','',{uso:'1105',act:'bienes'});
+    u['pendientes/'+S.uid+'/'+key()]=pendiente('compra_inv','Compra a la finca '+x.nom+' · '+nf,
+      `El ${PROV.n} no produce estos artículos: se los compró por usted a la finca ${x.nom} (${x.duen}) al precio de costo del mayorista. Factura ${nf}: ${det}. Subtotal ${fm(f.sub)} + IVA ${fm(f.iva)} = ${fm(f.tot)}, pagado por transferencia.`,
+      [{c:'1105',d:f.sub},{c:'1106',d:f.iva},{c:'1102',h:f.tot}],'La mercadería entra al Inventario (Debe) por su costo sin IVA; el IVA pagado es crédito fiscal (Debe) y Bancos disminuye (Haber).',{ref:f.fid});
+    u['movimientos/'+S.uid+'/'+key()]={d:('Pago a la finca '+x.nom+' · '+nf).slice(0,120),m:-f.tot,ts:SV.TIMESTAMP,ref:f.fid};
+    u['pendientes/'+f.u+'/'+key()]=pendiente('venta','Venta al mayorista para '+e.nom+' · '+nf,
+      `El ${PROV.n} le compró su producción para ${e.nom} al precio de costo del mayorista. Factura ${nf}: ${det}. Subtotal ${fm(f.sub)} + IVA ${fm(f.iva)} = ${fm(f.tot)}, cobrado por transferencia.`,
+      [{c:'1102',d:f.tot},{c:'4101',h:f.sub},{c:'2103',h:f.iva}],'Entra el dinero a Bancos (Debe); la venta se reconoce sin IVA (Ventas, Haber) y el IVA cobrado se le debe a Hacienda (IVA por Pagar, Haber).',{ref:f.fid});
+    u['pendientes/'+f.u+'/'+key()]=pendiente('costo','Costo de la venta al mayorista · '+nf,`Registre el costo de lo vendido en la factura ${nf}: ${det}.`,
+      [{c:'5101',d:costo},{c:'1105',h:costo}],'Lo vendido sale del inventario (Haber) por su costo y se reconoce como Costo de Ventas (Debe).',{ref:f.fid});
+    u['movimientos/'+f.u+'/'+key()]={d:('Venta al mayorista para '+e.nom+' · '+nf).slice(0,120),m:f.tot,ts:SV.TIMESTAMP,ref:f.fid};
+    Object.assign(u,notificar(f.u,'🌾 El mayorista le compró '+det+' para '+e.nom+' ('+fm(f.tot)+'). Registre la venta y su costo.','y'));
+    f.lin.forEach(l=>{ const p=e.prods[l.pid]; if(p&&Math.abs((p.cu||0)-l.pu)>0.004){ const q0=Math.max(0,st0[l.pid]||0); u['empresas/'+S.uid+'/prods/'+l.pid+'/cu']=r2((q0*p.cu+l.cant*l.pu)/(q0+l.cant)); } }); });
+  await upd(u); toast('🌾 Compra a '+fact.length+' finca(s) de la sala realizada ('+fm(fromC(totC))+'). Registre el asiento.','y'); return true;
+}
 function dibujarFincas2D(){
   if((me.k||HOMEK)!==HOMEK) return;
   const items=fincaItems({terr:S.terr,finca:S.finca}); if(!items.length) return;
