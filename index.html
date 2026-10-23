@@ -127,6 +127,15 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-
 .course-card .ctag{font-family:var(--mono);font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;}
 .course-card .ctitle{font-size:15px;font-weight:600;margin:6px 0 0;color:#fff;line-height:1.35;padding-right:18px;}
 .course-card .cpending{font-size:11.5px;color:var(--coral);margin-top:6px;}
+.search-box{position:sticky;top:0;z-index:20;margin:22px 0 4px;padding:10px 0;background:linear-gradient(var(--bg) 70%,transparent);}
+.search-wrap{display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:4px 6px 4px 14px;transition:border-color .2s;}
+.search-wrap:focus-within{border-color:var(--gold);}
+.search-wrap .ic{font-size:16px;opacity:.8;}
+.search-wrap input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--ink);font-family:var(--sans);font-size:15px;padding:10px 0;}
+.search-wrap button{background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:10px;}
+.search-wrap button:hover{color:var(--ink);background:rgba(255,255,255,.06);}
+.search-count{font-family:var(--mono);font-size:12px;color:var(--muted);margin:8px 2px 0;min-height:16px;}
+.course-card .csub{font-size:12px;color:var(--muted);margin-top:6px;}
 .empty-msg{text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;background:var(--bg-card);border:1px dashed var(--line);border-radius:14px;margin-top:20px;}
 .catalogo-error{background:#2a1512;border:1px solid var(--coral);color:#ffb3a8;font-size:13px;padding:12px 16px;border-radius:10px;margin-top:16px;}
 
@@ -490,6 +499,10 @@ async function renderPortal(){
       </div>
       <div class="sat-arrow">→</div>
     </a>
+    <div class="search-box">
+      <div class="search-wrap"><span class="ic">🔍</span><input type="text" id="searchInput" enterkeyhint="search" placeholder="Buscar curso, trabajo, antología o tema… (ej. Excel, IVA, repaso)" autocomplete="off" aria-label="Buscar en el catálogo"><button id="searchClear" title="Limpiar" style="display:none">✕</button></div>
+      <div class="search-count" id="searchCount"></div>
+    </div>
     <div id="courseList"><div class="empty-msg">Cargando catálogo...</div></div>
     </main>
   `;
@@ -560,12 +573,43 @@ async function renderPortal(){
     });
 
     listEl.innerHTML = html;
+    initSearch(listEl, html, rows, isDocente);
   }catch(e){
     listEl.innerHTML = '<div class="catalogo-error">No se pudo cargar el catálogo (catalogo.json). Detalle: ' + escapeHtml(e.message) + '</div>';
   }
 }
 
-function renderCard(r){
+function normTxt(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[_\-·]+/g,' '); }
+function initSearch(listEl, baseHtml, rows, isDocente){
+  const inp = document.getElementById('searchInput'), clr = document.getElementById('searchClear'), cnt = document.getElementById('searchCount');
+  if(!inp) return;
+  const catLbl = {'Tema':'Tema del programa','Antologia':'Antología'};
+  const idx = rows.map(r=>({r, t: normTxt([r.Titulo, r.Subarea, r.Categoria, catLbl[r.Categoria]||'', r.URL, (r.Nivel?r.Nivel+'° '+r.Nivel:'')].join(' '))}));
+  let tm = null;
+  function run(){
+    const q = normTxt(inp.value).trim();
+    clr.style.display = q ? '' : 'none';
+    if(!q){ listEl.innerHTML = baseHtml; cnt.textContent = ''; return; }
+    const words = q.split(/\s+/).filter(Boolean);
+    const hits = idx.filter(x=>words.every(w=>x.t.includes(w))).map(x=>x.r)
+      .sort((a,b)=> String(a.Nivel).localeCompare(String(b.Nivel)) || (Number(a.Orden)||0)-(Number(b.Orden)||0));
+    cnt.textContent = hits.length ? hits.length + (hits.length===1 ? ' resultado' : ' resultados') : '';
+    if(!hits.length){ listEl.innerHTML = '<div class="empty-msg">No se encontró nada con «' + escapeHtml(inp.value.trim()) + '». Pruebe con otra palabra.</div>'; return; }
+    let h = '';
+    const lv = isDocente ? [...new Set(hits.map(r=>String(r.Nivel)))].sort() : [null];
+    lv.forEach(l=>{
+      const rs = l===null ? hits : hits.filter(r=>String(r.Nivel)===l);
+      if(l!==null) h += `<div class="level-heading">${escapeHtml(l)}° año</div>`;
+      h += '<div class="cards" style="margin-top:14px">' + rs.map(r=>renderCard(r, true)).join('') + '</div>';
+    });
+    listEl.innerHTML = h;
+  }
+  inp.addEventListener('input', ()=>{ clearTimeout(tm); tm = setTimeout(run, 120); });
+  inp.addEventListener('keydown', e=>{ if(e.key==='Escape'){ inp.value=''; run(); } });
+  clr.addEventListener('click', ()=>{ inp.value=''; run(); inp.focus(); });
+}
+
+function renderCard(r, conSub){
   const cleanUrl = String(r.URL||'').trim();
   const pending = !cleanUrl || cleanUrl.toUpperCase().includes('PENDIENTE');
   const nombreParam = encodeURIComponent(session.nombre);
@@ -575,6 +619,7 @@ function renderCard(r){
   return `<a class="course-card" href="${pending?'#':href}" target="${pending?'_self':'_blank'}" onclick="${pending?'return false;':''}">
     <div class="ctag">${escapeHtml(catLabel)}</div>
     <div class="ctitle">${escapeHtml(r.Titulo||'')}</div>
+    ${conSub && r.Subarea ? '<div class="csub">'+escapeHtml(r.Subarea)+'</div>' : ''}
     ${pending ? '<div class="cpending">Próximamente — todavía no está publicado</div>' : ''}
   </a>`;
 }
