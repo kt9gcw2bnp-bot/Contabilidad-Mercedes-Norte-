@@ -5132,7 +5132,8 @@ function loop(t){
   const dt=Math.min(.12,(t-last)/1000); last=t;   // en equipos lentos se avanza en subpasos para no caminar más despacio
   const libre=$('panel').hidden&&$('docente').hidden&&$('crear').hidden&&!S.cfg.congelada&&!VJ.on;
   if(INT.on){ intLoop(dt,t,libre); requestAnimationFrame(loop); return; }
-  if(libre){
+  if(libre&&typeof autoStep==='function'&&autoStep(dt,t)){ /* ruta automática de entregas en vehículo */ }
+  else if(libre){
     let vx=(keys['arrowright']||keys['d']?1:0)-(keys['arrowleft']||keys['a']?1:0), vy=(keys['arrowdown']||keys['s']?1:0)-(keys['arrowup']||keys['w']?1:0);
     if(R3){ if(keys['q']) R3.rotate(dt*1.8); if(keys['e']) R3.rotate(-dt*1.8);
       if(vx||vy){ const yw=R3.yaw, fx=-Math.sin(yw), fz=-Math.cos(yw), rx=Math.cos(yw), rz=-Math.sin(yw); const wx=rx*vx-fx*vy, wy=rz*vx-fz*vy; vx=wx; vy=wy; } }
@@ -5561,7 +5562,7 @@ VIEWS.empresa_ord=()=>{
 VIEWS.empresa_inv=()=>{
   const e=myE(); if(e.act==='industrial') return VIEWS.empresa_fab(); if(e.act!=='bienes') return '<div class="empty">Su empresa presta servicios: no lleva inventario de mercancías.</div>';
   const st=(S.nuc.stock||{})[S.uid]||{}; let tv=0;
-  const rows=Object.entries(e.prods).map(([k,p])=>{ const q=st[k]||0, v=r2(q*p.cu); tv+=v; return `<tr><td>${esc(p.n)}${esAgroMay(CRID[k],e)?"<br>"+infoProductores(k):""}</td><td class="num">${q}</td><td class="num">${fm(p.cu)}</td><td class="num">${fm(v)}</td><td><input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0" aria-label="Cantidad a comprar de ${esc(p.n)}"></td></tr>`; }).join('');
+  const rows=Object.entries(e.prods).map(([k,p])=>{ const q=st[k]||0, v=r2(q*p.cu); tv+=v; return `<tr><td>${esc(p.n)}${esAgroMay(CRID[k],e)?"<br>"+infoProductores(k):""}</td><td class="num">${q}</td><td class="num">${fm(p.cu)}</td><td class="num">${fm(v)}</td><td>${esAgroMay(CRID[k],e)?'<button class="btn sm sec" data-act="mfIr" data-f="agro">🌾 A una finca</button>':`<input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0" aria-label="Cantidad a comprar de ${esc(p.n)}">`}</td></tr>`; }).join('');
   return `<p>Inventario perpetuo: la existencia se actualiza con cada compra y cada venta. Puede reabastecerse comprando <b>de contado</b> al ${PROV.n}${ramoDe(e)!=='otro'?' (como '+esc(RAMOS[ramoDe(e)].n.toLowerCase())+', el mayorista le vende la mercadería de su ramo)':''}.</p>
   ${avisoFincas(e)}<div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo unit.</th><th class="num">Valor al costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">Valor del inventario (según existencias)</td><td class="num">${fm(r2(tv))}</td><td></td></tr></tfoot></table></div>
   <div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`;
@@ -5703,7 +5704,7 @@ async function comprar(k){
   if(!(cant>=1&&cant<=10000)) return toast('Indique una cantidad válida (1 o más).','w');
   if(conStock(v)){ const st=((S.nuc.stock||{})[vu]||{})[pid]||0; if(cant>st) return toast('Solo hay '+st+' unidad(es) disponibles de '+p.n+'.','w'); }
   const c=p.cat?CRID[pid]:null, extra={}; let usoF=uso;
-  if(c){ const x=validarCompraRamo(c,q,cant); if(x.err) return toast(x.err,'w'); Object.assign(extra,x.extra,{cat:c.r}); usoF=RAMOS[c.r].uso; }
+  if(c){ const x=validarCompraRamo(c,q,cant); if(x.err) return toast(x.err,'w'); Object.assign(extra,x.extra,{cat:c.r}); usoF=RAMOS[c.r].uso; if(esAgroFinca(c)&&ramoDe(e)==='alimentos') usoF=q.uso==='6128'?'6128':'1105'; }
   const tarE=tarDe(v,p), sub=r2(cant*p.pv), tot=r2(sub+r2(sub*tarE));
   if(cond==='contado'&&toC(tot)>((S.nuc.saldo||{})[S.uid]||0)) return toast('Su saldo en Bancos no alcanza para pagar de contado '+fm(tot)+'. Pruebe a crédito.','w');
   const oid=key(), o={};
@@ -5790,7 +5791,7 @@ async function reabastecer(){
     const pu=c?c.cu:p.cu, tar=c?c.tar:0.13, s=r2(q*pu); (c&&esAgroMay(c,e)?agL:lin).push({d:p.n,cant:q,pu,sub:s,tar,iva:r2(s*tar),pid:k}); });
   if(noDisp.length) toast('El mayorista de su país no vende '+noDisp.join(', ')+': para tener más, impórtelo en el Puerto.','w');
   if(!lin.length&&!agL.length) return noDisp.length?null:toast('Indique al menos una cantidad a comprar.','w');
-  if(agL.length){ await comprarAProductores(agL); if(!lin.length){ RQ={}; renderPanel(true); return; } }
+  if(agL.length){ agL.forEach(l=>{ delete RQ[l.pid]; }); toast('🌾 El '+PROV.n+' no vende '+agL.map(l=>'«'+l.d+'»').join(', ')+': esos productos se compran directamente a las fincas en el Mercado → 🌾 Fincas.','w'); if(!lin.length){ renderPanel(true); return; } }
   const sub=r2(lin.reduce((a,l)=>a+l.sub,0)), iva=r2(lin.reduce((a,l)=>a+l.iva,0)), tot=r2(sub+iva), tC=toC(tot), fid=key(); let num=0;
   const r=await txN(n=>{ if(n.saldo[S.uid]==null) return 'sinEmpresa'; if(n.saldo[S.uid]<tC) return 'sinFondos';
     n.saldo[S.uid]-=tC; if(!n.stock[S.uid]) n.stock[S.uid]={}; lin.forEach(l=>{ n.stock[S.uid][l.pid]=(n.stock[S.uid][l.pid]||0)+l.cant; });
@@ -7832,6 +7833,7 @@ async function recibirCompras(){
     try{ const r=await base.child('ordenes/'+oid+'/rec').transaction(v=>v?undefined:1); if(!r.committed) continue; }catch(err){ delete RECIB[oid]; continue; }
     const u={}, oo=Object.assign({},o);
     if(c.r==='combustible'&&!(oo.vid&&(S.veh||{})[oo.vid])){ const ok=vehParaComb(c.id); oo.vid=ok.length?ok[0][0]:''; }
+    if(esAgroFinca(c)&&o.uso==='1105'){ await recibirAgroInventario(u,o,c); if(Object.keys(u).length) await upd(u).catch(()=>{}); continue; }
     efectosCompra(u,oo,c);
     if(c.r==='ropa'){ if(o.ent&&o.ent!=='entregada') u['ordenes/'+oid+'/ent']='entregada';
       const it=VID[c.vest]; if(it){ const d=vParse(vPuesto()); d[it.s]={id:it.id,ci:+(o.ci||0)}; const v=vStr(d); S.ves=Object.assign({},S.ves||{},{v,own:Object.assign({},vOwn(),{[it.id+(o.ci||0)]:1})});
@@ -7850,6 +7852,7 @@ function efectosCompra(u,o,c){
   else if(c.r==='combustible'&&o.vid) u['vehiculos/'+co+'/'+o.vid+'/comb']=SV.increment(o.cant);
 }
 function ctrlRamo(c,k,q){
+  if(esAgroFinca(c)&&ramoDe(myE())==='alimentos') return `<div><small class="mut" style="display:block;margin-bottom:4px">🌾 Compra directa a la finca</small><select data-mq="${esc(k)}" data-f="uso" aria-label="Uso"><option value="1105" ${q.uso!=='6128'?'selected':''}>📦 Inventario para revender</option><option value="6128" ${q.uso==='6128'?'selected':''}>🍗 Despensa del personal</option></select></div>`;
   const etq=`<small class="mut" style="display:block;margin-bottom:4px">${RAMOS[c.r].ic} ${esc(CTA[RAMOS[c.r].uso].n)}</small>`;
   if(c.r==='ropa'){ const it=VID[c.vest]; return `<div>${etq}<select data-mq="${esc(k)}" data-f="ci" aria-label="Color">${it.cols.map((x,i)=>`<option value="${i}" ${String(q.ci||0)===String(i)?'selected':''}>${esc(x[0])}${vOwn()[it.id+i]?' (ya la tiene)':''}</option>`).join('')}</select></div>`; }
   if(c.r==='combustible'){ const ok=vehParaComb(c.id); return `<div>${etq}${ok.length?`<select data-mq="${esc(k)}" data-f="vid" aria-label="Vehículo">${ok.map(([vk,v])=>`<option value="${vk}" ${q.vid===vk?'selected':''}>${esc(VEHID[v.t].n)} ${esc(v.pl||'')} · ${uni(combDe(vk),v.t)}/${TANQ[v.t].cap} ${uT(v.t)}</option>`).join('')}</select>`:'<small class="bad">No tiene vehículos que usen '+esc(c.n.toLowerCase())+'</small>'}</div>`; }
@@ -8001,7 +8004,7 @@ async function guardarRamo(){
   await upd(u); RM.sel={}; RM.pv={}; toast(RAMOS[r].ic+' Ramo guardado. Compre su mercadería en la Tienda Mayorista → Mercadería.','y'); renderPanel(true);
 }
 function tablaReabRamo(){ const e=myE(), st=(S.nuc.stock||{})[S.uid]||{};
-  const rows=Object.entries(e.prods).filter(([k,p])=>p.cat&&(p.cat!=='agro'||ramoDe(e)!=='agro')).map(([k,p])=>`<tr><td>${esc(p.n)}${esAgroMay(CRID[k],e)?"<br>"+infoProductores(k):""}</td><td class="num">${st[k]||0}</td><td class="num">${fm(p.cu)}</td><td><input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0"></td></tr>`).join('');
+  const rows=Object.entries(e.prods).filter(([k,p])=>p.cat&&(p.cat!=='agro'||ramoDe(e)!=='agro')).map(([k,p])=>`<tr><td>${esc(p.n)}${esAgroMay(CRID[k],e)?"<br>"+infoProductores(k):""}</td><td class="num">${st[k]||0}</td><td class="num">${fm(p.cu)}</td><td>${esAgroMay(CRID[k],e)?'<button class="btn sm sec" data-act="mfIr" data-f="agro">🌾 A una finca</button>':`<input type="number" min="0" step="1" style="max-width:110px;padding:7px 9px" data-rq="${k}" value="${esc(RQ[k]||'')}" placeholder="0">`}</td></tr>`).join('');
   return avisoFincas(e)+`<div class="tw"><table class="tbl"><thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Costo</th><th>Comprar</th></tr></thead><tbody>${rows}</tbody></table></div><div class="card" style="margin-top:12px" id="rqTot">${rqTotal()}</div><button class="btn" style="margin-top:12px" data-act="restock">Comprar al proveedor</button>`; }
 function ramoCrearHTML(){
   const r=CF.ramo, sel=CF.rsel||(CF.rsel={});
@@ -8812,17 +8815,26 @@ function minimapaAgro(g){ g.fillStyle='#24401f'; g.fillRect(0,0,W,H); g.fillStyl
 
 const miParcelaSafe=()=>{ try{ return miParcela()!=null; }catch(e){ return false; } };
 /* ===================== ETAPA 21 · PRODUCTORES DE FINCA EN EL MAYORISTA =====================
-   Los huevos, la leche, el plátano, la carne, la tilapia y las hortalizas no los fabrica el Proveedor Mayorista:
-   cuando un supermercado se reabastece, el mayorista se los compra automáticamente a las fincas de la sala al
-   precio de costo del mayorista. La finca factura la venta y registra su costo; el comprador registra su compra. */
+   Los huevos, la leche, el plátano, la carne, la tilapia y las hortalizas no los vende el Proveedor Mayorista:
+   los supermercados se los compran directamente a las fincas en el Mercado (orden → factura de la finca → entrega),
+   con uso «Inventario para revender» (1105). Así se fomenta el comercio entre compañeros. */
 function avisoFincas(e){ const ag=Object.keys(e.prods||{}).filter(k=>esAgroMay(CRID[k],e)); if(!ag.length) return ''; const sin=ag.filter(k=>!productoresDe(k).length);
-  return `<div class="fb ${sin.length?'bad':'ok'}" style="margin:0 0 12px">🌾 Los productos de finca (${ag.map(k=>esc(CRID[k].n)).join(', ')}) el mayorista se los compra a las fincas de la sala al precio de costo.${sin.length?` <b>Nadie produce ${sin.map(k=>'«'+esc(CRID[k].n)+'»').join(', ')} en la sala.</b> ${sugerirFinca()}`:''}</div>`; }
+  return `<div class="fb ${sin.length?'bad':'ok'}" style="margin:0 0 12px">🌾 Los productos de finca (${ag.map(k=>esc(CRID[k].n)).join(', ')}) <b>no los vende el ${esc(PROV.n)}</b>: su supermercado se los compra directamente a las fincas de la sala en el <b>Mercado → 🌾 Fincas</b>, al precio que cada finca fije, y elige «Inventario para revender». <button class="btn sm sec" data-act="mfIr" data-f="agro">🌾 Ir a las fincas</button>${sin.length?`<br><b>Nadie produce ${sin.map(k=>'«'+esc(CRID[k].n)+'»').join(', ')} en la sala.</b> ${sugerirFinca()}`:''}</div>`; }
 function esAgroMay(c,e){ return !!c&&c.r==='agro'&&!c.pais&&ramoDe(e)==='alimentos'; }
+function esAgroFinca(c){ return !!c&&c.r==='agro'&&!c.pais; }
+async function recibirAgroInventario(u,o,c){   // el supermercado recibe de la finca: entra al inventario (1105) con costo promedio
+  const e=myE(); let st0=0;
+  const r=await txN(n=>{ if(!n.stock[S.uid]) n.stock[S.uid]={}; st0=n.stock[S.uid][o.pid]||0; n.stock[S.uid][o.pid]=st0+o.cant; return 'ok'; });
+  if(r.out!=='ok'){ toast('No se pudo pasar a su inventario lo recibido de '+o.vn+'.','w'); return; }
+  const ep=(e.prods||{})[o.pid];
+  if(ep) u['empresas/'+S.uid+'/prods/'+o.pid+'/cu']=r2((st0*(ep.cu||0)+o.cant*o.pu)/(st0+o.cant));
+  else u['empresas/'+S.uid+'/prods/'+o.pid]={n:c.n,cu:o.pu,pv:r2(Math.ceil(o.pu*1.3/10)*10),tar:c.tar,cat:'agro'};
+  toast('📦 Llegó a su inventario: '+o.cant+' × '+c.n+' de la finca '+o.vn+'.'+(ep?'':' Revise su precio de venta en Su Empresa → Ramo.'),'y'); }
 function productoresDe(pid){ const st=(S.nuc&&S.nuc.stock)||{}; return Object.entries(S.emp||{}).filter(([u,x])=>x&&x.eid&&u!==S.uid&&ramoDe(x)==='agro'&&((st[u]||{})[pid]||0)>0).map(([u,x])=>[u,x,(st[u]||{})[pid]||0]).sort((a,b)=>b[2]-a[2]); }
 function sugerirFinca(){ const ed=typeof edificioPersona==='function'&&edificioPersona(), dos=typeof empresasPersona==='function'&&empresasPersona().length>=2;
   return ed&&!dos?'<button class="btn sm sec" data-act="empIr" data-n="2">🌾 Abrir una finca como segunda empresa</button>':'<span class="mut" style="font-size:12px">Puede pedirle a un compañero que abra una finca (o abrirla usted como segunda empresa cuando tenga un edificio).</span>'; }
 function infoProductores(pid){ const L=productoresDe(pid), tot=L.reduce((a,x)=>a+x[2],0);
-  return L.length?`<small class="mut">🌾 ${L.length} finca(s) · ${tot} disponible(s)</small>`:`<small class="bad">⚠ Nadie produce este artículo en la sala</small>`; }
+  return L.length?`<small class="mut">🌾 ${L.map(([u,x,st])=>esc(x.nom)+': '+st+' a '+fm(((x.prods||{})[pid]||{}).pv||0)).join(' · ')}</small>`:`<small class="bad">⚠ Nadie produce este artículo en la sala</small>`; }
 async function comprarAProductores(agL){
   const e=myE(), plan=[], faltan=[];
   agL.forEach(l=>{ let q=l.cant; for(const [u,x,st] of productoresDe(l.pid)){ if(q<=0) break; const t=Math.min(q,st); plan.push({u,x,pid:l.pid,d:l.d,cant:t,pu:l.pu,tar:l.tar}); q-=t; } if(q>0) faltan.push([l,q]); });
@@ -8915,13 +8927,14 @@ function irAEntregar(oid){ const o=(S.ord||{})[oid]; if(!o) return; if(INT.on) s
 VIEWS.empresa_ent=()=>{
   const L=misEntregas(), carg=L.filter(([k,o])=>o.ent==='cargada').length;
   const cap=capacidad();
-  return `<p style="margin-top:0">${entregasOn()?'Lo que vende a sus compañeros <b>no llega solo</b>: después de facturar, cargue los pedidos en su empresa y llévelos hasta el lote de la empresa compradora. Cuantos más pedidos lleve por viaje, menos viajes hace.':'⏸ El docente desactivó las entregas a domicilio: los pedidos llegan solos al facturar.'}</p>
+  const tieneV=misVehiculos().length>0;
+  return `<p style="margin-top:0">${entregasOn()?(tieneV?'Su empresa tiene vehículo: las entregas son <b>automáticas</b>. Su avatar se sube al vehículo, carga los pedidos en su empresa, recorre las calles hasta cada comprador y vuelve a estacionar. El combustible se gasta según la distancia y la carga.':'Lo que vende a sus compañeros <b>no llega solo</b>: como su empresa no tiene vehículo, <b>usted guía al avatar</b>. Cargue los pedidos en su empresa (1 por viaje a pie) y camine hasta el lote de la empresa compradora. Con un vehículo las entregas se hacen solas.')+(L.length&&tieneV?`<br><button class="btn sm" style="margin-top:8px" data-act="${AUTO.on?'autoStop':'autoGo'}">${AUTO.on?'⏹ Detener la ruta automática':'🚚 Iniciar ruta automática'}</button>`:''):'⏸ El docente desactivó las entregas a domicilio: los pedidos llegan solos al facturar.'}</p>
   <div class="grid3"><div class="card"><div class="k">A pie</div><b>${CAPA.pie}</b> pedido por viaje</div><div class="card"><div class="k">🏍 Moto · 🛻 Pick-up</div><b>${CAPA.mot}</b> · <b>${CAPA.pic}</b> pedidos por viaje</div><div class="card"><div class="k">🚚 Camión</div><b>${CAPA.cam}</b> pedidos por viaje</div></div>
   <div class="fb ${carg?'ok':''}" style="margin:12px 0">Usted va <b>${esc(capTxt())}</b>: lleva ${carg} de ${cap} pedido(s). ${S.drv?'':misVehiculos().length?'<button class="btn sm" data-act="vhToggle" style="margin-left:6px">🚗 Subirse a su vehículo</button>':'Compre un vehículo a una agencia para llevar más pedidos y moverse más rápido.'}</div>
   ${L.length?`<div class="tw"><table class="tbl"><thead><tr><th>Cliente</th><th>Pedido</th><th>Estado</th><th></th></tr></thead><tbody>${L.map(([k,o])=>`<tr><td><b>${esc(o.cn)}</b></td><td>${o.cant} × ${esc(o.pn)}</td><td>${o.ent==='cargada'?(S.drv?'<span class="pill g">🚚 en su vehículo</span>':'<span class="pill g">📦 lo lleva usted</span>'):'<span class="pill y">por cargar en su empresa</span>'}</td><td><button class="btn sm ${o.ent==='cargada'?'':'sec'}" data-act="entIr" data-id="${k}">📍 ${o.ent==='cargada'?'Ir a entregar':'Ir a cargar'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No tiene entregas pendientes.</div>'}`;
 };
 function hudEntregas(){ const L=misEntregas(); if(!L.length) return ''; const c=L.filter(([k,o])=>o.ent==='cargada').length;
-  return `<div class="row"><span>📦 Entregas: ${L.length-c} por cargar · ${c} en camino</span><button class="pill w" data-act="ir" data-b="empresa" data-t="ent">ver</button></div>`; }
+  return autoHUD()+`<div class="row"><span>📦 Entregas: ${L.length-c} por cargar · ${c} en camino</span><button class="pill w" data-act="ir" data-b="empresa" data-t="ent">ver</button></div>`; }
 function vhToggle(){
   if(S.drv){ dejarDeConducir(); return; }
   const mios=misVehiculos(); if(!mios.length){ toast(vendeVeh()?'Su empresa no tiene vehículos. Pídalos a una agencia de vehículos de la sala (Tienda Mayorista → Vehículos).':'Su empresa no tiene vehículos. Impórtelo de una agencia de la República de Undécimo (Puerto → Importar).','w'); return; }
@@ -8932,7 +8945,77 @@ function vhToggle(){
 }
 function botonVehiculo(){ const b=$('btnVeh'); if(!b) return; const n=misVehiculos().length; b.hidden=!n; b.classList.toggle('on',!!S.drv); b.innerHTML=S.drv?'🅿️<span class="tx"> Bajarse</span>':'🚗<span class="tx"> Conducir</span>'; }
 setInterval(botonVehiculo,1000);
-const ACT_ENT={ entIr:b=>irAEntregar(b.dataset.id), vhToggle:()=>vhToggle(),
+
+/* ===================== ENTREGAS AUTOMÁTICAS EN VEHÍCULO =====================
+   Si la empresa tiene un vehículo con combustible, el avatar se sube solo y hace la ruta: carga en su empresa,
+   recorre las calles hasta cada empresa compradora, entrega y vuelve a estacionar. Sin vehículo, el estudiante
+   guía al avatar a mano (cargar en su empresa → caminar al lote del comprador). Tocar las flechas o el suelo
+   devuelve el control al estudiante; la ruta se reanuda sola al minuto o con el botón de Entregas. */
+const AUTO={on:false,path:[],dest:null,wait:0,pausa:0,chk:0,send:0,skip:{},n0:0,fin:false};
+const AV_N=500, AV_S=1010, AV_V=800;
+function vehConComb(){ return misVehiculos().filter(([k])=>combDe(k)>=0.2).sort((a,b)=>CAPA[b[1].t]-CAPA[a[1].t]); }
+function autoDisponible(){ return entregasOn()&&misVehiculos().length>0; }
+function entradaLote(L){ return L.sede?{x:L.x+L.w/2,y:L.y-14}:{x:L.alley||L.x+L.w/2,y:L.y+L.h+14}; }
+function accesoLote(L){ const E=entradaLote(L); return L.sede?[{x:AV_V,y:AV_N},{x:AV_V,y:AV_S},{x:E.x,y:AV_S},E]:[{x:E.x,y:AV_N},E]; }
+function rutaA(L){ const pts=[], E0=entradaLote(L); if(Math.hypot(E0.x-me.x,E0.y-me.y)<8) return pts; const s=me.y>1000?[{x:me.x,y:AV_S},{x:AV_V,y:AV_S},{x:AV_V,y:AV_N}]:[{x:me.x,y:AV_N}];
+  s.concat(accesoLote(L)).forEach(q=>{ const l=pts.length?pts[pts.length-1]:me; if(Math.hypot(q.x-l.x,q.y-l.y)>2) pts.push(q); }); return pts; }
+function autoPlan(){
+  const L=misEntregas().filter(([k])=>!AUTO.skip[k]);
+  const carg=L.filter(([k,o])=>o.ent==='cargada'&&loteDe(o.co));
+  L.filter(([k,o])=>o.ent==='cargada'&&!loteDe(o.co)).forEach(([k])=>{ AUTO.skip[k]=1; });
+  let dest=null;
+  if(carg.length){ carg.sort((a,b)=>{ const A=entradaLote(loteDe(a[1].co)), B=entradaLote(loteDe(b[1].co)); return Math.hypot(A.x-me.x,A.y-me.y)-Math.hypot(B.x-me.x,B.y-me.y); }); dest=loteDe(carg[0][1].co); AUTO.fin=false; }
+  else if(L.some(([k,o])=>o.ent==='pendiente')){ dest=loteDe(S.uid); AUTO.fin=false; }
+  else { dest=loteDe(S.uid); AUTO.fin=true; }
+  if(!dest){ autoParar('No se encontró el lote para la ruta. Haga las entregas a mano.'); return; }
+  AUTO.dest=dest; AUTO.path=rutaA(dest); AUTO.wait=0;
+}
+function autoIniciar(manual){
+  if(AUTO.on) return true;
+  if(!autoDisponible()){ if(manual) toast('Para la ruta automática su empresa necesita un vehículo. Sin vehículo, lleve los pedidos usted mismo.','w'); return false; }
+  if((me.k||HOMEK)!==HOMEK){ if(manual) toast('Regrese a su país para hacer las entregas.','w'); return false; }
+  if(S.cfg.congelada) return false;
+  if(!S.drv){ const v=vehConComb(); if(!v.length){ if(manual||Date.now()-(AUTO.avisoComb||0)>120000){ AUTO.avisoComb=Date.now(); toast('⛽ Tiene pedidos por entregar, pero sus vehículos no tienen combustible. Cómprelo en una estación de servicio o entregue a pie.','w'); } return false; }
+    if(INT.on) salirInterior(true); conducir(v[0][0]); }
+  if(!S.drv) return false;
+  if(INT.on) salirInterior(true);
+  target=null; AUTO.on=true; AUTO.skip={}; AUTO.n0=misEntregas().length; autoPlan();
+  if(AUTO.on) toast('🚚 Ruta automática: su avatar va en su '+VEHID[S.drv.t].n.toLowerCase()+' a cargar y entregar '+AUTO.n0+' pedido(s). Toque las flechas o el suelo para tomar el control.','y');
+  hud(); return AUTO.on;
+}
+function autoParar(msg,pausaMs){ if(!AUTO.on) return; AUTO.on=false; AUTO.path=[]; AUTO.pausa=Date.now()+(pausaMs==null?60000:pausaMs); if(msg) toast(msg,'w'); hud(); renderPanel(); }
+function autoStep(dt,t){
+  const movKeys=['arrowright','arrowleft','arrowup','arrowdown','w','a','s','d'].some(k=>keys[k]);
+  if(!AUTO.on){
+    if(movKeys||target||INT.on||S.docenteSolo||!S.uid||!myE()) return false;
+    if(t-AUTO.chk<1000) return false; AUTO.chk=t;
+    if(Date.now()<AUTO.pausa||!misEntregas().length||!autoDisponible()) return false;
+    return autoIniciar(false)&&false;
+  }
+  if(movKeys||target){ autoParar('🕹 Tomó el control: la ruta automática se reanuda en 1 minuto (o en Su Empresa → Entregas).'); return false; }
+  if(!S.drv){ autoParar('',60000); return false; }
+  if((me.k||HOMEK)!==HOMEK||INT.on){ autoParar('',60000); return false; }
+  if(AUTO.path.length){
+    let dist=140*2.4*(R3?1:1.85)*dt;
+    while(dist>0&&AUTO.path.length){ const q=AUTO.path[0], dx=q.x-me.x, dy=q.y-me.y, d=Math.hypot(dx,dy);
+      if(d<=dist){ me.x=q.x; me.y=q.y; dist-=d; AUTO.path.shift(); gastarComb(d); } else { me.x+=dx/d*dist; me.y+=dy/d*dist; gastarComb(dist); dist=0; } }
+    if(S.ses&&t-AUTO.send>(MODE==='demo'?160:100)){ AUTO.send=t; base.child('jugadores/'+S.ses).update({x:Math.round(me.x),y:Math.round(me.y),t:SV.TIMESTAMP}).catch(()=>{}); }
+    if(!AUTO.path.length){ AUTO.wait=0; if(AUTO.dest&&AUTO.dest===loteDe(S.uid)) zonaActual='empresa'; entregasTick().catch(()=>{}); }
+    return true;
+  }
+  // detenido en una parada: esperar la carga o la entrega
+  AUTO.wait+=dt;
+  if(AUTO.fin&&AUTO.wait<=0.6) return true;
+  if(AUTO.fin){ const n=AUTO.n0; AUTO.on=false; AUTO.pausa=0; dejarDeConducir(true); toast('✅ Ruta terminada'+(n?': entregó '+n+' pedido(s)':'')+'. Su vehículo quedó estacionado en su empresa.','y'); hud(); renderPanel(); return true; }
+  if(AUTO.wait>1.2&&Math.floor((AUTO.wait-dt)/1.2)!==Math.floor(AUTO.wait/1.2)) entregasTick().catch(()=>{});
+  const L=misEntregas(), aqui=AUTO.dest===loteDe(S.uid);
+  const listo=aqui?!L.some(([k,o])=>o.ent==='pendiente')||L.filter(([k,o])=>o.ent==='cargada').length>=capacidad()||AUTO.wait>4.5
+                  :!L.some(([k,o])=>o.ent==='cargada'&&loteDe(o.co)===AUTO.dest)||AUTO.wait>4.5;
+  if(listo){ if(!aqui&&AUTO.wait>4.5) L.filter(([k,o])=>o.ent==='cargada'&&loteDe(o.co)===AUTO.dest).forEach(([k])=>{ AUTO.skip[k]=1; }); autoPlan(); }
+  return true;
+}
+function autoHUD(){ return AUTO.on?`<div class="row"><span>🚚 Ruta automática en curso</span><button class="pill w" data-act="autoStop">⏹ tomar el control</button></div>`:''; }
+const ACT_ENT={ entIr:b=>irAEntregar(b.dataset.id), vhToggle:()=>vhToggle(), autoGo:()=>{ AUTO.pausa=0; cerrarPanel(); autoIniciar(true); }, autoStop:()=>autoParar('🕹 Ruta automática detenida. Se reanuda en 1 minuto o con «Iniciar ruta automática» en Su Empresa → Entregas.'),
   dEntregas:()=>base.child('config/entregas').set(!entregasOn()).then(()=>toast(entregasOn()?'Entregas a domicilio obligatorias.':'Entregas automáticas (sin viaje).')).catch(err=>toast('No se pudo cambiar: '+err.message,'w')) };
 window.CCE={capacidad,misEntregas,entregasTick,irAEntregar,vhToggle,CAPA,loteDe};
 
