@@ -5825,9 +5825,18 @@ const VEST=[
  {id:'ber',s:'inf',t:'bermuda',n:'Bermuda',niv:1,pu:9000,cols:[BE,AM,OL,GR],tip:'Muy informal: solo para paseos o actividades recreativas.'},
  {id:'ten',s:'cal',t:'tenis',n:'Tenis',niv:1,pu:24000,cols:[BL,NE,GR,RO],tip:'Informales: no se combinan con saco ni corbata.'},
  {id:'gor',s:'gor',t:'gorra',n:'Gorra',niv:1,pu:6500,cols:[NE,RO,AZ,BL],tip:'Informal: se retira al entrar a oficinas, actos cívicos y reuniones.'},
+ {id:'sae',s:'abr',t:'saco',n:'Saco esencial',niv:3,eco:1,pu:22000,cols:[NE,AM,GO],tip:'Línea económica: saco formal de tela sencilla. Cumple el código formal igual que el saco tradicional.'},
+ {id:'cve',s:'sup',t:'camisa',n:'Camisa de vestir esencial',niv:3,eco:1,pu:7500,cols:[BL,CE],tip:'Línea económica: manga larga, para usar con saco y corbata. Cumple el código formal.'},
+ {id:'bue',s:'sup',t:'blusa',n:'Blusa formal esencial',niv:3,eco:1,pu:7000,cols:[BL,MA,NE],tip:'Línea económica: blusa sobria de corte clásico. Cumple el código formal.'},
+ {id:'pve',s:'inf',t:'pantalon',n:'Pantalón de vestir esencial',niv:3,eco:1,pu:9900,cols:[NE,AM,GO],tip:'Línea económica: pantalón de vestir en colores neutros. Cumple el código formal.'},
+ {id:'fae',s:'inf',t:'falda',n:'Falda formal esencial',niv:3,eco:1,pu:8000,cols:[NE,AM,GO],tip:'Línea económica: falda a la rodilla en colores neutros. Cumple el código formal.'},
+ {id:'zfe',s:'cal',t:'formal',n:'Zapatos formales esenciales',niv:3,eco:1,pu:16500,cols:[['Negro','#141416'],CA],tip:'Línea económica: zapato formal sintético. Limpio y lustrado, cumple con saco y corbata.'},
+ {id:'tae',s:'cal',t:'tacon',n:'Tacón bajo esencial',niv:3,eco:1,pu:14500,cols:[['Negro','#141416'],NU],tip:'Línea económica: tacón bajo cómodo para la oficina. Cumple el código formal.'},
+ {id:'coe',s:'cor',t:'corbata',n:'Corbata esencial',niv:3,eco:1,pu:4200,cols:[AM,VI,NE],tip:'Línea económica: corbata lisa. Se usa con camisa de vestir.'},
  {id:'gaf',s:'gaf',t:'gafete',n:'Gafete de identificación',niv:0,pu:2500,cols:[['Institucional','#f4f4f0']],tip:'Protocolo: identifica a la persona en ferias, congresos y visitas a empresas; se lleva visible a la altura del pecho.'}
 ];
 const VID={}; VEST.forEach(x=>{ VID[x.id]=x; });
+const VEQ={sae:'sac',cve:'cvs',bue:'blu',pve:'pvs',fae:'fal',zfe:'zfo',tae:'tac',coe:'cor'}; // línea económica = misma formalidad
 const SLOTS=[['sup','Parte superior',true],['abr','Saco o chaqueta',false],['inf','Parte inferior',true],['cal','Calzado',true],['cor','Corbata',false],['gor','Gorra',false],['gaf','Gafete',false]];
 const BASE_TXT={sup:'Camiseta básica (de su color)',inf:'Jeans básicos',cal:'Tenis básicos'};
 const NIV={formal:['Formal','nv3'],negocios:['Casual de negocios','nv2'],informal:['Informal','nv1']};
@@ -5840,7 +5849,7 @@ function vesObj(v,color,g,dv){ const o=vParse(v), out={}; if(g==='f'||g==='m') o
   Object.keys(o).forEach(s=>{ const it=VID[o[s].id]; out[s]={t:it.t,c:it.cols[o[s].ci][1]}; });
   if(!out.sup) out.sup={t:'camiseta',c:color||'#C9973F'}; return out; }
 function nivelVest(v){
-  const o=vParse(v), id=s=>o[s]?o[s].id:(s==='sup'?'cam':s==='inf'?'jea':s==='cal'?'ten':''), c=[];
+  const o=vParse(v), id=s=>o[s]?(VEQ[o[s].id]||o[s].id):(s==='sup'?'cam':s==='inf'?'jea':s==='cal'?'ten':''), c=[];
   const sup=id('sup'), abr=id('abr'), inf=id('inf'), cal=id('cal'), cor=id('cor'), gor=id('gor');
   const supF=sup==='cvs'||sup==='blu', infF=inf==='pvs'||inf==='fal', calF=cal==='zfo'||cal==='tac';
   if(cor&&sup!=='cvs') c.push('La corbata se usa con camisa de vestir, no con '+(sup==='pol'?'polo':sup==='blu'?'blusa':'camiseta')+'.');
@@ -5864,10 +5873,10 @@ function vCodigoAviso(k){ const cod=S.cfg.codigo; if(!cod||cod==='libre') return
   const ok=cumpleCodigo(k,cod); return `<div class="fb ${ok?'ok':'bad'}" style="margin:0 0 12px">${ok?'✓':'✗'} Código de vestimenta fijado por el docente: <b>${esc(CODIGOS[cod])}</b>. ${ok?'Su atuendo cumple.':'Su atuendo actual no cumple: revise su guardarropa.'}</div>`; }
 VIEWS.tienda_vest=()=>{
   const own=vOwn(), niv=nivelVest(vPuesto()); const e=myE(); const sal=S.nuc.saldo&&S.nuc.saldo[S.uid]; const esRopa=ramoDe(e)==='ropa';
-  const grupos=[['formal','Formal y de negocios',x=>x.niv>=2],['informal','Informal',x=>x.niv===1],['protocolo','Protocolo',x=>x.niv===0]];
+  const grupos=[['formal','Formal y de negocios',x=>x.niv>=2&&!x.eco],['economica','Formal económica',x=>!!x.eco],['informal','Informal',x=>x.niv===1],['protocolo','Protocolo',x=>x.niv===0]];
   const card=it=>{ const ci=VS.sel[it.id]!=null?VS.sel[it.id]:0; const k=it.id+ci; const tiene=!!own[k], ped=Object.values(S.ord||{}).find(o=>o&&o.co===S.uid&&o.pid==='r_'+it.id&&String(o.ci||0)===String(ci)&&(o.est==='pendiente'||(o.est==='aceptada'&&!o.rec))), enCarro=VS.cart.some(c=>c.id===it.id&&c.ci===ci);
     return `<div class="vcard${VS.try&&VS.try.id===it.id?' on':''}"><div class="vt"><b>${esc(it.n)}</b>${it.niv?`<i class="nv ${['','nv1','nv2','nv3'][it.niv]}">${['','Informal','Casual de negocios','Formal'][it.niv]}</i>`:'<i class="nv nv0">Protocolo</i>'}</div>
-      <div class="vp">${fm(it.pu)} <small class="mut">+ IVA 13 %</small></div>
+      <div class="vp">${fm(it.pu)} <small class="mut">+ IVA 13 %</small>${it.eco?' <i class="nv nv2" style="margin-left:4px">Línea económica</i>':''}</div>
       <div class="sws">${it.cols.map((c,i)=>`<button class="swb" data-act="vCol" data-id="${it.id}" data-ci="${i}" title="${esc(c[0])}" aria-label="${esc(it.n)} color ${esc(c[0])}">${vSw(c[1],i===ci)}</button>`).join('')}<small class="mut" style="margin-left:4px">${esc(it.cols[ci][0])}</small></div>
       <p class="vtip">${esc(it.tip)}</p>
       <div class="vb">${tiene?'<span class="pill g">✓ En su guardarropa</span>':ped?`<span class="pill y">⏳ ${ped.est==='pendiente'?'Pedida a '+esc(ped.vn||'la tienda')+': falta que la facture':'Facturada: llegando a su guardarropa'}</span>`:!esRopa?pedirRopaHTML(it,ci):enCarro?'<span class="pill y">En el carrito</span>':`<button class="btn sm" data-act="vAdd" data-id="${it.id}">Agregar</button>`}<button class="btn sec sm" data-act="vTry" data-id="${it.id}">Probármelo</button></div></div>`; };
