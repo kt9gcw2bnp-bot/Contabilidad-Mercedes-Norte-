@@ -1620,23 +1620,83 @@
     "Orden": 30
   },
   {
-    "Id": "repaso_consultoria_11",
-    "Nivel": "11",
-    "Categoria": "Trabajo en clase",
-    "Subarea": "Gestión Empresarial para Contadores",
-    "Titulo": "Consultoría Contable: repaso para la prueba",
-    "URL": "Repaso_Consultoria_Contable_Undecimo.html",
+    "Id": "excel_principiante_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Excel Principiante",
+    "URL": "Curso_Excel_Principiante.html",
     "Activo": "SI",
-    "Orden": 18
+    "Orden": 40
   },
   {
-    "Id": "repaso_lanzamiento_10",
+    "Id": "excel_intermedio_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Excel Intermedio",
+    "URL": "Curso_Excel_Intermedio.html",
+    "Activo": "SI",
+    "Orden": 41
+  },
+  {
+    "Id": "excel_avanzado_10",
+    "Nivel": "10",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "Excel Avanzado",
+    "URL": "Curso_Excel_Avanzado.html",
+    "Activo": "SI",
+    "Orden": 42
+  },
+  {
+    "Id": "excel_principiante_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Excel Principiante",
+    "URL": "Curso_Excel_Principiante.html",
+    "Activo": "SI",
+    "Orden": 40
+  },
+  {
+    "Id": "excel_intermedio_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Excel Intermedio",
+    "URL": "Curso_Excel_Intermedio.html",
+    "Activo": "SI",
+    "Orden": 41
+  },
+  {
+    "Id": "excel_avanzado_11",
+    "Nivel": "11",
+    "Categoria": "Curso interactivo",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Excel Avanzado",
+    "URL": "Curso_Excel_Avanzado.html",
+    "Activo": "SI",
+    "Orden": 42
+  },
+  {
+    "Id": "excel_trabajo_10",
     "Nivel": "10",
     "Categoria": "Trabajo en clase",
     "Subarea": "Gestión en Tecnologías Digitales Contables",
-    "Titulo": "Lanzamiento Comercial: repaso para la prueba",
-    "URL": "Repaso_Lanzamiento_Comercial_Decimo.html",
+    "Titulo": "Trabajo en Excel — Panadería La Espiga",
+    "URL": "Trabajo_Excel_Decimo.html",
     "Activo": "SI",
-    "Orden": 22
+    "Orden": 43
+  },
+  {
+    "Id": "excel_trabajo_11",
+    "Nivel": "11",
+    "Categoria": "Trabajo en clase",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Trabajo en Excel — Café Montaña Azul",
+    "URL": "Trabajo_Excel_Undecimo.html",
+    "Activo": "SI",
+    "Orden": 43
   }
 ]
