@@ -4874,7 +4874,7 @@ let pendSeen=null, notifT0=0;
 function suscribir(){
   const L=(p,f)=>base.child(p).on('value',s=>{ f(s.val()); programar(); },err=>toast('Sin permiso para leer '+p+': '+err.code,'w'));
   L('config',v=>{ S.cfg=v||{}; onCfg(); });
-  L('jugadores',v=>{ S.jug=v||{}; lista(); });
+  base.child('jugadores').on('value',s=>{ S.jug=s.val()||{}; const g=firmaJug(S.jug); if(g!==JSIG.home){ JSIG.home=g; lista(); programar(); } },err=>toast('Sin permiso para leer jugadores: '+err.code,'w'));
   L('empresas',v=>{ S.emp=v||{}; S.listo=true; });
   L('nucleo',v=>{ S.nuc=v||{}; });
   L('ordenes',v=>{ S.ord=v||{}; });
@@ -4894,7 +4894,12 @@ function suscribir(){
 }
 const vistos={};
 let prog=false;
-function programar(){ if(prog) return; prog=true; requestAnimationFrame(()=>{ prog=false; renderTodo(); }); }
+/* Las posiciones (x, y) de los avatares cambian varias veces por segundo: no obligan a redibujar paneles. */
+const JSIG={home:'',vec:{}};
+function firmaJug(J){ return Object.keys(J||{}).sort().map(k=>{ const j=J[k]||{}; return k+':'+[j.n,j.c,j.emp,j.k,j.v,j.dv,j.g,j.e,j.b,j.bx,j.niv,j.u,j.in,j.vj].join('|'); }).join(';'); }
+let ultRender=0;
+function programar(){ if(prog) return; prog=true; const espera=Math.max(0,250-(performance.now()-ultRender));   // como máximo 4 redibujos por segundo
+  const go=()=>requestAnimationFrame(()=>{ prog=false; ultRender=performance.now(); renderTodo(); }); if(espera>0) setTimeout(go,espera); else go(); }
 function renderTodo(){
   if(S.uid&&S.listo&&!S.docenteSolo){
     const e=myE();
@@ -5393,17 +5398,22 @@ const TIT={granja:['🌾','República Agrícola · Granja'],empresa:['🏢','Su 
 function abrirPanel(b,t){ if(S.docenteSolo) return; if(!myE()&&b!=='ayuda'){ return; } P.b=b; P.t=t||TABS[b][0][0]; P.fac=null; if(t!=='pend') ED=null; $('panel').hidden=false; $('frases').hidden=true; renderPanel(true); $('pbody').scrollTop=0; }
 function cerrarPanel(){ if(!$('pin').hidden){ $('pin').hidden=true; return; } $('panel').hidden=true; P.b=null; ED=null; }
 function foco(el){ const a=document.activeElement; return a&&el.contains(a)&&/INPUT|SELECT|TEXTAREA/.test(a.tagName); }
+var PCACHE={h:'',t:'',b:'',k:''};
 function renderPanel(force){
   if($('panel').hidden||!P.b) return;
   if(!force&&foco($('panel'))){ pendingRender=true; return; }
   pendingRender=false;
   const tt=TIT[P.b];
-  $('phead').innerHTML=`<span class="ic">${tt[0]}</span><div><h2>${tt[1]}</h2><div class="mut" style="font-size:12px">${esc(myE()?myE().nom:'')} · ${esc(periodo())}</div></div><button class="x" data-act="cerrar" aria-label="Cerrar">✕</button>`;
-  $('ptabs').innerHTML=TABS[P.b].map(t=>`<button data-act="tab" data-t="${t[0]}" class="${P.t===t[0]?'on':''}">${t[0]==='inv'&&esInd()?'Fábrica':t[1]}${t[0]==='pend'&&cuentaPend()?' · '+cuentaPend():''}${t[0]==='ord'&&ordenesPorAtender().length?' · '+ordenesPorAtender().length:''}${t[0]==='emb'&&HOME_P&&expPorAtender()?' · '+expPorAtender():''}</button>`).join('');
+  const _ph=`<span class="ic">${tt[0]}</span><div><h2>${tt[1]}</h2><div class="mut" style="font-size:12px">${esc(myE()?myE().nom:'')} · ${esc(periodo())}</div></div><button class="x" data-act="cerrar" aria-label="Cerrar">✕</button>`;
+  if(_ph!==PCACHE.h){ $('phead').innerHTML=_ph; PCACHE.h=_ph; }
+  const _pt=TABS[P.b].map(t=>`<button data-act="tab" data-t="${t[0]}" class="${P.t===t[0]?'on':''}">${t[0]==='inv'&&esInd()?'Fábrica':t[1]}${t[0]==='pend'&&cuentaPend()?' · '+cuentaPend():''}${t[0]==='ord'&&ordenesPorAtender().length?' · '+ordenesPorAtender().length:''}${t[0]==='emb'&&HOME_P&&expPorAtender()?' · '+expPorAtender():''}</button>`).join('');
+  if(_pt!==PCACHE.t){ $('ptabs').innerHTML=_pt; PCACHE.t=_pt; }
   const st=$('pbody').scrollTop;
   let h='';
   try{ h=P.fac?vistaFactura(P.fac):VIEWS[P.b+'_'+P.t](); }catch(err){ h='<div class="empty">Error al mostrar: '+esc(err.message)+'</div>'; console.warn(err); }
-  $('pbody').innerHTML=h; $('pbody').scrollTop=st;
+  const _k=P.b+'|'+P.t+'|'+(P.fac||'');
+  if(force||h!==PCACHE.b||_k!==PCACHE.k||!$('pbody').firstChild){ $('pbody').innerHTML=h; $('pbody').scrollTop=st; PCACHE.b=h; PCACHE.k=_k; }
+  else return;   // nada cambió: se deja el panel tal cual (más fluido y no se pierde lo que se está escribiendo)
   if(ED&&P.b==='empresa'&&P.t==='pend') edTotales();
   if(P.b==='tienda'){ probadorMontar(); pfPrevias(); }
 }
@@ -6029,7 +6039,7 @@ function suscribirMundo(){
   if(S.uid) base.child('depr/'+S.uid).on('value',s=>{ S.depr=s.val()||{}; programar(); },()=>{ S.depr={}; });
   if(!HOME_P) return;
   PAISES.forEach(p=>{ if(p.s===SALA) return; const r=DB.ref('mundo/'+p.s); const V=VEC[p.s]={emp:{},jug:{},terr:{},obras:{},consec:{}};
-    [['empresas','emp'],['jugadores','jug'],['terrenos','terr'],['obras','obras'],['nucleo/consec','consec']].forEach(([path,k])=>r.child(path).on('value',s=>{ V[k]=s.val()||{}; programar(); },()=>{})); });
+    [['empresas','emp'],['jugadores','jug'],['terrenos','terr'],['obras','obras'],['nucleo/consec','consec']].forEach(([path,k])=>r.child(path).on('value',s=>{ V[k]=s.val()||{}; if(k==='jug'){ const g=firmaJug(V[k]), id=r.toString(); if(g===JSIG.vec[id]) return; JSIG.vec[id]=g; } programar(); },()=>{})); });
 }
 const miTerreno=()=>(S.terr||{})[S.uid]||null;
 const miObra=()=>(S.obras||{})[S.uid]||{};
