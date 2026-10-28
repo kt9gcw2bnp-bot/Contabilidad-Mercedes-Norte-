@@ -537,6 +537,10 @@ async function renderPortal(){
       const examenes = levelRows.filter(r=>r.Categoria==='Examen' || r.Categoria==='Tarea');
       const temas = levelRows.filter(r=>r.Categoria==='Tema' || r.Categoria==='Curso interactivo');
 
+      if(examenes.length){
+        html += `<div class="section-title">🎯 Pruebas escritas, exámenes y tareas</div>`;
+        html += '<div class="cards">' + examenes.map(r=>renderCard(r)).join('') + '</div>';
+      }
       if(antologia.length){
         html += `<div class="section-title">📚 Antología y material de consulta</div>`;
         const antSorted = antologia.slice().sort((a,b)=> (Number(a.Orden)||0) - (Number(b.Orden)||0));
@@ -554,10 +558,6 @@ async function renderPortal(){
       if(trabajos.length){
         html += `<div class="section-title">📝 Trabajos en clase</div>`;
         html += '<div class="cards">' + trabajos.map(r=>renderCard(r)).join('') + '</div>';
-      }
-      if(examenes.length){
-        html += `<div class="section-title">🎯 Exámenes y tareas</div>`;
-        html += '<div class="cards">' + examenes.map(r=>renderCard(r)).join('') + '</div>';
       }
       if(temas.length){
         html += `<div class="section-title">📖 Temas del programa</div>`;
