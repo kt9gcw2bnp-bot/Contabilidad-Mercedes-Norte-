@@ -1718,5 +1718,25 @@
     "URL": "Repaso_Lanzamiento_Comercial_Decimo.html",
     "Activo": "SI",
     "Orden": 5
+  },
+  {
+    "Id": "examen_ii_p2_10_2026",
+    "Nivel": "10",
+    "Categoria": "Examen",
+    "Subarea": "Gestión en Tecnologías Digitales Contables",
+    "Titulo": "II Prueba escrita — II periodo 2026",
+    "URL": "Examen_II_Periodo_Decimo.html",
+    "Activo": "NO",
+    "Orden": 1
+  },
+  {
+    "Id": "examen_ii_p2_11_2026",
+    "Nivel": "11",
+    "Categoria": "Examen",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "II Prueba escrita — II periodo 2026",
+    "URL": "Examen_II_Periodo_Undecimo.html",
+    "Activo": "NO",
+    "Orden": 1
   }
 ]
