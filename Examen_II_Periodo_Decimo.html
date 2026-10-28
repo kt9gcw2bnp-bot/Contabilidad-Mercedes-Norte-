@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>II Prueba escrita · II periodo · Décimo año</title>
+<style>
+:root{ --bg:#050506; --card:#0e0e11; --card2:#15151a; --card3:#1c1c22; --line:#2a2a31; --line2:#3a3a44; --tx:#ECE9E1; --mut:#9b978d; --gold:#C9973F; --gold2:#F4DD7A; --teal:#2FC2AD; --coral:#EF6A5B; --blue:#5B8DEF;
+  --ff:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:ui-monospace,Menlo,Consolas,monospace; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--tx); font-family:var(--ff); font-size:15px; line-height:1.5; }
+button,input,select,textarea{ font-family:inherit; font-size:14px; }
+a{ color:var(--gold2); }
+.top{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:12px; padding:10px 18px; background:rgba(5,5,6,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+.logo{ width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:grid; place-items:center; color:#1a1206; font-weight:800; font-size:13px; flex:0 0 auto; }
+.top h1{ font-size:15.5px; margin:0; font-weight:650; } .top .sub{ font-size:12px; color:var(--mut); }
+.top .right{ margin-left:auto; display:flex; gap:10px; align-items:center; font-size:12.5px; color:var(--mut); }
+.timer{ font-family:var(--mono); font-size:15px; color:var(--gold2); background:var(--card2); border:1px solid var(--line2); border-radius:10px; padding:4px 10px; }
+.timer.low{ color:#fff; background:var(--coral); }
+.wrap{ max-width:1050px; margin:0 auto; padding:18px 18px 80px; }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px; }
+.card.soft{ background:var(--card2); }
+h2{ margin:0 0 8px; font-size:21px; } h3{ margin:14px 0 8px; font-size:16px; color:var(--gold2); }
+.mut{ color:var(--mut); font-size:13px; } .mono{ font-family:var(--mono); }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+@media(max-width:700px){ .grid2{ grid-template-columns:1fr; } .wrap{ padding:12px 10px 70px; } .card{ padding:14px; } }
+.btn{ border:1px solid transparent; border-radius:11px; padding:10px 16px; font-weight:650; cursor:pointer; background:var(--card3); color:var(--tx); }
+.btn.gold{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a1206; } .btn.teal{ background:var(--teal); color:#04140f; } .btn.coral{ background:var(--coral); color:#fff; }
+.btn.ghost{ background:transparent; border-color:var(--line2); } .btn.sm{ padding:6px 11px; font-size:12.5px; border-radius:9px; }
+.btn:disabled{ opacity:.5; cursor:default; }
+label.lb{ display:block; font-size:12.5px; color:var(--mut); margin:8px 0 4px; }
+input[type=text],input[type=number],input[type=password],select,textarea{ width:100%; background:#0a0a0d; color:var(--tx); border:1px solid var(--line2); border-radius:10px; padding:9px 11px; }
+textarea{ min-height:110px; resize:vertical; line-height:1.45; }
+input:focus,select:focus,textarea:focus{ outline:2px solid rgba(201,151,63,.55); border-color:var(--gold); }
+.pill{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:650; background:var(--card3); border:1px solid var(--line2); }
+.pill.gold{ background:rgba(201,151,63,.15); border-color:rgba(201,151,63,.5); color:var(--gold2); }
+.pill.teal{ background:rgba(47,194,173,.12); border-color:rgba(47,194,173,.5); color:var(--teal); }
+.pill.coral{ background:rgba(239,106,91,.12); border-color:rgba(239,106,91,.5); color:#f6a497; }
+.note{ border-radius:12px; padding:11px 14px; font-size:13.5px; margin:10px 0; border:1px solid var(--line2); background:var(--card2); }
+.note.gold{ border-color:rgba(201,151,63,.5); background:rgba(201,151,63,.08); } .note.bad{ border-color:rgba(239,106,91,.55); background:rgba(239,106,91,.08); } .note.ok{ border-color:rgba(47,194,173,.5); background:rgba(47,194,173,.08); }
+table.adm{ width:100%; border-collapse:collapse; font-size:13px; } table.adm td{ border:1px solid var(--line2); padding:6px 9px; vertical-align:top; } table.adm td.k{ color:var(--mut); width:23%; }
+table.tb{ width:100%; border-collapse:collapse; font-size:12.5px; } table.tb th,table.tb td{ border:1px solid var(--line2); padding:6px 8px; text-align:left; vertical-align:top; } table.tb th{ background:var(--card3); color:var(--gold2); font-weight:650; } table.tb td.c,table.tb th.c{ text-align:center; }
+.scroll{ overflow-x:auto; }
+.parte{ border-left:3px solid var(--gold); }
+.parte h2 .pts{ font-size:13px; color:var(--mut); font-weight:500; }
+.item{ border-top:1px solid var(--line); padding:14px 0; } .item:first-of-type{ border-top:0; }
+.item .en{ font-weight:600; } .item .n{ color:var(--gold2); font-family:var(--mono); margin-right:6px; }
+.item .ptsi{ font-size:12px; color:var(--mut); font-weight:500; margin-left:6px; }
+.opt{ display:flex; gap:10px; align-items:flex-start; padding:9px 12px; margin:6px 0; border-radius:10px; border:1px solid var(--line2); background:var(--card2); cursor:pointer; }
+.opt input{ margin-top:3px; accent-color:var(--gold); } .opt.sel{ border-color:var(--gold); background:rgba(201,151,63,.1); }
+.corr{ display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14px; }
+@media(max-width:700px){ .corr{ grid-template-columns:1fr; } }
+.corr .fila{ display:flex; gap:8px; align-items:flex-start; margin:7px 0; } .corr .fila select{ width:82px; flex:0 0 82px; padding:6px; }
+.corr .colb div{ padding:5px 0; border-bottom:1px dashed var(--line); font-size:14px; }
+.ctx{ background:var(--card2); border:1px solid var(--line2); border-radius:12px; padding:12px 14px; margin:8px 0; font-size:14px; }
+.rub{ font-size:12.5px; } .rub td{ padding:4px 7px !important; }
+.paso{ display:grid; grid-template-columns:minmax(0,1fr) 190px; gap:10px; align-items:center; margin:6px 0; }
+@media(max-width:600px){ .paso{ grid-template-columns:1fr; } }
+#banner{ position:fixed; top:0; left:0; right:0; background:var(--coral); color:#fff; text-align:center; padding:8px; z-index:90; display:none; font-weight:650; }
+#toast{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#1c1c22; border:1px solid var(--line2); padding:10px 16px; border-radius:12px; z-index:95; display:none; max-width:92vw; }
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:80; display:none; overflow:auto; padding:20px 12px; } .modal.on{ display:block; }
+.modal .box{ max-width:1150px; margin:0 auto; }
+.saved{ font-size:12px; color:var(--teal); }
+.rev{ border:1px solid var(--line2); border-radius:12px; padding:12px; margin:10px 0; background:var(--card2); }
+.rev .ans{ background:#0a0a0d; border:1px solid var(--line); border-radius:9px; padding:8px 10px; white-space:pre-wrap; font-size:13.5px; margin:6px 0; }
+.rev input.pt{ width:70px; text-align:center; font-weight:700; font-size:15px; }
+.kpis{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; } @media(max-width:700px){ .kpis{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.kpi{ background:var(--card2); border:1px solid var(--line2); border-radius:12px; padding:10px 12px; } .kpi .v{ font-size:22px; font-weight:750; color:var(--gold2); } .kpi .t{ font-size:12px; color:var(--mut); }
+footer{ text-align:center; color:var(--mut); font-size:12px; padding:20px; }
+/* ---------- impresión (PDF) ---------- */
+#print{ display:none; }
+@media print{
+  @page{ size:letter; margin:14mm 14mm 16mm; }
+  body{ background:#fff !important; color:#000 !important; font-size:11.5pt; }
+  body > *:not(#print){ display:none !important; }
+  #print{ display:block !important; }
+}
+#print{ color:#000; background:#fff; font-family:'Times New Roman',Georgia,serif; }
+#print .hd{ text-align:center; margin-bottom:6px; } #print .hd b{ font-size:13pt; }
+#print table{ width:100%; border-collapse:collapse; } #print td,#print th{ border:1px solid #000; padding:4px 6px; vertical-align:top; font-size:10.5pt; }
+#print th{ background:#e9e9e9; color:#000 !important; } #print .c{ text-align:center; }
+#print h2{ font-size:12.5pt; margin:14px 0 4px; border-bottom:1.5px solid #000; padding-bottom:2px; }
+#print .it{ margin:9px 0; page-break-inside:avoid; } #print .ops div{ margin:2px 0 2px 18px; }
+#print .ln{ border-bottom:1px solid #777; height:20px; margin:4px 0; }
+#print .key{ color:#0a5c2b; font-weight:bold; }
+#print .box{ border:1px solid #000; padding:6px 8px; margin:6px 0; }
+#print .small{ font-size:9.5pt; }
+#print .pb{ page-break-before:always; }
+#print .corrp{ display:flex; gap:18px; } #print .corrp > div{ flex:1; }
+#print .preview-bar{ position:sticky; top:0; background:#fff3cf; border:1px solid #c9973f; padding:8px; font-family:system-ui; font-size:13px; margin-bottom:10px; }
+@media print{ #print .preview-bar{ display:none; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="logo" id="lg">II</div><div><h1 id="hT"></h1><div class="sub" id="hS"></div></div><div class="right"><span id="saveSt" class="saved"></span><span id="tmr" class="timer" style="display:none"></span></div></div>
+<div class="wrap" id="app"></div>
+<footer><span id="ftx"></span> · <a href="#" id="lnkDoc">Panel docente</a></footer>
+<div id="banner"></div><div id="toast"></div>
+<div class="modal" id="modal"><div class="box" id="modalIn"></div></div>
+<div id="print"></div>
+<script>
+window.EXAM={"centro": "Colegio Técnico Profesional Mercedes Norte", "especialidad": "Contabilidad", "docente": "Gerardo González González", "periodo": "II periodo 2026", "periodoTxt": "II prueba escrita · II periodo 2026", "api": "", "id": "examen_ii_p2_10_2026", "titulo": "II Prueba escrita · II periodo · Décimo año", "logo": "10°", "subarea": "Gestión en tecnologías digitales contables", "nivel": "Décimo año", "unidades": "Gestión comercial y de ventas (RA 1, 2 y 3) · Sistemas de pago electrónico (RA 5: netiqueta)", "duracion": 80, "secciones": ["10-1", "10-2", "10-3", "10-4"], "instrucciones": ["Lea cuidadosamente cada instrucción y cada ítem antes de responder.", "La prueba tiene cuatro partes y un total de <b>40 puntos</b>. Responda todos los ítems; no hay ítems opcionales.", "Versión impresa: use bolígrafo de tinta azul o negra; no use corrector. Las respuestas en lápiz no se aceptan para reclamos.", "Versión en línea: sus respuestas se guardan automáticamente y puede cambiarlas hasta que presione <b>Enviar examen</b>. Si sale de la ventana de la prueba, queda registrado.", "No se permite el uso del celular, apuntes ni otros materiales. Ante cualquier duda, levante la mano y consulte a su docente."], "preliminar": 40, "constante": 0.63, "notaLecciones": "horas del programa de estudio (Gestión comercial y de ventas: 80 h para 5 RA = 16 h por RA; Sistemas de pago electrónico: 80 h para 5 RA = 16 h por RA). Es una propuesta: el docente puede ajustarla según lo efectivamente desarrollado.", "tiposTabla": [["su", "Selección única"], ["corr", "Correspondencia"], ["rc", "Respuesta corta"], ["rr", "Respuesta restringida"]], "tabla": [{"ra": "3.1", "nombre": "Reconocer el papel del Derecho Mercantil y los auxiliares del comercio (Gestión comercial y de ventas, RA 1).", "lecciones": 16, "indicadores": ["Reconoce el papel del Derecho Mercantil y los Auxiliares del Comercio.", "Clasifica los auxiliares del comercio, según el Código de Comercio vigente."]}, {"ra": "3.2", "nombre": "Aplicar técnicas modernas de ventas efectivas (Gestión comercial y de ventas, RA 2).", "lecciones": 16, "indicadores": ["Relaciona el concepto de ventas con el ciclo contable.", "Utiliza las técnicas modernas de ventas efectivas."]}, {"ra": "3.3", "nombre": "Aplicar normas de protocolo y etiqueta en eventos institucionales (Gestión comercial y de ventas, RA 3).", "lecciones": 16, "indicadores": ["Diferencia las características del protocolo y la etiqueta.", "Aplica las Normas de Protocolo y Etiqueta en un evento institucional.", "Implementa el protocolo y la etiqueta atendiendo la Ley 7600."]}, {"ra": "2.5", "nombre": "Aplicar normas de netiqueta (Sistemas de pago electrónico, RA 5).", "lecciones": 16, "indicadores": ["Identifica los principios de las normas de netiqueta.", "Representa las Normas de Netiqueta usando tecnología."]}], "partes": [{"num": "I", "nombre": "Selección única", "instr": "Lea cada enunciado y marque la letra de la <b>única opción correcta</b>. Cada respuesta correcta vale 1 punto.", "items": [{"tipo": "su", "ra": "3.1", "en": "La rama del Derecho que regula a los comerciantes, los actos de comercio y a los auxiliares del comercio es el Derecho:", "ops": ["Mercantil", "Laboral", "Tributario"], "correcta": 0, "pts": 1}, {"tipo": "su", "ra": "3.1", "en": "En Costa Rica, el Código de Comercio, que regula la actividad comercial y a sus auxiliares, corresponde a la:", "ops": ["Ley N.° 2", "Ley N.° 3284", "Ley N.° 7472"], "correcta": 1, "pts": 1}, {"tipo": "su", "ra": "3.1", "en": "¿Cuál de los siguientes auxiliares del comercio es <b>dependiente</b>, porque trabaja para el comerciante?", "ops": ["El corredor jurado", "El porteador", "El agente viajero"], "correcta": 2, "pts": 1}, {"tipo": "su", "ra": "3.2", "en": "Un vendedor le pregunta al cliente: «¿Prefiere pagarlo de contado o en tres cuotas?». Está aplicando el cierre de:", "ops": ["cambio de precio", "alternativa", "puercoespín"], "correcta": 1, "pts": 1}, {"tipo": "su", "ra": "3.2", "en": "En el ciclo contable, la emisión de la factura electrónica de una venta a crédito genera:", "ops": ["el ingreso, el IVA y una cuenta por cobrar", "el gasto, el IVA y una cuenta por pagar", "el cobro inmediato, la comisión y un pasivo laboral"], "correcta": 0, "pts": 1}, {"tipo": "su", "ra": "3.2", "en": "Un cliente compra una impresora y el vendedor le ofrece además papel y tintas. Esta técnica se llama:", "ops": ["venta adicional", "venta consultiva", "venta cruzada"], "correcta": 2, "pts": 1}, {"tipo": "su", "ra": "3.3", "en": "Decidir quién habla primero en la inauguración de un laboratorio es un asunto de:", "ops": ["etiqueta", "protocolo", "netiqueta"], "correcta": 1, "pts": 1}, {"tipo": "su", "ra": "3.3", "en": "En una mesa formal, los cubiertos se utilizan:", "ops": ["de adentro hacia afuera", "según el gusto del invitado", "de afuera hacia adentro"], "correcta": 2, "pts": 1}, {"tipo": "su", "ra": "3.3", "en": "En un acto de inauguración, la autoridad de mayor rango:", "ops": ["habla de última y ocupa el lugar de honor", "habla de primera para dar la bienvenida al público", "no hace uso de la palabra en el acto"], "correcta": 0, "pts": 1}, {"tipo": "su", "ra": "3.3", "en": "Según el protocolo inclusivo de la Ley 7600, ante una persona usuaria de silla de ruedas lo correcto es:", "ops": ["empujar la silla sin preguntar para ayudar rápido", "preguntarle antes de ayudar y hablarle directamente", "dirigirse solo a su acompañante para no incomodarla"], "correcta": 1, "pts": 1}, {"tipo": "su", "ra": "2.5", "en": "En netiqueta, escribir un mensaje TODO EN MAYÚSCULAS equivale a:", "ops": ["gritar al lector", "destacar con respeto", "firmar el mensaje"], "correcta": 0, "pts": 1}, {"tipo": "su", "ra": "2.5", "en": "La netiqueta es el conjunto de:", "ops": ["programas que protegen la computadora de virus", "leyes que regulan las compras y ventas por internet", "normas de comportamiento en los entornos en línea"], "correcta": 2, "pts": 1}, {"tipo": "su", "ra": "2.5", "en": "En una videollamada de trabajo, una norma de netiqueta es:", "ops": ["encender la cámara solo al final de la reunión", "mantener el micrófono en silencio si no habla", "atender otras llamadas mientras habla el grupo"], "correcta": 1, "pts": 1}]}, {"num": "II", "nombre": "Correspondencia", "instr": "Relacione cada enunciado de la columna A con la opción de la columna B. Escriba (o seleccione) la letra que corresponde. <b>Cada opción de la columna B se utiliza una sola vez y sobra una.</b> Cada relación correcta vale 1 punto.", "items": [{"tipo": "corr", "ra": "3.1", "en": "Relacione cada función (columna A) con el auxiliar del comercio que la realiza (columna B).", "filas": [{"t": "Realiza actos de comercio por cuenta ajena a cambio de una comisión.", "k": "o0"}, {"t": "Intermediario con fe pública que acerca a las partes y certifica las operaciones.", "k": "o1"}, {"t": "Gerente o administrador que dirige un negocio en nombre del dueño.", "k": "o2"}, {"t": "Representante que viaja ofreciendo los productos de una empresa.", "k": "o3"}, {"t": "Transporta mercancías mediante el contrato de transporte.", "k": "o4"}], "opciones": [{"k": "o3", "t": "Agente viajero"}, {"k": "o0", "t": "Comisionista"}, {"k": "o1", "t": "Corredor jurado"}, {"k": "o2", "t": "Factor"}, {"k": "o4", "t": "Porteador"}, {"k": "ox", "t": "Representante de casa extranjera"}]}, {"tipo": "corr", "ra": "3.2", "en": "Relacione cada descripción (columna A) con la técnica de ventas que corresponde (columna B).", "filas": [{"t": "Guía la conversación con preguntas de situación, problema, implicación y necesidad-beneficio.", "k": "o0"}, {"t": "Vende de forma simple, invaluable, alineada y prioritaria a clientes saturados de trabajo.", "k": "o1"}, {"t": "Enseña al cliente algo nuevo sobre su negocio y toma el control de la conversación con respeto.", "k": "o2"}, {"t": "Acuerda el objetivo de la reunión y califica al cliente: su dolor, su presupuesto y quién decide.", "k": "o3"}, {"t": "Diagnostica la situación del cliente y propone una solución integral, aunque venda menos.", "k": "o4"}], "opciones": [{"k": "o1", "t": "Método SNAP"}, {"k": "o0", "t": "Método SPIN"}, {"k": "o3", "t": "Sistema Sandler"}, {"k": "o2", "t": "Vendedor retador"}, {"k": "o4", "t": "Venta consultiva"}, {"k": "ox", "t": "Venta cruzada"}]}]}, {"num": "III", "nombre": "Respuesta corta", "instr": "Responda en forma breve lo que se solicita. Cada ítem indica el <b>número de respuestas esperadas</b> y su puntaje (1 punto por cada respuesta correcta).", "items": [{"tipo": "rc", "ra": "3.1", "en": "Mencione <b>dos</b> fuentes del Derecho Mercantil. <i>(2 respuestas)</i>", "resp": 2, "pts": 2, "claves": [["ley", "codigo de comercio", "leyes especiales"], ["tratado", "convenio"], ["uso", "costumbre"], ["jurisprudencia", "fallos"], ["doctrina", "juristas"]], "modelo": "Dos de: la ley (Código de Comercio y leyes especiales), los tratados internacionales, los usos y costumbres mercantiles, la jurisprudencia y la doctrina."}, {"tipo": "rc", "ra": "3.3", "en": "Mencione <b>dos</b> elementos de la presentación personal. <i>(2 respuestas)</i>", "resp": 2, "pts": 2, "claves": [["cuidado", "higiene", "cabello", "manos", "apariencia"], ["porte", "postura"], ["maquillaje"], ["vestuario", "vestimenta", "ropa", "accesorio"]], "modelo": "Dos de: cuidados personales (higiene, cabello y manos), porte y postura, maquillaje, vestuario y accesorios."}, {"tipo": "rc", "ra": "2.5", "en": "Escriba <b>tres</b> buenas prácticas de netiqueta para enviar un correo electrónico profesional. <i>(3 respuestas)</i>", "resp": 3, "pts": 3, "claves": [["asunto"], ["saludo", "saludar"], ["breve", "corto", "concreto", "claro"], ["firma", "firmar", "cargo"], ["ortografia", "revisar", "redaccion"], ["adjunto"], ["mayuscula"], ["responder a todos"], ["correo formal", "correo profesional", "informal"]], "modelo": "Tres de: asunto claro, saludo, mensaje breve, firma con nombre y cargo, revisar ortografía y adjuntos, no escribir en mayúsculas, no responder «a todos» sin necesidad, usar un correo formal."}]}, {"num": "IV", "nombre": "Respuesta restringida", "instr": "Lea cada situación y responda lo solicitado. Cada ítem indica el <b>número de respuestas esperadas</b> y la <b>rúbrica</b> con que se califica.", "items": [{"tipo": "rr", "ra": "3.2", "en": "Escriba <b>dos</b> preguntas del método SPIN que Mario puede hacerle a la dueña: <b>una de problema</b> y <b>una de implicación</b>. <i>(2 respuestas)</i>", "criterios": [{"t": "Pregunta de <b>problema</b>: busca descubrir una dificultad del cliente (errores, tiempo, pérdidas).", "pts": 1, "claves": ["problema", "dificultad", "error", "cuanto tiempo", "le cuesta", "se le pierde", "equivoca"]}, {"t": "Pregunta de <b>implicación</b>: muestra la consecuencia de ese problema (multas, pérdidas de dinero o de clientes).", "pts": 1, "claves": ["multa", "consecuencia", "que pasaria", "perder", "afecta", "implica", "sancion"]}], "modelo": "Problema: «¿Ha tenido errores al sumar las ventas del día en el cuaderno?». Implicación: «Si Hacienda detecta ventas sin factura electrónica, ¿qué multas podría enfrentar la soda?».", "ctx": "Mario vende un sistema de facturación electrónica. Visita la soda «La Esquina», cuya dueña anota todas las ventas en un cuaderno."}, {"tipo": "rr", "ra": "3.3", "en": "Indique <b>una</b> acción de protocolo inclusivo para cada invitado. <i>(2 respuestas)</i>", "criterios": [{"t": "Acción adecuada para la persona que usa <b>bastón</b> (ruta sin obstáculos, piso antideslizante, asiento con apoyabrazos, preguntar antes de ayudar).", "pts": 1, "claves": ["obstaculo", "antideslizante", "apoyabrazo", "ruta", "despejad", "camino"]}, {"t": "Acción adecuada para la <b>persona adulta mayor</b> (asiento preferente, trato deferente y paciente, buena iluminación y sonido).", "pts": 1, "claves": ["preferente", "paciencia", "paciente", "iluminacion", "sonido", "deferente", "primera fila", "cerca de la entrada"]}], "modelo": "Bastón: dejar una ruta libre de obstáculos hasta su asiento, con piso antideslizante y asiento con apoyabrazos. Persona adulta mayor: reservarle un asiento preferente, tratarla con paciencia y asegurar buena iluminación y sonido.", "ctx": "En la graduación del colegio participan un invitado que usa bastón y una persona adulta mayor."}, {"tipo": "rr", "ra": "3.3", "en": "Indique <b>dos</b> normas de protocolo para este acto: <b>una sobre precedencia</b> y <b>una sobre los símbolos patrios</b>. <i>(2 respuestas)</i>", "criterios": [{"t": "<b>Precedencia</b>: la ministra, como autoridad de mayor rango, ocupa el lugar de honor y habla de última; se usa el tratamiento «señora ministra».", "pts": 1, "claves": ["ultim", "lugar de honor", "mayor rango", "senora ministra", "precedencia"]}, {"t": "<b>Símbolos patrios</b>: el Himno Nacional se escucha de pie y en silencio, o la bandera ocupa el lugar de honor sin estandartes por encima.", "pts": 1, "claves": ["himno", "bandera", "de pie", "silencio"]}], "modelo": "Precedencia: la ministra se ubica en el lugar de honor y habla de última. Símbolos patrios: el Himno Nacional se escucha de pie y en silencio, y la bandera ocupa el lugar de honor.", "ctx": "La ministra de Educación inaugurará el nuevo laboratorio de Contabilidad del colegio."}, {"tipo": "rr", "ra": "2.5", "en": "Identifique <b>dos</b> normas de netiqueta que se incumplen en el correo y escriba <b>cómo corregir cada una</b>. <i>(4 respuestas: 2 normas y 2 correcciones)</i>", "criterios": [{"t": "Identifica una <b>primera norma</b> incumplida.", "pts": 1, "claves": ["mayuscula", "asunto", "gatito", "correo informal", "firma", "abreviatura", "saludo"]}, {"t": "Escribe la <b>corrección</b> de esa primera norma.", "pts": 1, "claves": ["minuscula", "agregar asunto", "escribir un asunto", "poner asunto", "correo formal", "correo institucional", "profesional"]}, {"t": "Identifica una <b>segunda norma</b> incumplida.", "pts": 1, "claves": ["mayuscula", "asunto", "gatito", "correo informal", "firma", "abreviatura", "saludo"]}, {"t": "Escribe la <b>corrección</b> de esa segunda norma.", "pts": 1, "claves": ["firmar con", "nombre y cargo", "escribir completo", "sin abreviar", "estimada", "saludo formal", "minuscula"]}], "modelo": "Normas incumplidas (dos de): sin asunto → escribir «Envío de factura de octubre»; todo en mayúsculas → escribir en mayúsculas y minúsculas; abreviaturas («q») → escribir palabras completas; saludo y despedida informales → «Estimada señora Rojas… Saludos cordiales»; sin firma y correo informal → firmar con nombre y cargo desde un correo profesional.", "ctx": "<div class=\"mono\" style=\"white-space:pre-wrap\">De: gatito123@correo.com\nAsunto: (vacío)\n\nhola!!! LE MANDO LA FACTURA Q ME PIDIO, MAÑANA LE MANDO LO OTRO. bye</div>"}]}]};
+</script>
+<script>
+(function(){
+'use strict';
+const X=window.EXAM;
+/* ====================== CONFIGURACIÓN DE CONEXIÓN ======================
+   API: URL de la Aplicación Web de Apps Script de ESTE examen (hoja propia, backend genérico
+   backend-examenes-gerardo.gs). Si está vacía, el examen funciona en MODO DEMOSTRACIÓN
+   (los datos quedan solo en este navegador), útil para revisarlo antes de publicarlo. */
+const API=(new URLSearchParams(location.search).get('api'))||X.api||'';
+const PIN='9986';
+const DEMO=!API;
+/* ====================== UTILIDADES ====================== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9ñ ]/g,' ').replace(/\s+/g,' ').trim();
+const nowIso=()=>new Date().toISOString();
+const qs=new URLSearchParams(location.search);
+function toast(t,ms){ const e=$('toast'); e.textContent=t; e.style.display='block'; clearTimeout(e._t); e._t=setTimeout(()=>e.style.display='none',ms||3200); }
+function seedRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); return ((h^=h>>>16)>>>0)/4294967296; }; }
+function shuffled(n,key){ const r=seedRand(key); const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function parseNum(x){ if(x==null) return null; let s=String(x).trim().replace(/[₡%\s]/g,'').replace(/[−–—]/g,'-'); if(!s) return null;
+  if(s.indexOf('.')>-1&&s.indexOf(',')>-1){ if(s.lastIndexOf(',')>s.lastIndexOf('.')) s=s.replace(/\./g,'').replace(',','.'); else s=s.replace(/,/g,''); }
+  else if(/^-?\d{1,3}([.,]\d{3})+$/.test(s)) s=s.replace(/[.,]/g,''); else s=s.replace(',','.');
+  return /^-?(\d+\.?\d*|\.\d+)$/.test(s)?parseFloat(s):null; }
+const fmt2=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
+const LET='abcdefgh', LETM='ABCDEFGH';
+/* ====================== ÍTEMS ====================== */
+const ITEMS=[]; let NUM=0;
+X.partes.forEach((p,pi)=>{ p.items.forEach((it,ii)=>{ NUM++; it.n=NUM; it.parte=pi; if(!it.id) it.id='i'+NUM; if(it.tipo==='corr') it.pts=it.filas.length; if(it.tipo==='ej') it.pts=it.pasos.reduce((a,s)=>a+s.pts,0); if(it.tipo==='rr') it.pts=it.criterios.reduce((a,c)=>a+c.pts,0); ITEMS.push(it); }); p.pts=p.items.reduce((a,i)=>a+i.pts,0); });
+const TOTAL=ITEMS.reduce((a,i)=>a+i.pts,0);
+const ITEM=id=>ITEMS.find(i=>i.id===id);
+/* ====================== CALIFICACIÓN AUTOMÁTICA (provisional en respuesta construida) ====================== */
+function hasKey(txt,keys){ const t=' '+norm(txt)+' '; return keys.some(k=>t.indexOf(' '+norm(k))>-1||(norm(k).length>5&&t.indexOf(norm(k))>-1)); }
+function autoScore(it,a){
+  if(a==null) return 0;
+  if(it.tipo==='su') return a===it.correcta?it.pts:0;
+  if(it.tipo==='corr'){ let s=0; it.filas.forEach((f,i)=>{ if(a[i]&&a[i]===f.k) s++; }); return s; }
+  if(it.tipo==='rc'){ const used={}; let ok=0; (a||[]).forEach(x=>{ if(!x||!String(x).trim()) return; const g=it.claves.findIndex((ks,gi)=>!used[gi]&&hasKey(x,ks)); if(g>-1){ used[g]=1; ok++; } }); return Math.round(Math.min(ok,it.resp)*it.pts/it.resp); }
+  if(it.tipo==='rr'){ let s=0; it.criterios.forEach(c=>{ if(c.claves&&hasKey(a||'',c.claves)) s+=c.pts; }); return s; }
+  if(it.tipo==='ej'){ let s=0; it.pasos.forEach((p,i)=>{ const v=(a||{})['p'+i]; if(v==null||String(v).trim()==='') return; if(p.txt){ if(norm(v).replace(/[^a-z]/g,'')===norm(p.v).replace(/[^a-z]/g,'')) s+=p.pts; } else { const n=parseNum(v); if(n!=null&&Math.abs(n-p.v)<=(p.tol||0)+1e-9) s+=p.pts; } }); return s; }
+  return 0; }
+const esConstruida=it=>it.tipo==='rc'||it.tipo==='rr'||it.tipo==='ej';
+function contestado(it,a){ if(a==null) return false; if(it.tipo==='su') return a!==undefined&&a!==null; if(it.tipo==='corr') return it.filas.every((f,i)=>a[i]); if(it.tipo==='rc') return (a||[]).filter(x=>String(x||'').trim()).length>=it.resp; if(it.tipo==='rr') return String(a||'').trim().length>8; if(it.tipo==='ej') return it.pasos.every((p,i)=>String((a||{})['p'+i]||'').trim()); return false; }
+function calificar(resp,ajustes){ const det={}; let auto=0, fin=0; ITEMS.forEach(it=>{ const s=autoScore(it,(resp||{})[it.id]); auto+=s; const aj=ajustes&&ajustes[it.id]&&ajustes[it.id].p!=null&&ajustes[it.id].p!==''?+ajustes[it.id].p:null; const f=aj!=null?aj:s; fin+=f; det[it.id]=[s,f]; }); return {auto,fin,det}; }
+function nota(pts){ return Math.round(pts/TOTAL*10000)/100; }
+/* ====================== DATOS (Apps Script o demostración) ====================== */
+function jsonp(url){ return new Promise(res=>{ const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e5); const s=document.createElement('script');
+  window[cb]=d=>{ res(d); delete window[cb]; s.remove(); }; s.onerror=()=>{ res(null); delete window[cb]; s.remove(); };
+  s.src=url+(url.indexOf('?')>-1?'&':'?')+'callback='+cb+'&t='+Date.now(); document.body.appendChild(s); setTimeout(()=>{ if(window[cb]){ res(null); delete window[cb]; s.remove(); } },15000); }); }
+const LSK=k=>'exam_'+X.id+'_'+k;
+function lsGet(k,d){ try{ const v=localStorage.getItem(LSK(k)); return v?JSON.parse(v):d; }catch(e){ return d; } }
+function lsSet(k,v){ try{ localStorage.setItem(LSK(k),JSON.stringify(v)); }catch(e){} }
+async function getConfig(){ if(DEMO) return lsGet('Config',{}); const d=await jsonp(API+'?action=getConfig'); return (d&&d.ok&&d.value)||{}; }
+async function getEntregas(){ if(DEMO) return lsGet('Entregas',[]); const d=await jsonp(API+'?sheet=Entregas'); return (d&&d.ok&&d.rows)||[]; }
+function post(sheet,keyField,row){ if(DEMO){ const L=lsGet(sheet,sheet==='Config'?{}:[]); if(sheet==='Config'){ L[row.Clave]=row.Valor; lsSet('Config',L); return Promise.resolve(); } const i=L.findIndex(r=>String(r[keyField])===String(row[keyField])); if(i>-1) L[i]=Object.assign({},L[i],row); else L.push(row); lsSet(sheet,L); return Promise.resolve(); }
+  const body=new URLSearchParams(Object.assign({sheet,keyField},row)); return fetch(API,{method:'POST',mode:'no-cors',body,keepalive:true}).catch(()=>{}); }
+function delRow(sheet,field,val){ if(DEMO){ lsSet(sheet,lsGet(sheet,[]).filter(r=>String(r[field])!==String(val))); return Promise.resolve(); } return fetch(API,{method:'POST',mode:'no-cors',body:new URLSearchParams({sheet,action:'delete',matchField:field,matchValue:val})}).catch(()=>{}); }
+const setCfg=(k,v)=>post('Config','Clave',{Clave:k,Valor:v});
+/* ====================== ESTADO ====================== */
+let CFG={}, U=null, R={resp:{},inc:0,inicio:null,estado:''}, enCurso=false, finT=null, saveT=null, dirty=false;
+const adm=()=>({periodo:CFG.Periodo||X.periodo||'', fecha:CFG.Fecha||'', valor:CFG.ValorPorcentual||'', dur:+CFG.Duracion||X.duracion||90, secciones:String(CFG.Secciones||X.secciones.join(',')).split(',').map(s=>s.trim()).filter(Boolean), habil:String(CFG.Habilitado||'NO').toUpperCase()==='SI'});
+const claveDe=(ced)=>X.id+'|'+ced;
+/* ====================== ENCABEZADO MEP ====================== */
+function admTabla(st){ const a=adm(); const S=st||{};
+  const v=(x)=>x?esc(x):'<span class="mut">________</span>';
+  return `<table class="adm"><tr><td class="k">Centro educativo</td><td colspan="3"><b>${esc(X.centro)}</b></td></tr>
+  <tr><td class="k">Especialidad · Subárea</td><td colspan="3">${esc(X.especialidad)} · ${esc(X.subarea)}</td></tr>
+  <tr><td class="k">Unidad(es) de estudio</td><td colspan="3">${esc(X.unidades)}</td></tr>
+  <tr><td class="k">Docente</td><td>${esc(X.docente)}</td><td class="k">Periodo</td><td>${v(a.periodo)}</td></tr>
+  <tr><td class="k">Nivel</td><td>${esc(X.nivel)}</td><td class="k">Sección</td><td>${v(S.sec)}</td></tr>
+  <tr><td class="k">Estudiante</td><td>${v(S.nombre)}</td><td class="k">Fecha</td><td>${v(a.fecha)}</td></tr>
+  <tr><td class="k">Duración de la prueba</td><td>${a.dur} minutos</td><td class="k">Valor porcentual</td><td>${a.valor?esc(a.valor)+' %':v('')}</td></tr>
+  <tr><td class="k">Puntuación total</td><td>${TOTAL} puntos</td><td class="k">Puntuación obtenida</td><td>${S.obt!=null?S.obt:v('')}</td></tr>
+  <tr><td class="k">Calificación obtenida</td><td>${S.nota!=null?fmt2(S.nota):v('')}</td><td class="k">Porcentaje obtenido</td><td>${S.porc!=null?fmt2(S.porc)+' %':v('')}</td></tr></table>`; }
+function instrGen(){ return `<ul style="margin:6px 0 0;padding-left:20px">${X.instrucciones.map(t=>`<li>${t}</li>`).join('')}</ul>`; }
+/* ====================== PORTADA / INGRESO ====================== */
+async function portada(){
+  $('hT').textContent=X.titulo; $('hS').textContent=X.subarea+' · '+X.nivel+' · '+X.centro; $('lg').textContent=X.logo||'II'; $('ftx').textContent=X.titulo+' · '+X.centro;
+  $('app').innerHTML='<div class="card"><p>Cargando…</p></div>';
+  CFG=await getConfig(); const a=adm();
+  const nomP=(qs.get('nombre')||'').trim();
+  $('app').innerHTML=`${DEMO?'<div class="note gold"><b>Modo demostración:</b> este examen todavía no está conectado a su hoja de Google; las respuestas se guardan solo en este navegador. Úselo para revisarlo y probar el panel docente.</div>':''}
+  <div class="card"><span class="pill gold">${esc(X.periodoTxt||'')} · ${TOTAL} puntos · ${ITEMS.length} ítems · ${a.dur} min</span>
+   <h2 style="margin-top:10px">${esc(X.titulo)}</h2>${admTabla({})}
+   <h3>Instrucciones generales</h3>${instrGen()}
+   <h3>Estructura de la prueba</h3><div class="scroll"><table class="tb"><tr><th>Parte</th><th>Tipo de ítem</th><th class="c">Ítems</th><th class="c">Puntos</th></tr>${X.partes.map((p,i)=>`<tr><td>${esc(p.num)}</td><td>${esc(p.nombre)}</td><td class="c">${p.items.length}</td><td class="c">${p.pts}</td></tr>`).join('')}<tr><th colspan="2">Total</th><th class="c">${ITEMS.length}</th><th class="c">${TOTAL}</th></tr></table></div>
+   <div class="row" style="margin-top:12px"><button class="btn ghost sm" data-pdf="tabla">📄 Tabla de especificaciones (PDF)</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Ingreso</h3>
+   ${a.habil||DEMO?'':'<div class="note bad">El examen aún no está habilitado. Espere la indicación de su docente.</div>'}
+   <div class="grid2"><div><label class="lb" for="inNom">Nombre completo</label><input type="text" id="inNom" value="${esc(nomP)}" ${nomP?'readonly':''} placeholder="Nombre y apellidos" autocomplete="off"></div>
+   <div><label class="lb" for="inCed">Cédula (solo números)</label><input type="text" id="inCed" inputmode="numeric" placeholder="Ej. 101230456" autocomplete="off"></div>
+   <div><label class="lb" for="inSec">Sección</label><select id="inSec"><option value="">Seleccione…</option>${a.secciones.map(s=>`<option>${esc(s)}</option>`).join('')}</select></div></div>
+   <div class="row" style="margin-top:14px"><button class="btn gold" id="bIn" ${a.habil||DEMO?'':'disabled'}>Iniciar la prueba</button><span id="mIn" class="mut"></span></div></div>`;
+  $('bIn').onclick=entrar; wirePdf($('app'));
+}
+async function entrar(){
+  const nom=$('inNom').value.trim().replace(/\s+/g,' '), ced=$('inCed').value.replace(/\D/g,''), sec=$('inSec').value;
+  if(nom.split(' ').length<2) return $('mIn').innerHTML='<span style="color:#f6a497">Escriba su nombre y al menos un apellido.</span>';
+  if(ced.length<9) return $('mIn').innerHTML='<span style="color:#f6a497">Escriba su cédula completa (9 dígitos o más).</span>';
+  if(!sec) return $('mIn').innerHTML='<span style="color:#f6a497">Seleccione su sección.</span>';
+  $('bIn').disabled=true; $('mIn').textContent='Verificando…';
+  CFG=await getConfig(); if(!adm().habil&&!DEMO){ $('bIn').disabled=false; return $('mIn').innerHTML='<span style="color:#f6a497">El examen no está habilitado.</span>'; }
+  const rows=await getEntregas(); const mine=rows.find(r=>String(r.Clave)===claveDe(ced));
+  U={nombre:nom,ced,sec,clave:claveDe(ced)};
+  if(mine&&String(mine.Estado)==='entregado'){ verEntregado(mine); return; }
+  if(mine){ try{ R.resp=JSON.parse(mine.Respuestas||'{}'); }catch(e){ R.resp={}; } R.inc=+mine.Incidentes||0; R.inicio=mine.Inicio; toast('Se recuperaron sus respuestas guardadas.'); }
+  else { R.inicio=nowIso(); R.resp={}; R.inc=0; await guardar(true); }
+  const loc=lsGet('borrador_'+ced,null); if(loc&&loc.resp){ Object.keys(loc.resp).forEach(k=>{ if(R.resp[k]==null) R.resp[k]=loc.resp[k]; }); }
+  enCurso=true; renderExamen(); iniciarReloj();
+}
+/* ====================== EXAMEN DEL ESTUDIANTE ====================== */
+function itemHTML(it,a,print,key){
+  const pts=`<span class="ptsi">(${it.pts} ${it.pts===1?'punto':'puntos'})</span>`;
+  const ctx=it.ctx?`<div class="ctx">${it.ctx}</div>`:'';
+  if(it.tipo==='su'){ const ord=key?shuffled(it.ops.length,key+it.id):[...it.ops.keys()];
+    return `<div class="item" id="it_${it.id}"><div class="en"><span class="n">${it.n}.</span>${it.en}${pts}</div>${ctx}${ord.map((oi,k)=>`<label class="opt ${a===oi?'sel':''}"><input type="radio" name="r_${it.id}" value="${oi}" ${a===oi?'checked':''} data-it="${it.id}"> <span><b>${LET[k]})</b> ${it.ops[oi]}</span></label>`).join('')}</div>`; }
+  if(it.tipo==='corr'){ const ordB=key?shuffled(it.opciones.length,key+it.id):[...it.opciones.keys()]; const letra={}; ordB.forEach((oi,k)=>letra[it.opciones[oi].k]=LETM[k]);
+    return `<div class="item" id="it_${it.id}"><div class="en"><span class="n">${it.n}.</span>${it.en}${pts}</div>${ctx}<div class="corr"><div><div class="mut" style="margin-bottom:4px">Columna A</div>${it.filas.map((f,i)=>`<div class="fila"><select data-it="${it.id}" data-i="${i}" aria-label="Respuesta ${i+1}"><option value="">—</option>${ordB.map(oi=>`<option value="${it.opciones[oi].k}" ${(a||[])[i]===it.opciones[oi].k?'selected':''}>${letra[it.opciones[oi].k]}</option>`).join('')}</select><span>${i+1}. ${f.t}</span></div>`).join('')}</div>
+      <div class="colb"><div class="mut" style="margin-bottom:4px;border:0">Columna B</div>${ordB.map(oi=>`<div><b>${letra[it.opciones[oi].k]})</b> ${it.opciones[oi].t}</div>`).join('')}</div></div></div>`; }
+  if(it.tipo==='rc'){ return `<div class="item" id="it_${it.id}"><div class="en"><span class="n">${it.n}.</span>${it.en}${pts}</div>${ctx}${[...Array(it.resp).keys()].map(i=>`<div class="row" style="margin:6px 0;flex-wrap:nowrap"><span class="mono mut">${i+1}.</span><input type="text" data-it="${it.id}" data-i="${i}" value="${esc((a||[])[i]||'')}" autocomplete="off"></div>`).join('')}</div>`; }
+  if(it.tipo==='rr'){ return `<div class="item" id="it_${it.id}"><div class="en"><span class="n">${it.n}.</span>${it.en}${pts}</div>${ctx}${rubricaHTML(it)}<textarea data-it="${it.id}" placeholder="Escriba su respuesta completa">${esc(a||'')}</textarea></div>`; }
+  if(it.tipo==='ej'){ const A=a||{}; return `<div class="item" id="it_${it.id}"><div class="en"><span class="n">${it.n}.</span>${it.en}${pts}</div>${ctx}${it.pasos.map((p,i)=>`<div class="paso"><span>${String.fromCharCode(97+i)}) ${p.lbl} <span class="ptsi">(${p.pts} pt${p.pts>1?'s':''})</span></span><input type="text" data-it="${it.id}" data-k="p${i}" value="${esc(A['p'+i]||'')}" placeholder="${p.txt?'Respuesta':'Resultado'}" autocomplete="off" ${p.txt?'':'inputmode="decimal"'}></div>`).join('')}
+     <label class="lb">Procedimiento (anote cada cálculo: el docente lo revisa)</label><textarea data-it="${it.id}" data-k="proc" style="min-height:90px">${esc(A.proc||'')}</textarea></div>`; }
+  return ''; }
+function rubricaHTML(it){ return `<div class="scroll" style="margin:6px 0"><table class="tb rub"><tr><th>Criterio de calificación</th><th class="c">Puntos</th></tr>${it.criterios.map(c=>`<tr><td>${c.t}</td><td class="c">${c.pts}</td></tr>`).join('')}</table></div>`; }
+function renderExamen(){
+  const a=adm();
+  $('app').innerHTML=`<div class="card"><div class="row"><span class="pill gold">${esc(U.nombre)} · ${esc(U.sec)}</span><span class="pill">${TOTAL} puntos</span><span class="mut" id="prog"></span></div>${admTabla({nombre:U.nombre,sec:U.sec})}<h3>Instrucciones generales</h3>${instrGen()}</div>`+
+   X.partes.map((p,pi)=>`<div class="card parte"><h2>${esc(p.num)} parte · ${esc(p.nombre)} <span class="pts">(${p.pts} puntos)</span></h2><p class="mut" style="margin-top:0">${p.instr}</p>${p.items.map(it=>itemHTML(it,R.resp[it.id],false,U.clave)).join('')}</div>`).join('')+
+   `<div class="card"><div class="row"><button class="btn gold" id="bEnv">Enviar examen</button><span class="mut" id="mEnv">Revise sus respuestas antes de enviar. Después de enviar ya no podrá modificarlas.</span></div></div>`;
+  const app=$('app');
+  app.addEventListener('change',onInput); app.addEventListener('input',onInput);
+  $('bEnv').onclick=confirmarEnvio; progreso();
+}
+function onInput(e){ const el=e.target; const id=el.dataset&&el.dataset.it; if(!id||!enCurso) return; const it=ITEM(id);
+  if(it.tipo==='su'){ if(el.type==='radio'&&el.checked){ R.resp[id]=+el.value; el.closest('.item').querySelectorAll('.opt').forEach(o=>o.classList.toggle('sel',o.contains(el))); } }
+  else if(it.tipo==='corr'){ const a=R.resp[id]||(R.resp[id]=[]); a[+el.dataset.i]=el.value; }
+  else if(it.tipo==='rc'){ const a=R.resp[id]||(R.resp[id]=[]); a[+el.dataset.i]=el.value; }
+  else if(it.tipo==='rr'){ R.resp[id]=el.value; }
+  else if(it.tipo==='ej'){ const a=R.resp[id]||(R.resp[id]={}); a[el.dataset.k]=el.value; }
+  dirty=true; lsSet('borrador_'+U.ced,{resp:R.resp}); progreso(); clearTimeout(saveT); saveT=setTimeout(()=>guardar(),2500); }
+function progreso(){ const n=ITEMS.filter(it=>contestado(it,R.resp[it.id])).length; const e=$('prog'); if(e) e.textContent=n+' de '+ITEMS.length+' ítems respondidos'; return n; }
+async function guardar(force){ if(!U) return; if(!dirty&&!force) return; dirty=false; $('saveSt').textContent='Guardando…';
+  const c=calificar(R.resp,null);
+  await post('Entregas','Clave',{Clave:U.clave,Examen:X.id,Estudiante:U.nombre,Cedula:U.ced,Seccion:U.sec,Inicio:R.inicio,Ultimo:nowIso(),Estado:R.estado||'en curso',Respuestas:JSON.stringify(R.resp),Incidentes:R.inc,PuntajeAuto:c.auto,Total:TOTAL});
+  $('saveSt').textContent='✓ Guardado '+new Date().toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'}); }
+setInterval(()=>{ if(enCurso) guardar(); },20000);
+function iniciarReloj(){ const t=$('tmr'); t.style.display=''; clearInterval(finT);
+  const fin=new Date(R.inicio).getTime()+adm().dur*60000;
+  const tick=()=>{ const ms=fin-Date.now(); if(ms<=0){ t.textContent='00:00'; clearInterval(finT); if(enCurso){ toast('Se terminó el tiempo: la prueba se envía automáticamente.',5000); enviar(true); } return; }
+    const m=Math.floor(ms/60000), s=Math.floor(ms/1000)%60; t.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); t.classList.toggle('low',ms<5*60000); };
+  tick(); finT=setInterval(tick,1000); }
+function confirmarEnvio(){ const falt=ITEMS.length-progreso(); const m=$('mEnv');
+  if(!$('bEnv').dataset.arm){ $('bEnv').dataset.arm='1'; $('bEnv').textContent='Sí, enviar definitivamente'; $('bEnv').classList.add('coral'); m.innerHTML=(falt?'<b style="color:#f6a497">Tiene '+falt+' ítem(s) sin responder completos.</b> ':'')+'¿Seguro que desea enviar? <button class="btn ghost sm" id="bNo">No, seguir revisando</button>'; $('bNo').onclick=()=>{ delete $('bEnv').dataset.arm; $('bEnv').textContent='Enviar examen'; $('bEnv').classList.remove('coral'); m.textContent='Revise sus respuestas antes de enviar.'; }; return; }
+  enviar(false); }
+async function enviar(auto){ if(!enCurso) return; enCurso=false; clearInterval(finT); R.estado='entregado'; dirty=true;
+  const c=calificar(R.resp,null);
+  await post('Entregas','Clave',{Clave:U.clave,Examen:X.id,Estudiante:U.nombre,Cedula:U.ced,Seccion:U.sec,Inicio:R.inicio,Ultimo:nowIso(),Entrega:nowIso(),Estado:'entregado',Respuestas:JSON.stringify(R.resp),Incidentes:R.inc,PuntajeAuto:c.auto,Total:TOTAL,EnvioAutomatico:auto?'SI':'NO'});
+  try{ localStorage.removeItem(LSK('borrador_'+U.ced)); }catch(e){}
+  $('saveSt').textContent='✓ Entregado'; $('tmr').style.display='none';
+  verEntregado({Estudiante:U.nombre,Seccion:U.sec,Entrega:nowIso(),Revisado:'NO'}); }
+function verEntregado(row){ enCurso=false; const mostrar=String(CFG.MostrarNotas||'NO').toUpperCase()==='SI'&&String(row.Revisado||'NO')==='SI';
+  $('app').innerHTML=`<div class="card"><span class="pill teal">Prueba entregada</span><h2 style="margin-top:10px">¡Gracias, ${esc(String(row.Estudiante||'').split(' ')[0])}!</h2>
+  <p>Su prueba quedó registrada${row.Entrega?' el '+new Date(row.Entrega).toLocaleString('es-CR'):''}. Ya no puede modificarse.</p>
+  ${mostrar?`<div class="note ok">Puntuación obtenida: <b>${row.PuntajeFinal} de ${TOTAL}</b> · Calificación: <b>${fmt2(+row.Nota)}</b>${row.Porcentaje?' · Porcentaje: <b>'+fmt2(+row.Porcentaje)+' %</b>':''}</div>`:'<p class="mut">Su docente revisará las respuestas de desarrollo y publicará la calificación final.</p>'}</div>`; }
+/* ====================== MONITOREO DE SALIDA ====================== */
+let lastLeave=0;
+function salio(){ if(!enCurso) return; const t=Date.now(); if(t-lastLeave<1500) return; lastLeave=t; R.inc++; dirty=true; guardar();
+  const b=$('banner'); b.textContent='⚠ Salió de la ventana de la prueba ('+R.inc+(R.inc===1?' vez':' veces')+'). Queda registrado para su docente.'; b.style.display='block'; setTimeout(()=>b.style.display='none',6000); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) salio(); });
+window.addEventListener('blur',()=>{ setTimeout(()=>{ if(!document.hasFocus()) salio(); },350); });
+window.addEventListener('beforeunload',e=>{ if(enCurso){ guardar(true); e.preventDefault(); e.returnValue=''; } });
+/* ====================== VISTAS PARA PDF ====================== */
+function tablaEspHTML(){ const tipos=X.tiposTabla; let tot={l:0,p:0}; const sumT={}; tipos.forEach(t=>sumT[t[0]]=0);
+  const filas=X.tabla.map(r=>{ const its=ITEMS.filter(i=>i.ra===r.ra); const porT={}; tipos.forEach(t=>porT[t[0]]=its.filter(i=>i.tipo===t[0]).reduce((a,i)=>a+i.pts,0)); const p=its.reduce((a,i)=>a+i.pts,0); tot.l+=r.lecciones; tot.p+=p; tipos.forEach(t=>sumT[t[0]]+=porT[t[0]]);
+    const calc=Math.round(r.lecciones*X.constante*100)/100;
+    return `<tr><td><b>${esc(r.ra)}</b> ${esc(r.nombre)}</td><td>${r.indicadores.map(x=>'• '+esc(x)).join('<br>')}</td><td class="c">${r.lecciones}</td><td class="c">${fmt2(calc)} → <b>${Math.round(calc)}</b></td>${tipos.map(t=>`<td class="c">${porT[t[0]]||'—'}</td>`).join('')}<td class="c"><b>${p}</b></td><td class="c small">${its.map(i=>i.n).join(', ')}</td></tr>`; }).join('');
+  return `<div class="hd"><b>Tabla de especificaciones</b><br>${esc(X.titulo)}<br>${esc(X.centro)} · ${esc(X.especialidad)} · ${esc(X.subarea)} · ${esc(X.nivel)} · ${esc(adm().periodo||'')}</div>
+  <table><tr><th style="width:24%">Aprendizaje esperado (Resultado de aprendizaje)</th><th style="width:27%">Indicadores</th><th class="c">N.° de lecciones</th><th class="c">Puntos (constante × lecciones)</th>${tipos.map(t=>`<th class="c">${t[1]}</th>`).join('')}<th class="c">Total</th><th class="c">Ítems</th></tr>${filas}
+  <tr><th colspan="2">Total</th><th class="c">${tot.l}</th><th class="c">${tot.p}</th>${tipos.map(t=>`<th class="c">${sumT[t[0]]}</th>`).join('')}<th class="c">${tot.p}</th><th></th></tr></table>
+  <p class="small"><b>Cálculo (Lineamientos técnicos MEP para la prueba escrita):</b> puntuación total preliminar ${X.preliminar} ÷ ${tot.l} lecciones = constante <b>${String(X.constante).replace('.',',')}</b>; constante × lecciones de cada aprendizaje, redondeado (0,50 o más hacia arriba). La suma da la puntuación total de la prueba: <b>${tot.p} puntos</b>.</p>
+  <p class="small"><b>Lecciones:</b> ${X.notaLecciones}</p>`; }
+function encabezadoPrint(st){ const a=adm(); const S=st||{}; const L='______________';
+  return `<div class="hd"><b>${esc(X.centro)}</b><br>${esc(X.titulo)}</div><table class="small">
+  <tr><td>Especialidad / Subárea: ${esc(X.especialidad)} · ${esc(X.subarea)}</td><td>Unidad(es): ${esc(X.unidades)}</td></tr>
+  <tr><td>Docente: ${esc(X.docente)}</td><td>Periodo: ${esc(a.periodo)||L} · Nivel: ${esc(X.nivel)}</td></tr>
+  <tr><td>Nombre del estudiante: ${S.nombre?esc(S.nombre):L+L}</td><td>Sección: ${S.sec?esc(S.sec):L} · Fecha: ${esc(a.fecha)||L}</td></tr>
+  <tr><td>Duración: ${a.dur} minutos · Puntuación total: ${TOTAL} puntos</td><td>Valor porcentual: ${a.valor?esc(a.valor)+' %':L}</td></tr>
+  <tr><td>Puntuación obtenida: ${S.obt!=null?S.obt:L}</td><td>Calificación: ${S.nota!=null?fmt2(S.nota):L} · Porcentaje obtenido: ${S.porc!=null?fmt2(S.porc)+' %':L}</td></tr></table>`; }
+function itemPrint(it,clave){
+  const pts=` <i>(${it.pts} ${it.pts===1?'punto':'puntos'})</i>`;
+  const ctx=it.ctx?`<div class="box">${it.ctx}</div>`:'';
+  if(it.tipo==='su') return `<div class="it"><b>${it.n}.</b> ${it.en}${pts}${ctx}<div class="ops">${it.ops.map((o,k)=>`<div class="${clave&&k===it.correcta?'key':''}">${LET[k]}) ${o}${clave&&k===it.correcta?' ✔':''}</div>`).join('')}</div></div>`;
+  if(it.tipo==='corr'){ const letra={}; it.opciones.forEach((o,k)=>letra[o.k]=LETM[k]);
+    return `<div class="it"><b>${it.n}.</b> ${it.en}${pts}${ctx}<div class="corrp"><div><b>Columna A</b>${it.filas.map((f,i)=>`<div style="margin:4px 0">( ${clave?`<span class="key">${letra[f.k]}</span>`:'&nbsp;&nbsp;'} ) ${i+1}. ${f.t}</div>`).join('')}</div><div><b>Columna B</b>${it.opciones.map(o=>`<div style="margin:4px 0">${letra[o.k]}) ${o.t}</div>`).join('')}</div></div></div>`; }
+  if(it.tipo==='rc') return `<div class="it"><b>${it.n}.</b> ${it.en}${pts}${ctx}${clave?`<div class="key">Respuesta esperada: ${it.modelo}</div>`:[...Array(it.resp).keys()].map(i=>`<div class="ln">${i+1}.</div>`).join('')}</div>`;
+  if(it.tipo==='rr') return `<div class="it"><b>${it.n}.</b> ${it.en}${pts}${ctx}<table class="small"><tr><th>Criterio</th><th class="c">Puntos</th></tr>${it.criterios.map(c=>`<tr><td>${c.t}</td><td class="c">${c.pts}</td></tr>`).join('')}</table>${clave?`<div class="key">Respuesta esperada: ${it.modelo}</div>`:[...Array(Math.max(4,it.pts*2)).keys()].map(()=>'<div class="ln"></div>').join('')}</div>`;
+  if(it.tipo==='ej') return `<div class="it"><b>${it.n}.</b> ${it.en}${pts}${ctx}<table class="small"><tr><th>Se solicita</th><th class="c">Puntos</th>${clave?'<th>Respuesta</th>':''}</tr>${it.pasos.map((p,i)=>`<tr><td>${String.fromCharCode(97+i)}) ${p.lbl}</td><td class="c">${p.pts}</td>${clave?`<td class="key">${esc(p.show||p.v)}${p.proc?'<br><span class="small" style="color:#333;font-weight:normal">'+esc(p.proc)+'</span>':''}</td>`:''}</tr>`).join('')}</table>${clave?'':'<div class="small"><i>Procedimiento:</i></div>'+[...Array(7).keys()].map(()=>'<div class="ln"></div>').join('')}</div>`;
+  return ''; }
+function examenPrint(clave){ return encabezadoPrint()+`<h2>Instrucciones generales</h2><ul class="small">${X.instrucciones.map(t=>`<li>${t}</li>`).join('')}</ul>`+
+  X.partes.map(p=>`<h2>${esc(p.num)} parte · ${esc(p.nombre)} (${p.pts} puntos)</h2><div class="small"><i>${p.instr}</i></div>${p.items.map(it=>itemPrint(it,clave)).join('')}`).join('')+
+  (clave?'':`<p class="small" style="margin-top:16px;text-align:center">— Fin de la prueba —</p>`); }
+function mostrarPrint(tipo,auto){ const pr=$('print');
+  const t={examen:'Examen (versión para imprimir)',clave:'Solucionario del docente',tabla:'Tabla de especificaciones'}[tipo];
+  pr.innerHTML=`<div class="preview-bar">${esc(t)} · Use <b>Imprimir → Guardar como PDF</b>. <button onclick="window.print()">🖨 Imprimir / PDF</button> <button onclick="document.getElementById('print').style.display='none';document.body.classList.remove('printing')">Cerrar</button></div>`+(tipo==='tabla'?tablaEspHTML():tipo==='clave'?'<div class="hd"><b>SOLUCIONARIO · USO EXCLUSIVO DEL DOCENTE</b></div>'+examenPrint(true):examenPrint(false));
+  let ps=document.getElementById('pgSz'); if(!ps){ ps=document.createElement('style'); ps.id='pgSz'; document.head.appendChild(ps); } ps.textContent=tipo==='tabla'?'@page{ size:letter landscape; margin:12mm; } #print td,#print th{ font-size:9.5pt; }':'';
+  pr.style.display='block'; window.scrollTo(0,0);
+  if(!auto) setTimeout(()=>window.print(),300); }
+function wirePdf(root){ root.querySelectorAll('[data-pdf]').forEach(b=>b.onclick=()=>{ const t=b.dataset.pdf; if(t!=='tabla'&&!b.dataset.ok){ const p=prompt('PIN docente:'); if(p!==PIN) return toast('PIN incorrecto.'); } mostrarPrint(t); }); }
+/* ====================== PANEL DOCENTE ====================== */
+let PANEL={rows:[],sec:'Todas'};
+async function panel(){ const p=prompt('PIN del panel docente:'); if(p===null) return; if(p!==PIN) return toast('PIN incorrecto.');
+  $('modal').classList.add('on'); $('modalIn').innerHTML='<div class="card"><p>Cargando entregas…</p></div>'; CFG=await getConfig(); PANEL.rows=await getEntregas(); panelRender(); }
+function filaCalc(r){ let resp={},aj={}; try{ resp=JSON.parse(r.Respuestas||'{}'); }catch(e){} try{ aj=JSON.parse(r.Ajustes||'{}'); }catch(e){} const c=calificar(resp,aj); return {resp,aj,c}; }
+function panelRender(){ const a=adm(); const secs=['Todas'].concat(a.secciones);
+  const L=PANEL.rows.filter(r=>String(r.Examen||X.id)===X.id&&(PANEL.sec==='Todas'||r.Seccion===PANEL.sec)).sort((x,y)=>String(x.Estudiante).localeCompare(String(y.Estudiante),'es'));
+  const ent=L.filter(r=>r.Estado==='entregado'); const prom=ent.length?ent.reduce((s,r)=>s+nota(filaCalc(r).c.fin),0)/ent.length:0;
+  $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · ${esc(X.titulo)}</h2><button class="btn ghost sm" style="margin-left:auto" id="pX">Cerrar ✕</button></div>
+   ${DEMO?'<div class="note gold">Modo demostración: se muestran solo las entregas hechas en este navegador.</div>':''}
+   <div class="kpis" style="margin-top:12px"><div class="kpi"><div class="v">${L.length}</div><div class="t">Estudiantes que ingresaron</div></div><div class="kpi"><div class="v">${ent.length}</div><div class="t">Pruebas entregadas</div></div><div class="kpi"><div class="v">${ent.filter(r=>r.Revisado==='SI').length}</div><div class="t">Revaloradas por usted</div></div><div class="kpi"><div class="v">${fmt2(prom)}</div><div class="t">Calificación promedio</div></div></div>
+   <h3>Configuración de la aplicación</h3>
+   <div class="grid2"><div><label class="lb">Periodo</label><input type="text" id="cfPer" value="${esc(a.periodo)}"></div><div><label class="lb">Fecha de aplicación</label><input type="text" id="cfFec" value="${esc(a.fecha)}" placeholder="Ej. 10 de noviembre de 2026"></div>
+   <div><label class="lb">Valor porcentual (%)</label><input type="text" id="cfVal" value="${esc(a.valor)}" placeholder="Ej. 30"></div><div><label class="lb">Duración (minutos)</label><input type="number" id="cfDur" value="${a.dur}"></div>
+   <div><label class="lb">Secciones (separadas por coma)</label><input type="text" id="cfSec" value="${esc(a.secciones.join(', '))}"></div><div><label class="lb">Mostrar la nota al estudiante cuando usted la revalore</label><select id="cfMos"><option value="NO">No</option><option value="SI" ${String(CFG.MostrarNotas||'').toUpperCase()==='SI'?'selected':''}>Sí</option></select></div></div>
+   <div class="row" style="margin-top:12px"><button class="btn teal sm" id="cfSave">Guardar configuración</button><button class="btn sm ${a.habil?'coral':'gold'}" id="cfHab">${a.habil?'⏸ Deshabilitar el examen':'▶ Habilitar el examen'}</button><span class="mut">Estado: <b>${a.habil?'habilitado':'deshabilitado'}</b></span></div>
+   <h3>Documentos</h3><div class="row"><button class="btn ghost sm" data-pdf="examen" data-ok="1">📄 Examen en PDF</button><button class="btn ghost sm" data-pdf="clave" data-ok="1">📄 Solucionario en PDF</button><button class="btn ghost sm" data-pdf="tabla">📄 Tabla de especificaciones en PDF</button></div>
+   <h3>Entregas</h3><div class="row" style="margin-bottom:8px">${secs.map(s=>`<button class="btn sm ${s===PANEL.sec?'gold':'ghost'}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}<button class="btn teal sm" id="pCsv" style="margin-left:auto">Exportar CSV</button><button class="btn ghost sm" id="pRef">↻ Actualizar</button></div>
+   <div class="scroll"><table class="tb"><tr><th>Estudiante</th><th>Sección</th><th>Estado</th><th class="c">Automático</th><th class="c">Final</th><th class="c">Calificación</th><th class="c">Salidas</th><th></th></tr>
+   ${L.map(r=>{ const {c}=filaCalc(r); return `<tr><td>${esc(r.Estudiante)}<div class="mut">${esc(r.Cedula)}</div></td><td>${esc(r.Seccion)}</td><td>${r.Estado==='entregado'?'<span class="pill teal">entregado</span>':'<span class="pill gold">en curso</span>'} ${r.Revisado==='SI'?'<span class="pill">revalorado</span>':''}</td><td class="c">${c.auto}</td><td class="c"><b>${c.fin}</b> / ${TOTAL}</td><td class="c">${fmt2(nota(c.fin))}</td><td class="c">${+r.Incidentes||0}</td><td><button class="btn gold sm" data-rev="${esc(r.Clave)}">Revisar y revalorar</button> <button class="btn ghost sm" data-del="${esc(r.Clave)}">Reabrir</button></td></tr>`; }).join('')||`<tr><td colspan="8" class="mut">Sin entregas todavía.</td></tr>`}</table></div>
+   <p class="mut">«Automático»: lo que calificó el sistema (en respuesta construida es una sugerencia por palabras clave). «Final»: incluye sus revaloraciones. «Reabrir» borra el intento para que el estudiante pueda hacer la prueba de nuevo.</p></div>
+   <div class="card">${tablaResumenItems(L.filter(r=>r.Estado==='entregado'))}</div>`;
+  const M=$('modalIn');
+  $('pX').onclick=()=>$('modal').classList.remove('on');
+  M.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{ PANEL.sec=b.dataset.sec; panelRender(); });
+  $('pRef').onclick=async()=>{ PANEL.rows=await getEntregas(); panelRender(); };
+  M.querySelectorAll('[data-rev]').forEach(b=>b.onclick=()=>revisar(b.dataset.rev));
+  M.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{ if(!b.dataset.arm){ b.dataset.arm=1; b.textContent='¿Confirmar?'; b.classList.add('coral'); return; } await delRow('Entregas','Clave',b.dataset.del); PANEL.rows=PANEL.rows.filter(r=>r.Clave!==b.dataset.del); toast('Intento borrado: el estudiante puede volver a hacer la prueba.'); panelRender(); });
+  $('cfSave').onclick=async()=>{ const v={Periodo:$('cfPer').value.trim(),Fecha:$('cfFec').value.trim(),ValorPorcentual:$('cfVal').value.trim().replace('%',''),Duracion:$('cfDur').value.trim(),Secciones:$('cfSec').value.trim(),MostrarNotas:$('cfMos').value};
+    for(const k of Object.keys(v)) await setCfg(k,v[k]); Object.assign(CFG,v); toast('Configuración guardada.'); panelRender(); };
+  $('cfHab').onclick=async()=>{ const nv=a.habil?'NO':'SI'; await setCfg('Habilitado',nv); CFG.Habilitado=nv; toast(nv==='SI'?'Examen habilitado.':'Examen deshabilitado.'); panelRender(); };
+  $('pCsv').onclick=()=>exportCsv(L);
+  wirePdf(M); }
+function tablaResumenItems(L){ if(!L.length) return '<h3 style="margin-top:0">Rendimiento por ítem</h3><p class="mut">Aparece cuando haya pruebas entregadas.</p>';
+  return `<h3 style="margin-top:0">Rendimiento por ítem (puntaje final promedio)</h3><div class="scroll"><table class="tb"><tr><th>Ítem</th><th>Parte</th><th>RA</th><th class="c">Puntos</th><th class="c">Promedio</th><th class="c">% de logro</th></tr>${ITEMS.map(it=>{ const s=L.reduce((a,r)=>a+filaCalc(r).c.det[it.id][1],0)/L.length; return `<tr><td>${it.n}</td><td>${esc(X.partes[it.parte].num)}</td><td>${esc(it.ra)}</td><td class="c">${it.pts}</td><td class="c">${fmt2(s)}</td><td class="c">${Math.round(s/it.pts*100)} %</td></tr>`; }).join('')}</table></div>`; }
+function respTexto(it,a){ if(a==null) return '(sin respuesta)';
+  if(it.tipo==='su'){ return a!=null&&it.ops[a]!=null?it.ops[a].replace(/<[^>]+>/g,''):'(sin respuesta)'; }
+  if(it.tipo==='corr'){ return it.filas.map((f,i)=>(i+1)+'. '+((it.opciones.find(o=>o.k===(a||[])[i])||{t:'—'}).t)+(a[i]===f.k?'  ✔':'  ✘ (correcta: '+it.opciones.find(o=>o.k===f.k).t+')')).join('\n'); }
+  if(it.tipo==='rc') return (a||[]).map((x,i)=>(i+1)+'. '+(x||'—')).join('\n');
+  if(it.tipo==='rr') return a||'(sin respuesta)';
+  if(it.tipo==='ej') return it.pasos.map((p,i)=>String.fromCharCode(97+i)+') '+((a||{})['p'+i]||'—')+'   [esperado: '+(p.show||p.v)+']').join('\n')+'\n\nProcedimiento:\n'+((a||{}).proc||'—');
+  return ''; }
+function revisar(clave){ const r=PANEL.rows.find(x=>x.Clave===clave); if(!r) return; const {resp,aj}=filaCalc(r); const a=adm();
+  const totalVivo=()=>{ let s=0; ITEMS.forEach(it=>{ const v=$('pt_'+it.id).value; s+=v===''?0:+v; }); $('rvTot').textContent=s; $('rvNota').textContent=fmt2(nota(s)); $('rvPorc').textContent=a.valor?fmt2(nota(s)*(+a.valor)/100)+' %':'—'; };
+  $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Revaloración · ${esc(r.Estudiante)}</h2><span class="pill">${esc(r.Seccion)}</span><span class="pill ${+r.Incidentes?'coral':''}">Salidas de pantalla: ${+r.Incidentes||0}</span><button class="btn ghost sm" style="margin-left:auto" id="rvBack">← Volver</button></div>
+   <p class="mut">Puede cambiar el puntaje de <b>cualquier ítem en todas las partes</b> (números enteros entre 0 y el valor del ítem). El valor sugerido es el automático; en respuesta construida verifique siempre la respuesta.</p>
+   <div class="kpis"><div class="kpi"><div class="v"><span id="rvTot"></span> / ${TOTAL}</div><div class="t">Puntuación obtenida</div></div><div class="kpi"><div class="v" id="rvNota"></div><div class="t">Calificación</div></div><div class="kpi"><div class="v" id="rvPorc"></div><div class="t">Porcentaje obtenido (valor ${a.valor?esc(a.valor)+' %':'sin definir'})</div></div><div class="kpi"><div class="v">${calificar(resp,null).auto}</div><div class="t">Puntaje automático</div></div></div></div>`+
+   X.partes.map(p=>`<div class="card"><h3 style="margin-top:0">${esc(p.num)} parte · ${esc(p.nombre)} (${p.pts} pts)</h3>${p.items.map(it=>{ const s=autoScore(it,resp[it.id]); const cur=aj[it.id]&&aj[it.id].p!=null&&aj[it.id].p!==''?aj[it.id].p:s;
+     return `<div class="rev"><div class="row"><b>${it.n}.</b><span style="flex:1">${it.en.replace(/<[^>]+>/g,'').slice(0,160)}</span><span class="pill">${esc(it.ra)}</span>${esConstruida(it)?'<span class="pill gold">revisar</span>':''}</div>
+      <div class="ans">${esc(respTexto(it,resp[it.id]))}</div>
+      ${it.tipo==='su'?`<div class="mut">Correcta: ${it.ops[it.correcta].replace(/<[^>]+>/g,'')}</div>`:''}${it.modelo?`<div class="mut"><b>Respuesta esperada:</b> ${it.modelo}</div>`:''}${it.criterios?`<div class="mut"><b>Criterios:</b> ${it.criterios.map(c=>c.t+' ('+c.pts+')').join(' · ')}</div>`:''}
+      <div class="row" style="margin-top:8px"><span class="mut">Automático: <b>${s}</b> / ${it.pts}</span><label class="mut" for="pt_${it.id}">Puntaje final:</label><input class="pt" type="number" min="0" max="${it.pts}" step="1" id="pt_${it.id}" value="${cur}"><span class="mut">/ ${it.pts}</span><input type="text" id="cm_${it.id}" value="${esc((aj[it.id]||{}).c||'')}" placeholder="Comentario (opcional)" style="flex:1;min-width:180px"></div></div>`; }).join('')}</div>`).join('')+
+   `<div class="card"><div class="row"><button class="btn gold" id="rvSave">Guardar revaloración</button><span class="mut" id="rvMsg"></span></div></div>`;
+  ITEMS.forEach(it=>{ const e=$('pt_'+it.id); e.oninput=()=>{ let v=e.value===''?'':Math.round(+e.value); if(v!==''&&(v<0||v>it.pts)) v=Math.max(0,Math.min(it.pts,v)); if(String(v)!==e.value) e.value=v; totalVivo(); }; });
+  totalVivo(); $('rvBack').onclick=()=>panelRender();
+  $('rvSave').onclick=async()=>{ const A={}; ITEMS.forEach(it=>{ const v=$('pt_'+it.id).value, c=$('cm_'+it.id).value.trim(); const s=autoScore(it,resp[it.id]); if((v!==''&&+v!==s)||c) A[it.id]={p:v===''?null:+v,c}; if(v!==''&&+v===s&&c) A[it.id].p=+v; });
+    const c=calificar(resp,A); const n=nota(c.fin); const porc=a.valor?Math.round(n*(+a.valor))/100:'';
+    const upd={Clave:r.Clave,Ajustes:JSON.stringify(A),PuntajeFinal:c.fin,Nota:n,Porcentaje:porc,Revisado:'SI',RevisadoEl:nowIso()};
+    await post('Entregas','Clave',upd); Object.assign(r,upd); $('rvMsg').textContent='✓ Revaloración guardada: '+c.fin+' / '+TOTAL+' · calificación '+fmt2(n); toast('Revaloración guardada.'); };
+}
+function exportCsv(L){ const a=adm(); const head=['Estudiante','Cédula','Sección','Estado','Inicio','Entrega','Salidas'].concat(ITEMS.map(it=>'Ítem '+it.n+' ('+it.pts+')'),['Automático','Puntuación final','Total','Calificación','Porcentaje','Revisado']);
+  const rows=[head]; L.forEach(r=>{ const {c}=filaCalc(r); const n=nota(c.fin); rows.push([r.Estudiante,r.Cedula,r.Seccion,r.Estado,r.Inicio,r.Entrega||'',+r.Incidentes||0].concat(ITEMS.map(it=>c.det[it.id][1]),[c.auto,c.fin,TOTAL,fmt2(n),a.valor?fmt2(n*(+a.valor)/100):'',r.Revisado||'NO'])); });
+  const csv='﻿'+rows.map(r=>r.map(x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const el=document.createElement('a'); el.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); el.download=X.id+'_'+PANEL.sec+'.csv'; document.body.appendChild(el); el.click(); el.remove(); }
+$('lnkDoc').onclick=e=>{ e.preventDefault(); panel(); };
+window.__EX={ITEMS,TOTAL,autoScore,calificar,mostrarPrint,X};
+/* ====================== ARRANQUE ====================== */
+(async()=>{ const pdf=qs.get('pdf'); if(pdf){ CFG=await getConfig(); $('hT').textContent=X.titulo; if(pdf==='tabla'||qs.get('pin')===PIN) mostrarPrint(pdf,true); document.body.classList.add('printing'); return; } portada(); })();
+})();
+</script>
+</body>
+</html>
