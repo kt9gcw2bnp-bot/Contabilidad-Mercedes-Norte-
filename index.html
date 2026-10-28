@@ -514,7 +514,10 @@ async function renderPortal(){
     const [allRows, overrides] = await Promise.all([loadCatalogo(), loadActivoOverrides()]);
     window.__catalogoCache = allRows;
     window.__overridesCache = overrides;
-    let rows = allRows.filter(r=> efectivoActivo(r, overrides) === 'SI');
+    // Las pruebas escritas siempre se listan; la propia prueba bloquea el ingreso mientras esté cerrada.
+    let rows = allRows.filter(r=> r.Categoria==='Examen' || efectivoActivo(r, overrides) === 'SI');
+    window.__examAbierto = {};
+    allRows.filter(r=>r.Categoria==='Examen').forEach(r=>{ window.__examAbierto[String(r.Id||'').trim()] = efectivoActivo(r, overrides)==='SI'; });
     if(!isDocente) rows = rows.filter(r=> String(r.Nivel) === String(session.nivel));
 
     if(rows.length===0){
@@ -621,6 +624,7 @@ function renderCard(r, conSub){
     <div class="ctitle">${escapeHtml(r.Titulo||'')}</div>
     ${conSub && r.Subarea ? '<div class="csub">'+escapeHtml(r.Subarea)+'</div>' : ''}
     ${pending ? '<div class="cpending">Próximamente — todavía no está publicado</div>' : ''}
+    ${r.Categoria==='Examen' ? (window.__examAbierto && window.__examAbierto[String(r.Id||'').trim()] ? '<div class="csub" style="color:#2FC2AD;font-weight:700">🟢 Habilitada: puede ingresar</div>' : '<div class="cpending">🔒 Se habilita el día de la prueba</div>') : ''}
   </a>`;
 }
 
