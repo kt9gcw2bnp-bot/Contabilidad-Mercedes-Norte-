@@ -645,10 +645,32 @@ function renderAdminPanel(){
   overlay.className = 'overlay';
   overlay.id = 'adminOverlay';
 
+  const esExamen = r=> r.Categoria==='Examen';
+  const examenes = allRows.filter(esExamen);
+  let examHtml = '';
+  if(examenes.length){
+    examHtml = `<div class="level-heading" style="margin-top:14px;">📝 Pruebas escritas</div>
+      <p class="sub" style="margin:4px 0 8px">Cerradas, los estudiantes no ven la prueba ni pueden ingresar aunque tengan el enlace. Ábrala el día de la aplicación y ciérrela al terminar.</p>`;
+    examenes.forEach(r=>{
+      const id = String(r.Id||'').trim();
+      const on = efectivoActivo(r, overrides) === 'SI';
+      examHtml += `
+        <div class="toggle-row" style="border:1px solid ${on?'#2FC2AD':'#3a3a44'};border-radius:12px;padding:10px 12px;margin:6px 0">
+          <div class="trow-info">
+            <div class="trow-title">${escapeHtml(r.Nivel)}° · ${escapeHtml(r.Titulo||'')}</div>
+            <div class="trow-sub">${on?'🟢 Habilitada: los estudiantes pueden ingresar':'🔒 Cerrada: no visible para estudiantes'}</div>
+          </div>
+          <button type="button" data-exam-id="${escapeHtml(id)}" data-on="${on?'SI':'NO'}"
+            style="border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;white-space:nowrap;${on?'background:#EF6A5B;color:#fff':'background:linear-gradient(135deg,#C9973F,#F4DD7A);color:#1a1206'}">
+            ${on?'⏸ Cerrar prueba':'▶ Habilitar prueba'}</button>
+        </div>`;
+    });
+  }
+
   let rowsHtml = '';
   levels.forEach(lvl=>{
     rowsHtml += `<div class="level-heading" style="margin-top:18px;">Nivel ${escapeHtml(lvl)}°</div>`;
-    allRows.filter(r=>String(r.Nivel)===lvl).forEach(r=>{
+    allRows.filter(r=>String(r.Nivel)===lvl && !esExamen(r)).forEach(r=>{
       const id = String(r.Id||'').trim();
       const activo = efectivoActivo(r, overrides) === 'SI';
       rowsHtml += `
@@ -673,12 +695,27 @@ function renderAdminPanel(){
       <button class="overlay-close" id="closeAdmin">&times;</button>
       <h2>Panel docente</h2>
       <p class="sub">Active o inactive los temas que ven los estudiantes de cada nivel. Los cambios se guardan de inmediato.</p>
+      ${examHtml}
       ${rowsHtml}
     </div>
   `;
   document.body.appendChild(overlay);
   document.getElementById('closeAdmin').addEventListener('click', ()=> overlay.remove());
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+
+  overlay.querySelectorAll('button[data-exam-id]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.getAttribute('data-exam-id');
+      const nuevo = btn.getAttribute('data-on')==='SI' ? 'NO' : 'SI';
+      if(nuevo==='SI' && !window.confirm('¿Habilitar la prueba ahora? Los estudiantes podrán ingresar de inmediato.')) return;
+      btn.disabled = true; btn.textContent = 'Guardando…';
+      try{
+        await sheetPost('CatalogoActivo', { CursoId: id, Activo: nuevo, Timestamp: new Date().toISOString() });
+        window.__overridesCache[id] = nuevo;
+      }catch(e){ window.alert('No se pudo guardar el cambio. Intente de nuevo.'); }
+      overlay.remove(); renderAdminPanel();
+    });
+  });
 
   overlay.querySelectorAll('input[data-toggle-id]').forEach(inp=>{
     inp.addEventListener('change', async ()=>{
