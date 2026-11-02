@@ -4664,6 +4664,7 @@ const qs=new URLSearchParams(location.search);
 const SALA=(qs.get('sala')||'prueba').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,30)||'prueba';
 const configOK=!!(FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.databaseURL);
 const DEMO=qs.get('demo')==='1'||!configOK;
+const VISITA=qs.get('visita')==='1';   // modo visitante: solo recorrer y observar, sin escribir datos
 const COLORS=['#F4DD7A','#2FC2AD','#EF6A5B','#7DA7FF','#C38BFF','#7EE07A','#FF9F43','#F58FD0'];
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const r2=x=>Math.round((Number(x)||0)*100+ (x>=0?1e-9:-1e-9))/100;
@@ -4791,6 +4792,19 @@ const SOLO_IND=SALA==='12'||qs.get('ind')==='1';                      // 12.° a
 const myEid=()=>{ const e=myE(); return e?e.eid:'-'; };
 const now=()=>Date.now()+(S.off||0);
 let DB=null, SV=null, base=null, MODE='', fbErr='';
+/* Modo visitante: toda escritura a la base de datos se ignora (solo lectura). */
+function soloLectura(db){
+  const ok=()=>Promise.resolve();
+  const RO=r=>(!r||typeof r!=='object')?r:new Proxy(r,{get(t,p){
+    if(p==='set'||p==='update'||p==='remove'||p==='setWithPriority'||p==='setPriority') return ok;
+    if(p==='transaction') return ()=>Promise.resolve({committed:false,snapshot:{val:()=>null,exists:()=>false}});
+    if(p==='push') return ()=>RO(t.child('v'+Math.random().toString(36).slice(2,12)));
+    if(p==='onDisconnect') return ()=>({set:ok,remove:ok,update:ok,cancel:ok});
+    const v=t[p]; if(typeof v!=='function') return v;
+    return function(...a){ const r=v.apply(t,a); return (r&&typeof r==='object'&&typeof r.on==='function')?RO(r):r; };
+  }});
+  return new Proxy(db,{get(t,p){ const v=t[p]; if(p==='ref') return (...a)=>RO(v.apply(t,a)); return typeof v==='function'?v.bind(t):v; }});
+}
 
 /* ===================== red ===================== */
 const fbCarga=DEMO?Promise.reject(new Error('demo')):new Promise((res,rej)=>{
@@ -4806,6 +4820,7 @@ function iniciarRed(){
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     DB=firebase.database(); SV=firebase.database.ServerValue; MODE='firebase';
   }).catch(e=>{ if(!DEMO) fbErr=e.message; DB=SimDB(); SV=DB.ServerValue; MODE='demo'; }).then(()=>{
+    if(VISITA) DB=soloLectura(DB);
     base=DB.ref('mundo/'+SALA);
     DB.ref('.info/serverTimeOffset').on('value',s=>{ S.off=s.val()||0; });
     DB.ref('.info/connected').on('value',s=>{ S.conectado=!!s.val(); presencia(); hud(); });
@@ -4839,7 +4854,8 @@ const np=(qs.get('nombre')||'').trim(); if(np) $('nom').value=np.slice(0,40);
 try{ S.g=localStorage.getItem('cc_g')||''; }catch(e){}
 function pintarGen(){ document.querySelectorAll('#genero label').forEach(l=>{ const on=l.dataset.g===S.g; l.classList.toggle('on',on); l.querySelector('input').checked=on; }); }
 pintarGen(); $('genero').addEventListener('change',e=>{ S.g=e.target.value; pintarGen(); });
-$('modeNote').innerHTML=(DEMO?'Modo demostración (simulador local): solo comparten el mundo las pestañas de este navegador.':'Conexión: <b>Firebase en tiempo real</b>')+' · sala «'+esc(SALA)+'»';
+if(VISITA){ if(!$('nom').value) $('nom').value='Visitante'; $('go').textContent='Entrar como visitante →'; }
+$('modeNote').innerHTML=(VISITA?'<b>👁 Modo visitante:</b> recorra la ciudad y observe las empresas; no se crean empresas ni se guardan datos.<br>':'')+(DEMO?'Modo demostración (simulador local): solo comparten el mundo las pestañas de este navegador.':'Conexión: <b>Firebase en tiempo real</b>')+' · sala «'+esc(SALA)+'»';
 $('go').onclick=entrar; if(qs.get('auto')==='1'&&np&&(S.g==='m'||S.g==='f')) setTimeout(()=>entrar(),60); $('nom').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
 $('linkDoc').onclick=()=>pedirPin();
 iniciarRed();
@@ -4851,13 +4867,14 @@ async function entrar(){
   if(S.g!=='m'&&S.g!=='f'){ $('loginErr').textContent='Elija si su personaje es hombre o mujer.'; return; }
   $('go').disabled=true; $('go').textContent='Conectando…';
   await iniciarRed();
-  S.nombre=n.slice(0,40); S.uid=u+(EMPN?'--'+EMPN:''); S.ses=S.uid+'_'+Math.random().toString(36).slice(2,7);
+  S.nombre=n.slice(0,40); S.uid=VISITA?'visitante_'+Math.random().toString(36).slice(2,8):u+(EMPN?'--'+EMPN:''); S.ses=S.uid+'_'+Math.random().toString(36).slice(2,7);
   try{ localStorage.setItem('cc_color',S.color); localStorage.setItem('cc_g',S.g); }catch(e){}
   suscribir();
   $('login').hidden=true; $('game').hidden=false;
   me={x:800+(Math.random()*2-1)*40,y:532,k:HOMEK};
   resize(); iniciar3D(); requestAnimationFrame(loop);
   presencia();
+  if(VISITA) setTimeout(()=>toast('👁 Modo visitante: puede recorrer la ciudad y ver las empresas. No puede crear empresas ni comprar.',''),800);
   if(fbErr) toast('No se pudo conectar con Firebase ('+fbErr+'). Se usa el modo demostración.','w');
 }
 let presOK=false;
@@ -4901,7 +4918,7 @@ let ultRender=0;
 function programar(){ if(prog) return; prog=true; const espera=Math.max(0,250-(performance.now()-ultRender));   // como máximo 4 redibujos por segundo
   const go=()=>requestAnimationFrame(()=>{ prog=false; ultRender=performance.now(); renderTodo(); }); if(espera>0) setTimeout(go,espera); else go(); }
 function renderTodo(){
-  if(S.uid&&S.listo&&!S.docenteSolo){
+  if(S.uid&&S.listo&&!S.docenteSolo&&!VISITA){
     const e=myE();
     if(!e){ if($('crear').hidden){ abrirCrear(); } }
     else { if(!$('crear').hidden){ $('crear').hidden=true; toast('¡Su empresa '+e.nom+' está lista! Vaya a «Su Empresa» para registrar el asiento de apertura.','y'); }
@@ -4926,7 +4943,7 @@ function onCfg(){
   else if(c.congelada){ a.hidden=false; a.textContent='❄️ El mundo está congelado. Espere las indicaciones del docente.'; }
   else a.hidden=true;
 }
-function puede(){ if(S.cfg.abierta===false){ toast('La sala está cerrada por el docente.','w'); return false; } if(S.cfg.congelada){ toast('El mundo está congelado por el docente.','w'); return false; } if(!myE()){ toast('Primero cree su empresa.','w'); return false; } return true; }
+function puede(){ if(VISITA){ toast('👁 Modo visitante: solo puede recorrer y observar.','w'); return false; } if(S.cfg.abierta===false){ toast('La sala está cerrada por el docente.','w'); return false; } if(S.cfg.congelada){ toast('El mundo está congelado por el docente.','w'); return false; } if(!myE()){ toast('Primero cree su empresa.','w'); return false; } return true; }
 function periodo(){ return S.cfg.periodo||'Período 1'; }
 
 /* ===================== toasts ===================== */
@@ -4993,6 +5010,7 @@ $('crear').addEventListener('change',e=>{ if(e.target.name==='cfAct'){ leerCF();
 $('crear').addEventListener('click',e=>{ const b=e.target.closest('[data-cfc]'); if(b){ leerCF(); CF.color=b.dataset.cfc; renderCrear(); } });
 
 async function crearEmpresa(){
+  if(VISITA){ toast('👁 Modo visitante: no se pueden crear empresas.','w'); return; }
   leerCF(); CF.err='';
   const bienes=conStock(CF), ind=CF.act==='industrial';
   const nom=CF.nom.trim().replace(/\s+/g,' '), giro=CF.giro.trim().replace(/\s+/g,' ');
