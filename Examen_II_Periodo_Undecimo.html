@@ -169,8 +169,10 @@ function delRow(sheet,field,val){ if(DEMO){ lsSet(sheet,lsGet(sheet,[]).filter(r
 const setCfg=(k,v)=>post('Config','Clave',{Clave:k,Valor:v});
 /* ====================== ESTADO ====================== */
 let CFG={}, U=null, R={resp:{},inc:0,inicio:null,estado:''}, enCurso=false, finT=null, saveT=null, dirty=false;
-const adm=()=>({periodo:CFG.Periodo||X.periodo||'', fecha:CFG.Fecha||'', valor:CFG.ValorPorcentual||'', dur:+CFG.Duracion||X.duracion||90, secciones:String(CFG.Secciones||X.secciones.join(',')).split(',').map(s=>s.trim()).filter(Boolean), habil:HAB==='SI'});
+const adm=()=>({periodo:CFG.Periodo||X.periodo||'', fecha:CFG.Fecha||'', valor:CFG.ValorPorcentual||'', dur:+CFG.Duracion||X.duracion||90, secciones:String(CFG.Secciones||X.secciones.join(',')).split(',').map(s=>s.trim()).filter(Boolean), habil:HAB==='SI'||enVentana()});
 const claveDe=(ced)=>X.id+'|'+ced;
+/* Ventanas fijas de aplicación (respaldo si la hoja de Google no responde): la prueba queda abierta en esas horas aunque el botón diga cerrada. */
+function enVentana(){ const t=Date.now(); return (X.ventanas||[]).some(v=>t>=Date.parse(v.desde)&&t<=Date.parse(v.hasta)); }
 /* ====================== ENCABEZADO MEP ====================== */
 function admTabla(st){ const a=adm(); const S=st||{};
   const v=(x)=>x?esc(x):'<span class="mut">________</span>';
