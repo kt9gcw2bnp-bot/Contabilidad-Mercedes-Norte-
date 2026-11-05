@@ -9487,7 +9487,7 @@ const misPorEncargar=()=>{ const e=myE(); if(!e) return []; return Object.entrie
 const misEncargadas=()=>{ const e=myE(); if(!e) return []; return Object.entries(S.ord||{}).filter(([k,o])=>o&&o.ve===S.uid&&o.vee===e.eid&&o.tr&&(o.ent==='pendiente'||o.ent==='cargada')); };
 async function fleteOferta(on){
   if(!puede()) return; FL.err=''; const tar=r2(pn(FL.tar||((myE().flete||{}).tar||'')));
-  if(on&&!(tar>=500&&tar<=20000)){ FL.err='La tarifa por pedido debe estar entre ₡500 y ₡20 000.'; renderPanel(true); return; }
+  if(on&&!(tar>=50&&tar<=300)){ FL.err='La tarifa por pedido debe estar entre ₡50 y ₡300.'; renderPanel(true); return; }
   await upd({['empresas/'+S.uid+'/flete']:{on:!!on,tar:on?tar:((myE().flete||{}).tar||0)}});
   toast(on?'🚚 Su empresa ya aparece como servicio de entregas de la sala.':'Dejó de ofrecer el servicio de entregas.','y'); renderPanel(true); }
 async function fleteEncargar(oid){
@@ -9525,7 +9525,7 @@ function fleteHTML(){
    ${enc.length?`<h3>Encargadas</h3>${enc.map(([k,o])=>`<div style="font-size:13px;padding:4px 0">${o.cant} × ${esc(o.pn)} → ${esc(o.cn)} · <b>${esc(o.trn||'')}</b> ${o.ent==='cargada'?'<span class="pill g">en camino</span>':'<span class="pill y">por recoger</span>'}</div>`).join('')}`:''}</div>
    <div class="card"><h3 style="margin-top:0">🚚 Ofrecer mi servicio de entregas</h3>
     <p style="font-size:12.5px;margin-top:0">${of.on?`Su empresa aparece como transportista a <b>${fm(of.tar)}</b> por pedido (+ IVA 13 %).`:'Fije su tarifa por pedido y otras empresas podrán contratarlo para hacer sus entregas.'}</p>
-    <label class="l" for="flTar">Tarifa por pedido ₡</label><input type="text" inputmode="decimal" id="flTar" data-flq="1" value="${esc(FL.tar!==''?FL.tar:(of.tar||''))}" placeholder="500 a 20 000" style="max-width:160px">
+    <label class="l" for="flTar">Tarifa por pedido ₡</label><input type="text" inputmode="decimal" id="flTar" data-flq="1" value="${esc(FL.tar!==''?FL.tar:(of.tar||''))}" placeholder="50 a 300" style="max-width:160px">
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" data-act="flOfrecer">${of.on?'Actualizar tarifa':'Ofrecer servicio'}</button>${of.on?'<button class="btn sec" data-act="flRetirar">Dejar de ofrecer</button>':''}</div></div></div>
   ${FL.err?`<div class="err">${esc(FL.err)}</div>`:''}`;
 }
