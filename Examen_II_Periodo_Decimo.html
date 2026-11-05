@@ -195,9 +195,11 @@ async function sincronizarLocal(){ await cargarFB(); if(!FBDB) return 0; const L
 const setCfg=(k,v)=>post('Config','Clave',{Clave:k,Valor:v});
 /* ====================== ESTADO ====================== */
 let CFG={}, U=null, R={resp:{},inc:0,inicio:null,estado:''}, enCurso=false, finT=null, saveT=null, dirty=false;
-const adm=()=>({periodo:CFG.Periodo||X.periodo||'', fecha:CFG.Fecha||'', valor:CFG.ValorPorcentual||'', dur:+CFG.Duracion||X.duracion||90, secciones:String(CFG.Secciones||X.secciones.join(',')).split(',').map(s=>s.trim()).filter(Boolean), habil:HAB==='SI'||enVentana()});
+const adm=()=>({periodo:CFG.Periodo||X.periodo||'', fecha:CFG.Fecha||'', valor:CFG.ValorPorcentual||'', dur:+CFG.Duracion||X.duracion||90, secciones:String(CFG.Secciones||X.secciones.join(',')).split(',').map(s=>s.trim()).filter(Boolean), habil:estadoHab()==='SI'||enVentana()});
 const claveDe=(ced)=>X.id+'|'+ced;
 /* Ventanas fijas de aplicación (respaldo si la hoja de Google no responde): la prueba queda abierta en esas horas aunque el botón diga cerrada. */
+/* Habilitación: primero el valor guardado en la nube (Firebase); si no existe, el de la hoja del portal. */
+function estadoHab(){ const c=String(CFG.Habilitado||'').toUpperCase(); return (c==='SI'||c==='NO')?c:(HAB||'NO'); }
 function enVentana(){ const t=Date.now(); return (X.ventanas||[]).some(v=>t>=Date.parse(v.desde)&&t<=Date.parse(v.hasta)); }
 /* ====================== ENCABEZADO MEP ====================== */
 function admTabla(st){ const a=adm(); const S=st||{};
@@ -377,7 +379,7 @@ function panelRender(){ const a=adm(); const secs=['Todas'].concat(a.secciones);
   M.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{ if(!b.dataset.arm){ b.dataset.arm=1; b.textContent='¿Confirmar?'; b.classList.add('coral'); return; } await delRow('Entregas','Clave',b.dataset.del); PANEL.rows=PANEL.rows.filter(r=>r.Clave!==b.dataset.del); toast('Intento borrado: el estudiante puede volver a hacer la prueba.'); panelRender(); });
   $('cfSave').onclick=async()=>{ const v={Periodo:$('cfPer').value.trim(),Fecha:$('cfFec').value.trim(),ValorPorcentual:$('cfVal').value.trim().replace('%',''),Duracion:$('cfDur').value.trim(),Secciones:$('cfSec').value.trim(),MostrarNotas:$('cfMos').value};
     for(const k of Object.keys(v)) await setCfg(k,v[k]); Object.assign(CFG,v); toast('Configuración guardada.'); panelRender(); };
-  $('cfHab').onclick=async()=>{ const nv=a.habil?'NO':'SI'; await setHab(nv); toast(nv==='SI'?'Examen habilitado.':'Examen deshabilitado.'); panelRender(); };
+  $('cfHab').onclick=async()=>{ const nv=estadoHab()==='SI'?'NO':'SI'; CFG.Habilitado=nv; await Promise.all([setCfg('Habilitado',nv),setHab(nv)]); toast(nv==='SI'?'Examen habilitado.':'Examen deshabilitado.'); panelRender(); };
   $('pCsv').onclick=()=>exportCsv(L);
   wirePdf(M); }
 function tablaResumenItems(L){ if(!L.length) return '<h3 style="margin-top:0">Rendimiento por ítem</h3><p class="mut">Aparece cuando haya pruebas entregadas.</p>';

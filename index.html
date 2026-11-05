@@ -512,6 +512,7 @@ async function renderPortal(){
   const listEl = document.getElementById('courseList');
   try{
     const [allRows, overrides] = await Promise.all([loadCatalogo(), loadActivoOverrides()]);
+    await estadoExamenesNube(allRows, overrides);
     window.__catalogoCache = allRows;
     window.__overridesCache = overrides;
     // Las pruebas escritas siempre se listan; la propia prueba bloquea el ingreso mientras esté cerrada.
@@ -537,6 +538,10 @@ async function renderPortal(){
       const examenes = levelRows.filter(r=>r.Categoria==='Examen' || r.Categoria==='Tarea');
       const temas = levelRows.filter(r=>r.Categoria==='Tema' || r.Categoria==='Curso interactivo');
 
+      if(examenes.length){
+        html += `<div class="section-title">🎯 Pruebas escritas, exámenes y tareas</div>`;
+        html += '<div class="cards">' + examenes.map(r=>renderCard(r)).join('') + '</div>';
+      }
       if(antologia.length){
         html += `<div class="section-title">📚 Antología y material de consulta</div>`;
         const antSorted = antologia.slice().sort((a,b)=> (Number(a.Orden)||0) - (Number(b.Orden)||0));
@@ -554,10 +559,6 @@ async function renderPortal(){
       if(trabajos.length){
         html += `<div class="section-title">📝 Trabajos en clase</div>`;
         html += '<div class="cards">' + trabajos.map(r=>renderCard(r)).join('') + '</div>';
-      }
-      if(examenes.length){
-        html += `<div class="section-title">🎯 Exámenes y tareas</div>`;
-        html += '<div class="cards">' + examenes.map(r=>renderCard(r)).join('') + '</div>';
       }
       if(temas.length){
         html += `<div class="section-title">📖 Temas del programa</div>`;
@@ -628,6 +629,31 @@ function renderCard(r, conSub){
   </a>`;
 }
 
+
+/* ============================================================
+   PRUEBAS ESCRITAS — habilitación guardada en la nube (Firebase de Ciudad Contable)
+   ============================================================ */
+const FB_EXAM = {apiKey:"AIzaSyBS6ea8vhmDffugHc-3la99xPGq97kpf_I",authDomain:"ciudad-contable.firebaseapp.com",databaseURL:"https://ciudad-contable-default-rtdb.firebaseio.com",projectId:"ciudad-contable",appId:"1:331358015454:web:98e2d3dbf9b27ee6a4d74f"};
+let FBX = null;
+function conTiempoX(p, ms){ return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('tiempo agotado')), ms))]); }
+function cargarFBX(){
+  if(window.__fbxp) return window.__fbxp;
+  const add = src => new Promise((ok,ko)=>{ const sc=document.createElement('script'); sc.src=src; sc.onload=ok; sc.onerror=()=>ko(new Error('Firebase')); document.head.appendChild(sc); });
+  window.__fbxp = conTiempoX(add('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js').then(()=>add('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js')), 12000)
+    .then(()=>{ const app = firebase.apps.find(a=>a.name==='portal') || firebase.initializeApp(FB_EXAM,'portal'); FBX = app.database(); return FBX; })
+    .catch(()=>null);
+  return window.__fbxp;
+}
+async function estadoExamenesNube(rows, overrides){
+  const ex = rows.filter(r=>r.Categoria==='Examen'); if(!ex.length) return;
+  const db = await cargarFBX(); if(!db) return;
+  await Promise.all(ex.map(async r=>{ const id=String(r.Id||'').trim();
+    try{ const snap = await conTiempoX(db.ref('examenes/'+id+'/config/Habilitado').once('value'), 8000); const v=String(snap.val()||'').toUpperCase(); if(v==='SI'||v==='NO') overrides[id]=v; }catch(e){} }));
+}
+async function guardarExamenNube(id, valor){
+  const db = await cargarFBX(); if(!db) throw new Error('Sin conexión con la nube');
+  await conTiempoX(db.ref('examenes/'+id+'/config/Habilitado').set(valor), 8000);
+}
 /* ============================================================
    PANEL DOCENTE — habilitar/inhabilitar temas por nivel con botones
    ============================================================ */
@@ -714,8 +740,9 @@ function renderAdminPanel(){
       if(nuevo==='SI' && !window.confirm('¿Habilitar la prueba ahora? Los estudiantes podrán ingresar de inmediato.')) return;
       btn.disabled = true; btn.textContent = 'Guardando…';
       try{
-        await sheetPost('CatalogoActivo', { CursoId: id, Activo: nuevo, Timestamp: new Date().toISOString() });
+        await guardarExamenNube(id, nuevo);
         window.__overridesCache[id] = nuevo;
+        sheetPost('CatalogoActivo', { CursoId: id, Activo: nuevo, Timestamp: new Date().toISOString() }).catch(()=>{});
       }catch(e){ window.alert('No se pudo guardar el cambio. Intente de nuevo.'); }
       overlay.remove(); renderAdminPanel();
     });
