@@ -70,17 +70,17 @@ const PORC={doc:8,auto:4,coev:3}; const TOTAL_P=15;
 const NIV=[[1,'Inicial'],[2,'Intermedio'],[3,'Avanzado']];
 /* Rúbrica analítica del docente (8 %): proceso y producto (REA, art. 33 y 35) */
 const RUB=[
- {t:'Diseño y construcción del prototipo',d:['El basurero está incompleto o no separa los residuos en compartimentos.','El basurero está armado y tiene compartimentos, pero con fallas de estructura o acabado.','El basurero está completo, es resistente y separa los residuos en compartimentos bien identificados.']},
- {t:'Clasificación de residuos con inteligencia artificial',d:['El modelo de IA no clasifica o no se entrenó con datos propios.','El modelo clasifica algunos residuos, con errores frecuentes o pocas pruebas.','El modelo se entrenó con datos propios, se probó y clasifica correctamente la mayoría de los residuos.']},
- {t:'Integración electrónica y funcionamiento',d:['Los componentes (cámara, placa, servos) no están conectados o no responden.','Los componentes funcionan por separado, pero el sistema completo falla a veces.','Cámara, placa y servos trabajan juntos: el basurero detecta y abre el compartimento correcto.']},
- {t:'Plan de negocio y costeo (Junior Achievement)',d:['No presenta costos ni precio de venta del producto.','Presenta costos y precio, con errores de cálculo o sin punto de equilibrio.','Calcula costos, precio de venta, margen y punto de equilibrio de forma correcta y justificada.']},
- {t:'Registros contables de la miniempresa',d:['No presenta registros de ingresos y gastos.','Presenta registros incompletos o sin respaldo (facturas, recibos).','Presenta registros completos con respaldo y un estado de resultados de la miniempresa.']},
- {t:'Presentación, defensa y bitácora del proceso',d:['No presenta o no responde preguntas; sin bitácora.','Presenta con apoyo de lectura; la bitácora tiene pocas entradas.','Defiende el proyecto con dominio, responde con seguridad y la bitácora muestra cada etapa.']}];
+ {t:'Participación en las actividades del proyecto',d:['Participa pocas veces y solo cuando se le solicita.','Participa en la mayoría de las actividades, con aportes ocasionales.','Participa de forma activa y constante en todas las actividades, con aportes propios.']},
+ {t:'Compromiso con el proyecto',d:['Incumple con frecuencia las tareas y los plazos acordados.','Cumple la mayoría de las tareas y plazos, con algunos atrasos.','Cumple todas las tareas y plazos, y asume responsabilidades adicionales cuando el proyecto lo requiere.']},
+ {t:'Participación en la feria de emprendimiento',d:['No participa en la feria o lo hace sin preparación.','Participa en la feria, pero con poca preparación o dominio del producto.','Participa en la feria con preparación: presenta el producto con dominio y atiende al público con seguridad.']},
+ {t:'Investigación',d:['No aporta información o la copia sin analizarla ni citar fuentes.','Aporta información relevante, con poco análisis o sin fuentes claras.','Investiga en fuentes confiables, analiza la información y la aplica a las decisiones del proyecto.']},
+ {t:'Trabajo en equipo',d:['Trabaja de forma aislada o dificulta el avance del equipo.','Colabora con el equipo, pero le cuesta coordinar o cumplir su rol.','Coordina con el equipo, cumple su rol y contribuye a las decisiones en conjunto.']},
+ {t:'Compromiso con los compañeros',d:['Muestra poco respeto o no apoya a sus compañeros.','Respeta a sus compañeros y los apoya cuando se lo piden.','Respeta, escucha y apoya a sus compañeros por iniciativa propia, y ayuda a resolver los conflictos.']}];
 /* Autoevaluación (4 %) */
-const AUTO=['Cumplí con las tareas que me asignó el equipo en el tiempo acordado.','Aporté ideas y trabajo al prototipo del basurero con inteligencia artificial.','Participé activamente en las actividades de Junior Achievement.','Apliqué conocimientos contables en el costeo y los registros de la miniempresa.','Respeté y escuché las opiniones de mis compañeros.','Asistí y aproveché las sesiones de trabajo del proyecto.'];
+const AUTO=['Participé de forma activa en las actividades del proyecto.','Cumplí con mis tareas y los plazos acordados.','Me preparé y participé en la feria de emprendimiento.','Investigué y aporté información útil para el proyecto.','Trabajé en equipo y cumplí mi rol.','Apoyé y respeté a mis compañeros.'];
 const NIV_A=[[1,'Necesito mejorar'],[2,'Lo logré en parte'],[3,'Lo logré plenamente']];
 /* Coevaluación (3 %) anónima: cada estudiante valora a todo su grupo */
-const COEV=['Cumplió con sus tareas a tiempo.','Aportó ideas y trabajo al proyecto.','Se comunicó con respeto y escuchó a los demás.','Ayudó a resolver problemas del proyecto.','Asistió y participó en las sesiones de trabajo.'];
+const COEV=['Participó de forma activa en el proyecto.','Cumplió con sus tareas y plazos.','Participó y se preparó para la feria de emprendimiento.','Trabajó en equipo y aportó a las decisiones.','Apoyó y respetó a sus compañeros.'];
 const MAX={doc:RUB.length*3,auto:AUTO.length*3,coev:COEV.length*3};
 /* ===================== UTILIDADES ===================== */
 const $=id=>document.getElementById(id);
@@ -128,7 +128,7 @@ async function inicio(){
   $('app').innerHTML=`<div class="card"><span class="pill gold">Proyecto · 15 % de la calificación</span>
    <h2 style="margin-top:10px">Evaluación del proyecto Junior Achievement y EcoSmartBin</h2>
    <p>El proyecto se evalúa en tres partes, con criterios que usted conoce de antemano:</p>
-   <div class="grid3"><div class="note"><b style="color:var(--gold2)">8 % · Docente</b><br>Rúbrica técnica del prototipo con IA, el plan de negocio y los registros contables.</div><div class="note"><b style="color:var(--teal)">4 % · Autoevaluación</b><br>Usted valora su propio desempeño y escribe una reflexión.</div><div class="note"><b style="color:#c7bdfb">3 % · Coevaluación</b><br>Usted valora a cada compañero de su sección. <b>Es anónima:</b> nadie sabe quién dio cada valoración.</div></div>
+   <div class="grid3"><div class="note"><b style="color:var(--gold2)">8 % · Docente</b><br>Rúbrica de su participación y compromiso con el proyecto.</div><div class="note"><b style="color:var(--teal)">4 % · Autoevaluación</b><br>Usted valora su propio desempeño y escribe una reflexión.</div><div class="note"><b style="color:#c7bdfb">3 % · Coevaluación</b><br>Usted valora a cada compañero de su sección. <b>Es anónima:</b> nadie sabe quién dio cada valoración.</div></div>
    <div class="row" style="margin-top:8px"><button class="btn ghost sm" id="bInst">📄 Ver los instrumentos (PDF)</button></div></div>
    <div class="card"><h3 style="margin-top:0">Ingreso</h3>${habil()?'':'<div class="note bad">🔒 La evaluación aún no está habilitada. Su docente la abrirá cuando corresponda.</div>'}
    <div ${habil()?'':'style="display:none"'}><div class="grid2"><div><label class="lb" for="iNom">Nombre completo</label><input type="text" id="iNom" value="${esc(nomP)}" ${nomP?'readonly':''} autocomplete="off"></div>
@@ -162,7 +162,7 @@ function vistaEst(){
   const T=$('tabIn');
   if(TAB==='auto') T.innerHTML=autoHTML(e,hechoA);
   if(TAB==='coev') T.innerHTML=coevHTML(comp,hechas);
-  if(TAB==='rub') T.innerHTML=`<p class="mut">Con esta rúbrica su docente califica la parte técnica del proyecto (proceso y producto). Cada criterio vale de 1 a 3 puntos; total ${MAX.doc} puntos = 8 %.</p>`+rubHTML();
+  if(TAB==='rub') T.innerHTML=`<p class="mut">Con esta rúbrica su docente califica su participación y compromiso durante todo el proyecto. Cada criterio vale de 1 a 3 puntos; total ${MAX.doc} puntos = 8 %.</p>`+rubHTML();
   wire(T,comp);
 }
 function nivHTML(name,niveles,val,dis){ return `<div class="niv">${niveles.map(([v,t])=>`<label class="${val===v?'sel':''}"><input type="radio" name="${name}" value="${v}" ${val===v?'checked':''} ${dis?'disabled':''}><span><b>${v}</b> · ${esc(t)}</span></label>`).join('')}</div>`; }
