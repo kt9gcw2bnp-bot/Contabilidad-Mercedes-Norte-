@@ -177,6 +177,50 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important;transition:none !important;}
 }
+/* ============ MIS APUNTES ============ */
+.nt-card{margin-top:18px;background:var(--bg-card);border:1px solid rgba(201,151,63,.35);border-radius:18px;padding:20px 22px;position:relative;overflow:hidden;}
+.nt-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--gold-light),var(--teal));}
+.nt-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.nt-head h3{margin:0;font-size:20px;color:#fff;}
+.nt-kick{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);}
+.nt-stats{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.nt-chip{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--muted);white-space:nowrap;}
+.nt-chip b{color:var(--gold-light);}
+.nt-chip.on{border-color:rgba(47,194,173,.5);color:var(--teal);}
+.nt-week{display:flex;gap:5px;margin:12px 0 2px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--muted);}
+.nt-day{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;}
+.nt-day.ok{background:rgba(47,194,173,.18);border-color:var(--teal);color:var(--teal);font-weight:700;}
+.nt-day.hoy{box-shadow:0 0 0 2px rgba(201,151,63,.55);}
+.nt-reto{margin:12px 0 0;padding:10px 12px;border:1px dashed rgba(201,151,63,.4);border-radius:10px;font-size:13.5px;color:#d9dadc;line-height:1.45;}
+.nt-reto b{color:var(--gold-light);}
+.nt-form{display:grid;gap:8px;margin-top:12px;}
+.nt-row{display:flex;gap:8px;flex-wrap:wrap;}
+.nt-in,.nt-ta,.nt-sel{width:100%;background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;font-family:var(--sans);font-size:15px;}
+.nt-in:focus,.nt-ta:focus,.nt-sel:focus{outline:none;border-color:var(--gold);}
+.nt-ta{min-height:96px;resize:vertical;line-height:1.5;font-family:var(--mono);font-size:14px;}
+.nt-row .nt-in{flex:2 1 220px;width:auto;} .nt-row .nt-sel{flex:1 1 150px;width:auto;}
+.nt-tipos{display:flex;gap:6px;flex-wrap:wrap;}
+.nt-tipo{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:6px 11px;font-size:13px;cursor:pointer;font-family:var(--sans);}
+.nt-tipo.sel{border-color:var(--gold);color:#0a0a0a;background:var(--gold-light);font-weight:600;}
+.nt-btn{border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;font-family:var(--sans);font-size:14px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#0a0a0a;}
+.nt-btn.g{background:transparent;border:1px solid var(--line);color:var(--ink);font-weight:500;}
+.nt-btn.sm{padding:6px 10px;font-size:12.5px;}
+.nt-msg{font-family:var(--mono);font-size:11.5px;color:var(--muted);align-self:center;}
+.nt-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:14px;}
+.nt-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(0,0,0,.35);cursor:pointer;position:relative;}
+.nt-item:hover{border-color:rgba(201,151,63,.5);}
+.nt-item .tt{font-weight:600;color:#fff;font-size:14.5px;padding-right:22px;}
+.nt-item .mt{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:3px;}
+.nt-item .bd{font-size:13px;color:#c9cbce;margin-top:6px;white-space:pre-wrap;max-height:4.6em;overflow:hidden;font-family:var(--mono);}
+.nt-item .pin{position:absolute;right:10px;top:9px;}
+.nt-k{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);margin-right:6px;}
+.nt-k.Proceso{color:var(--teal);border-color:rgba(47,194,173,.5);} .nt-k.Concepto{color:var(--gold-light);border-color:rgba(201,151,63,.5);}
+.nt-k.Fórmula{color:#9ec5ff;border-color:rgba(158,197,255,.5);} .nt-k.Duda{color:var(--coral);border-color:rgba(239,106,91,.5);} .nt-k.Idea{color:#d6b4ff;border-color:rgba(214,180,255,.5);}
+.nt-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:60;display:none;overflow:auto;padding:20px 12px;}
+.nt-modal.on{display:block;}
+.nt-modal .box{max-width:980px;margin:0 auto;background:#111113;border:1px solid var(--line);border-radius:18px;padding:20px;}
+.nt-empty{color:var(--muted);font-size:13.5px;padding:10px 0;}
+@media (max-width:600px){ .nt-card{padding:16px 14px;} .nt-stats{margin-left:0;} }
 </style>
 </head>
 <body>
@@ -499,6 +543,7 @@ async function renderPortal(){
       </div>
       <div class="sat-arrow">→</div>
     </a>
+    <div id="notasBox"></div>
     <div class="search-box">
       <div class="search-wrap"><span class="ic">🔍</span><input type="text" id="searchInput" enterkeyhint="search" placeholder="Buscar curso, trabajo, antología o tema… (ej. Excel, IVA, repaso)" autocomplete="off" aria-label="Buscar en el catálogo"><button id="searchClear" title="Limpiar" style="display:none">✕</button></div>
       <div class="search-count" id="searchCount"></div>
@@ -508,12 +553,14 @@ async function renderPortal(){
   `;
   document.getElementById('logoutBtn').addEventListener('click', logout);
   if(isDocente) document.getElementById('adminBtn').addEventListener('click', openAdminPanel);
+  try{ initNotas(); }catch(e){ console.warn('apuntes', e); }
 
   const listEl = document.getElementById('courseList');
   try{
     const [allRows, overrides] = await Promise.all([loadCatalogo(), loadActivoOverrides()]);
     await estadoExamenesNube(allRows, overrides);
     window.__catalogoCache = allRows;
+    try{ const c0=document.getElementById('ntC'), t0=document.getElementById('ntT'); if(!NT.edit && !document.querySelector('#ntModal.on') && c0 && !c0.value && !t0.value) ntRender(); }catch(e){}
     window.__overridesCache = overrides;
     // Las pruebas escritas siempre se listan; la propia prueba bloquea el ingreso mientras esté cerrada.
     let rows = allRows.filter(r=> r.Categoria==='Examen' || efectivoActivo(r, overrides) === 'SI');
@@ -629,6 +676,163 @@ function renderCard(r, conSub){
   </a>`;
 }
 
+
+/* ============================================================
+   MIS APUNTES — bloc de notas personal de cada estudiante
+   Se guarda en el dispositivo y en la nube (Firebase: apuntes/<cédula>)
+   ============================================================ */
+const NT_TIPOS = [['Proceso','🧭'],['Concepto','💡'],['Fórmula','🧮'],['Duda','❓'],['Idea','✨']];
+const NT_RETOS = [
+  'Anotá los <b>pasos</b> del último asiento que hiciste: ¿qué cuenta se debita, cuál se acredita y por qué?',
+  'Escribí con tus palabras qué es la <b>partida doble</b> y un ejemplo de hoy.',
+  'Anotá el <b>proceso</b> para calcular el IVA de una venta (13 %) y un ejemplo con números.',
+  '¿Qué tema te costó esta semana? Anotalo como <b>Duda</b> para preguntarlo en clase.',
+  'Escribí la <b>fórmula</b> que más usaste hoy y cuándo se aplica.',
+  'Explicá en 3 pasos cómo se hace una <b>conciliación bancaria</b>.',
+  'Anotá cómo se calcula la <b>depreciación</b> en línea recta, con un ejemplo.',
+  'Resumí en 5 líneas lo que aprendiste hoy. Si lo podés explicar, lo aprendiste.',
+  'Anotá los pasos para registrar una <b>planilla</b> (cargas sociales del patrono y del trabajador).',
+  'Escribí la diferencia entre <b>activo, pasivo y patrimonio</b> con un ejemplo de cada uno.'
+];
+const NT_DB = 'https://ciudad-contable-default-rtdb.firebaseio.com/apuntes/';
+let NT = { ced:'', notas:{}, tipo:'Proceso', edit:null, filtro:'', fk:'Todos' };
+function ntKey(){ return 'apuntes_' + NT.ced; }
+function ntCed(){ return String((session && session.cedula) || '').replace(/[^0-9A-Za-z]/g,'').slice(0,20); }
+function ntHoy(d){ d = d ? new Date(d) : new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function ntFecha(ms){ try{ return new Date(ms).toLocaleDateString('es-CR',{day:'numeric',month:'short'}) + ' · ' + new Date(ms).toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+function ntId(){ return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function ntLocalLeer(){ try{ return JSON.parse(localStorage.getItem(ntKey()) || '{}') || {}; }catch(e){ return {}; } }
+function ntLocalGuardar(){ try{ localStorage.setItem(ntKey(), JSON.stringify(NT.notas)); }catch(e){} }
+function ntFetch(path, opt){ return Promise.race([fetch(NT_DB + NT.ced + path + '.json', opt), new Promise((_,r)=>setTimeout(()=>r(new Error('tiempo agotado')), 12000))])
+  .then(r=>{ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
+function ntLimpia(n){ const o = {t:n.t, c:n.c, k:n.k, s:n.s||'', f:n.f?1:0, cr:n.cr, u:n.u}; if(n.x) o.x = 1; return o; }
+async function ntSubir(id){
+  const n = NT.notas[id]; if(!n) return;
+  try{ await ntFetch('/' + id, {method:'PUT', body:JSON.stringify(ntLimpia(n))}); delete n.p; ntLocalGuardar(); ntEstado(true); }
+  catch(e){ n.p = 1; ntLocalGuardar(); ntEstado(false); }
+}
+async function ntSincronizar(){
+  let nube = null;
+  try{ nube = (await ntFetch('', {cache:'no-store'})) || {}; }catch(e){ ntEstado(false); return; }
+  Object.keys(nube).forEach(id=>{ const a = NT.notas[id], b = nube[id]; if(!b) return; if(!a || (b.u||0) > (a.u||0)) NT.notas[id] = b; });
+  ntLocalGuardar();
+  const pend = Object.keys(NT.notas).filter(id=>NT.notas[id].p || !nube[id]);
+  for(const id of pend) await ntSubir(id);
+  ntEstado(true); ntRender();
+}
+function ntEstado(ok){ const e = document.getElementById('ntNube'); if(!e) return;
+  const p = Object.values(NT.notas).filter(n=>n.p).length;
+  e.className = 'nt-chip' + (ok && !p ? ' on' : '');
+  e.innerHTML = ok && !p ? '☁ Guardado en la nube' : '⏳ ' + (p ? p + ' sin subir' : 'Sin conexión') + ' · guardado en este dispositivo'; }
+function ntVivas(){ return Object.entries(NT.notas).filter(([id,n])=>n && !n.x).map(([id,n])=>Object.assign({id}, n)); }
+function ntRacha(){
+  const dias = new Set(ntVivas().map(n=>ntHoy(n.cr)));
+  let r = 0, d = new Date(); if(!dias.has(ntHoy(d))) d.setDate(d.getDate()-1);
+  while(dias.has(ntHoy(d))){ r++; d.setDate(d.getDate()-1); }
+  return {r, dias};
+}
+function ntSemana(dias){
+  const hoy = new Date(), out = []; const L = ['D','L','K','M','J','V','S'];
+  for(let i=6;i>=0;i--){ const d = new Date(hoy); d.setDate(hoy.getDate()-i); const k = ntHoy(d);
+    out.push(`<span class="nt-day ${dias.has(k)?'ok':''} ${i===0?'hoy':''}" title="${k}">${dias.has(k)?'✓':L[d.getDay()]}</span>`); }
+  return out.join('');
+}
+function ntSubareas(){ const rows = (window.__catalogoCache||[]).filter(r=>session.rol==='Docente' || String(r.Nivel)===String(session.nivel));
+  return [...new Set(rows.map(r=>r.Subarea).filter(Boolean))].sort(); }
+function ntItem(n){
+  const tipo = NT_TIPOS.find(t=>t[0]===n.k) || ['Idea','✨'];
+  return `<div class="nt-item" data-nt="${n.id}">${n.f?'<span class="pin">📌</span>':''}
+    <div class="tt">${escapeHtml(n.t||'(sin título)')}</div>
+    <div class="mt"><span class="nt-k ${escapeHtml(tipo[0])}">${tipo[1]} ${escapeHtml(tipo[0])}</span>${escapeHtml(n.s||'')}${n.s?' · ':''}${ntFecha(n.u||n.cr)}</div>
+    <div class="bd">${escapeHtml(n.c||'')}</div></div>`;
+}
+function ntOrden(a,b){ return (b.f||0)-(a.f||0) || (b.u||0)-(a.u||0); }
+function ntRender(){
+  const box = document.getElementById('notasBox'); if(!box) return;
+  const vivas = ntVivas().sort(ntOrden), {r, dias} = ntRacha();
+  const reto = NT_RETOS[Math.floor(Date.now()/86400000) % NT_RETOS.length];
+  const subs = ntSubareas(), e = NT.edit ? NT.notas[NT.edit] : null;
+  if(e) NT.tipo = e.k || NT.tipo;
+  box.innerHTML = `<section class="nt-card" id="ntCard">
+    <div class="nt-head"><div><div class="nt-kick">Cultura de anotar · Cuaderno contable</div><h3>📒 Mis apuntes</h3></div>
+      <div class="nt-stats"><span class="nt-chip">🔥 Racha: <b>${r}</b> ${r===1?'día':'días'}</span><span class="nt-chip">📝 <b>${vivas.length}</b> apuntes</span><span class="nt-chip" id="ntNube">…</span></div></div>
+    <div class="nt-week">Esta semana: ${ntSemana(dias)}</div>
+    <div class="nt-reto">🎯 <b>Reto de hoy:</b> ${reto}</div>
+    <div class="nt-form">
+      <div class="nt-tipos">${NT_TIPOS.map(([t,i])=>`<button class="nt-tipo ${NT.tipo===t?'sel':''}" data-tipo="${t}">${i} ${t}</button>`).join('')}</div>
+      <div class="nt-row"><input class="nt-in" id="ntT" maxlength="120" placeholder="Título (ej. Pasos para registrar una venta con IVA)" value="${escapeHtml(e?e.t:'')}">
+        <select class="nt-sel" id="ntS"><option value="">Tema / subárea…</option>${subs.map(s=>`<option ${e&&e.s===s?'selected':''}>${escapeHtml(s)}</option>`).join('')}<option value="Otro" ${e&&e.s==='Otro'?'selected':''}>Otro</option></select></div>
+      <textarea class="nt-ta" id="ntC" maxlength="6000" placeholder="Escribí aquí tu apunte. Para un proceso usá el botón «Pasos».">${escapeHtml(e?e.c:'')}</textarea>
+      <div class="nt-row"><button class="nt-btn" id="ntG">${e?'💾 Guardar cambios':'💾 Guardar apunte'}</button>
+        <button class="nt-btn g" id="ntPasos">🧭 Pasos 1-2-3</button><button class="nt-btn g" id="ntAs">📒 Plantilla de asiento</button>
+        ${e?'<button class="nt-btn g" id="ntCan">Cancelar</button>':''}<span class="nt-msg" id="ntMsg"></span></div>
+    </div>
+    <div class="nt-row" style="margin-top:16px;align-items:center"><b style="color:#fff">Recientes</b><span style="margin-left:auto"></span>
+      <button class="nt-btn g sm" id="ntTodas">📚 Ver todos y buscar</button></div>
+    <div class="nt-list">${vivas.slice(0,6).map(ntItem).join('') || '<div class="nt-empty">Todavía no tenés apuntes. Empezá con el reto de hoy: lo que se anota, se recuerda.</div>'}</div>
+  </section>
+  <div class="nt-modal" id="ntModal"><div class="box" id="ntModalIn"></div></div>`;
+  ntEstado(!Object.values(NT.notas).some(n=>n.p));
+  box.querySelectorAll('[data-tipo]').forEach(b=>b.onclick=()=>{ NT.tipo=b.dataset.tipo; box.querySelectorAll('[data-tipo]').forEach(x=>x.classList.toggle('sel',x===b)); });
+  const ins = txt=>{ const ta=document.getElementById('ntC'); const p=ta.selectionStart||ta.value.length; ta.value=ta.value.slice(0,p)+txt+ta.value.slice(p); ta.focus(); };
+  document.getElementById('ntPasos').onclick=()=>{ NT.tipo='Proceso'; box.querySelectorAll('[data-tipo]').forEach(x=>x.classList.toggle('sel',x.dataset.tipo==='Proceso')); ins('Paso 1: \nPaso 2: \nPaso 3: \nResultado / ejemplo: \n'); };
+  document.getElementById('ntAs').onclick=()=>ins('Fecha: \nDebe:  ____________  ₡\nHaber: ____________  ₡\nDetalle: \n¿Por qué? \n');
+  document.getElementById('ntG').onclick=ntGuardar;
+  if(e) document.getElementById('ntCan').onclick=()=>{ NT.edit=null; ntRender(); };
+  document.getElementById('ntTodas').onclick=ntTodas;
+  box.querySelectorAll('.nt-list [data-nt]').forEach(el=>el.onclick=()=>ntVer(el.dataset.nt));
+}
+function ntGuardar(){
+  const t = document.getElementById('ntT').value.trim(), c = document.getElementById('ntC').value.trim(), s = document.getElementById('ntS').value;
+  const msg = document.getElementById('ntMsg');
+  if(!c){ msg.innerHTML = '<span style="color:var(--coral)">Escribí el contenido del apunte.</span>'; return; }
+  const ahora = Date.now(), id = NT.edit || ntId(), prev = NT.notas[id] || {};
+  NT.notas[id] = {t: t || c.split('\n')[0].slice(0,60), c, k:NT.tipo, s, f:prev.f||0, cr:prev.cr||ahora, u:ahora, p:1};
+  NT.edit = null; ntLocalGuardar(); ntRender(); ntSubir(id);
+  const m = document.getElementById('ntMsg'); if(m) m.textContent = '✓ Apunte guardado';
+}
+function ntVer(id){
+  const n = NT.notas[id]; if(!n) return; const tipo = NT_TIPOS.find(t=>t[0]===n.k) || ['Idea','✨'];
+  const M = document.getElementById('ntModal'); M.classList.add('on');
+  document.getElementById('ntModalIn').innerHTML = `<div class="nt-row" style="align-items:center"><span class="nt-k ${escapeHtml(tipo[0])}">${tipo[1]} ${escapeHtml(tipo[0])}</span><span class="nt-msg">${escapeHtml(n.s||'')} · creado ${ntFecha(n.cr)}</span><button class="nt-btn g sm" style="margin-left:auto" id="ntX">Cerrar ✕</button></div>
+    <h3 style="color:#fff;margin:12px 0 8px">${escapeHtml(n.t||'')}</h3>
+    <div style="white-space:pre-wrap;font-family:var(--mono);font-size:14.5px;line-height:1.55;color:#e6e6e6;border:1px solid var(--line);border-radius:12px;padding:14px;background:rgba(0,0,0,.35)">${escapeHtml(n.c||'')}</div>
+    <div class="nt-row" style="margin-top:12px"><button class="nt-btn" id="ntE">✏️ Editar</button><button class="nt-btn g" id="ntF">${n.f?'📌 Quitar de fijados':'📌 Fijar arriba'}</button><button class="nt-btn g" id="ntD" style="color:var(--coral)">🗑 Borrar</button><span class="nt-msg" id="ntDm"></span></div>`;
+  document.getElementById('ntX').onclick=()=>M.classList.remove('on');
+  document.getElementById('ntE').onclick=()=>{ M.classList.remove('on'); NT.edit=id; ntRender(); const c=document.getElementById('ntCard'); if(c) c.scrollIntoView({behavior:'smooth'}); };
+  document.getElementById('ntF').onclick=()=>{ n.f = n.f?0:1; n.u = Date.now(); n.p = 1; ntLocalGuardar(); ntSubir(id); ntRender(); ntVer(id); };
+  let conf = false;
+  document.getElementById('ntD').onclick=()=>{ if(!conf){ conf=true; document.getElementById('ntDm').innerHTML='<span style="color:var(--coral)">Toque «Borrar» otra vez para confirmar.</span>'; return; }
+    NT.notas[id] = {t:'',c:'',k:n.k,s:'',f:0,cr:n.cr,u:Date.now(),x:1,p:1}; ntLocalGuardar(); ntSubir(id); ntRender(); };
+}
+function ntTodas(){
+  const M = document.getElementById('ntModal'); M.classList.add('on');
+  const pintar = ()=>{
+    const q = normTxt(NT.filtro).trim().split(/\s+/).filter(Boolean);
+    const L = ntVivas().filter(n=>(NT.fk==='Todos'||n.k===NT.fk) && q.every(w=>normTxt([n.t,n.c,n.s,n.k].join(' ')).includes(w))).sort(ntOrden);
+    document.getElementById('ntRes').innerHTML = L.map(ntItem).join('') || '<div class="nt-empty">No hay apuntes con ese filtro.</div>';
+    document.getElementById('ntRes').querySelectorAll('[data-nt]').forEach(el=>el.onclick=()=>ntVer(el.dataset.nt));
+  };
+  document.getElementById('ntModalIn').innerHTML = `<div class="nt-row" style="align-items:center"><h3 style="margin:0;color:#fff">📚 Todos mis apuntes</h3><button class="nt-btn g sm" style="margin-left:auto" id="ntDesc">⬇ Descargar</button><button class="nt-btn g sm" id="ntX2">Cerrar ✕</button></div>
+    <div class="nt-row" style="margin-top:12px"><input class="nt-in" id="ntQ" placeholder="Buscar en mis apuntes… (ej. IVA, planilla)" value="${escapeHtml(NT.filtro)}"></div>
+    <div class="nt-tipos" style="margin-top:8px">${[['Todos','🗂']].concat(NT_TIPOS).map(([t,i])=>`<button class="nt-tipo ${NT.fk===t?'sel':''}" data-fk="${t}">${i} ${t}</button>`).join('')}</div>
+    <div class="nt-list" id="ntRes"></div>`;
+  document.getElementById('ntX2').onclick=()=>M.classList.remove('on');
+  document.getElementById('ntQ').oninput=e=>{ NT.filtro=e.target.value; pintar(); };
+  M.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{ NT.fk=b.dataset.fk; M.querySelectorAll('[data-fk]').forEach(x=>x.classList.toggle('sel',x===b)); pintar(); });
+  document.getElementById('ntDesc').onclick=ntDescargar;
+  pintar();
+}
+function ntDescargar(){
+  const L = ntVivas().sort((a,b)=>(a.cr||0)-(b.cr||0));
+  const txt = 'MIS APUNTES DE CONTABILIDAD\n' + session.nombre + ' · CTP Mercedes Norte\n\n' + L.map(n=>'■ ' + (n.t||'') + '\n[' + n.k + (n.s?' · '+n.s:'') + ' · ' + ntFecha(n.cr) + ']\n' + n.c + '\n').join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿'+txt],{type:'text/plain;charset=utf-8'})); a.download = 'Mis_apuntes_' + String(session.nombre||'').replace(/\s+/g,'_') + '.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function initNotas(){
+  NT.ced = ntCed(); if(!NT.ced) return;
+  NT.notas = ntLocalLeer(); NT.edit = null; ntRender(); ntSincronizar();
+}
 
 /* ============================================================
    PRUEBAS ESCRITAS — habilitación guardada en la nube (Firebase de Ciudad Contable)
