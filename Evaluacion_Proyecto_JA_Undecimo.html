@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evaluación del proyecto · Junior Achievement y EcoSmartBin · 11°</title>
+<style>
+:root{ --bg:#050506; --card:#0e0e11; --card2:#15151a; --card3:#1c1c22; --line:#2a2a31; --line2:#3a3a44; --tx:#ECE9E1; --mut:#9b978d; --gold:#C9973F; --gold2:#F4DD7A; --teal:#2FC2AD; --coral:#EF6A5B; --vi:#9b8cf6;
+  --ff:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:ui-monospace,Menlo,Consolas,monospace; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--tx); font-family:var(--ff); font-size:15px; line-height:1.5; }
+button,input,select,textarea{ font-family:inherit; font-size:14px; }
+.top{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:12px; padding:10px 18px; background:rgba(5,5,6,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+.logo{ width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:grid; place-items:center; color:#1a1206; font-weight:800; font-size:13px; flex:0 0 auto; }
+.top h1{ font-size:15.5px; margin:0; font-weight:650; } .top .sub{ font-size:12px; color:var(--mut); }
+.top .right{ margin-left:auto; font-size:12.5px; color:var(--teal); }
+.wrap{ max-width:1050px; margin:0 auto; padding:18px 18px 80px; }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px; }
+h2{ margin:0 0 8px; font-size:21px; } h3{ margin:16px 0 8px; font-size:16px; color:var(--gold2); }
+.mut{ color:var(--mut); font-size:13px; }
+.row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.grid2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } .grid3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+@media(max-width:720px){ .grid2,.grid3{ grid-template-columns:1fr; } .wrap{ padding:12px 10px 70px; } .card{ padding:14px; } }
+.btn{ border:1px solid transparent; border-radius:11px; padding:10px 16px; font-weight:650; cursor:pointer; background:var(--card3); color:var(--tx); }
+.btn.gold{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a1206; } .btn.teal{ background:var(--teal); color:#04140f; } .btn.coral{ background:var(--coral); color:#fff; }
+.btn.ghost{ background:transparent; border-color:var(--line2); } .btn.sm{ padding:6px 11px; font-size:12.5px; border-radius:9px; } .btn:disabled{ opacity:.5; cursor:default; }
+label.lb{ display:block; font-size:12.5px; color:var(--mut); margin:8px 0 4px; }
+input[type=text],input[type=number],select,textarea{ width:100%; background:#0a0a0d; color:var(--tx); border:1px solid var(--line2); border-radius:10px; padding:9px 11px; }
+textarea{ min-height:100px; resize:vertical; }
+input:focus,select:focus,textarea:focus{ outline:2px solid rgba(201,151,63,.55); border-color:var(--gold); }
+.pill{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:650; background:var(--card3); border:1px solid var(--line2); }
+.pill.gold{ background:rgba(201,151,63,.15); border-color:rgba(201,151,63,.5); color:var(--gold2); } .pill.teal{ background:rgba(47,194,173,.12); border-color:rgba(47,194,173,.5); color:var(--teal); } .pill.coral{ background:rgba(239,106,91,.12); border-color:rgba(239,106,91,.5); color:#f6a497; } .pill.vi{ background:rgba(155,140,246,.12); border-color:rgba(155,140,246,.5); color:#c7bdfb; }
+.note{ border-radius:12px; padding:11px 14px; font-size:13.5px; margin:10px 0; border:1px solid var(--line2); background:var(--card2); }
+.note.gold{ border-color:rgba(201,151,63,.5); background:rgba(201,151,63,.08); } .note.bad{ border-color:rgba(239,106,91,.55); background:rgba(239,106,91,.08); } .note.ok{ border-color:rgba(47,194,173,.5); background:rgba(47,194,173,.08); }
+table.tb{ width:100%; border-collapse:collapse; font-size:12.5px; } table.tb th,table.tb td{ border:1px solid var(--line2); padding:6px 8px; text-align:left; vertical-align:top; } table.tb th{ background:var(--card3); color:var(--gold2); } table.tb .c{ text-align:center; }
+.scroll{ overflow-x:auto; }
+.tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.tabs button{ border:1px solid var(--line2); background:var(--card2); color:var(--tx); border-radius:12px; padding:10px 14px; font-weight:650; cursor:pointer; }
+.tabs button.on{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a1206; border-color:transparent; }
+.ind{ border-top:1px solid var(--line); padding:12px 0; } .ind:first-of-type{ border-top:0; }
+.niv{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.niv label{ flex:1; min-width:150px; display:flex; gap:8px; align-items:flex-start; padding:8px 10px; border-radius:10px; border:1px solid var(--line2); background:var(--card2); cursor:pointer; font-size:13px; }
+.niv label.sel{ border-color:var(--gold); background:rgba(201,151,63,.1); } .niv input{ accent-color:var(--gold); margin-top:3px; }
+.peer{ display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--line2); border-radius:12px; background:var(--card2); margin:6px 0; }
+.kpis{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; } @media(max-width:720px){ .kpis{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.kpi{ background:var(--card2); border:1px solid var(--line2); border-radius:12px; padding:10px 12px; } .kpi .v{ font-size:22px; font-weight:750; color:var(--gold2); } .kpi .t{ font-size:12px; color:var(--mut); }
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,.78); z-index:80; display:none; overflow:auto; padding:20px 12px; } .modal.on{ display:block; } .modal .box{ max-width:1150px; margin:0 auto; }
+#toast{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#1c1c22; border:1px solid var(--line2); padding:10px 16px; border-radius:12px; z-index:95; display:none; max-width:92vw; }
+footer{ text-align:center; color:var(--mut); font-size:12px; padding:20px; } footer a{ color:var(--gold2); }
+#print{ display:none; color:#000; background:#fff; font-family:'Times New Roman',Georgia,serif; }
+#print table{ width:100%; border-collapse:collapse; } #print td,#print th{ border:1px solid #000; padding:4px 6px; vertical-align:top; font-size:10pt; } #print th{ background:#e9e9e9; color:#000; }
+#print h2{ font-size:12.5pt; margin:14px 0 4px; border-bottom:1.5px solid #000; } #print .hd{ text-align:center; } #print .small{ font-size:9.5pt; } #print .pb{ page-break-before:always; }
+#print .bar{ font-family:system-ui; background:#fff3cf; border:1px solid #c9973f; padding:8px; margin-bottom:10px; font-size:13px; }
+@media print{ @page{ size:letter; margin:14mm; } body{ background:#fff !important; } body > *:not(#print){ display:none !important; } #print{ display:block !important; } #print .bar{ display:none; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="logo">11°</div><div><h1>Evaluación del proyecto · Junior Achievement y EcoSmartBin</h1><div class="sub">Especialidad de Contabilidad · CTP Mercedes Norte · Valor: 15 %</div></div><div class="right" id="st"></div></div>
+<div class="wrap" id="app"><div class="card">Cargando…</div></div>
+<footer>CTP Mercedes Norte · Prof. Gerardo González González · <a href="#" id="lnkDoc">Panel docente</a></footer>
+<div id="toast"></div><div class="modal" id="modal"><div class="box" id="modalIn"></div></div><div id="print"></div>
+<script>
+(function(){
+'use strict';
+/* ===================== CONFIGURACIÓN ===================== */
+const ID='eval_proyecto_ja_11_2026';
+const PIN='9986';
+const FB={apiKey:'AIzaSyBS6ea8vhmDffugHc-3la99xPGq97kpf_I',authDomain:'ciudad-contable.firebaseapp.com',databaseURL:'https://ciudad-contable-default-rtdb.firebaseio.com',projectId:'ciudad-contable',appId:'1:331358015454:web:98e2d3dbf9b27ee6a4d74f'};
+const PORC={doc:8,auto:4,coev:3}; const TOTAL_P=15;
+const NIV=[[1,'Inicial'],[2,'Intermedio'],[3,'Avanzado']];
+/* Rúbrica analítica del docente (8 %): proceso y producto (REA, art. 33 y 35) */
+const RUB=[
+ {t:'Diseño y construcción del prototipo',d:['El basurero está incompleto o no separa los residuos en compartimentos.','El basurero está armado y tiene compartimentos, pero con fallas de estructura o acabado.','El basurero está completo, es resistente y separa los residuos en compartimentos bien identificados.']},
+ {t:'Clasificación de residuos con inteligencia artificial',d:['El modelo de IA no clasifica o no se entrenó con datos propios.','El modelo clasifica algunos residuos, con errores frecuentes o pocas pruebas.','El modelo se entrenó con datos propios, se probó y clasifica correctamente la mayoría de los residuos.']},
+ {t:'Integración electrónica y funcionamiento',d:['Los componentes (cámara, placa, servos) no están conectados o no responden.','Los componentes funcionan por separado, pero el sistema completo falla a veces.','Cámara, placa y servos trabajan juntos: el basurero detecta y abre el compartimento correcto.']},
+ {t:'Plan de negocio y costeo (Junior Achievement)',d:['No presenta costos ni precio de venta del producto.','Presenta costos y precio, con errores de cálculo o sin punto de equilibrio.','Calcula costos, precio de venta, margen y punto de equilibrio de forma correcta y justificada.']},
+ {t:'Registros contables de la miniempresa',d:['No presenta registros de ingresos y gastos.','Presenta registros incompletos o sin respaldo (facturas, recibos).','Presenta registros completos con respaldo y un estado de resultados de la miniempresa.']},
+ {t:'Presentación, defensa y bitácora del proceso',d:['No presenta o no responde preguntas; sin bitácora.','Presenta con apoyo de lectura; la bitácora tiene pocas entradas.','Defiende el proyecto con dominio, responde con seguridad y la bitácora muestra cada etapa.']}];
+/* Autoevaluación (4 %) */
+const AUTO=['Cumplí con las tareas que me asignó el equipo en el tiempo acordado.','Aporté ideas y trabajo al prototipo del basurero con inteligencia artificial.','Participé activamente en las actividades de Junior Achievement.','Apliqué conocimientos contables en el costeo y los registros de la miniempresa.','Respeté y escuché las opiniones de mis compañeros.','Asistí y aproveché las sesiones de trabajo del proyecto.'];
+const NIV_A=[[1,'Necesito mejorar'],[2,'Lo logré en parte'],[3,'Lo logré plenamente']];
+/* Coevaluación (3 %) anónima: cada estudiante valora a todo su grupo */
+const COEV=['Cumplió con sus tareas a tiempo.','Aportó ideas y trabajo al proyecto.','Se comunicó con respeto y escuchó a los demás.','Ayudó a resolver problemas del proyecto.','Asistió y participó en las sesiones de trabajo.'];
+const MAX={doc:RUB.length*3,auto:AUTO.length*3,coev:COEV.length*3};
+/* ===================== UTILIDADES ===================== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qs=new URLSearchParams(location.search);
+const r2=n=>Math.round(n*100)/100, f2=n=>r2(n).toFixed(2).replace('.',',');
+function toast(t,ms){ const e=$('toast'); e.textContent=t; e.style.display='block'; clearTimeout(e._t); e._t=setTimeout(()=>e.style.display='none',ms||3500); }
+const conT=(p,ms)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error('tiempo agotado')),ms))]);
+let DB=null;
+function cargarFB(){ if(window.__fbp) return window.__fbp;
+  const add=src=>new Promise((ok,ko)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>ko(new Error('Firebase')); document.head.appendChild(s); });
+  window.__fbp=conT(add('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js').then(()=>add('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js')),15000)
+   .then(()=>{ const a=firebase.apps.find(x=>x.name==='evalja')||firebase.initializeApp(FB,'evalja'); DB=a.database(); return DB; }).catch(()=>null);
+  return window.__fbp; }
+const ref=p=>DB.ref('examenes/'+ID+'/'+p);
+const leer=async p=>{ const s=await conT(ref(p).once('value'),12000); return s.val(); };
+const escribir=(p,v)=>conT(ref(p).set(v),10000);
+const actualizar=(p,v)=>conT(ref(p).update(v),10000);
+function claveAzar(){ const a=new Uint8Array(12); crypto.getRandomValues(a); return 'k'+Array.from(a,b=>b.toString(16).padStart(2,'0')).join(''); }
+const sum=a=>a.reduce((x,y)=>x+(+y||0),0);
+/* ===================== ESTADO ===================== */
+let CFG={}, U=null, EST={}, TAB='auto', DRAFT={auto:null,refl:'',coev:{}};
+const secciones=()=>String(CFG.Secciones||'11-1, 11-2').split(',').map(s=>s.trim()).filter(Boolean);
+const habil=()=>String(CFG.Habilitado||'NO').toUpperCase()==='SI';
+const cerradaAuto=()=>String(CFG.CerrarAuto||'NO').toUpperCase()==='SI';
+/* ===================== CÁLCULO ===================== */
+function calc(ced,coevAll){
+  const e=EST[ced]||{}, aj=e.aj||{};
+  const docPts=e.doc&&e.doc.r?sum(e.doc.r):null;
+  const autoPts=e.auto&&e.auto.r?sum(e.auto.r):null;
+  const cv=Object.values((coevAll||{})[ced]||{}).map(x=>sum(x.r||[]));
+  const coevProm=cv.length?sum(cv)/cv.length:null;
+  const pDoc=aj.doc!=null&&aj.doc!==''?+aj.doc:(docPts!=null?docPts/MAX.doc*PORC.doc:null);
+  const pAuto=aj.auto!=null&&aj.auto!==''?+aj.auto:(autoPts!=null?autoPts/MAX.auto*PORC.auto:null);
+  const pCoev=aj.coev!=null&&aj.coev!==''?+aj.coev:(coevProm!=null?coevProm/MAX.coev*PORC.coev:null);
+  const tot=(pDoc||0)+(pAuto||0)+(pCoev||0);
+  return {docPts,autoPts,coevProm,nCoev:cv.length,pDoc,pAuto,pCoev,tot:r2(tot),nota:r2(tot/TOTAL_P*100)};
+}
+/* ===================== ESTUDIANTE ===================== */
+async function inicio(){
+  await cargarFB();
+  if(!DB){ $('app').innerHTML='<div class="card"><div class="note bad"><b>Sin conexión con la base de datos.</b> Revise el internet y recargue la página.</div></div>'; return; }
+  try{ CFG=(await leer('config'))||{}; }catch(e){ CFG={}; }
+  const nomP=(qs.get('nombre')||'').trim();
+  $('app').innerHTML=`<div class="card"><span class="pill gold">Proyecto · 15 % de la calificación</span>
+   <h2 style="margin-top:10px">Evaluación del proyecto Junior Achievement y EcoSmartBin</h2>
+   <p>El proyecto se evalúa en tres partes, con criterios que usted conoce de antemano:</p>
+   <div class="grid3"><div class="note"><b style="color:var(--gold2)">8 % · Docente</b><br>Rúbrica técnica del prototipo con IA, el plan de negocio y los registros contables.</div><div class="note"><b style="color:var(--teal)">4 % · Autoevaluación</b><br>Usted valora su propio desempeño y escribe una reflexión.</div><div class="note"><b style="color:#c7bdfb">3 % · Coevaluación</b><br>Usted valora a cada compañero de su sección. <b>Es anónima:</b> nadie sabe quién dio cada valoración.</div></div>
+   <div class="row" style="margin-top:8px"><button class="btn ghost sm" id="bInst">📄 Ver los instrumentos (PDF)</button></div></div>
+   <div class="card"><h3 style="margin-top:0">Ingreso</h3>${habil()?'':'<div class="note bad">🔒 La evaluación aún no está habilitada. Su docente la abrirá cuando corresponda.</div>'}
+   <div ${habil()?'':'style="display:none"'}><div class="grid2"><div><label class="lb" for="iNom">Nombre completo</label><input type="text" id="iNom" value="${esc(nomP)}" ${nomP?'readonly':''} autocomplete="off"></div>
+   <div><label class="lb" for="iCed">Cédula (solo números)</label><input type="text" id="iCed" inputmode="numeric" autocomplete="off"></div>
+   <div><label class="lb" for="iSec">Sección</label><select id="iSec"><option value="">Seleccione…</option>${secciones().map(s=>`<option>${esc(s)}</option>`).join('')}</select></div></div>
+   <div class="row" style="margin-top:14px"><button class="btn gold" id="bIn">Entrar</button><span id="mIn" class="mut"></span></div></div></div>`;
+  $('bInst').onclick=()=>imprimir();
+  if($('bIn')) $('bIn').onclick=entrar;
+}
+async function entrar(){
+  const nom=$('iNom').value.trim().replace(/\s+/g,' '), ced=$('iCed').value.replace(/\D/g,''), sec=$('iSec').value, m=$('mIn');
+  if(nom.split(' ').length<2) return m.innerHTML='<span style="color:#f6a497">Escriba su nombre y al menos un apellido.</span>';
+  if(ced.length<9) return m.innerHTML='<span style="color:#f6a497">Escriba su cédula completa.</span>';
+  if(!sec) return m.innerHTML='<span style="color:#f6a497">Seleccione su sección.</span>';
+  $('bIn').disabled=true; m.textContent='Verificando…';
+  try{ EST=(await leer('est'))||{}; }catch(e){ $('bIn').disabled=false; return m.innerHTML='<span style="color:#f6a497">No se pudo conectar. Intente de nuevo.</span>'; }
+  const prev=EST[ced];
+  if(prev&&prev.sec!==sec){ $('bIn').disabled=false; return m.innerHTML='<span style="color:#f6a497">Esa cédula ya está registrada en la sección '+esc(prev.sec)+'.</span>'; }
+  U={ced,nom:prev?prev.nom:nom,sec};
+  if(!prev){ await escribir('est/'+ced,{nom,sec,ts:firebase.database.ServerValue.TIMESTAMP}); EST[ced]={nom,sec}; }
+  vistaEst();
+}
+function vistaEst(){
+  const e=EST[U.ced]||{}, hechoA=!!(e.auto&&e.auto.r);
+  const comp=Object.entries(EST).filter(([c,x])=>c!==U.ced&&x&&x.sec===U.sec).sort((a,b)=>String(a[1].nom).localeCompare(String(b[1].nom),'es'));
+  const hechas=e.ch||{}, pend=comp.filter(([c])=>!hechas[c]).length;
+  $('st').textContent=U.nom+' · '+U.sec;
+  $('app').innerHTML=`<div class="card"><div class="row"><span class="pill gold">${esc(U.nom)} · ${esc(U.sec)}</span>${hechoA?'<span class="pill teal">Autoevaluación enviada</span>':'<span class="pill coral">Autoevaluación pendiente</span>'}<span class="pill vi">Coevaluación: ${comp.length-pend} de ${comp.length}</span></div>
+   <div class="tabs" style="margin-top:12px"><button data-tab="auto" class="${TAB==='auto'?'on':''}">🙋 Autoevaluación (4 %)</button><button data-tab="coev" class="${TAB==='coev'?'on':''}">🤝 Coevaluación (3 %)</button><button data-tab="rub" class="${TAB==='rub'?'on':''}">📋 Rúbrica del docente (8 %)</button></div><div id="tabIn"></div></div>`;
+  $('app').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ TAB=b.dataset.tab; vistaEst(); });
+  const T=$('tabIn');
+  if(TAB==='auto') T.innerHTML=autoHTML(e,hechoA);
+  if(TAB==='coev') T.innerHTML=coevHTML(comp,hechas);
+  if(TAB==='rub') T.innerHTML=`<p class="mut">Con esta rúbrica su docente califica la parte técnica del proyecto (proceso y producto). Cada criterio vale de 1 a 3 puntos; total ${MAX.doc} puntos = 8 %.</p>`+rubHTML();
+  wire(T,comp);
+}
+function nivHTML(name,niveles,val,dis){ return `<div class="niv">${niveles.map(([v,t])=>`<label class="${val===v?'sel':''}"><input type="radio" name="${name}" value="${v}" ${val===v?'checked':''} ${dis?'disabled':''}><span><b>${v}</b> · ${esc(t)}</span></label>`).join('')}</div>`; }
+function autoHTML(e,hecho){
+  if(!DRAFT.auto) DRAFT.auto=hecho?e.auto.r.slice():AUTO.map(()=>0);
+  if(hecho&&!DRAFT.refl) DRAFT.refl=e.auto.refl||'';
+  const dis=hecho||cerradaAuto();
+  return `${hecho?'<div class="note ok">✅ Su autoevaluación ya fue enviada. Así quedó registrada.</div>':''}
+   <p class="mut">Valore con honestidad su propio trabajo en el proyecto. Escala: 1 Necesito mejorar · 2 Lo logré en parte · 3 Lo logré plenamente.</p>
+   ${AUTO.map((t,i)=>`<div class="ind"><b>${i+1}.</b> ${esc(t)}${nivHTML('a'+i,NIV_A,DRAFT.auto[i],dis)}</div>`).join('')}
+   <label class="lb" for="refl">Reflexión (obligatoria): ¿qué aprendí en el proyecto y qué haría diferente?</label><textarea id="refl" ${dis?'disabled':''}>${esc(DRAFT.refl)}</textarea>
+   ${dis?'':'<div class="row" style="margin-top:12px"><button class="btn gold" id="bAuto">Enviar autoevaluación</button><span class="mut" id="mAuto">Después de enviarla no se puede cambiar.</span></div>'}`;
+}
+function coevHTML(comp,hechas){
+  if(!comp.length) return '<div class="note">Todavía no hay compañeros de su sección registrados. Vuelva más tarde: aparecerán aquí cuando ingresen.</div>';
+  const sel=DRAFT.coevSel&&!hechas[DRAFT.coevSel]?DRAFT.coevSel:null;
+  return `<div class="note gold">🔒 <b>Su valoración es anónima.</b> Se guarda sin su nombre ni su cédula, y su docente solo ve el promedio de cada estudiante. Sea justo y honesto.</div>
+   <p class="mut">Valore a cada compañero de su sección (1 Inicial · 2 Intermedio · 3 Avanzado). Cada valoración se envía una sola vez.</p>
+   ${comp.map(([c,x])=>`<div class="peer"><span style="flex:1"><b>${esc(x.nom)}</b></span>${hechas[c]?'<span class="pill teal">✓ Valorado</span>':`<button class="btn sm ${sel===c?'gold':'ghost'}" data-peer="${esc(c)}">${sel===c?'Valorando…':'Valorar'}</button>`}</div>${sel===c?coevForm(c,x):''}`).join('')}`;
+}
+function coevForm(c,x){ const d=DRAFT.coev[c]||(DRAFT.coev[c]=COEV.map(()=>0));
+  return `<div class="card" style="background:var(--card2);margin:6px 0 12px"><b>Valoración de ${esc(x.nom)}</b>${COEV.map((t,i)=>`<div class="ind"><b>${i+1}.</b> ${esc(t)}${nivHTML('c'+i,NIV,d[i],false)}</div>`).join('')}
+   <div class="row"><button class="btn gold" id="bCoev" data-c="${esc(c)}">Enviar valoración anónima</button><button class="btn ghost" id="bCoevX">Cancelar</button><span class="mut" id="mCoev"></span></div></div>`; }
+function wire(T,comp){
+  T.querySelectorAll('input[type=radio]').forEach(r=>r.onchange=()=>{ const n=r.name, v=+r.value, i=+n.slice(1);
+    if(n[0]==='a') DRAFT.auto[i]=v; else if(n[0]==='c') DRAFT.coev[DRAFT.coevSel][i]=v;
+    r.closest('.niv').querySelectorAll('label').forEach(l=>l.classList.toggle('sel',l.contains(r))); });
+  const rf=$('refl'); if(rf) rf.oninput=()=>DRAFT.refl=rf.value;
+  const bA=$('bAuto'); if(bA) bA.onclick=enviarAuto;
+  T.querySelectorAll('[data-peer]').forEach(b=>b.onclick=()=>{ DRAFT.coevSel=b.dataset.peer; vistaEst(); });
+  const bC=$('bCoev'); if(bC) bC.onclick=()=>enviarCoev(bC.dataset.c);
+  const bX=$('bCoevX'); if(bX) bX.onclick=()=>{ DRAFT.coevSel=null; vistaEst(); };
+}
+async function enviarAuto(){ const m=$('mAuto');
+  if(DRAFT.auto.some(v=>!v)) return m.innerHTML='<span style="color:#f6a497">Valore todos los indicadores.</span>';
+  if(DRAFT.refl.trim().length<40) return m.innerHTML='<span style="color:#f6a497">Escriba una reflexión de al menos 40 caracteres.</span>';
+  if(!confirm('¿Enviar su autoevaluación? Después no podrá cambiarla.')) return;
+  $('bAuto').disabled=true;
+  try{ const v={r:DRAFT.auto.slice(),refl:DRAFT.refl.trim().slice(0,1500),ts:firebase.database.ServerValue.TIMESTAMP}; await escribir('est/'+U.ced+'/auto',v); EST[U.ced].auto=v; toast('✅ Autoevaluación enviada.'); }
+  catch(e){ $('bAuto').disabled=false; return m.innerHTML='<span style="color:#f6a497">No se pudo guardar. Revise el internet.</span>'; }
+  vistaEst(); }
+async function enviarCoev(c){ const d=DRAFT.coev[c], m=$('mCoev');
+  if(!d||d.some(v=>!v)) return m.innerHTML='<span style="color:#f6a497">Valore los '+COEV.length+' indicadores.</span>';
+  $('bCoev').disabled=true;
+  try{
+    const ya=await leer('est/'+U.ced+'/ch/'+c); if(ya){ toast('Ya había valorado a este compañero.'); }
+    else{
+      /* la valoración se guarda con una clave al azar, sin cédula, nombre ni hora del evaluador */
+      await escribir('coev/'+c+'/'+claveAzar(),{r:d.slice()});
+      await escribir('est/'+U.ced+'/ch/'+c,true);
+    }
+    (EST[U.ced].ch=EST[U.ced].ch||{})[c]=true; delete DRAFT.coev[c]; DRAFT.coevSel=null; toast('🤝 Valoración anónima enviada.');
+  }catch(e){ $('bCoev').disabled=false; return m.innerHTML='<span style="color:#f6a497">No se pudo guardar. Revise el internet.</span>'; }
+  vistaEst(); }
+function rubHTML(){ return `<div class="scroll"><table class="tb"><tr><th>Criterio</th>${NIV.map(([v,t])=>`<th>${v} · ${t}</th>`).join('')}</tr>${RUB.map((r,i)=>`<tr><td><b>${i+1}. ${esc(r.t)}</b></td>${r.d.map(x=>`<td>${esc(x)}</td>`).join('')}</tr>`).join('')}</table></div>`; }
+/* ===================== PANEL DOCENTE ===================== */
+let PS={sec:'Todas',coev:{},sel:null};
+async function panel(){ const p=prompt('PIN del panel docente:'); if(p===null) return; if(p!==PIN) return toast('PIN incorrecto.');
+  await cargarFB(); if(!DB) return toast('Sin conexión con la base de datos.');
+  $('modal').classList.add('on'); $('modalIn').innerHTML='<div class="card">Cargando…</div>'; await recargar(); panelRender(); }
+async function recargar(){ CFG=(await leer('config'))||{}; EST=(await leer('est'))||{}; PS.coev=(await leer('coev'))||{}; }
+function lista(){ return Object.entries(EST).filter(([c,x])=>x&&(PS.sec==='Todas'||x.sec===PS.sec)).sort((a,b)=>String(a[1].nom).localeCompare(String(b[1].nom),'es')); }
+function panelRender(){
+  const L=lista(), C=L.map(([c])=>calc(c,PS.coev)), prom=C.length?sum(C.map(x=>x.nota))/C.length:0;
+  $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Evaluación del proyecto (15 %)</h2><button class="btn ghost sm" style="margin-left:auto" id="pX">Cerrar ✕</button></div>
+   <div class="kpis" style="margin-top:12px"><div class="kpi"><div class="v">${L.length}</div><div class="t">Estudiantes registrados</div></div><div class="kpi"><div class="v">${L.filter(([c,x])=>x.auto).length}</div><div class="t">Autoevaluaciones</div></div><div class="kpi"><div class="v">${L.filter(([c,x])=>x.doc).length}</div><div class="t">Calificados por usted</div></div><div class="kpi"><div class="v">${f2(prom)}</div><div class="t">Nota promedio del proyecto</div></div></div>
+   <h3>Configuración</h3><div class="grid2"><div><label class="lb">Secciones (separadas por coma)</label><input type="text" id="cfSec" value="${esc(secciones().join(', '))}"></div>
+   <div><label class="lb">Autoevaluación</label><select id="cfCA"><option value="NO">Abierta</option><option value="SI" ${cerradaAuto()?'selected':''}>Cerrada (ya no se reciben)</option></select></div></div>
+   <div class="row" style="margin-top:10px"><button class="btn teal sm" id="cfG">Guardar</button><button class="btn sm ${habil()?'coral':'gold'}" id="cfH">${habil()?'⏸ Cerrar la evaluación':'▶ Habilitar la evaluación'}</button><span class="mut">Estado: <b>${habil()?'habilitada':'cerrada'}</b></span><button class="btn ghost sm" id="pPdf">📄 Instrumentos en PDF</button></div>
+   <h3>Estudiantes</h3><div class="row" style="margin-bottom:8px">${['Todas'].concat(secciones()).map(s=>`<button class="btn sm ${s===PS.sec?'gold':'ghost'}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}<button class="btn teal sm" id="pCsv" style="margin-left:auto">Exportar CSV</button><button class="btn ghost sm" id="pRef">↻ Actualizar</button></div>
+   <div class="scroll"><table class="tb"><tr><th>Estudiante</th><th>Sección</th><th class="c">Docente (8 %)</th><th class="c">Autoevaluación (4 %)</th><th class="c">Coevaluación (3 %)</th><th class="c">Total (15 %)</th><th class="c">Nota</th><th></th></tr>
+   ${L.map(([c,x],i)=>{ const k=C[i]; const v=(p,max)=>p==null?'<span class="mut">—</span>':f2(p)+' %'; return `<tr><td>${esc(x.nom)}<div class="mut">${esc(c)}</div></td><td>${esc(x.sec)}</td><td class="c">${v(k.pDoc)}</td><td class="c">${v(k.pAuto)}</td><td class="c">${v(k.pCoev)}<div class="mut">${k.nCoev} valoraciones</div></td><td class="c"><b>${f2(k.tot)} %</b></td><td class="c">${f2(k.nota)}</td><td><button class="btn gold sm" data-cal="${esc(c)}">Calificar</button></td></tr>`; }).join('')||'<tr><td colspan="8" class="mut">Nadie ha ingresado todavía.</td></tr>'}</table></div>
+   <p class="mut">La coevaluación es anónima: aquí solo se ve el promedio que cada estudiante recibió y cuántas valoraciones tiene, nunca quién valoró a quién. Usted puede ajustar cualquier porcentaje en «Calificar».</p></div>`;
+  const M=$('modalIn');
+  $('pX').onclick=()=>$('modal').classList.remove('on');
+  M.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{ PS.sec=b.dataset.sec; panelRender(); });
+  M.querySelectorAll('[data-cal]').forEach(b=>b.onclick=()=>calificar(b.dataset.cal));
+  $('pRef').onclick=async()=>{ await recargar(); panelRender(); };
+  $('pCsv').onclick=()=>csv(L);
+  $('pPdf').onclick=()=>imprimir();
+  $('cfG').onclick=async()=>{ await actualizar('config',{Secciones:$('cfSec').value.trim(),CerrarAuto:$('cfCA').value}); CFG.Secciones=$('cfSec').value.trim(); CFG.CerrarAuto=$('cfCA').value; toast('Configuración guardada.'); panelRender(); };
+  $('cfH').onclick=async()=>{ const nv=habil()?'NO':'SI'; await escribir('config/Habilitado',nv); CFG.Habilitado=nv; toast(nv==='SI'?'Evaluación habilitada.':'Evaluación cerrada.'); panelRender(); };
+}
+function calificar(c){
+  const x=EST[c]||{}, k=calc(c,PS.coev), d=(x.doc&&x.doc.r)?x.doc.r.slice():RUB.map(()=>0), aj=Object.assign({},x.aj||{});
+  const vivo=()=>{ const pts=sum(d); $('vDoc').textContent=pts+' / '+MAX.doc+' pts = '+f2(pts/MAX.doc*PORC.doc)+' %'; };
+  $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">${esc(x.nom)}</h2><span class="pill">${esc(x.sec)}</span><button class="btn ghost sm" style="margin-left:auto" id="cB">← Volver</button></div>
+   <h3>1. Rúbrica del docente (8 %)</h3>${RUB.map((r,i)=>`<div class="ind"><b>${i+1}. ${esc(r.t)}</b><div class="niv">${NIV.map(([v,t],j)=>`<label class="${d[i]===v?'sel':''}"><input type="radio" name="d${i}" value="${v}" ${d[i]===v?'checked':''}><span><b>${v} · ${t}</b><br><span class="mut">${esc(r.d[j])}</span></span></label>`).join('')}</div></div>`).join('')}
+   <div class="row"><span class="pill gold" id="vDoc"></span></div><label class="lb">Observaciones</label><textarea id="cObs" style="min-height:70px">${esc((x.doc||{}).obs||'')}</textarea>
+   <h3>2. Autoevaluación (4 %)</h3>${x.auto?`<div class="scroll"><table class="tb">${AUTO.map((t,i)=>`<tr><td>${esc(t)}</td><td class="c">${x.auto.r[i]} · ${NIV_A[x.auto.r[i]-1][1]}</td></tr>`).join('')}</table></div><div class="note"><b>Reflexión:</b> ${esc(x.auto.refl)}</div><div class="mut">Automático: ${k.autoPts} / ${MAX.auto} pts = ${f2(k.autoPts/MAX.auto*PORC.auto)} %</div>`:'<div class="note">Aún no envía la autoevaluación.</div>'}
+   <h3>3. Coevaluación (3 %)</h3><div class="mut">${k.nCoev?`Promedio recibido: ${f2(k.coevProm)} / ${MAX.coev} pts de ${k.nCoev} compañeros = ${f2(k.coevProm/MAX.coev*PORC.coev)} %`:'Todavía nadie lo ha valorado.'}</div>
+   <h3>Ajustes del docente (opcional)</h3><p class="mut" style="margin-top:0">Si necesita corregir una parte, escriba aquí el porcentaje final. En blanco se usa el cálculo automático.</p>
+   <div class="grid3"><div><label class="lb">Docente (0 a 8 %)</label><input type="number" step="0.01" min="0" max="8" id="aDoc" value="${esc(aj.doc==null?'':aj.doc)}"></div><div><label class="lb">Autoevaluación (0 a 4 %)</label><input type="number" step="0.01" min="0" max="4" id="aAuto" value="${esc(aj.auto==null?'':aj.auto)}"></div><div><label class="lb">Coevaluación (0 a 3 %)</label><input type="number" step="0.01" min="0" max="3" id="aCoev" value="${esc(aj.coev==null?'':aj.coev)}"></div></div>
+   <div class="row" style="margin-top:14px"><button class="btn gold" id="cG">Guardar calificación</button><span class="mut" id="cM"></span></div></div>`;
+  $('modalIn').querySelectorAll('input[type=radio]').forEach(r=>r.onchange=()=>{ d[+r.name.slice(1)]=+r.value; r.closest('.niv').querySelectorAll('label').forEach(l=>l.classList.toggle('sel',l.contains(r))); vivo(); });
+  vivo(); $('cB').onclick=()=>panelRender();
+  $('cG').onclick=async()=>{ const lim=(v,m)=>v===''?null:Math.max(0,Math.min(m,+v));
+    const A={doc:lim($('aDoc').value,8),auto:lim($('aAuto').value,4),coev:lim($('aCoev').value,3)};
+    const upd={aj:A}; if(d.every(v=>v)) upd.doc={r:d,obs:$('cObs').value.trim().slice(0,1500)}; else if(d.some(v=>v)) return $('cM').innerHTML='<span style="color:#f6a497">Califique los 6 criterios de la rúbrica.</span>';
+    await actualizar('est/'+c,upd); Object.assign(EST[c],upd); const k2=calc(c,PS.coev); $('cM').textContent='✓ Guardado: '+f2(k2.tot)+' % de 15 % · nota '+f2(k2.nota); toast('Calificación guardada.'); };
+}
+function csv(L){ const H=['Estudiante','Cédula','Sección'].concat(RUB.map((r,i)=>'Rúbrica '+(i+1)),['Docente %','Autoevaluación %','Coevaluación %','Valoraciones recibidas','Total 15 %','Nota 100']);
+  const rows=[H].concat(L.map(([c,x])=>{ const k=calc(c,PS.coev); const r=(x.doc&&x.doc.r)||[]; return [x.nom,c,x.sec].concat(RUB.map((_,i)=>r[i]||''),[k.pDoc==null?'':f2(k.pDoc),k.pAuto==null?'':f2(k.pAuto),k.pCoev==null?'':f2(k.pCoev),k.nCoev,f2(k.tot),f2(k.nota)]); }));
+  const s='﻿'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([s],{type:'text/csv;charset=utf-8'})); a.download='Evaluacion_Proyecto_JA_11_'+PS.sec+'.csv'; document.body.appendChild(a); a.click(); a.remove(); }
+/* ===================== INSTRUMENTOS PARA IMPRIMIR ===================== */
+function imprimir(auto){
+  const tabla=(items,niv)=>`<table><tr><th style="width:55%">Indicador</th>${niv.map(([v,t])=>`<th class="small">${v} · ${t}</th>`).join('')}</tr>${items.map((t,i)=>`<tr><td>${i+1}. ${esc(t)}</td>${niv.map(()=>'<td></td>').join('')}</tr>`).join('')}</table>`;
+  $('print').innerHTML=`<div class="bar">Instrumentos de evaluación · Use Imprimir → Guardar como PDF. <button onclick="window.print()">🖨 Imprimir / PDF</button> <button onclick="document.getElementById('print').style.display='none'">Cerrar</button></div>
+  <div class="hd"><b>Colegio Técnico Profesional Mercedes Norte · Especialidad de Contabilidad</b><br>Instrumentos de evaluación del proyecto · Junior Achievement y EcoSmartBin · Undécimo año<br>Docente: Gerardo González González · Valor del proyecto: 15 %</div>
+  <p class="small">Distribución: rúbrica del docente 8 % (${MAX.doc} pts) · autoevaluación 4 % (${MAX.auto} pts) · coevaluación anónima 3 % (${MAX.coev} pts por valoración; se usa el promedio recibido). Porcentaje de cada parte = puntos obtenidos ÷ puntos máximos × valor de la parte. Criterios comunicados por escrito antes de la evaluación (REA, Decreto 45509-MEP, arts. 10, 13, 33 y 35).</p>
+  <p class="small">Estudiante: ________________________________ Sección: ________ Fecha: ____________</p>
+  <h2>1. Rúbrica analítica del docente (8 %)</h2><table><tr><th style="width:22%">Criterio</th>${NIV.map(([v,t])=>`<th>${v} · ${t}</th>`).join('')}<th>Pts</th></tr>${RUB.map((r,i)=>`<tr><td><b>${i+1}. ${esc(r.t)}</b></td>${r.d.map(x=>`<td class="small">${esc(x)}</td>`).join('')}<td></td></tr>`).join('')}<tr><th colspan="4" style="text-align:right">Total (máx. ${MAX.doc})</th><th></th></tr></table>
+  <h2>2. Autoevaluación (4 %)</h2>${tabla(AUTO,NIV_A)}<p class="small">Reflexión: ¿qué aprendí en el proyecto y qué haría diferente?</p><div style="border-bottom:1px solid #777;height:22px"></div><div style="border-bottom:1px solid #777;height:22px"></div><div style="border-bottom:1px solid #777;height:22px"></div>
+  <h2>3. Coevaluación anónima (3 %)</h2><p class="small">Cada estudiante valora a cada compañero de su sección. La valoración se registra sin el nombre de quien la da; al docente solo se le muestra el promedio recibido.</p>${tabla(COEV,NIV)}`;
+  $('print').style.display='block'; window.scrollTo(0,0); if(!auto) setTimeout(()=>window.print(),300); }
+$('lnkDoc').onclick=e=>{ e.preventDefault(); panel(); };
+window.__EV={calc,RUB,AUTO,COEV,MAX};
+if(qs.get('pdf')==='1'){ imprimir(true); } else inicio();
+})();
+</script>
+</body>
+</html>

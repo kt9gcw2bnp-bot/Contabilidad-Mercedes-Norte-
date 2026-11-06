@@ -1738,5 +1738,15 @@
     "URL": "Examen_II_Periodo_Undecimo.html",
     "Activo": "NO",
     "Orden": 1
+  },
+  {
+    "Id": "eval_proyecto_ja_11_2026",
+    "Nivel": "11",
+    "Categoria": "Examen",
+    "Subarea": "Gestión Empresarial para Contadores",
+    "Titulo": "Evaluación del proyecto Junior Achievement y EcoSmartBin (15 %)",
+    "URL": "Evaluacion_Proyecto_JA_Undecimo.html",
+    "Activo": "NO",
+    "Orden": 2
   }
 ]
