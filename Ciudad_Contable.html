@@ -9571,7 +9571,7 @@ VIEWS.empresa_ent=()=>_vistaEnt()+fleteHTML();
 /* ---------- 3) villanos y seguridad ---------- */
 const villanosOn=()=>S.cfg.villanos!==false;
 const VILL=[
-  {id:'g',n:'🥊 Golpeador',c:'#EF6A5B',acc:'#7a1f18',d:'Lo golpea y le quita 25 de salud.'},
+  {id:'g',n:'🥊 Golpeador',c:'#EF6A5B',acc:'#7a1f18',d:'Hay 15 recorriendo las avenidas. Si uno lo alcanza, le quita 25 de salud.'},
   {id:'c',n:'👛 Carterista',c:'#F4DD7A',acc:'#6b5a12',d:'Le arrebata dinero de la caja de su empresa (hasta ₡30 000).'},
   {id:'s',n:'📦 Saqueador',c:'#C38BFF',acc:'#43206e',d:'Recorre las empresas y saquea inventario de las que no tienen seguridad.'}];
 const VD_SEG={tar:20000};
@@ -9588,9 +9588,18 @@ function sqEstado(t){
     let s=ph/SQ_VIAJE*tot, i=0; while(i<2&&s>seg[i]){ s-=seg[i]; i++; } const f=seg[i]?s/seg[i]:1; return {x:pts[i].x+(pts[i+1].x-pts[i].x)*f,y:pts[i].y+(pts[i+1].y-pts[i].y)*f,u:u1,cic,en:false,ph}; }
   return {x:E1.x,y:E1.y,u:u1,cic,en:true,ph:ph-SQ_VIAJE};
 }
+// 15 golpeadores por mundo: 6 en la avenida sur, 5 en la avenida norte (lejos de la plaza) y 4 en la avenida vertical
+const GOLP=(()=>{ const L=[], add=(h,c,a,b,per,off)=>L.push({id:L.length?'g'+L.length:'g',h,y:h?c:0,x:h?0:c,a,b,per,off});
+  add(1,AV_S+18,140,1460,64000,0); add(1,AV_S-18,140,1460,58000,21000); add(1,AV_S+18,140,1460,71000,37000);
+  add(1,AV_S-18,140,1460,52000,9000); add(1,AV_S+18,140,1460,77000,50000); add(1,AV_S-18,140,1460,61000,30000);
+  add(1,AV_N-18,90,640,46000,0); add(1,AV_N+18,90,640,53000,19000); add(1,AV_N-18,960,1510,49000,7000);
+  add(1,AV_N+18,960,1510,57000,26000); add(1,AV_N-18,960,1510,63000,41000);
+  add(0,AV_V+18,40,340,38000,0); add(0,AV_V-18,40,340,44000,15000); add(0,AV_V+18,1180,1560,41000,8000); add(0,AV_V+18,1180,1560,47000,27000);
+  return L; })();
+const vDef=id=>VILL.find(v=>v.id===id.charAt(0));
 function villanosPos(t){
   const out={};
-  const g=pingpong(vmod(t,64000)/64000); out.g={x:140+g*1320,y:AV_S+18};
+  GOLP.forEach(r=>{ const f=pingpong(vmod(t+r.off,r.per)/r.per); out[r.id]=r.h?{x:r.a+f*(r.b-r.a),y:r.y}:{x:r.x,y:r.a+f*(r.b-r.a)}; });
   const c=pingpong(vmod(t+17000,40000)/40000); out.c={x:AV_V-18,y:620+c*860};
   const s=sqEstado(t); if(s) out.s=s;
   return out;
@@ -9602,12 +9611,12 @@ function enCasa(){ return (me.k||HOMEK)===HOMEK; }
 function villanos3d(out){
   if(!villanosOn()||!S.listo) return;
   const P=villanosPos(now()), C=contOf(contDeSala(SALA));
-  VILL.forEach(v=>{ const p=P[v.id]; if(!p) return;
-    out.push({k:'vil_'+v.id,self:false,n:v.n,c:v.c,emp:v.id==='s'&&p.u&&S.emp[p.u]?(p.en?'en ':'hacia ')+S.emp[p.u].nom:'villano de la ciudad',x:p.x+C.ox,y:p.y+C.oy,ves:VVES[v.id],vk:'vil'+v.id,niv:'',nivk:'',emo:'',bub:''}); }); }
+  Object.keys(P).forEach(id=>{ const p=P[id], v=vDef(id); if(!p||!v) return;
+    out.push({k:'vil_'+id,self:false,n:v.n,c:v.c,emp:v.id==='s'&&p.u&&S.emp[p.u]?(p.en?'en ':'hacia ')+S.emp[p.u].nom:'villano de la ciudad',x:p.x+C.ox,y:p.y+C.oy,ves:VVES[v.id],vk:'vil'+v.id,niv:'',nivk:'',emo:'',bub:''}); }); }
 function villanos2D(){
   if(!villanosOn()||!S.listo||R3||curK()!==contDeSala(SALA)) return;
   const P=villanosPos(now());
-  VILL.forEach(v=>{ const p=P[v.id]; if(!p) return;
+  Object.keys(P).forEach(id=>{ const p=P[id], v=vDef(id); if(!p||!v) return;
     cx.beginPath(); cx.arc(p.x,p.y+14,14,0,Math.PI*2); cx.fillStyle='rgba(0,0,0,.35)'; cx.fill();
     cx.beginPath(); cx.arc(p.x,p.y,18,0,Math.PI*2); cx.fillStyle='#1b1b20'; cx.fill(); cx.lineWidth=3; cx.strokeStyle=v.c; cx.stroke();
     cx.font='18px sans-serif'; cx.textAlign='center'; cx.fillText(v.n.split(' ')[0],p.x,p.y+6);
@@ -9630,8 +9639,8 @@ async function roboCaja(){
   await upd(u).catch(()=>{});
   toast('👛 ¡Lo asaltó un carterista! Le robó '+fm(m)+'. Registre la pérdida en Pendientes y aléjese de los villanos.','w');
   avisoTodos('🚨 Asalto: un carterista le robó dinero a '+S.nombre+' ('+e.nom+'). ¡Cuídense en la calle!'); hud(); renderPanel(); }
-function golpe(){ toast('🥊 ¡Lo asaltó el Golpeador! Pierde 25 de salud. Aléjese cuando lo vea venir o viaje en vehículo.','w');
-  avisoTodos('🚨 Asalto: el Golpeador atacó a '+S.nombre+' en la avenida. ¡Cuídense en la calle!'); danar(25,false,'un asalto'); }
+function golpe(){ toast('🥊 ¡Lo asaltó un Golpeador! Pierde 25 de salud. Aléjese cuando lo vea venir o viaje en vehículo.','w');
+  avisoTodos('🚨 Asalto: un Golpeador atacó a '+S.nombre+' en la avenida. ¡Cuídense en la calle!'); danar(25,false,'un asalto'); }
 async function saqueo(cic){
   const e=myE(); if(!e) return; const idr='s'+cic; if(VL.robos&&VL.robos[idr]) return; VL.sq[cic]='hecho';
   if(seguridadActiva()){ toast('🛡 El guarda de seguridad de su empresa ahuyentó al Saqueador. ¡Buena decisión!','y'); await base.child('robos/'+S.uid+'/'+idr).set({t:'x',m:0,per:periodo(),ts:SV.TIMESTAMP}).catch(()=>{}); return; }
@@ -9654,7 +9663,7 @@ function villanosTick(){
   const t=now(), P=villanosPos(t);
   // golpeador y carterista: atacan en la calle
   if(puedeSerAsaltado()){
-    ['g','c'].forEach(id=>{ const p=P[id]; if(!p) return; const d=Math.hypot(p.x-me.x,p.y-me.y), v=VILL.find(x=>x.id===id);
+    Object.keys(P).filter(i=>i.charAt(0)==='g'||i==='c').forEach(i=>{ const p=P[i]; if(!p) return; const id=i.charAt(0), d=Math.hypot(p.x-me.x,p.y-me.y), v=vDef(i);
       if(d<110&&d>=30&&Date.now()-(VL.warn[id]||0)>45000&&Date.now()-(VL.hit[id]||0)>60000){ VL.warn[id]=Date.now(); toast('⚠️ '+v.n+' se acerca. ¡Aléjese de él!','w'); }
       if(d<30&&Date.now()-(VL.hit[id]||0)>90000&&Date.now()-(VL.t0||0)>20000){ VL.hit[id]=Date.now(); if(id==='g') golpe(); else roboCaja().catch(()=>{}); } }); }
   // saqueador: actúa en la empresa del dueño conectado
