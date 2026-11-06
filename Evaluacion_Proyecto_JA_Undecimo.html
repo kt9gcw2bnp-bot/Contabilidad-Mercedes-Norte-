@@ -106,6 +106,8 @@ let CFG={}, U=null, EST={}, TAB='auto', DRAFT={auto:null,refl:'',coev:{}};
 const secciones=()=>String(CFG.Secciones||'11-1, 11-2').split(',').map(s=>s.trim()).filter(Boolean);
 const habil=()=>String(CFG.Habilitado||'NO').toUpperCase()==='SI';
 const cerradaAuto=()=>String(CFG.CerrarAuto||'NO').toUpperCase()==='SI';
+const mostrarNotas=()=>String(CFG.MostrarNotas||'NO').toUpperCase()==='SI';
+let MICOEV=null;
 /* ===================== CÁLCULO ===================== */
 function calc(ced,coevAll){
   const e=EST[ced]||{}, aj=e.aj||{};
@@ -148,6 +150,7 @@ async function entrar(){
   const prev=EST[ced];
   if(prev&&prev.sec!==sec){ $('bIn').disabled=false; return m.innerHTML='<span style="color:#f6a497">Esa cédula ya está registrada en la sección '+esc(prev.sec)+'.</span>'; }
   U={ced,nom:prev?prev.nom:nom,sec};
+  try{ CFG=(await leer('config'))||CFG; MICOEV=mostrarNotas()?((await leer('coev/'+ced))||{}):null; }catch(e){ MICOEV=null; }
   if(!prev){ await escribir('est/'+ced,{nom,sec,ts:firebase.database.ServerValue.TIMESTAMP}); EST[ced]={nom,sec}; }
   vistaEst();
 }
@@ -157,6 +160,7 @@ function vistaEst(){
   const hechas=e.ch||{}, pend=comp.filter(([c])=>!hechas[c]).length;
   $('st').textContent=U.nom+' · '+U.sec;
   $('app').innerHTML=`<div class="card"><div class="row"><span class="pill gold">${esc(U.nom)} · ${esc(U.sec)}</span>${hechoA?'<span class="pill teal">Autoevaluación enviada</span>':'<span class="pill coral">Autoevaluación pendiente</span>'}<span class="pill vi">Coevaluación: ${comp.length-pend} de ${comp.length}</span></div>
+   ${notaHTML()}
    <div class="tabs" style="margin-top:12px"><button data-tab="auto" class="${TAB==='auto'?'on':''}">🙋 Autoevaluación (4 %)</button><button data-tab="coev" class="${TAB==='coev'?'on':''}">🤝 Coevaluación (3 %)</button><button data-tab="rub" class="${TAB==='rub'?'on':''}">📋 Rúbrica del docente (8 %)</button></div><div id="tabIn"></div></div>`;
   $('app').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ TAB=b.dataset.tab; vistaEst(); });
   const T=$('tabIn');
@@ -164,6 +168,13 @@ function vistaEst(){
   if(TAB==='coev') T.innerHTML=coevHTML(comp,hechas);
   if(TAB==='rub') T.innerHTML=`<p class="mut">Con esta rúbrica su docente califica su participación y compromiso durante todo el proyecto. Cada criterio vale de 1 a 3 puntos; total ${MAX.doc} puntos = 8 %.</p>`+rubHTML();
   wire(T,comp);
+}
+function notaHTML(){
+  if(!mostrarNotas()) return '';
+  const e=EST[U.ced]||{};
+  if(!e.doc) return '<div class="note" style="margin-top:12px">📊 Su docente todavía no ha calificado su rúbrica. Aquí verá su nota cuando esté lista.</div>';
+  const k=calc(U.ced,{[U.ced]:MICOEV||{}}), v=p=>p==null?'—':f2(p)+' %';
+  return `<div class="kpis" style="margin-top:12px"><div class="kpi"><div class="v">${v(k.pDoc)}</div><div class="t">Docente (de 8 %)</div></div><div class="kpi"><div class="v">${v(k.pAuto)}</div><div class="t">Autoevaluación (de 4 %)</div></div><div class="kpi"><div class="v">${v(k.pCoev)}</div><div class="t">Coevaluación (de 3 %) · promedio de ${k.nCoev} compañeros</div></div><div class="kpi" style="border-color:var(--gold)"><div class="v">${f2(k.tot)} %</div><div class="t">Total de 15 % · nota ${f2(k.nota)}</div></div></div>${(e.doc&&e.doc.obs)?`<div class="note"><b>Observaciones del docente:</b> ${esc(e.doc.obs)}</div>`:''}`;
 }
 function nivHTML(name,niveles,val,dis){ return `<div class="niv">${niveles.map(([v,t])=>`<label class="${val===v?'sel':''}"><input type="radio" name="${name}" value="${v}" ${val===v?'checked':''} ${dis?'disabled':''}><span><b>${v}</b> · ${esc(t)}</span></label>`).join('')}</div>`; }
 function autoHTML(e,hecho){
@@ -230,7 +241,8 @@ function panelRender(){
   $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente · Evaluación del proyecto (15 %)</h2><button class="btn ghost sm" style="margin-left:auto" id="pX">Cerrar ✕</button></div>
    <div class="kpis" style="margin-top:12px"><div class="kpi"><div class="v">${L.length}</div><div class="t">Estudiantes registrados</div></div><div class="kpi"><div class="v">${L.filter(([c,x])=>x.auto).length}</div><div class="t">Autoevaluaciones</div></div><div class="kpi"><div class="v">${L.filter(([c,x])=>x.doc).length}</div><div class="t">Calificados por usted</div></div><div class="kpi"><div class="v">${f2(prom)}</div><div class="t">Nota promedio del proyecto</div></div></div>
    <h3>Configuración</h3><div class="grid2"><div><label class="lb">Secciones (separadas por coma)</label><input type="text" id="cfSec" value="${esc(secciones().join(', '))}"></div>
-   <div><label class="lb">Autoevaluación</label><select id="cfCA"><option value="NO">Abierta</option><option value="SI" ${cerradaAuto()?'selected':''}>Cerrada (ya no se reciben)</option></select></div></div>
+   <div><label class="lb">Autoevaluación</label><select id="cfCA"><option value="NO">Abierta</option><option value="SI" ${cerradaAuto()?'selected':''}>Cerrada (ya no se reciben)</option></select></div>
+   <div><label class="lb">Mostrar la nota a los estudiantes</label><select id="cfMN"><option value="NO">No, todavía no</option><option value="SI" ${mostrarNotas()?'selected':''}>Sí, cuando yo califique su rúbrica</option></select></div></div>
    <div class="row" style="margin-top:10px"><button class="btn teal sm" id="cfG">Guardar</button><button class="btn sm ${habil()?'coral':'gold'}" id="cfH">${habil()?'⏸ Cerrar la evaluación':'▶ Habilitar la evaluación'}</button><span class="mut">Estado: <b>${habil()?'habilitada':'cerrada'}</b></span><button class="btn ghost sm" id="pPdf">📄 Instrumentos en PDF</button></div>
    <h3>Estudiantes</h3><div class="row" style="margin-bottom:8px">${['Todas'].concat(secciones()).map(s=>`<button class="btn sm ${s===PS.sec?'gold':'ghost'}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}<button class="btn teal sm" id="pCsv" style="margin-left:auto">Exportar CSV</button><button class="btn ghost sm" id="pRef">↻ Actualizar</button></div>
    <div class="scroll"><table class="tb"><tr><th>Estudiante</th><th>Sección</th><th class="c">Docente (8 %)</th><th class="c">Autoevaluación (4 %)</th><th class="c">Coevaluación (3 %)</th><th class="c">Total (15 %)</th><th class="c">Nota</th><th></th></tr>
@@ -243,7 +255,7 @@ function panelRender(){
   $('pRef').onclick=async()=>{ await recargar(); panelRender(); };
   $('pCsv').onclick=()=>csv(L);
   $('pPdf').onclick=()=>imprimir();
-  $('cfG').onclick=async()=>{ await actualizar('config',{Secciones:$('cfSec').value.trim(),CerrarAuto:$('cfCA').value}); CFG.Secciones=$('cfSec').value.trim(); CFG.CerrarAuto=$('cfCA').value; toast('Configuración guardada.'); panelRender(); };
+  $('cfG').onclick=async()=>{ await actualizar('config',{Secciones:$('cfSec').value.trim(),CerrarAuto:$('cfCA').value,MostrarNotas:$('cfMN').value}); CFG.Secciones=$('cfSec').value.trim(); CFG.CerrarAuto=$('cfCA').value; CFG.MostrarNotas=$('cfMN').value; toast('Configuración guardada.'); panelRender(); };
   $('cfH').onclick=async()=>{ const nv=habil()?'NO':'SI'; await escribir('config/Habilitado',nv); CFG.Habilitado=nv; toast(nv==='SI'?'Evaluación habilitada.':'Evaluación cerrada.'); panelRender(); };
 }
 function calificar(c){
