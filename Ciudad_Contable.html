@@ -41,7 +41,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
 .err{color:var(--coral);font-size:13px;margin-top:8px;min-height:1em}
 #game{position:fixed;inset:0}
 canvas{display:block;width:100%;height:100%;touch-action:none}
-.glass{background:rgba(10,10,12,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px}
+.glass{background:linear-gradient(180deg,rgba(24,22,18,.9),rgba(10,10,12,.9) 60px);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border:1px solid var(--line);border-top-color:rgba(244,221,122,.28);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04)}
 .hud{position:fixed;left:12px;top:12px;padding:12px 14px;font-size:13px;width:270px;z-index:5}
 .hud .row{display:flex;justify-content:space-between;gap:10px;margin:4px 0;align-items:center}
 .hud .row span:first-child{color:var(--mut)}
@@ -91,6 +91,16 @@ button.pill{cursor:pointer}
 #toasts{position:fixed;right:12px;bottom:72px;z-index:40;display:flex;flex-direction:column;gap:8px;width:min(420px,calc(100vw - 24px));pointer-events:none}
 .toast{pointer-events:none;padding:11px 14px;border-radius:12px;background:#1a1a1f;border:1px solid var(--line);border-left:4px solid var(--teal);font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:tin .25s ease-out}
 .toast.w{border-left-color:var(--coral)} .toast.y{border-left-color:var(--gold2)}
+.toast.lb{padding:0;overflow:hidden;background:repeating-linear-gradient(180deg,#17171c 0 23px,rgba(255,255,255,.045) 23px 24px),#17171c;position:relative}
+.toast.lb:before{content:"";position:absolute;left:34px;top:0;bottom:0;width:1px;background:rgba(239,106,91,.35)}
+.toast .tk{display:flex;justify-content:space-between;gap:10px;padding:6px 12px 5px 44px;font-family:var(--mono);font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--mut);border-bottom:1px dashed rgba(255,255,255,.1);background:rgba(0,0,0,.25)}
+.toast .tk b{color:var(--teal);font-weight:600} .toast.w .tk b{color:var(--coral)} .toast.y .tk b{color:var(--gold2)}
+.toast .tb{padding:8px 14px 10px 44px;line-height:1.45}
+.toast .tb .mo{font-family:var(--mono);color:var(--gold2);font-weight:600;white-space:nowrap}
+.toast .ti{position:absolute;left:9px;top:28px;font-size:16px;width:20px;text-align:center}
+.toast .tp{position:absolute;left:0;bottom:0;height:2px;background:var(--teal);animation:tprog 5.2s linear forwards} .toast.w .tp{background:var(--coral)} .toast.y .tp{background:var(--gold2)}
+@keyframes tprog{from{width:100%}to{width:0}}
+@media (prefers-reduced-motion:reduce){.toast .tp{animation:none;width:0}}
 @keyframes tin{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}
 #evento{position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.6)}
 #evento .ev{max-width:760px;text-align:center;padding:34px 30px;border-radius:22px;background:linear-gradient(135deg,#1b160a,#0c0c0f);border:2px solid var(--gold);box-shadow:0 0 80px rgba(201,151,63,.35)}
@@ -4950,7 +4960,11 @@ function puede(){ if(VISITA){ toast('👁 Modo visitante: solo puede recorrer y 
 function periodo(){ return S.cfg.periodo||'Período 1'; }
 
 /* ===================== toasts ===================== */
-function toast(t,k){ const d=document.createElement('div'); d.className='toast '+(k||''); d.textContent=t; $('toasts').appendChild(d); setTimeout(()=>{ d.style.opacity='0'; d.style.transition='opacity .4s'; setTimeout(()=>d.remove(),450); },5200); while($('toasts').children.length>4) $('toasts').firstChild.remove(); }
+function toast(t,k){ const d=document.createElement('div'); d.className='toast lb '+(k||'');
+  const ic={w:'⚠️',y:'📒'}[k]||(/✓|correct/i.test(t)?'✅':/₡/.test(t)?'💰':'🔔'), et={w:'Atención',y:'Contabilidad'}[k]||(/asiento/i.test(t)?'Libro diario':/₡/.test(t)?'Movimiento':'Aviso');
+  const hh=new Date().toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'}); toast.n=(toast.n||0)+1;
+  const tx=String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[+−-]?₡\s?[\d\s.,]*\d/g,m=>'<span class="mo">'+m+'</span>');
+  d.innerHTML='<div class="tk"><span><b>'+et+'</b> · folio '+String(toast.n).padStart(3,'0')+'</span><span>'+hh+'</span></div><span class="ti">'+ic+'</span><div class="tb">'+tx+'</div><div class="tp"></div>'; $('toasts').appendChild(d); setTimeout(()=>{ d.style.opacity='0'; d.style.transition='opacity .4s'; setTimeout(()=>d.remove(),450); },5200); while($('toasts').children.length>4) $('toasts').firstChild.remove(); }
 function notificar(uid,txt,k){ const o={}; o['notif/'+uid+'/'+key()]={txt:String(txt).slice(0,200),k:k||'',ts:SV.TIMESTAMP}; return o; }
 
 /* ===================== crear empresa ===================== */
