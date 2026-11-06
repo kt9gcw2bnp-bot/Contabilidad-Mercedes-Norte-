@@ -93,12 +93,15 @@ let DB=null;
 function cargarFB(){ if(window.__fbp) return window.__fbp;
   const add=src=>new Promise((ok,ko)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>ko(new Error('Firebase')); document.head.appendChild(s); });
   window.__fbp=conT(add('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js').then(()=>add('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js')),15000)
-   .then(()=>{ const a=firebase.apps.find(x=>x.name==='evalja')||firebase.initializeApp(FB,'evalja'); DB=a.database(); return DB; }).catch(()=>null);
+   .then(()=>{ const a=firebase.apps.find(x=>x.name==='evalja')||firebase.initializeApp(FB,'evalja'); DB=a.database(); return DB; }).catch(e=>{ window.__fbp=null; window.__fbErr=(e&&e.message)||'Firebase'; return null; });
   return window.__fbp; }
 const ref=p=>DB.ref('examenes/'+ID+'/'+p);
-const leer=async p=>{ const s=await conT(ref(p).once('value'),12000); return s.val(); };
-const escribir=(p,v)=>conT(ref(p).set(v),10000);
-const actualizar=(p,v)=>conT(ref(p).update(v),10000);
+const RURL=p=>FB.databaseURL+'/examenes/'+ID+'/'+p+'.json';
+async function rest(p,met,v){ const r=await conT(fetch(RURL(p),met?{method:met,body:JSON.stringify(v)}:{cache:'no-store'}),15000);
+  if(!r.ok) throw new Error('HTTP '+r.status+(r.status===401||r.status===403?' permission denied':'')); return r.json(); }
+const leer=async p=>{ if(DB){ try{ const s=await conT(ref(p).once('value'),8000); return s.val(); }catch(e){ console.warn('SDK leer',p,e); } } return rest(p); };
+const escribir=async(p,v)=>{ if(DB){ try{ return await conT(ref(p).set(v),8000); }catch(e){ console.warn('SDK set',e); } } return rest(p,'PUT',v); };
+const actualizar=async(p,v)=>{ if(DB){ try{ return await conT(ref(p).update(v),8000); }catch(e){ console.warn('SDK upd',e); } } return rest(p,'PATCH',v); };
 function claveAzar(){ const a=new Uint8Array(12); crypto.getRandomValues(a); return 'k'+Array.from(a,b=>b.toString(16).padStart(2,'0')).join(''); }
 const sum=a=>a.reduce((x,y)=>x+(+y||0),0);
 /* ===================== ESTADO ===================== */
@@ -123,8 +126,8 @@ function calc(ced,coevAll){
 }
 /* ===================== ESTUDIANTE ===================== */
 async function inicio(){
-  await cargarFB();
-  if(!DB){ $('app').innerHTML='<div class="card"><div class="note bad"><b>Sin conexión con la base de datos.</b> Revise el internet y recargue la página.</div></div>'; return; }
+  await Promise.race([cargarFB(),new Promise(r=>setTimeout(r,8000))]);
+  if(false){ $('app').innerHTML='<div class="card"><div class="note bad"><b>Sin conexión con la base de datos.</b> Revise el internet y recargue la página.</div></div>'; return; }
   try{ CFG=(await leer('config'))||{}; }catch(e){ CFG={}; }
   const nomP=(qs.get('nombre')||'').trim();
   $('app').innerHTML=`<div class="card"><span class="pill gold">Proyecto · 15 % de la calificación</span>
@@ -231,10 +234,28 @@ async function enviarCoev(c){ const d=DRAFT.coev[c], m=$('mCoev');
 function rubHTML(){ return `<div class="scroll"><table class="tb"><tr><th>Criterio</th>${NIV.map(([v,t])=>`<th>${v} · ${t}</th>`).join('')}</tr>${RUB.map((r,i)=>`<tr><td><b>${i+1}. ${esc(r.t)}</b></td>${r.d.map(x=>`<td>${esc(x)}</td>`).join('')}</tr>`).join('')}</table></div>`; }
 /* ===================== PANEL DOCENTE ===================== */
 let PS={sec:'Todas',coev:{},sel:null};
-async function panel(){ const p=prompt('PIN del panel docente:'); if(p===null) return; if(p!==PIN) return toast('PIN incorrecto.');
-  await cargarFB(); if(!DB) return toast('Sin conexión con la base de datos.');
-  $('modal').classList.add('on'); $('modalIn').innerHTML='<div class="card">Cargando…</div>'; await recargar(); panelRender(); }
-async function recargar(){ CFG=(await leer('config'))||{}; EST=(await leer('est'))||{}; PS.coev=(await leer('coev'))||{}; }
+function panel(){
+  $('modal').classList.add('on');
+  $('modalIn').innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">Panel docente</h2><button class="btn ghost sm" style="margin-left:auto" id="pX0">Cerrar ✕</button></div>
+   <label class="lb">PIN del docente</label><input type="password" inputmode="numeric" id="pPin" autocomplete="off">
+   <div class="row" style="margin-top:10px"><button class="btn gold" id="pOk">Entrar</button><span class="mut" id="pMsg"></span></div></div>`;
+  $('pX0').onclick=()=>$('modal').classList.remove('on');
+  const ir=()=>{ if($('pPin').value.trim()!==PIN){ $('pMsg').innerHTML='<span style="color:#f6a497">PIN incorrecto.</span>'; return; } abrirPanel(); };
+  $('pOk').onclick=ir; $('pPin').onkeydown=e=>{ if(e.key==='Enter') ir(); }; setTimeout(()=>{ try{$('pPin').focus();}catch(e){} },50); }
+async function abrirPanel(){
+  $('modalIn').innerHTML='<div class="card">Cargando el panel… (conectando con la base de datos)</div>';
+  try{ await Promise.race([cargarFB(),new Promise(r=>setTimeout(r,8000))]);
+    await recargar(); panelRender();
+  }catch(e){ panelError(e); } }
+function panelError(e){ const m=String((e&&e.message)||e);
+  const perm=/permission|denied/i.test(m);
+  $('modalIn').innerHTML=`<div class="card"><h2 style="margin-top:0">No se pudo cargar el panel</h2>
+   <div class="note">${perm?'La base de datos rechazó la lectura (permisos).':'Revise la conexión a internet e intente de nuevo.'}<br><span class="mut">Detalle: ${esc(m)}</span></div>
+   <div class="row" style="margin-top:10px"><button class="btn gold" id="pRe">↻ Reintentar</button><button class="btn ghost" id="pX1">Cerrar</button></div></div>`;
+  $('pRe').onclick=abrirPanel; $('pX1').onclick=()=>$('modal').classList.remove('on'); }
+async function recargar(){ CFG=(await leer('config'))||{}; EST=(await leer('est'))||{};
+  try{ PS.coev=(await leer('coev'))||{}; }catch(e){ PS.coev={}; toast('No se pudo leer la coevaluación: '+e.message,6000); } }
+async function seguro(fn,ok){ try{ await fn(); if(ok) toast(ok); return true; }catch(e){ toast('No se guardó: '+((e&&e.message)||e),7000); return false; } }
 function lista(){ return Object.entries(EST).filter(([c,x])=>x&&(PS.sec==='Todas'||x.sec===PS.sec)).sort((a,b)=>String(a[1].nom).localeCompare(String(b[1].nom),'es')); }
 function panelRender(){
   const L=lista(), C=L.map(([c])=>calc(c,PS.coev)), prom=C.length?sum(C.map(x=>x.nota))/C.length:0;
@@ -252,11 +273,11 @@ function panelRender(){
   $('pX').onclick=()=>$('modal').classList.remove('on');
   M.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{ PS.sec=b.dataset.sec; panelRender(); });
   M.querySelectorAll('[data-cal]').forEach(b=>b.onclick=()=>calificar(b.dataset.cal));
-  $('pRef').onclick=async()=>{ await recargar(); panelRender(); };
+  $('pRef').onclick=async()=>{ try{ await recargar(); panelRender(); }catch(e){ panelError(e); } };
   $('pCsv').onclick=()=>csv(L);
   $('pPdf').onclick=()=>imprimir();
-  $('cfG').onclick=async()=>{ await actualizar('config',{Secciones:$('cfSec').value.trim(),CerrarAuto:$('cfCA').value,MostrarNotas:$('cfMN').value}); CFG.Secciones=$('cfSec').value.trim(); CFG.CerrarAuto=$('cfCA').value; CFG.MostrarNotas=$('cfMN').value; toast('Configuración guardada.'); panelRender(); };
-  $('cfH').onclick=async()=>{ const nv=habil()?'NO':'SI'; await escribir('config/Habilitado',nv); CFG.Habilitado=nv; toast(nv==='SI'?'Evaluación habilitada.':'Evaluación cerrada.'); panelRender(); };
+  $('cfG').onclick=async()=>{ if(!await seguro(()=>actualizar('config',{Secciones:$('cfSec').value.trim(),CerrarAuto:$('cfCA').value,MostrarNotas:$('cfMN').value}))) return; CFG.Secciones=$('cfSec').value.trim(); CFG.CerrarAuto=$('cfCA').value; CFG.MostrarNotas=$('cfMN').value; toast('Configuración guardada.'); panelRender(); };
+  $('cfH').onclick=async()=>{ const nv=habil()?'NO':'SI'; if(!await seguro(()=>escribir('config/Habilitado',nv))) return; CFG.Habilitado=nv; toast(nv==='SI'?'Evaluación habilitada.':'Evaluación cerrada.'); panelRender(); };
 }
 function calificar(c){
   const x=EST[c]||{}, k=calc(c,PS.coev), d=(x.doc&&x.doc.r)?x.doc.r.slice():RUB.map(()=>0), aj=Object.assign({},x.aj||{});
@@ -274,7 +295,7 @@ function calificar(c){
   $('cG').onclick=async()=>{ const lim=(v,m)=>v===''?null:Math.max(0,Math.min(m,+v));
     const A={doc:lim($('aDoc').value,8),auto:lim($('aAuto').value,4),coev:lim($('aCoev').value,3)};
     const upd={aj:A}; if(d.every(v=>v)) upd.doc={r:d,obs:$('cObs').value.trim().slice(0,1500)}; else if(d.some(v=>v)) return $('cM').innerHTML='<span style="color:#f6a497">Califique los 6 criterios de la rúbrica.</span>';
-    await actualizar('est/'+c,upd); Object.assign(EST[c],upd); const k2=calc(c,PS.coev); $('cM').textContent='✓ Guardado: '+f2(k2.tot)+' % de 15 % · nota '+f2(k2.nota); toast('Calificación guardada.'); };
+    if(!await seguro(()=>actualizar('est/'+c,upd))) return; Object.assign(EST[c],upd); const k2=calc(c,PS.coev); $('cM').textContent='✓ Guardado: '+f2(k2.tot)+' % de 15 % · nota '+f2(k2.nota); toast('Calificación guardada.'); };
 }
 function csv(L){ const H=['Estudiante','Cédula','Sección'].concat(RUB.map((r,i)=>'Rúbrica '+(i+1)),['Docente %','Autoevaluación %','Coevaluación %','Valoraciones recibidas','Total 15 %','Nota 100']);
   const rows=[H].concat(L.map(([c,x])=>{ const k=calc(c,PS.coev); const r=(x.doc&&x.doc.r)||[]; return [x.nom,c,x.sec].concat(RUB.map((_,i)=>r[i]||''),[k.pDoc==null?'':f2(k.pDoc),k.pAuto==null?'':f2(k.pAuto),k.pCoev==null?'':f2(k.pCoev),k.nCoev,f2(k.tot),f2(k.nota)]); }));
@@ -293,7 +314,7 @@ function imprimir(auto){
   $('print').style.display='block'; window.scrollTo(0,0); if(!auto) setTimeout(()=>window.print(),300); }
 $('lnkDoc').onclick=e=>{ e.preventDefault(); panel(); };
 window.__EV={calc,RUB,AUTO,COEV,MAX};
-if(qs.get('pdf')==='1'){ imprimir(true); } else inicio();
+if(qs.get('pdf')==='1'){ imprimir(true); } else { inicio(); if(qs.get('docente')==='1') panel(); }
 })();
 </script>
 </body>
