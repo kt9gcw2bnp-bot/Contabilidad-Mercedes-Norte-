@@ -96,9 +96,12 @@ function cargarFB(){ if(window.__fbp) return window.__fbp;
    .then(()=>{ const a=firebase.apps.find(x=>x.name==='evalja')||firebase.initializeApp(FB,'evalja'); DB=a.database(); return DB; }).catch(e=>{ window.__fbp=null; window.__fbErr=(e&&e.message)||'Firebase'; return null; });
   return window.__fbp; }
 const ref=p=>DB.ref('examenes/'+ID+'/'+p);
-const leer=async p=>{ const s=await conT(ref(p).once('value'),12000); return s.val(); };
-const escribir=(p,v)=>conT(ref(p).set(v),10000);
-const actualizar=(p,v)=>conT(ref(p).update(v),10000);
+const RURL=p=>FB.databaseURL+'/examenes/'+ID+'/'+p+'.json';
+async function rest(p,met,v){ const r=await conT(fetch(RURL(p),met?{method:met,body:JSON.stringify(v)}:{cache:'no-store'}),15000);
+  if(!r.ok) throw new Error('HTTP '+r.status+(r.status===401||r.status===403?' permission denied':'')); return r.json(); }
+const leer=async p=>{ if(DB){ try{ const s=await conT(ref(p).once('value'),8000); return s.val(); }catch(e){ console.warn('SDK leer',p,e); } } return rest(p); };
+const escribir=async(p,v)=>{ if(DB){ try{ return await conT(ref(p).set(v),8000); }catch(e){ console.warn('SDK set',e); } } return rest(p,'PUT',v); };
+const actualizar=async(p,v)=>{ if(DB){ try{ return await conT(ref(p).update(v),8000); }catch(e){ console.warn('SDK upd',e); } } return rest(p,'PATCH',v); };
 function claveAzar(){ const a=new Uint8Array(12); crypto.getRandomValues(a); return 'k'+Array.from(a,b=>b.toString(16).padStart(2,'0')).join(''); }
 const sum=a=>a.reduce((x,y)=>x+(+y||0),0);
 /* ===================== ESTADO ===================== */
@@ -123,8 +126,8 @@ function calc(ced,coevAll){
 }
 /* ===================== ESTUDIANTE ===================== */
 async function inicio(){
-  await cargarFB();
-  if(!DB){ $('app').innerHTML='<div class="card"><div class="note bad"><b>Sin conexión con la base de datos.</b> Revise el internet y recargue la página.</div></div>'; return; }
+  await Promise.race([cargarFB(),new Promise(r=>setTimeout(r,8000))]);
+  if(false){ $('app').innerHTML='<div class="card"><div class="note bad"><b>Sin conexión con la base de datos.</b> Revise el internet y recargue la página.</div></div>'; return; }
   try{ CFG=(await leer('config'))||{}; }catch(e){ CFG={}; }
   const nomP=(qs.get('nombre')||'').trim();
   $('app').innerHTML=`<div class="card"><span class="pill gold">Proyecto · 15 % de la calificación</span>
@@ -241,7 +244,7 @@ function panel(){
   $('pOk').onclick=ir; $('pPin').onkeydown=e=>{ if(e.key==='Enter') ir(); }; setTimeout(()=>{ try{$('pPin').focus();}catch(e){} },50); }
 async function abrirPanel(){
   $('modalIn').innerHTML='<div class="card">Cargando el panel… (conectando con la base de datos)</div>';
-  try{ await cargarFB(); if(!DB) throw new Error('No se pudo cargar Firebase ('+(window.__fbErr||'sin conexión')+')');
+  try{ await Promise.race([cargarFB(),new Promise(r=>setTimeout(r,8000))]);
     await recargar(); panelRender();
   }catch(e){ panelError(e); } }
 function panelError(e){ const m=String((e&&e.message)||e);
